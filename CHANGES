@@ -1,0 +1,254 @@
+USEMARCON Change Log
+
+**************************
+**************************
+version 1.70
+
+2nd February 2006
+
+The National Library of Finland
+Ere Maijala
+http://www.lib.helsinki.fi/
+ere.maijala at helsinki.fi
+
+- Added support to peeking at the previous contents of the destination field
+  using variable D (requires of course that there is already data in the 
+  destination field). This allows for example comparisons between the old
+  and new value and concatenation of old value to the new one.
+- Added experimental support for simple regular expressions. Three new 
+  functions are provided:
+  RegFind('expression') returns >= 0 if the expression was found. 
+  RegMatch(index) returns matched parts by index (0-9).
+  RegReplace('expression', 'expression') replaces expression by another. 
+  \1 \2 etc. can be used to reference the matched parts. Thoroughly untested.
+- Added possibility to do the conversion in field order instead of the classic
+  rule order. In this new mode the record is processed field by field and all 
+  matching rules are applied. Enabled by setting ConvertInFieldOrder=TRUE in 
+  section DEFAULT_STATES of the ini file.
+- Added possibility to specify the absolute field or subfield index in input 
+  or output CD (for example rule "245(1)$a | 240(2)$a | S" would copy $a from
+  first 245 to the second 240 in the destination.
+- Added possibility to use "If Then Translation Else Condition" and 
+  "If Then Condition". This allows more complicated conditional rules. 
+- Fixed a crash if the destination record doesn't contain any fields.
+- Fixed a hang when UTF-8 mode was active and To command was used.
+- Fixed a problem where transcoding a string with Table command would return
+  only the default value and not the other transcoded parts of the string.
+
+
+**************************
+**************************
+version 1.60
+
+14th October 2005
+
+The National Library of Finland
+Ere Maijala
+http://www.lib.helsinki.fi/
+ere.maijala at helsinki.fi
+
+- Implemented UTF-8 support for Len, From, To, Between and /.../ operators.
+  Enabled by setting UTF8Mode=TRUE in section DEFAULT_STATES of the ini file.
+- Fixed a possible memory overwrite error in
+  TTransFile::Transcode. Patch by DanX, Talis.
+- Fixed a possible memory allocation error in
+  TEvaluateRule::Between. Patch by DanX, Talis.
+- Fixed an error where indicators for a variable width field were not
+  written to the output file if the conversion rules didn't create them
+  correctly.
+- Optimized the search for a specific field so that it would be faster to
+  apply rules for non-existing fields or check if a field exists.
+- Implemented a simple memory pooling to optimize memory allocations
+- Implemented a simple string class to optimize memory allocations and
+  avoid frequent allocations of short strings
+- Removed the line length limit (256 characters) of rule and table files
+- Fixed a crash when the input data contained an empty variable length field
+
+**************************
+**************************
+version 1.51
+
+5th January 2005
+
+Helsinki University Library, the National Library of Finland
+Ere Maijala
+http://www.lib.helsinki.fi/
+ere.maijala at helsinki.fi
+
+- added a directive UpdateOrdinalNumber to control if the
+  OrdinalNumber in the ini file is updated. It's no longer
+  updated by default as the update can cause problems if
+  multiple conversions are done simultaneously.
+
+**************************
+**************************
+version 1.50
+
+7th December 2004
+
+Helsinki University Library, the National Library of Finland
+Ere Maijala
+http://www.lib.helsinki.fi/
+ere.maijala at helsinki.fi
+
+- added some fairly simple Autoconf/Automake magic to ease
+  building on different platforms
+- fixed a memory leak from precedes and follows operations
+- fixed a read of uninitialized memory error
+- fixed a potential memory overwrite error from rule handling
+- fixed a memory leak from ReplaceOcc operation
+- fixed a memory leak from Len operation
+- optimized the code a bit, now the uni2uk conversion is more
+  than 20% faster than before
+- added build command for Microsoft Visual C++ Toolkit 2003
+
+**************************
+**************************
+version 1.44
+
+24th August 2004
+
+ATP Library Systems Ltd, Finland
+http://www.atp.fi
+mailto:usemarcon@atp.fi
+
+- a malformed field with no subfields doesn't cause a crash
+  anymore
+
+**************************
+**************************
+version 1.43
+
+28th July 2004
+
+ATP Library Systems Ltd, Finland
+http://www.atp.fi
+mailto:usemarcon@atp.fi
+
+- fixed a bug which caused a crash or a converted record to
+  be reconverted when running in non-interactive mode
+
+**************************
+**************************
+version 1.42
+
+15th June 2004
+
+ATP Library Systems Ltd, Finland
+http://www.atp.fi
+mailto:usemarcon@atp.fi
+
+- added the possibility to disable character conversion
+- corrected a bug where the non-strict Replace command on a string
+  with only spaces crashed the program
+
+**************************
+**************************
+version 1.41
+
+15th April 2004
+
+ATP Library Systems Ltd, Finland
+http://www.atp.fi
+mailto:usemarcon@atp.fi
+
+- fixed a crash when a control field containing two characters was
+  treated as a data field (thanks to Christopher Dunavant from
+  VTLS for reporting the problem)
+- fixed error messages related to the above crash
+- added command line option -v for verbose mode
+- moved the startup banner and usage text away from the library
+- unified the way USEMARCON is written
+- created MS Visual C++ .NET 2003 project files
+
+**************************
+**************************
+version 1.4
+
+29th August 2003
+
+ATP Library Systems Ltd, Finland
+http://www.atp.fi
+mailto:usemarcon@atp.fi
+
+- fixed situations where the ini file was left open if an error was encountered
+- fixed the file handling to only require input and output files
+- moved the error messages into a header file to avoid the need to locate
+  and load them at startup
+
+
+
+**************************
+**************************
+version 1.3
+
+8th July 2003
+
+ATP Library Systems Ltd, Finland
+http://www.atp.fi
+mailto:usemarcon@atp.fi
+
+We have made some major modifications, fixes and restructuring to
+make USEMARCON more suitable for integration in other software,
+our main targets being on-the-fly conversions in Z39.50 clients and
+multithreaded Z39.50 servers. There are too many changes to list
+them all here, but this document outlines the most important ones.
+
+
+Major Changes
+-------------
+
+* Merged Windows and Linux versions
+
+Windows and Linux versions have been merged into the same source.
+The current source should be easily adaptable to other systems too.
+The ini file handling has been rewritten to be cross platform code. This
+includes updating the ini file (the ordinal number), which now works in
+Linux too.
+
+
+* Elimination of global and static data
+
+The scanner and parser have been regenerated using flex++/bison++
+(Win32 port available at http://http://www.kohsuke.org/flex++bison++/)
+to create C++ classes and avoid global non-reentrant code. Most code
+had to be moved from the parser (Analyse.y) to a child class
+(TEvaluateRule in a new header file lien_not.h). The error
+handler (TError) is now a member of TUMApplication and it is used by
+other classes also. Global temporary buffers have been incorporated
+into the error handler (this is a workaround to avoid allocating them
+in dozens of places).
+
+
+* Better handling of on-the-fly conversions
+
+Input and output files are no longer required if the data is provided
+in a buffer. File names in .ini files can be declared without paths.
+In that case it is assumed that they reside in the same directory as
+the .ini file itself. Error log is not created if the file name is
+empty.
+
+
+* Elimination of all known memory leaks
+
+All detected memory leaks have been fixed.
+
+
+* Command line enhancements
+
+Input and output files can now be specified on the command line
+overriding the ini file settings. This makes it possible to, for example,
+run conversion for a batch of files.
+
+
+* A bunch of miscellaneous bug fixes
+
+During the modification and testing phases, multiple bugs from minor
+to severe (crash-producing) ones were discovered and fixed.
+
+
+* Non-functional code restructuring for better readability
+
+Most source files have been restructured to fix the different
+indentation errors and styles. Some ugly things will remain, but the
+overall readability has been improved.

@@ -1,0 +1,101 @@
+#!/bin/sh
+usemarconprefix=@prefix@
+usemarcon_echo_cflags=no
+usemarcon_echo_libs=no
+usemarcon_echo_help=no
+usemarcon_echo_source=yes
+usemarcon_echo_lalibs=no
+usemarcon_echo_comp=no
+usemarcon_src_root=@USEMARCON_SRC_ROOT@
+usemarcon_build_root=@USEMARCON_BUILD_ROOT@
+
+USEMARCONVERSION=@VERSION@
+
+usage()
+{
+	cat <<EOF
+Usage: usemarcon-config [OPTIONS]
+Options:
+	[--prefix[=DIR]]
+	[--version]
+	[--lalibs]
+	[--cflags]
+EOF
+	exit $1
+}
+
+#if test $# -eq 0; then
+#	usemarcon_echo_help=yes
+#fi
+
+while test $# -gt 0; do
+  case "$1" in
+  -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+  *) optarg= ;;
+  esac
+
+  case $1 in
+    --prefix=*)
+      usemarconprefix=$optarg
+      ;;
+    --prefix)
+      echo $usemarconprefix
+      exit 0
+      ;;
+    --version)
+      echo $USEMARCONVERSION
+      exit 0
+      ;;
+    --cflags)
+      usemarcon_echo_cflags=yes
+      ;;
+    --lalibs)
+      usemarcon_echo_lalibs=yes
+      ;;
+    -*)
+      usemarcon_echo_help=yes
+      ;;
+  esac
+  shift
+done
+
+lusemarcon="-lusemarcon"
+
+if test "$lib_thread" = "yes" -a -n "@CFLAGSTHREADS@"; then
+    lusemarcon="-lusemarcon $lusemarcon"
+fi 
+
+if test "$usemarcon_echo_source" = "yes"; then
+    BIN=${yaz_build_root}/bin
+    USEMARCONLALIB="${usemarcon_build_root}/library/libusemarcon.la $yazextralibs"
+    USEMARCONINC="-I${usemarcon_build_root}/library"
+else
+    USEMARCONBIN=${usemarconprefix}/bin
+
+    if test "$usemarconprefix" = "/usr"; then
+	USEMARCONLIB="$lusemarcon $usemarconextralibs"
+    else
+	USEMARCONLIB="-L$usemarconprefix/lib $lusemarcon $usemarconextralibs"
+    fi
+    USEMARCONLALIB=$USEMARCONLIB
+    if test "$usemarconprefix" = "/usr"; then
+	USEMARCONINC=
+    else
+	USEMARCONINC=-I$usemarconprefix/include
+    fi
+fi
+
+USEMARCONINC="$USEMARCONINC @USEMARCON_CONF_CFLAGS@"
+
+if test "$usemarcon_echo_help" = "yes"; then
+	usage 1 1>&2
+fi
+if test "$usemarcon_echo_cflags" = "yes"; then
+	echo $USEMARCONINC
+fi
+if test "$usemarcon_echo_libs" = "yes"; then
+	echo $USEMARCONLIB
+fi
+if test "$usemarcon_echo_lalibs" = "yes"; then
+	echo $USEMARCONLALIB
+fi

@@ -1,0 +1,469 @@
+UNIMARC
+UKMARC - Draft -
+
+// Record label pos 1-5 (rec length) generated nothing to do
+000   /6-8/	| 000        /6-8/	| 
+000   /9-10/	| 000        /9-10/	| '  '
+// nothing to do
+000   /12-17/	| 000        /12-17/	| S
+000   /18/	| 000        /18/	| 1
+000   /19-20/	| 000        /19-20/	| '  '
+// nothing to do
+000   /21-24/	| 000        /21-24/	| S
+// Transfers 001 into 091 (Previous control  no.) Target system generates new 001
+001	| 001			| 'UKM'+Ordinal(7)
+001	| 091I1	| 0
+001	| 091I2	| 0
+001	| 091$a	| 
+001	| 005			| Year+Month+Day+Hour+Minute+Second+'.0'
+// When output record will be built, this field will be sorted Each 010 creates a new 021
+// 010	| 021(n)	| Sort('abcdz') //Not necessary ?
+// Indicator 1 is 1
+010	| 021(nt)I1	| 1
+// Indicator 2 is 0
+010	| 021(nt)I2	| 0
+// nothing to do
+010$a	| 021(nt)$a      | Delete('-')
+// nothing to do
+010$b	| 021(nt)$c      |
+// nothing to do
+010$d	| 021(nt)$d      |
+// nothing to do
+010$z	| 021(nt)$z      |
+011	| 022        | Sort(abz)
+// Only the first 011 will be converted
+011	| 022I1	| If (n=1) Then 0
+011	| 022I2	| If (n=1) Then 0
+011$a	| 022$a	| If (n=1) Then Delete('-')
+011$d	| 350I1	| 0
+011$d	| 350I2	| 0
+011$d	| 350$a	| 
+// Indicator 1 is 0
+020	| 015(n)I1	| 0
+// Indicator 2 is 0
+020	| 015(n)I2	| 0
+020$b	| 015$a	| 
+// Indicator 1 and
+071	| 538(n)I1	| 0
+// Indicator 2 are 0
+071	| 538(n)I2	| 0
+071I1	| 538(n)$a	| Table(538); If Exists($b) Then S+':b' +$b Else S
+071$a	| 538(n)$b	| 
+// Indicator 1 and
+100	| 008I1	| ''
+// Indicator 2 are empty
+100	| 008I2	| ''
+// Skip century
+100$a/1-8/	| 008        /1-6/	| From(3 )
+// nothing to do as described in ANNEX B.1
+100$a/9/	| 008/7/ | Table ('date.tbl')
+100$a/10-17/	| 008/8-15/ |
+100$a/14-17/ | 008/12-15/ | If (S='i') Or (S='j') Then '    ' // overwrites above with 4 blanks
+100$a/18/	    | 008/23/ | Table ('aud.tbl')
+100$a/21/	    | 008/29/ | If (S='y' Or S='u') Then '0' Else '1'
+101	| 008I1	| ''
+101	| 008I2	| ''
+// First $a goes in 008
+101$a	| 008 /36-38/	    | If (n=1) Then S
+// 041 is only created
+101$a	| 041I1	| If (n>1) Then '|'
+// when more than one $a
+// It is impossible to tell from UNI 101 whether or not a translation has or has not the original text (if has, I1=0, if has not, I1=1). Any conversion must use the fill character.
+101$a	| 041I2	| If (n>1) Then 0
+// Two first 101$a in 041$a
+101$a	| 041$a	| If (n=2) Then 101$a(1)+S
+// any subsequent $a merged in 041$a
+101$a	| 041$a	| + If (n>2) Then S
+101$b	| 041$h	|
+101$c	| 041$h	|
+101$d	| 041$b	|
+101$e	| 041$f	|
+101$f	| 041$a	| +
+101$g	| 041$a	| +
+101$h	| 041$e	|
+101$i	| 041$g	|
+101$j	| 041$b	|
+// First $a in 008
+102$a	| 008        /16-18/ | Table ('iso2uk.tbl')
+102$a	| 044I1	| If (n>1) Then 0
+102$a	| 044I2	| If (n>1) Then 0
+102$a	| 044$a	| If (n=2) Then 102$a(1)+S
+102$a	| 044$a	| + If (n>2) Then S
+105$a/1-4/	| 008/19-22/ | Table ('illustra.tbl')
+105$a/5-8/	| 008/25-28/ | Table ('frm.tbl')
+105$a/9/	| 008/30/ |
+105$a/10/	| 008/31/ |
+105$a/11/	| 008/32/ |
+105$a/12/	| 008/34/ | Table ('lit.tbl')
+105$a/13/	| 008/35/ | Table ('biog.tbl')
+106$a/1-4/	| 008/24/ | Table ('gmd.tbl')
+110$a/1/	| 008/39/ | Table ('ser.tbl')
+110$a/3/	| 008/34/ | Table ('frm.tbl')
+110$a/7/	| 008/30/ |
+// Each 123 creates a 034
+123I1	| 034(n)I1	| 0
+123I2	| 034(n)I2	| 0
+123$a	| 034(n)$a	| 
+// Each $b or $c of each 123 goes in the
+123$b	| 034$b	| 
+// corresponding $b or $c of each 034
+123$c	| 034$c	| 
+200I1	| 245I1	| If (S=0) Then S
+200I1	| 245I1	| If (S=1) Then S; If (Exists(@700) Or Exists(@710) Or Exists(@720) Or Exists(@101) Or Exists (@102) Or Exists(@105) Or Exists(@106)) Then 1
+200I1	| 245I1	| If (S=1 And Not(Exists(@700) Or Exists(@710) Or Exists (@720))) Then 3
+200$a	| 245I2	| If (n=1) Then Sto(0); Bfirst('\88'); Sto(1);Mem(0); Bfirst('\89'); S-Mem(1);S-1;if (S<0) then 0 Else S
+200$a	| 245$a	| If (n=1) Then Delete('\88'); Delete('\89');
+200$a	| 245$i	| If (n>1) Then S
+200$b	| 245$z	| 
+200$c	| 245$j	| 
+200$d	| 245$k	| 
+// First $e created
+200$f	| 245$e	| 
+// Subsequent $es created Searches next $i until next $h If found merges it with $h+', ' else only $h in $l
+200$g	| 245$e	| 
+// Searches last $h until last $i If not found then create a new $l containing only $i If found there is nothing to do, the preceding rule has already created the subfield
+200$h	| 245$l(no)	| sto(0); Next($i,$h);If (S='') Then Mem(0) Else Mem(0)+', '+S
+200$i	| 245$l(no)	| sto(0); Last($h,$i);If (S='') Then Mem(0)
+200$h	| 248I1	| ns
+200$h	| 248I2	| 0
+// first h, I or hi combination has 248I1=1, second has I1=2, etc.
+200$h	| 248$g	| 
+// The routine for separating out combinations is as above
+200$i	| 248$h	| 
+205I1	| 250(n)I1	| 0
+205I2	| 250(n)I2	| 0
+205$a	| 250(n)$a	| 
+206I1	| 256(n)I1	| 0
+206I2	| 256(n)I2	| 0
+206$a	| 256(n)$a	| 
+207	| 255I1	| 0
+207	| 255I2	| 0
+207$a	| 255$a(n)	| 
+208$a	| 254(n)I1	| 0
+208$a	| 254(n)I2	| 0
+208$a	| 254(n)$a	| 
+210	| 260I1	| 0
+210	| 260I2	| 0
+210$a	| 260$a(n)	| 
+210$c	| 260$b(n)	| 
+210$d	| 260$c(n)	| 
+215	| 300(n)I1	| 0
+215	| 300(n)I2	| 0
+// Searches end of first number Searches first word Compare it with v. vol.To(BFirst(Number)) If v. or vol. 300$a is 215$a until first number
+215$a	| 300(n)$a	| Sto(0); From(EFirst(Number)); If (S!='') Then Between(BFirst(String),EFirst(String));  If (S='v.' or S='vol.') Then Mem(0);
+// If no number then whole 215$a in 300$n
+215$a	| 300(n)$n	| Sto(0); From(EFirst(Number)); If (S='') Then Mem(0)
+// If not v. nor vol. then whole 215$a in 300$a
+215$a	| 300(n)$a	| Sto(0); From(EFirst(Number)); If (S!='') Then Between(BFirst(String),EFirst(String));If Not(S='v.' or S='vol.') Then Mem(0)
+215$a	| 300(n)$f	| From(BFirst(Number)); If (S!='') Then Sto(0); Between(BFirst(String),EFirst(String)); If (S='v.' or S='vol.') Then Mem(0); To(EFirst(number))
+215$a	| 300(n)$n	| From(EFirst(Number)); If (S!='') Then Sto(0);Between(BFirst(String),EFirst(String));If (S='v.' or S='vol.') Then Mem(0);From(BFirst(String))
+215$c	| 300$b	| 
+215$d	| 300(n)$c	| 
+// If 225I1=0 or
+225I1	| 490(n)I1	| If (S=0) Then 1
+// 225I1=1 then creates 490
+225I1	| 490(n)I1	| If (S=1) Then 0
+225I1	| 490(n)I2	| If (S!=2) Then 0
+225I1	| 440(n)I1	| If (S=2) Then 0
+225I1	| 440(n)I2	| If (S=2) Then 0
+225$a	| 490(n)$a	| If (I1!=2) Then S
+225$a	| 440(n)$a	| If (I1=2) Then S
+225$h	| 490$l	| Sto(0);If (I1!=2) Then Next($i,$h);If (S='') Then Mem(0) Else Mem(0)+', '+S
+225$i	| 490$l	| Sto(0); If (I1!=2) Then Last($h,$i);If (S='') Then Mem(0)
+225$h	| 440$l	| Sto(0);If (I1=2) Then Next($i,$h);If (S='') Then Mem(0) Else Mem(0)+', '+S
+225$i	| 440$l	| Sto(0); If (I1=2) Then Last($h,$i);If (S='') Then Mem(0)
+225$v	| 490$v	| If (I1!=2) Then S
+225$v	| 440$v	| If (I1=2) Then S
+225$x	| 490(n)$w	| + If (I1!=2) Then S
+225$x	| 440(n)$w	| + If (I1=2) Then S
+// Indicator 1 is 0
+300	| 500(no)I1	| 0
+// Indicator 2 is 0
+300	| 500(no)I2	| 0
+300$a	| 500(no)$a	|
+// Notes on identification numbers. Rough conversion
+301	| 538(no)I1	| 0
+301	| 538(no)I2	| 0
+301$a	| 538(no)$a	|
+// Notes on coded information. Not reversible
+302	| 500(no)I1	| 0
+302	| 500(no)I2	| 0
+302$a	| 500(no)$a	|
+// General notes on descriptive information. Not reversible
+303	| 500(no)I1	| 0
+303	| 500(no)I2	| 0
+303$a	| 500(no)$a	|
+// Notes on title and statement of responsibility. Rough conversion: 508 also possible field
+304	| 514(no)I1	| 0 // Title information field
+304	| 514(no)I2	| 0
+304$a	| 514(no)$a	|
+// Notes on bibliographic history
+305	| 503(no)I1	| 0
+305	| 503(no)I2	| 0
+305$a	| 503(no)$a	|
+// Notes on publication
+306	| 528(no)I1	| 0
+306	| 528(no)I2	| 0
+306$a	| 528(no)$a	|
+// Notes on physical description
+307	| 531(no)I1	| 0
+307	| 531(no)I2	| 0
+307$a	| 531(no)$a	|
+// Notes on series
+308	| 532(no)I1	| 0
+308	| 532(no)I2	| 0
+308$a	| 532(no)$a	|
+// Notes on binding and availability. Maps to several fields
+310	| 500(no)I1	| 0
+310	| 500(no)I2	| 0
+310$a	| 500(no)$a	|
+// 311 Notes pertaining to linking fields.  Cannot be converted
+// Notes on related titles
+312	| 514(no)I1	| 0
+312	| 514(no)I2	| 0
+312$a	| 514(no)$a	|
+// Notes on subject access. No equivalent
+313	| 500(no)I1	| 0
+313	| 500(no)I2	| 0
+313$a	| 500(no)$a	|
+// Notes on intellectual responsibility
+314	| 508(no)I1	| 0
+314	| 508(no)I2	| 0
+314$a	| 508(no)$a	|
+// Notes on material-specific information. Maps to several fields
+315	| 500(no)I1	| 0
+315	| 500(no)I2	| 0
+315$a	| 500(no)$a	|
+// Notes on the copy in hand. No equivalent in UKMARC (or USMARC)
+316	| 500(no)I1	| 0
+316	| 500(no)I2	| 0
+316$a	| 500(no)$a	|
+316$5	| 500(no)$s	|
+// Notes on provenance
+317	| 561(no)I1	| 0
+317	| 561(no)I2	| 0
+317$a	| 561(no)$a	|
+317$5	| 561(no)$s	|
+// Notes on action
+318	| 583(no)I1	| 0
+318	| 583(no)I2	| 0
+318$a	| 583(no)$a	|
+318$b	| 583(no)$b	|
+318$c	| 583(no)$c	|
+318$d	| 583(no)$d	|
+318$e	| 583(no)$e	|
+318$f	| 583(no)$f	|
+318$h	| 583(no)$h	|
+318$i	| 583(no)$i	|
+318$j	| 583(no)$j	|
+318$k	| 583(no)$k	|
+318$l	| 583(no)$l	|
+318$n	| 583(no)$n	|
+318$o	| 583(no)$o	|
+318$p	| 583(no)$x	|
+318$r	| 583(no)$z	|
+318$5	| 583(no)$s	|
+// Notes on internal bibliographies/indexes
+320	| 504(no)I1	| 0
+320	| 504(no)I2	| 0
+320$a	| 504(no)$a	|
+// Notes on external indexes etc.
+321	| 500(no)I1	| If (I1=' ') Then 0
+321	| 500(no)I2	| If (I1=' ') Then 0
+321$a	| 500(no)$a	| If (I1=' ') Then S
+321$b	| 500(no)$a	| + If (I1=' ') Then ' ' + S
+321$x	| 500(no)$a	| + If (I1=' ') Then ' ISSN: ' + S
+321	| 555(no)I1	| If (I1='0') Then 0
+321	| 555(no)I2	| If (I1='0') Then 0
+321$a	| 555(no)$a	| If (I1='0') Then S
+321$b	| 555(no)$a	| + If (I1='0') Then ' ' + S
+321$x	| 534(no)$a	| + If (I1='0') Then '.ISSN: ' + S
+321	| 534(no)I1	| If (I1='1') Then 0
+321	| 534(no)I2	| If (I1='1') Then 0
+321$a	| 534(no)$a	| If (I1='1') Then ' References: ' + S
+321$b	| 534(no)$a	| + If (I1='1') Then ' ' + S
+321$x	| 534(no)$a	| + If (I1='1') Then ' ISSN: ' + S
+// 322, 323 notes not for books
+// Notes on original version
+324	| 536(no)I1	| 0
+324	| 536(no)I2	| 0
+324$a	| 536(no)$a	|
+// Notes on reproduction. Records containing this field are not AACR2. Non-standard notes field used
+// Error log will record presence - 533 not in UK checking table
+325	| 533(no)I1	| 0
+325	| 533(no)I2	| 0
+325$a	| 533(no)$a	|
+// Notes on intellectual responsibility
+326	| 554(no)I1	| 0
+326	| 554(no)I2	| 0
+326$a	| 554(no)$a	|
+// Contents note
+327	| 505(no)I1	| 0 // Not reversible - UNI has two values
+327	| 505(no)I2	| 0
+327$a	| 505(no)$a	|
+// *************************** NEEDS + as UNI $a is repeatable ********
+// Thesis note
+328	| 502(no)I1	| 0
+328	| 502(no)I2	| 0
+328$a	| 502(no)$a	|
+// Summary or abstract
+330	| 513(no)I1	| 0
+330	| 513(no)I2	| 0
+330$a	| 513(no)$a	|
+// Preferred citation note // No equivalent
+332	| 500(no)I1	| 0
+332	| 500(no)I2	| 0
+332$a	| 500(no)$a	|
+// Intended audience note
+333	| 521(no)I1	| 0
+333	| 521(no)I2	| 0
+333$a	| 521(no)$a	|
+// 336, 337 Computer files notes
+// 345 Acquisition information note. Not converted
+410$1	| 840(no)I1	| If (S=200) Then Last($1);If ((S='') or ((S!=700) and (S!=710) and (S!=720))) Then 0
+410$1	| 840(no)I2	| If (S=200) Then Last($1);If ((S='') or ((S!=700) and (S!=710) and (S!=720))) Then 0
+410$1	| 840(no)$a	| If (S=200) Then Sto(0); Last($1);If ((S='') or ((S!=700) and (S!=710) and (S!=720))) Then Mem(0)
+410$1	| 800(no)I1	| If (S=700) Then 0
+410$1	| 800(no)I2	| If (S=700) Then 0
+410$1	| 800(no)$a	| If (S=700) Then Delete(',')
+410$1	| 800(no)$t	| If (S=200) Then Sto(0); Last($1);If (S=700) Then Mem(0);
+410$1	| 810(no)I1	| If (S=710) Then 0
+410$1	| 810(no)I2	| If (S=710) Then 0
+410$1	| 810(no)$a	| If (S=710) Then Delete(',')
+410$1	| 810(no)$t	| If (S=200) Then Sto(0); Last($1);If (S=710) Then Mem(0);
+410$1	| 820(no)I1	| If (S=720) Then 0
+410$1	| 820(no)I2	| If (S=720) Then 0
+410$1	| 820(no)$a	| If (S=720) Then Delete(',')
+410$1	| 820(no)$t	| If (S=200) Then Sto(0); Last($1);If (S=720) Then Mem(0);
+500I1	| 240I1	| If (n=1 and S=1 andI2=0) Then 4
+500I1	| 240I1	| If (n=1 and S=1 andI2=1) Then 3
+500I1	| 240I1	| If (n=1 and S=0 and Exists(@710)) Then 0
+500I1	| 240I1	| If (n=1 and S=0 and Not Exists(@710)) Then 1
+500$a	| 240I2	| If (n=1) Then BFirst('|'); If (S>9) Then 9 Else S
+// Field 500 is repeatable
+500$a	| 240$a	| If (n=1) Then S
+500$a	| 740(no)$a	| If (n>1) Then S
+500$a	| 740$a	| 
+500$h	| 240$s(n)	| Sto(0);If (I1!=2) Then Next($i,$h);If (S='') Then Mem(0) Else Mem(0)+', '+S
+500$i	| 240$s(n)	| Sto(0); If (I1!=2) Then Last($h,$i);If (S='') Then Mem(0)
+500$k	| 240$o	| If (n=1) Then S
+500$k	| 740(no)$o	| If (n>1) Then S
+500$l	| 240$p(n)	| S
+500$m	| 240$r	| If (n=1) Then S
+500$m	| 740(no)$r	| If (n>1) Then S
+500$n	| 240$j(n)	| 
+500$q	| 240$q(n)	| 
+500$r	| 240$d	| If (n=1) Then S
+500$r	| 740(no)$d	| If (n>1) Then S
+500$s	| 240$f	| If (n=1) Then S
+500$s	| 740(no)$f	| If (n>1) Then S
+500$u	| 240$h	| If (n=1) Then S
+500$u	| 740(no)$h	| If (n>1) Then S
+500$w	| 240$k	| If (n=1) Then S
+500$w	| 740(no)$k	| If (n>1) Then S
+530I1	| 222I1	| 0
+530$a	| 222I2	| If (n=1) Then Sto(0); Bfirst('\88'); Sto(1);Mem(0); Bfirst('\89'); S-Mem(1);S-1;if (S<0) then 0 Else S
+// Take only the $a of first 530 for example
+530$a	| 222$a	| If (n=1) Then S
+// Take only the $b of first 530 for example
+530$b	| 222$b	| If (n=1) Then S
+// Indicator 1 is 0
+675	| 080(n)I1	| 0
+// Indicator 2 is 0
+675	| 080(n)I2	| 0
+675$a	| 080$a	| 
+// Indicator 1 is 0
+676	| 082(n)I1	| 0
+// Indicator 2 is 0
+676	| 082(n)I2	| 0
+676$a	| 082$a	| 
+676$v	| 082$c	| 
+700I1	| 100I2	| 0
+// Store 700$a in memory 0 Search pos of first word of 700$a and store it in memory
+// Search pos of last word of 700$a (memory 0) and compare it with first word pos (memory 1).
+// If first word pos and last word pos are the same, there is only one word in 700$a
+700I2	| 100I1	| If (S=0) Then 0
+700I2	| 100I1	| If (S=1) Then $a; Sto(0); BFirst(String); Sto(1); Mem(0); BLast(String);If (S=Mem(1)) Then 1 Else 2
+700$a	| 100$a	| Delete(',')
+// If neither ( nor ) is found, then $c goes in $e
+700$b	| 100$h	| Delete(',')
+700$c	| 100$e	| If ((n=1) And ($a Precedes $c) And ($b Follows $c) And BFirst('(')=0 And BFirst(')')=0) Then S 
+700$c	| 100$f | If ((n=1) And Not(($a Precedes $c) And ($b Follows $c)) And BFirst('(')=0 And BFirst(')')=0) Then S
+700$c	| 100$l	| If ((n=1) And (BFirst('(')!=0 Or BFirst(')')!=0)) Then S
+700$c	| 100$d	| + If (n>1) Then S
+700$d	| 100$e	| S
+700$f	| 100$c	| 
+700$g	| 100$k	| 
+701I1	| 700(n)I2	| 0
+701I2	| 700(n)I1	| If (S=0) Then 0
+701I2	| 700(n)I1	| If (S=1) Then $a; Sto(0); BFirst(String); Sto(1); Mem(0); BLast(String);If (S=Mem(1)) Then 1 Else 2
+701$a	| 700(n)$a	| Delete(',')
+701$b	| 700(n)$h	| Delete(',')
+// If neither ( nor ) is found, then $c goes in $e
+701$c	| 700(n)$e	| If ((ns=1) And ($a Precedes $c) And ($b Follows $c) And BFirst('(')=0 And BFirst(')')=0) Then S
+701$c	| 700(n)$f	| If ((ns=1) And Not(($a Precedes $c) And ($b Follows $c)) And BFirst('(')=0 And BFirst(')')=0) Then S
+701$c	| 700(n)$l	| If ((ns=1) And (BFirst('(')!=0 Or BFirst(')')!=0)) Then S
+701$c	| 700(n)$d	| + If (ns>1) Then S
+701$d	| 700(n)$e	| S
+701$f	| 700(n)$c	| 
+701$g	| 700(n)$k	| 
+702I1	| 700(n)I2	| 1
+702I2	| 700(n)I1	| If (S=0) Then 0
+702I2	| 700(n)I1	| If (S=1) Then $a; Sto(0); BFirst(String); Sto(1); Mem(0); BLast(String);If (S=Mem(1)) Then 1 Else 2
+702$a	| 700(n)$a	| Delete(',')
+702$b	| 700(n)$h	| Delete(',')
+// If neither ( nor ) is found, then $c goes in $e
+702$c	| 700(n)$e	| If ((ns=1) And ($a Precedes $c) And ($b Follows $c) And BFirst('(')=0 And BFirst(')')=0) Then S
+702$c	| 700(n)$f	| If ((ns=1) And Not(($a Precedes $c) And ($b Follows $c)) And BFirst('(')=0 And BFirst(')')=0) Then S
+702$c	| 700(n)$l	| If ((ns=1) and (BFirst('(')!=0 or BFirst(')')!=0)) Then S
+702$c	| 700(n)$d	| + If (ns>1) Then S
+702$d	| 700(n)$e	| S
+702$f	| 700(n)$c	| 
+702$g	| 700(n)$k	| 
+710	| 110	| If (I1=0) Then Sort('ijk')
+710I1	| 110I2	| If (I1=0) Then S
+710I2	| 110I1	| If (I1=0) Then S
+710$a	| 110$a	| If (I1=0) Then Delete(','); Delete('.');
+710$b	| 110$c(n)	| If (I1=0) Then S
+710$c	| 110$e(n)	| If (I1=0) Then S
+710$d	| 110$i	| + If (I1=0) Then S
+710$e	| 110$j	| If (I1=0) Then S
+710$f	| 110$k	| If (I1=0) Then S
+710I1	| 111I1	| If (S=1) Then 0
+710I1	| 111I2	| If (S=1) Then 0
+710$a	| 111$a	| If (I1=1) Then Delete(','); Delete('.')
+710$b	| 111$c(n)	| If (I1=1) Then S
+710$c	| 111$e(n)	| If (I1=1) Then S
+710$d	| 111$i	| + If (I1=1) Then S
+710$e	| 111$j	| If (I1=1) Then S
+710$f	| 111$k	| If (I1=1) Then S
+711	| 710(n)	| If (I1=0) Then Sort('ijk')
+711I1	| 710(n)I2	| If (I1=0) Then S
+711I2	| 710(n)I1	| If (I1=0) Then S
+711$a	| 710(n)$a	| If (I1=0) Then Delete(','); Delete('.');
+711$b	| 710$c	| If (I1=0) Then S
+711$c	| 710$e	| If (I1=0) Then S
+711$d	| 710(n)$i	| + If (I1=0) Then S
+711$e	| 710(n)$j	| If (I1=0) Then S
+711$f	| 710(n)$k	| If (I1=0) Then S
+711I1	| 711(n)I1	| If (S=1) Then 0
+711I1	| 711(n)I2	| If (S=1) Then 0
+712$a	| 711(n)$a	| If (I1=1) Then Delete(','); Delete('.')
+712$b	| 711$c	| If (I1=1) Then S
+712$c	| 711$e	| If (I1=1) Then S
+712$d	| 711(n)$i	| + If (I1=1) Then S
+712$e	| 711(n)$j	| If (I1=1) Then S
+712$f	| 711(n)$k	| If (I1=1) Then S
+720I1	| 100I1	| 3
+// Any word(s) in parentheses lose the parentheses and go in $l - similar to UNI 700 $c
+720I2	| 100I2	| 0
+720$a	| 100$a	| Sto(0); To(BFirst(',')); If (S!='') Then S Else Mem(0)
+720$a	| 100$l	| From(EFirst(',')); If (S!='') Then S
+720$f	| 100$c	| 
+801	| 040I1	| 0
+801	| 040I2	| 0
+801$b	| 040$a	| 
+801	| 040$d	| 'Uk'
+900$3	| 999I1	| 0
+900$3	| 999I2	| 0
+900$3	| 999$a(n)	| From(3)

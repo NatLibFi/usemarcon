@@ -1,0 +1,440 @@
+UNIMARC FORMAT CHECKING FILE
+
+// Record identifier													( Clé d'enregistrement )
+001_ | I1=		| I2=		|											// Man/Uni (no subfield )
+
+// Version identifier													( Date de mise a jour )
+005? | I1=		| I2=		|											// Opt/Uni ( no subfield )
+
+// International Standard Book Number									( ISBN )
+010* | I1=_		| I2=_		| $a? | $b? | $d? | $z*						// Opt/Rep ( $z:Opt/Rep; others:Opt/Uni )
+ 
+// International Standard Serial Number									( ISSN )
+011* | I1=_		| I2=_		| $a? | $b? | $d* | $y* | $z*				// Opt/Rep ( $a,b:Opt/Uni; others:Opt/Rep )
+
+// National Bibliography Number											( Numéro d'annonce dans la bibliographie de la France ) 
+020* | I1=_		| I2=_		| $a? | $b? | $z*							// Opt/Rep ( $z:Opt/Rep; others:Opt/Uni )
+
+// Legal deposit number													( Numéro de dépôt légal )
+021* | I1=_		| I2=_		| $a? | $b? | $z*							// Opt/Rep ( $z:Opt/Rep; others:Opt/Uni )
+ 
+// Government publication number										( Numéro de publication officielle )
+022* | I1=_		| I2=_		| $a? | $b? | $z*							// Opt/Rep ( $z:Opt/Rep; others:Opt/Uni )
+ 
+// CODEN																( CODEN )
+040* | I1=_		| I2=_		| $a? | $z*									// Opt/Rep ( $z:Opt/Rep; others:Opt/Uni )
+ 
+// Publisher's number													( Numéros d'éditeurs )
+071* | I1=0123	| I2=01		| $a? | $b?									// Opt/Rep ( $a,b:Opt/Uni )
+
+// Previous control number
+091*| I1=_ | I2=_ | $a_ | $b_
+
+// General processing data - general									( Informations codées - général )
+100_ | I1=_		| I2=_		| $a?										// Man/Uni ( $a:Opt/Uni )
+
+// Language of the item													( Langue de publication )
+101_ | I1=012 0x7C	| I2=_	| $a* | $b* | $c* | $d* | $e* | $f* | $h* | $i* | $j* | $g?	// Man/Uni ( $g:Opt/Uni; others:Opt/Rep )
+
+// Country of publication or production									( Pays de publication ou de production )
+102? | I1=_		| I2=_		| $a* | $b*									// Opt/Uni ( others:Opt/Rep )
+
+// Coded data field	: Books												( monographies )
+105? | I1=_		| I2=_		| $a?										// Opt/Uni ( $a:Opt/Uni )
+
+// Coded data field : textual material - physical attributes			( Informations sur le support de texte )
+106? | I1=_		| I2=_		| $a?										// Opt/Uni ( $a:Opt/Uni )
+
+// Coded data field : serials											( Publications en serie )
+110? | I1=_		| I2=_		| $a?										// Opt/Uni ( $a:Opt/Uni )
+
+// Coded data field : visual projections, video recordings and motion pictures	( Images projetées, enregistrements vidéo et films )
+115* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Coded data field : graphics											( Documents graphiques )
+116* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Coded data field : cartographic materials - general					( Documents cartographiques - général )
+120? | I1=_		| I2=_		| $a?										// Opt/Uni ( $a:Opt/Uni )
+
+// Coded data field : cartographic materials - physical attributes		( Documents cartographiques - caracteristiques physiques )
+121? | I1=_		| I2=_		| $a_ | $b_									// Opt/Uni ( $a,b:Man/Uni )
+
+// Coded data field : time period of item content						( Période historique etudiée dans le document )
+122* | I1=012	| I2=_		| $a+										// Opt/Rep ( $a:Man/Rep )
+
+// Coded data field : cartographic materials - scale ans coordinates	( Documents cartographiques - échelle et coordonnées )
+123* | I1=0123	| I2=_		| $a_ | $b* | $c* | $d? | $e? | $f? | $g? | $h* | $i? | $j? | $k? | $m? | $n?
+
+// Coded data field : cartographic materials - designation analysis		( Documents cartographiques - autres caractéristiques physiques )
+124? | I1=_		| I2=_		| $a? | $b* | $c* | $d* | $e* | $f* | $g*	// Opt/Uni ( $a:Man/Uni; others:Opt/Rep )
+
+// Coded data field : sound recording and printed music					( Enregistrements sonores parlés et musique imprimée )
+125? | I1=_		| I2=_		| $a? | $b?									// Opt/Uni ( $a,b:Opt/Uni )
+
+// Coded data field : sound recording - physical attributes				( Enregistrements sonores - caractéristiques physiques )
+126? | I1=_		| I2=_		| $a* | $b?									// Opt/Uni ( $a:Opt/Rep; b:Opt/Uni )
+
+// Coded data field : duration of sound recordings and printed music	( Durée des enregistrements sonores et partitions musicales imprimées )
+127? | I1=_		| I2=_		| $a?										// Opt/Uni ( $a:Opt/Rep )
+
+// Coded data field : musical performances and scores					( Interprétations musicales et partitions )
+128* | I1=_		| I2=_		| $a* | $b* | $c*							// Opt/Rep ( $a,b,c:Opt/Rep )
+
+// Coded data field : Microforms - physical attributes					( Microforme - caractéristiques physiques )
+130* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Rep )
+
+// Coded data field : cartographic materials-grid and vert. measurement	( Documents cartographiques - mesures géodésiques, quadrillage et mesures vert. )
+131? | I1=_		| I2=_		| $a* | $b* | $c* | $d* | $e* | $f* | $g* | $h* | $i* | $j* | $k* | $l*
+
+// Coded data field : computer files									( Fichiers informatiques )
+135* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Title and statement of responsibility								( Titre et mention de responsabilite )
+200_ | I1=01	| I2=_		| $a+ | $b* | $c* | $d* | $e* | $f* | $g* | $h* |$i* | $z* | $v*
+
+// Edition statement													( Edition )
+205* | I1=_		| I2=_		| $a? | $b* | $f* | $g* | $d*			    // Opt/Rep ( $a:Opt/Uni; others:Opt/Rep )
+
+// Cartographic materials - mathematical data							( Documents cartographiques - données mathématiques )
+206* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Serials numbering													( Publication en série : numérotation )
+207? | I1=_		| I2=01		| $a* | $z*									// Opt/Uni ( $a,z:Opt/Rep )
+
+// Printed music specific statement										( Musique imprimmée )
+208? | I1=_		| I2=_		| $a? | $d*									// Opt/Uni ( $a:Opt/Uni; $d:Opt/Rep )
+
+// Publication, distribution, etc...									( Adresse bibliographique )
+210? | I1=_		| I2=_		| $a* | $b* | $c* | $d* | $e* | $f* | $g* | $h*	// Opt/Uni ( others:Opt/Rep )
+
+// Projected publication date											( Date de publication prevue )
+211? | I1=_		| I2=_		| $a?										// Opt/Uni ( $a:Opt/Uni )
+
+// Physical description													( Collation )                                
+215* | I1=_		| I2=_		| $a* | $c? | $d* | $e*						// Opt/Rep ( $c:Opt/Uni; others:Opt/Rep )
+
+// Series																( Collection )
+225* | I1=012	| I2=_		| $a? | $e* | $f* | $x* | $v* | $h* | $i* | $z* | $d*	// Opt/Rep ( $a:Opt/Uni; others:Opt/Rep )
+
+// General notes														( Notes generales )
+300* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to identification number							( Notes sur les numeros d'identification )
+301* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to coded information								( Notes sur les informations codees )
+302* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// General notes pertaining to descriptive information					( Notes generales sur la description bibliographique )
+303* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to title and statement of responsability			( Notes sur le titre et la mention de responsabilite )
+304* | I1=_		| I2=_		| $a? 										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to edition and bibliographic history				( Notes sur l'edition et l'histoire bibliographique )
+305* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to publication, distribution, etc...				( Notes sur l'adresse bibliographique )
+306* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to physical description								( Notes sur la collation )
+307* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to series											( Notes sur la collection )
+308* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to binding and availability							( Notes sur la reliure et la disponibilite )
+310* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to linking fields									( Notes sur les zones de liens )
+311* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to related titles									( Notes sur les titres associes )
+312* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to subject access									( Notes sur les vedettes matieres )
+313* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to intellectual responsibility						( Notes sur la mention de responsabilite intellectuelle )
+314* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Notes pertaining to material - specific information					( Notes sur les informations propres au document )
+315* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Internal bibliographies / indexes notes								( Notes sur les bibliographies ou index )
+320* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// External indexes / abstract / references notes						( Notes sur les index, citations et analyse publies separement )
+321* | I1=_01	| I2=_		| $a? | $b? | $x?							// Opt/Rep ( Others:Opt/Uni )
+
+// Credits notes														( Notes sur le generique )
+322? | I1=_		| I2=_		| $a?										// Opt/Uni ( $a:Opt/Uni )
+
+// Cast notes															( Notes sur les interpretes )
+323* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Facsimile note														( Note de fac-simile )
+324? | I1=_		| I2=_		| $a?										// Opt/Uni ( $a:Opt/Uni )
+
+// Frequency statement note												( Note sur la periodicite )
+326* | I1=_		| I2=_		| $a? | $b?									// Opt/Rep ( Others:Opt/Uni )
+
+// Contents note														( Note de contenu )
+327? | I1=01	| I2=_		| $a*										// Opt/Uni ( $a:Opt/Rep )
+
+// Dissertation note													( Note de these )
+328* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Summary or abstract													( Resumes ou analyses )
+330* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Preferred citation of described materials							( Notes sur le titre choisi pour le document )
+332* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Users / intended audience notes										( Notes sur le public )
+333* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Type of computer file												( Notes sur le type de fichier informatique )
+336* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Technical details notes												( Notes sur les details techniques )
+337* | I1=_		| I2=_		| $a?										// Opt/Rep ( $a:Opt/Uni )
+
+// Acquisition information notes										( Renseignements sur l'acquisition )
+345? | I1=_		| I2=_		| $a* | $b* | $c* | $d*						// Opt/Uni ( Other:Opt/Rep )
+
+// Series																( Lien a une notice de collection )
+410* | I1=_		| I2=01		| $1+ | $a* | $d* | $e* | $f* | $g* | $h* | $i* | $v* | $w* 						// Man/Rep ( Others:Opt/Rep)
+
+// Subseries															( Sous-collection )
+411* | I1=_		| I2=01		| $3? | $t? | $x? | $v?						// Opt/Rep ( Others:Opt/Uni )
+
+// Supplement															( A pour supplement ... )
+421* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Parent of supplement													( Supplement de ... )
+422* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Issued with															( Publie avec ... )
+423* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Continues															( Suite de ... )
+430* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Continues in part													( Succede apres scission a ... )
+431* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Supercedes															( Remplace ... )
+432* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Supercedes in part													( Remplace partiellement ... )
+433* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Absorbed																( Absorbe ... )
+434* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Absorbed in part														( Absorbe partiellement ... )
+435* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Formed by merge of...												( Fusion de ... )
+436* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Continued by															( Devient ... )
+440* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Continued in part by													( Devient partiellement ... )
+441* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Supercedes by														( Remplace par ... )
+442* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Supercedes in part by												( Remplace partiellement par ... )
+443* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Absorbed by															( Absorbe par ... )
+444* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Absorbed in part by													( Absorbe partiellement par ... )
+445* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Split into ...														( Scinde en ... et en ... )
+446* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Merged with ...														( Fusionne avec ... pour donner ... )
+447* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Changed back to...													( Redevient )
+448* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Other edition in the same medium										( Autre edition sur le meme support )
+451* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Other edition in another medium										( Autre edition sur un autre support )
+452* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Translated as ...													( Traduit sous le titre )
+453* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Translation of ...													( Traduit de ... )
+454* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Set																	( Lien a une notice generale )
+461* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Subset																( Niveau du sous-ensemble )
+462* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Piece																( Niveau de l'unite materielle )
+463* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Piece-analytic														( Niveau du depouillement )
+464* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Other related work													( Autres eouvres en liaison )
+488* | I1=_		| I2=01		| $3? | $t? | $x? | $y?						// Opt/Rep ( Others:Opt/Uni )
+
+// Uniform title														( Titre uniforme )
+500* | I1=01	| I2=01		| $a? | $b* | $h* | $i* | $k? | $l? | $m? | $n* | $q? | $r* | $s* | $u? | $v? | $w? | $x* | $y* | $z* | $2? | $3?
+
+// Collective uniform title												( Rubrique de classement )
+501* | I1=012	| I2=_		| $a? | $b* | $e? | $k? | $m? | $r* | $s* | $u? | $w? | $x* | $y* | $z* | $2? | $3?
+
+// Uniform conventional heading											( Titre de forme )
+503* | I1=01	| I2=_		| $a? | $b? | $j? | $d? | $e? | $f? | $h? | $m? | $n? | $k? | $l? | $i?
+
+// Parallel title proper												( Titre parallele )
+510* | I1=01	| I2=_		| $a? | $e* | $h* | $i* | $j? | $n? | $z?	// Opt/Rep ( $a,j,n,z:Opt/Uni; Others:Opt/Rep )
+
+// Cover title															( Titre de couverture )
+512* | I1=01	| I2=_		| $a? | $e*									// Opt/Rep ( $a:Opt/Uni; others:Opt/Rep )
+
+// Added title _ Page title												( Titre figurant sur une autre page de titre )
+513* | I1=01	| I2=_		| $a? | $e* | $h? | $i?						// Opt/Rep ( $e:Opt/rep; Others:Opt/Uni )
+
+// Caption title														( Titre de depart )
+514* | I1=01	| I2=_		| $a? | $e*									// Opt/Rep ( $e:Opt/Rep; Others:Opt/Uni )
+
+// Running title														( Titre courant )
+515* | I1=01	| I2=_		| $a?										// Opt/Rep ( Others:Opt/Uni )
+
+// Spine title															( Titre de dos )
+516* | I1=01	| I2=		| $a? | $e*									// Opt/Rep ( $e:Opt/Rep; Others:Opt/Uni )
+
+// Other variant titles													( Autres variantes du titre )
+517* | I1=01	| I2=_		| $a? | $e*									// Opt/Rep ( $e:Opt/Rep; Others:Opt/Uni )
+
+// Former title															( Titre precedent )
+520* | I1=01	| I2=_		| $a? | $e* | $h? | $i?						// Opt/Rep ( $e:Opt/Rep; Others:Opt/Uni )
+
+// Key title															( Titre cle )
+530* | I1=01	| I2=_		| $a? | $b? | $j?							// Opt/Rep ( Others:Opt/Uni )
+
+// Abbreviated title													( Titre abrege )
+531* | I1=_		| I2=_		| $a? | $b?									// Opt/Rep ( Others:Opt/Uni )
+
+// Expanded title														( Titre developpe )
+532* | I1=01	| I2=0123	| $a? | $z?									// Opt/Rep ( Others:Opt/Uni )
+
+// Additional title supplied by cataloguer								( Titre ajoute par le catalogueur )
+540* | I1=01	| I2=_		| $a?										// Opt/Rep ( Others:Opt/Uni )
+
+// Translated title supplied by cataloguer								( Titre traduit ajoute par le catalogueur )
+541* | I1=01	| I2=_		| $a? | $e? | $h? | $i? | $z?				// Opt/Rep ( Others:Opt/Uni )
+
+// Personal name used as subject										( Vedette matiere nom de personne )
+600* | I1=_		| I2=01		| $a_ | $b? | $c* | $f? | $t? | $3? | $x* | $y* | $z* | $2?
+
+// Corporate body name used as subject									( Vedette matiere collectivite )
+601* | I1=01	| I2=012	| $a_ | $b* | $c* | $f? | $g? | $d? | $e? | $l? | $h? | $t? | $3? | $x* | $y? | $z? | $2?
+
+// Vedette matiere nom de famille
+602* | I1=_		| I2=_		| $a? | $f? | $t? | $3? | $x* | $y* | $z* | $2?
+
+// Auteur-titre-vedette matiere
+604* | I1=_		| I2=_		| $3? | $t? | $x? | $v?
+
+// Vedette matiere titre
+605* | I1=_		| I2=_		| $a? | $h* | $i* | $l? | $m? | $n* | $q? | $x* | $2? | $3? | $y* | $z*
+
+// Vedette matiere nom commun
+606* | I1=_		| I2=_		| $a? | $3? | $x* | $y* | $z* | $2?
+
+// Vedette matiere geographique
+607* | I1=_		| I2=_		| $a? | $x* | $y* | $z* | $2? | $3?
+
+// Indexation en vocabulaire libre
+610* | I1=012_	| I2=_		| $a*
+
+// Acces par le lieu d'edition
+620* | I1=_		| I2=_		| $a? | $b? | $c? | $d?
+
+// Acces par donnees techniques
+626* | I1=_		| I2=_		| $a? | $b? | $c?
+
+// Code de zone geographique
+660* | I1=_		| I2=_		| $a?
+
+// Code de date
+661* | I1=_		| I2=_		| $a?
+
+// Precis
+670* | I1=_		| I2=_		| $b? | $c? | $e* | $z?
+
+// Indice CDU
+675* | I1=_		| I2=_		| $a? | $v? | $z?
+
+// Indice DEWEY
+676* | I1=_		| I2=_		| $a? | $v? | $z?
+
+// Classification de la bibliotheque du congres
+680* | I1=_		| I2=_		| $a? | $b?
+
+// Autres classifications
+686* | I1=_		| I2=_		| $a* | $b* | $c* | $d?
+
+// Premier auteur personne physique
+700? | I1=_		| I2=01		| $a_ | $b? | $c* | $d? | $f? | $g? | $3? | $4*
+
+// Co-auteur personne physique
+701* | I1=_		| I2=01		| $a_ | $b? | $c* | $d? | $f? | $g? | $3? | $4*
+
+// Auteur secondaire personne physique
+702* | I1=_		| I2=01		| $a_ | $b? | $c* | $d? | $f? | $g? | $3? | $4*
+
+// Premier auteur collectivite
+710? | I1=01	| I2=012	| $a_ | $b* | $c* | $g? | $d* | $e? | $f? | $h* | $3? | $4*
+
+// Collectivite co-auteur
+711* | I1=01	| I2=012	| $a_ | $b* | $c* | $g? | $d* | $e? | $f? | $h* | $3? | $4*
+
+// Collectivite auteur secondaire
+712* | I1=01	| I2=012	| $a_ | $b* | $c* | $g? | $d* | $e? | $f? | $h* | $3? | $4*
+
+// Premier auteur nom de famille
+720? | I1=_		| I2=_		| $a? | $f? | $3? | $4*
+
+// Nom de famille co-auteur
+721* | I1=_		| I2=_		| $a? | $f? | $3? | $4*
+
+// Nom de famille auteur secondaire
+722* | I1=_		| I2=_		| $a? | $f? | $3? | $4*
+
+// Source de la notice
+801* | I1=_		| I2=0123	| $a? | $b? | $c? | $g*
+
+// Centre ISDS
+802* | I1=_		| I2=_		| $a?
+
+// Forme rejetee des zones 700, 701, 702 et 720, 721, 722
+900* | I1=*		| I2=*		| $**
+
+// Forme rejetee des zones 710, 711, 712
+910* | I1=*		| I2=*		| $**
+
+// Forme rejetee des zones 500
+950* | I1=*		| I2=*		| $**
+
+// Forme rejetee des zones 600, 601, 602, 605, 606, 607
+960* | I1=*		| I2=*		| $**
+

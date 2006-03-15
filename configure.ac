@@ -1,0 +1,28 @@
+AC_INIT(program/usemarcon.cpp)
+AM_INIT_AUTOMAKE(usemarcon_cpp,1.70)
+
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+AM_DISABLE_SHARED
+AC_PROG_LIBTOOL
+AM_SANITY_CHECK
+
+AC_LANG_CPLUSPLUS
+
+AC_CHECK_HEADERS(fcntl.h)
+AC_STDC_HEADERS
+
+AC_SUBST(USEMARCON_CONF_CFLAGS)
+AC_SUBST(USEMARCON_SRC_ROOT)
+AC_SUBST(USEMARCON_BUILD_ROOT)
+USEMARCON_SRC_ROOT=`cd ${srcdir}; pwd`
+USEMARCON_BUILD_ROOT=`pwd`
+
+AC_OUTPUT([
+Makefile
+library/Makefile
+program/Makefile
+usemarcon-config
+], [chmod +x usemarcon-config])
+

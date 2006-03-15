@@ -1,0 +1,162 @@
+ 501|Invalid rule pattern to search
+ 502|No more patterns found
+ 503|Maximum errors to be encountered has been reached
+ 504|The last record to be converted has been reached
+ 505|Type or browse a MARC file to open before
+ 506|Pattern not found
+ 507|Unable to evaluate an empty rule
+ 508|No defined box to search.  Please point to the box to search in 
+ 509|No search is available on this selection. Please select another one 
+ 510|Comment is too long and will be truncated
+ 511|Line is too long and will be truncated
+ 512|Unknown input format comment
+ 513|Unknown output format comment
+ 514|Please, select RI boundaries
+ 515|Please, select No boundaries
+ 516|Invalid RI boundaries
+ 517|invalid No boundaries
+ 590|Specified file doesn't exist ( please check path ) 
+ 
+1001|Unable to reset a writing mode opened file
+1002|Invalid SCW encountered when attempting to read a MARC notice
+1003|Unable to go further in MARC file reading                  
+1004|Invalid length encountered when attempting to read a MARC notice
+1005|Unable to go further in MARC file writing
+1006|Unable to flush the MARC output file
+1007|Invalid MARC data location address
+1009|Unable to set the content of the field
+1101|Invalid MARC tag
+1102|Invalid MARC indicators
+1103|Invalid label
+1202|Unable to set the label
+1501|MARC buffer allocation failure
+1502|Error encountered when attempting to read the MARC file      
+      
+2001|Invalid input format checking rule ( item expected )
+2002|Invalid or absent tag in input format checking rule
+2003|Format checking rule redundancy in input format checking file
+2004|Invalid or absent first indicators list in input format checking rule
+2005|Invalid or absent second indicators list in input format checking rule
+2006|Invalid or absent subfield in input format checking rule
+2101|Not repeatable but redundant field found in input record
+2102|Invalid first indicator found in input record
+2103|Invalid second indicator found in input record 
+2104|Invalid or redundant subfield found in input record
+2105|Unexpected field found in input record
+2106|Mandatory field expected in input record
+2107|Mandatory subfield expected in input record
+2108|Field without any subfield found in input record
+2501|TControlField allocation failure when attempting to load a new input format checking rule
+2502|TCtrlSubfield allocation failure when attempting to load a new input format checking rule
+2503|First indicators list allocation failure when attempting to load a new input format checking rule
+2504|Second indicators list allocation failure when attempting to load a new input format checking rule
+      
+3000|Memory allocation error
+3001|Character not transcoded (unable to find it in transco table)
+     
+4001|Coded data not loaded
+
+5000|Memory allocation error        
+5001|The selected rule file does not exist 
+5002|Unable to load the invalid rule
+5003|Unable to find the label in any CD
+5004|Only one indicator has been found
+5005|Content of indicator is too long (>1)
+5100|Rule analysis error
+5101|A CDOut like TTT(no)... has an invalid subfield occurrence number (no, nso or nto)
+5102|A CDOut like ...SS(no) has an invalid field occurrence number (no, nso or nto)
+5103|A CDOut like TTT(nto)... has an invalid subfield occurrence number (no, nso or nto)
+5104|A CDOut like ...SS(nso) has an invalid field occurrence number (no, nso or nto)
+5200|Expected CD tag
+5201|Invalid CD tag ( three characters are required )
+5202|Invalid CD tag ( only numerics or letters are allowed )
+5203|Invalid CD subfield ( only two characters required )
+5204|Invalid CD subfield ( only '1' or '2' is expected behind a 'I' subfield )
+5205|Invalid CD subfield ( only numerics or letters are allowed behind a '$' subfield )
+5206|Invalid CD subfield ( only I1, I2 or $? are allowed )
+5207|Invalid position settings
+5208|Invalid CD tag occurrence number
+5209|Invalid CD subfield occurrence number
+5210|Misplaced rule : please insert this rule before the previous one
+5211|Misplaced rule : please insert this rule after the next one
+5212|Invalid character found in rule
+5301|Invalid output occurrence number 'no'
+5302|Invalid output tag occurrence number 'nto'
+5303|Invalid output sub occurrence number 'nso'  
+5304|Invalid input occurrence number 'n'
+5305|Invalid input tag occurrence number 'nt'
+5306|Invalid input sub occurrence number 'ns'
+5307|Unknown main input CD ( please type or load it before evaluating )
+5308|Unknown old output CD ( please type it before evaluating )
+5309|Unknown other input CD ( please, type it before evaluating )
+5501|TRule allocation failure when attempting to analyse the rule
+5502|Unable to allocate space for setting text of analysed rule 
+5503|Unable to allocate space for setting comment of analysed rule
+5504|TCD allocation failure when attempting to analyse the rule 
+5505|TCDLib allocation failure when attempting to deal with other input CDs
+5506|Buffer allocation failure when attempting to split the rule
+5507|TCD allocation failure when attempting to load CD from MARC record 
+
+7001|Invalid output format checking rule ( item expected )
+7002|Invalid or absent tag in output format checking rule
+7003|Format checking rule redundancy in output format checking file
+7004|Invalid or absent first indicators list in output format checking rule
+7005|Invalid or absent second indicators list in output format checking rule
+7006|Invalid or absent sub in output format checking rule
+7101|Redundant field (not repeatable) found in output record
+7102|Invalid first indicator found in output record
+7103|Invalid second indicator found in output record 
+7104|Invalid or redundant subfield found in output record
+7105|Unexpected field found in output record
+7106|Mandatory field expected in output record
+7107|Mandatory subfield expected in output record
+7108|Field without any subfield found in output record
+7501|TControlField allocation failure when attempting to load a new output format checking rule
+7502|TCtrlSubfield allocation failure when attempting to load a new output format checking rule
+7503|First indicators list allocation failure when attempting to load a new output format checking rule
+7504|Second indicators list allocation failure when attempting to load a new output format checking rule
+
+8001|Unable to delete the Error Log File
+
+9001|TRuleFile allocation failure when attempting to load the Rule File             
+9011|TCheckFile allocation failure when attempting to load the Input Check File             
+9012|TCheckFile allocation failure when attempting to load the Output Check File             
+9013|TTransFile allocation failure when attempting to load the Transcoding Character Table             
+9021|TMARCFile allocation failure when attempting to open the Input MARC File             
+9022|TMARCFile allocation failure when attempting to open the Output MARC File             
+9031|TMARCRecord allocation failure when attempting to load the Input MARC File             
+9032|TMARCRecord allocation failure when attempting to load the Output MARC File 
+9041|TMARCField allocation failure when attempting to load the notice into memory fields
+9101|TRuleDoc not created
+9102|TMARCDoc not created
+9103|TDummyDoc not created                             
+9104|TTransDoc not created              
+9105|TCheckDoc not created 
+9201|TCD allocation failure when attempting to search for another CD
+9202|Label is mandatory and has not been converted
+9203|TMARCField allocation failure when attempting to merge CDs into fields
+9301|TCDLib allocation failure when attempting to split a field into CDs
+9401|Find SLIST allocation failure when attempting to memorize precedent find/replace request
+9402|Replace SLIST allocation failure when attempting to memorize precedent find/replace request
+9403|TRule allocation failure when attempting to search/replace items
+9404|TCD allocation failure when attempting to search/replace items
+9501|Unable to open the ASCII mode file
+9502|Unable to open the binary mode file
+9503|Unable to delete the file
+9504|Unable to get the next line of a binary file 
+9505|Invalid #include 'file' directive found in file
+9506|Unable to read two first lines of an ASCII file
+9601|Unable to open the MARC Input Window
+9602|Unable to open the MARC Output Window
+9603|Unable to open the Rule Edit Window
+9604|Unable to open the Rule Eval. Window
+9700|Two identical CDs found in a record !
+9701|Unable to save the MARC edit configuration file
+9703|Invalid tag field to add to the list of tags without indicator
+9704|Unable to add the selected tag to the list of tags without indicator
+9705|Unable to remove the selected tag from the list of tags without indicator
+9706|(No) is not filled
+9800|Unable to open the help file "usemarco.csc/hlp"
+
+9999|Unknown error
+     

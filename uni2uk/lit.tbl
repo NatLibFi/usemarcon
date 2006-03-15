@@ -1,0 +1,12 @@
+lit.tbl
+
+a | f
+b | d
+c | e
+d | h
+e | i
+f | j
+g | p
+h | s
+z | m
+#DEFAULT | 0X20

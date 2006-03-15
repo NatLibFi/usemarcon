@@ -1,0 +1,7 @@
+List of items to do
+
+- clean up header inter-dependencies
+- convert analyse.y and analyse.l for current bison and flex
+- add make support for bison and flex
+- add tests
+

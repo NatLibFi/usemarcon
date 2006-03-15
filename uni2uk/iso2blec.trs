@@ -1,0 +1,85 @@
+iso5426
+iso5889
+
+#include "standard.trs"
+
+0x88 | 0x88          // NSB
+0x89 | 0x89          // NSE
+
+0xA1 | 0x7B   // Inverse Exclaimation mark
+0xA2 |             // Left Low Double Quotation
+0xA3 | 0xB9   // Pound Sign
+0xA4 | 0x24   // Dollar Sign
+0xA5 |             // Yen Sign
+0xA6 | 0x5E   // Single Dagger
+0xA7 |             // Paragraph
+0xA8 |             // Prime
+0xA9 | 0x27   // Left High Single Quotation
+0xAA | 0x22   // Left High Double Quotation
+0xAB |             // Left Angle Quotation
+0xAC | 0xA9   // Musical flat
+0xAD |             // Copyright Sign
+0xAE |             // Sound Recording Copyright
+0xAF |             // Trademark Sign
+0xB0 |              // Ayn
+0xB1 | 0xAE   // Alif/Hamzah
+0xB2 |             // Left Low Single Quotation
+0xB6 |             // Double Dagger
+0xB7 | 0xA8   // Middle Dot
+0xB8 | 0x22    // Double Prime
+0xB9 | 0x27    // Right High Single Quotation mark
+0xBA | 0x22   // Right High Double Quotation mark
+0xBB |            // Right Angle Quotation
+0xBC | 0x60   // Musical Sharp
+0xBD | 0xA7   // Mjagkij Znak
+0xBE | 0xB7   // Tverdyj Znak
+0xBF | 0x7C   // Inverted Questionmark
+0xC0 |             // Low Rising Tone mark
+0xC1 | 0xE1   // Grave Accent
+0xC2 | 0xE2   // Acute Accent
+0xC3 | 0xE3   // Circumflex
+0xC4 | 0xE4   // Tilde
+0xC5 | 0xE5   // Macron
+0xC6 | 0xE6   // Breve
+0xC7 | 0xE7   // Dot Above
+0xC8 |            // Trema
+0xC9 | 0xE8   // Umlaut
+0xCA | 0xEA   // Circle Above
+0xCB | 0xED   // High Comma off centre
+0xCC |             // Inverted High Comma centred  
+0xCD | 0xEE   // Double Acute Accent  
+0xCE |             // Horn
+0xCF | 0xE9   // Caron (Hacek)
+0xD0 | 0xF0   // Cedilla
+0xD1 | 0xF8   // Rude
+0xD2 | 0xF7   // Hook to left
+0xD3 | 0xF1   // Hook to right
+0xD4 | 0xF4   // Circle Below
+0xD5 |             // Half Circle Below
+0xD6 | 0xF2   // Dot Below
+0xD7 | 0xF3   // Double Dot Below
+0xD8 | 0xF6   // Underline
+0xD9 | 0xF5   // Double Underline
+0xDA |            // Small Low Vertical Bar
+0xDB |            // Circumflex below
+0xDC |
+0xDD | 0xEB   // Left half of Ligature sign and Double Tilde
+0xDE | 0xEC   // Right half of Ligature sign
+0xDF |  // Right half of Double Tilde
+0xE1 | 0xA5	// AE
+0xE2 | 0xA3   // D with bar
+0xE6 | 0x49 6A   // IJ
+0xE8 | 0xA1   // L with bar
+0xE9 | 0xA2   // O with bar
+0xEA | 0xA6   // OE (Capital Dipthong)
+0xEC | 0xA4   // THORN
+0xF1 | 0xB5    // ae (Small Dipthong)
+0xF2 | 0xB3   // d  with bar
+0xF3 | 0xBA   // eth
+0xF5 | 0xB8   // i without dot
+0xF6 | 0x69 6A   // ij
+0xF8 | 0xB1   // l with bar
+0xF9 | 0xB2   // o with solidus
+0xFA | 0xB6   // oe (small dipthong)
+0xFB |           // Sharp s
+0xFC | 0xB4   // Thorn

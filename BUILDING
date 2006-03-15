@@ -1,0 +1,16 @@
+
+Building in Windows:
+
+Run win\buildwin.bat (VC++ .NET 2003) or win\buildwin_vc6.bat (VC++ 6.0). There are also
+MS VC++ projects in library and program directories.
+
+The build has been tested using MS Visual C++ 6 SP5 and MS Visual C++ .NET 2003
+under Windows XP.
+
+
+Building in other systems:
+
+(chmod +x Makefile.am buildconf.sh config.guess config.status config.sub configure install-sh libtool missing mkinstalldirs usemarcon-config.in)
+./configure
+make
+

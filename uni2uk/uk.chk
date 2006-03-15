@@ -1,0 +1,280 @@
+UKMARC FORMAT CHECKING FILE
+
+// Record control number
+001_| I1= | I2= |
+
+// Information codes
+008_| I1= | I2= |
+
+// Library of Congress card number
+010?| I1=0 | I2=0 | $a_ |
+
+// British National Bibliography number
+015?| I1=0 | I2=0 | $a_ |
+
+// Authority control information field
+016?| I1=0 | I2=0 | $a+ |
+
+// Correction field
+017?| I1=0 | I2=0 | $a+ |
+
+// International Standard Book Number (ISBN)
+021*| I1=01 | I2=0 | $a? | $b_ | $c? | $d? | $z? |
+
+// International Standard Serial Number (ISSN)
+022?| I1=0 | I2=0 | $a_ |
+
+// Physical description coded information field
+037*| I1=0 | I2=0 | $a+ |
+
+// Cataloguing source
+040?| I1=0 | I2=0 | $a_ | $b? | $c? | $d* | $e? |
+
+// Languages
+041*| I1=01 | I2=0 | $a_ | $b?| $c? |
+
+// Area codes
+043*| I1=0 | I2=0 | $a_ |
+
+// Library of Congress classification number
+050*| I1=0 | I2=0 | $a_ |
+
+// Universal Decimal Classification number
+080*| I1=0 | I2=0 | $a_ |
+
+// Dewey Decimal Classification number (old edition)
+081*| I1=0 | I2=0 | $a_ | $b*| $c? | $d? |
+
+// Dewey Decimal Classification number (current edition)
+082*| I1=0 | I2=0 | $a_ | $b* | $c? | $d? |
+
+// Verbal feature
+083*| I1=0 | I2=0 | $a+ | $b* |
+
+// British Catalogue of Music classification number
+085*| I1=0 | I2=0 | $a_ |
+
+// National shelf mark
+087?| I1=0 | I2=012 | $a_ | $b? | 
+
+// Previous control number
+091*| I1=0 | I2=0 | $a_ |
+
+// Personal name main entry heading
+100?| I1=0123 | I2=0 | $a_ | $c? | $d? | $e? | $f? | $h? | $k? | $l? | $q? | $r? | $y? |
+
+// Corporate name main entry heading
+110?| I1=12 | I2=0 | $a_ | $c* | $e* | $i? | $j? | $k? | $p? | $q? | $y? |
+
+// Conference, congress, meeting, etc. name main entry heading
+111?| I1=0 | I2=0 | $a_ | $c* | $e* | $i? | $j? | $k? |
+
+// Key-title
+222?| I1=0 | I2=0123456789 | $a_ | $b? |
+
+// Uniform title-excluding collective title
+240?| I1=01234 | I2=0123456789 | $a_ | $d? | $e? | $f? | $g? | $h? | $j* | $k? | $o? | $p? | $q? | $r? | $s* | $z? | 
+
+// Collective title
+243?| I1=023 | I2=0 | $a_ | $k? | $o? | $q? | $r? | $s? | $z? |
+
+// Title and statement of responsibility area
+245?| I1=013 | I2=0123456789 | $a_ | $b* | $d? | $e* | $f* | $i* | $j* | $k* | $l* | $z? |
+
+// Second level and subsequent level title and statement of responsibility information relating to a multipart item
+248*| I1=123456789 | I2=0123456789 | $b* | $e* | $f* | $g? | $h? | $i* | $j* | $k* | $z? |
+
+// Edition area
+250*| I1=0 | I2=0123456789 | $a_ | $c? | $d? | $e? | $k* |
+
+// Numeric and/or alphabetic, chronological or other designation area (serials)
+255?| I1=0 | I2=0 | $a+ |
+
+// Mathematical data area (cartographic materials)
+256?| I1=0 | I2=0123456789 | $a_ | $b? | $c? | $d? | $e? |
+
+// Publication, distribution, etc. area
+260*| I1=01 | I2=0123456789 | $a* | $b* | $c* | $d* | $e* | $f* | $g* | $h? | $I* | $j* | $k? | $l? |
+
+// Physical description area
+300*| I1=0 | I2=0 | $a? | $b? | $c* | $e? | $f? | $g? | $h? | $i? | $j? | $k? | $l* | $m* | $n? |$p? |
+
+// Terms of availability
+350?| I1=0 | I2=0 | $a_ | $c? | 
+
+// Series area - title of series in added entry heading form
+440*| I1=0123456789 | I2=0123456789 | $a_ | $b* | $e* | $k* | $l* | $v* | $w? |
+
+// Series area - title of series not in added entry heading form
+490*| I1=01 | I2=0123456789 | $a_ | $b* | $e* | $k* | $l* | $v* | $w? |
+
+// Nature, scope or artistic form note
+500*| I1=0 | I2=0123456789 | $a_ | 
+
+// "with" note
+501*| I1=0 | I2=0123456789 | $a_ |
+
+// Dissertation note
+502*| I1=0 | I2=0123456789 | $a_ |
+
+// Edition and history note (monographs) relationships with other serials note (serials)
+503*| I1=0 | I2=0123456789 | $a_ |
+
+// Bibliography and index note
+504*| I1=0 | I2=0123456789 | $a_ |
+
+// Contents note
+505*| I1=0 | I2=0123456789 | $a_ |
+
+// Statements of responsibility note
+508*| I1=0 | I2=0123456789 | $a_ |
+
+// ISBN and ISSN note
+511*| I1=0 | I2=0123456789 | $a_ |
+
+// Summary note
+513*| I1=0 | I2=0123456789 | $a_ |
+
+// Title proper, parallel title and other title information note
+514*| I1=0 | I2=0123456789 | $a_ |
+
+// Numbering and chronological designation note (serials)
+515*| I1=0 | I2=0123456789 | $a_ |
+
+// Mathematical and other cartographic data note (cartographic materials)
+516*| I1=0 | I2=0123456789 | $a_ |
+
+// Change of control number note
+518*| I1=0 | I2=0123456789 | $a_ |
+
+// Audience note
+521*| I1=0 | I2=0123456789 | $a_ |
+
+// Accompanying materials and supplements note
+525*| I1=0 | I2=0123456789 | $a_ |
+
+// Publication, distribution, etc. note
+528*| I1=0 | I2=0123456789 | $a_ |
+
+// Other versions available note
+530*| I1=0 | I2=0123456789 | $a_ |
+
+// Physical description note
+531*| I1=0 | I2=0123456789 | $a_ |
+
+// Series note
+532*| I1=0 | I2=0123456789 | $a_ |
+
+// Reference to published descriptions note
+534*| I1=0 | I2=0123456789 | $a_ |
+
+// Note relating to original (graphic materials and microforms)
+536*| I1=0 | I2=0123456789 | $a_ |
+
+// Program note (machine-readable data files)
+537*| I1=0 | I2=0123456789 | $a_ |
+
+// Numbers borne by the item note
+538*| I1=0 | I2=0123456789 | $a_ | $b? |
+
+// Mode of use note (machine-readable data files)
+542*| I1=0 | I2=0123456789 | $a_ |
+
+// Language of the item and/or translation or adaptation note
+546*| I1=0 | I2=0123456789 | $a_ |
+
+// Frequency note (serials)
+554*| I1=0 | I2=0123456789 | $a_ |
+
+// Indexes note (serials)
+555*| I1=0 | I2=0123456789 | $a_ |
+
+// Item described note (serials)
+556*| I1=0 | I2=0123456789 | $a_ |
+
+// Graphic index and characteristic sheet note (cartographic materials)
+557*| I1=0 | I2=0123456789 | $a_ |
+
+// Personal name subject heading
+600*| I1=0123 | I2=0123456789 | $a_ | $c? | $d? | $e? | $f? | $h? | $k? | $l? | $m? | $n? | $o? | $q? | $r? | $t? | $u? | $x* | $y* | $z* |
+
+// Corporate name subject heading
+610*| I1=12 | I2=0123456789 | $a_ | $c* | $e* | $I? | $j? | $k? | $p? | $t? | $u? | $x* | $y* | $z* |
+
+// Conference, congress, meeting etc. subject heading
+611*| I1=0 | I2=0123456789 | $a_ | $c* | $e* | $i? | $j? | $k? | $t? | $u? | $x* | $y* | $z* |
+
+// Uniform title subject heading
+640*| I1=0 | I2=0123456789 | $a_ | $d? | $e? | $f? | $g? | $h? | $j* | $k? | $o? | $p? | $q? | $r? | $s* | $x* | $y* | $z* |
+
+// Title subject heading
+645*| I1=0 | I2=0123456789 | $a_ | $x* | $y* | $z* |
+
+// Topical Library of Congress subject heading
+650*| I1=0 | I2=0123456789 | $a_ | $x* | $y* | $z* |
+
+// Geographical Library of Congress subject heading
+651*| I1=0 | I2=0123456789 | $a_ | $x* | $y* | $z* |
+
+// Subject topical descriptors
+660*| I1=01 | I2=0 | $a* | $b* | $c* | $d? | 
+
+// Subject geographical descriptors
+661*| I1=0 | I2=0 | $a? | $b? | $d? | 
+
+// PRECIS string
+690*| I1=0 | I2=0123456789| $a* | $c* | $d* | $e* | $f* | $g* | $h* | $i* | $k* | $l* | $m* | $v* | $w* | $x* | $y* | $z* |
+
+// Subject indicator number
+691*| I1=0 | I2=0123456789| $a_ |
+
+// Reference indicator number
+692*| I1=0 | I2=0123456789| $a_ |
+
+// Personal name added entry heading
+700*| I1=0123 | I2=012 | $a_ | $c? | $d? | $e? | $f? | $h? | $k? | $l? | $m? | $n? | $o? | $p? | $q? | $r? | $t? | $u? | $v? | $w? | $y? | $z? |
+
+// Corporate name added entry heading
+710*| I1=12 | I2=012 | $a_ | $c* | $e* | $i? | $j? | $k? | $p? | $q? | $t? | $u? | $v? | $w? | $y? | $z? |
+
+// Conference, congress, meeting, etc. name added entry heading
+711*| I1=0 | I2=012 | $a_ | $c* | $e* | $i? | $j? | $k? | $t? | $u? | $v? | $w? | $y? | $z? | 
+
+// Uniform title added entry heading
+740*| I1=0 | I2=0123456789 | $a_ | $d? | $e? | $f? | $g? | $h? | $j* | $k? | $o? | $p? | $q? | $r? | $s* | $v? | $w? | $z? |
+
+// Title added entry heading - excluding uniform titles
+745*| I1=01 | I2=0123456789 | $a_ | $v? | $w? | $z? | 
+
+// Real name note
+790*| I1=0 | I2=0 | $a_|
+
+// Personal author series added entry heading
+800*| I1=0123 | I2=0 | $a_ | $c? | $d? | $e? | $f? | $h? | $k? | $l? | $q? | $r? | $t? | $u? | $v? | $w? | $y? | $z? | 
+
+// Corporate series added entry heading
+810*| I1=12 | I2=0 | $a_ | $c* | $e* | $i? | $j? | $k? | $p? | $q? | $t? | $u? | $v? | $w? | $y? | $z? | 
+
+// Conference, congress, meeting, etc. series added entry heading
+811*| I1=0 | I2=0 | $a_ | $c* | $e* | $i? | $j? | $k? | $t? | $u? | $v? | $w? | $y? | $z? | 
+
+// Series title added entry heading
+840*| I1=0 | I2=0123456789 | $a_ | $l* | $v* | $w? | $z? | 
+
+// Reference from a personal name
+900*| I1=0123 | I2=01 | $a+ | $c? | $d? | $e? | $f? | $h? | $k? | $l? | $q? | $r? | $u? | $x* | $z* |
+
+// Reference from a corporate name
+910*| I1=012 | I2=0 | $a+ | $c* | $e* | $g? | $h? | $i? | $j? | $k? | $p? | $q? | $u? | $x* | $z* |
+
+// Reference from the name of a conference, congress, meeting, etc.
+911*| I1=0 | I2=0 | $a+ | $c* | $e* | $i? | $j? | $k? | $u? | $x* | $z* |
+
+// Reference from a title of a work
+945*| I1=0 | I2=0 | $a+ | $d? | $e? | $f? | $g? | $h? | $j* | $k? | $o? | $p? | $q? | $r? | $s* | $x* | $z* |
+
+
+
+
+
+

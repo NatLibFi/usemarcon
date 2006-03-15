@@ -1,0 +1,148 @@
+#   Module Name: Makefile
+#   Version: 12/11/00
+#   Author:  J. Hough
+#    
+#   Crossnet Systems Ltd.
+#   Unit 41, Bone Lane,
+#   Newbury,
+#   Berkshire, RG14 5SH
+#
+#   Adapted by ATP Library Systems Ltd, Finland, 2003
+#
+#   Description: 
+#         usemarcon library makefile
+#
+#---------------------------------------------------------------
+#---------------------------------------------------------------
+#	Usage: 
+#
+#	   make -f makefile.gcc
+#
+#---------------------------------------------------------------
+ 
+
+#---------------------------------------------------------------
+#	DEFINE: Variable used to specify a #define constant during 
+#		compilation pre-process
+
+DEFINE=LINUX
+
+
+#---------------------------------------------------------------
+#       Default compiler optimisation levels, dbx symbol generation, etc.
+#               (C_OPT: -O3 | -O2 | -g | etc....)
+ 
+C_OPT=-g
+
+
+#---------------------------------------------------------------
+#       C Compiler used
+ 
+CC= g++
+
+
+#---------------------------------------------------------------
+#       Linker flags
+ 
+LDFLAGS=
+
+
+
+#---------------------------------------------------------------
+#	Name and default release level of programs that are to be built
+#		(REL: exedir)
+
+PROGRAM1=usemarcon
+
+#---------------------------------------------------------------
+#	Compiler Include Paths
+
+C_INCL=-Ilibrary/.
+
+#---------------------------------------------------------------
+#	C Compiler Options
+
+CFLAGS= $(C_INCL) $(C_OPT) 	
+
+#---------------------------------------------------------------
+#       Directory for object files
+ 
+OBJDIR= object_files
+
+#---------------------------------------------------------------
+#	C source files
+
+
+# Program1
+P1CSRCS= library/chckfile.cpp \
+	library/codedata.cpp \
+	library/ctrlfld.cpp \
+	library/error.cpp \
+	library/marcfile.cpp \
+	library/mrcfield.cpp \
+	library/rulefile.cpp \
+	library/semi.cpp \
+	library/tagnoind.cpp \
+	library/tcd.cpp \
+	library/tcdlib.cpp \
+	library/tfile.cpp \
+	library/tmarcrec.cpp \
+	library/trule.cpp \
+	library/umrecord.cpp \
+	library/lien_not.cpp \
+	library/tchckdoc.cpp \
+	library/tmarcdoc.cpp \
+	library/tmpplctn.cpp \
+	library/tools.cpp \
+	library/trnsfile.cpp \
+	library/truledoc.cpp \
+	library/ttrnsdoc.cpp \
+	library/ytab.cpp \
+	library/lex.yy.cpp 
+ 
+P1CSRCSTEST= program/usemarcon.cpp 
+
+#---------------------------------------------------------------
+#	Define object files
+
+P1MEMB= $(P1CSRCS:.cpp=.o)
+P1OBJS= $(P1MEMB:%=$(OBJDIR)/%)
+P1MEMBTEST= $(P1CSRCSTEST:.cpp=.o)
+P1OBJSTEST= $(P1MEMBTEST:%=$(OBJDIR)/%)
+
+
+#---------------------------------------------------------------
+#	Absolute pathname of target program
+
+PROG1= $(PROGRAM1)
+
+#---------------------------------------------------------------
+#	Principal dependencies
+
+all:	lib $(PROG1)
+
+
+$(PROG1): $(P1OBJS) $(P1OBJSTEST)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROG1) $(P1OBJSTEST) $(LIBNAME)
+	chmod a+x $(PROG1)
+
+#---------------------------------------------------------------
+#	Library build
+
+LIBNAME= library/libusemarcon.a
+
+lib: $(P1OBJS)
+	rm -f $(LIBNAME)
+	ar rv $(LIBNAME) $(P1OBJS)
+	ranlib $(LIBNAME)
+	
+
+#---------------------------------------------------------------
+#	Implicit build rules
+
+$(OBJDIR)/%.o: %.cpp
+	$(CC) $(CFLAGS) -D$(DEFINE) -c -o $@ $<
+
+clean:
+	rm -f $(OBJDIR)/library/*.o $(OBJDIR)/program/*.o ./$(PROGRAM1) ./$(LIBNAME)
+
