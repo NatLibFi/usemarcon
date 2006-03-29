@@ -24,7 +24,7 @@ AUTHOR
 #ifndef _Defines_H
 #define _Defines_H
 
-#define USEMARCON_VERSION "1.70"
+#define USEMARCON_VERSION "1.71"
 
 #define UNKNOWN 0
 #define INPUT 1

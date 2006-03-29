@@ -97,7 +97,7 @@ void show_message(const char *message);
 // UTF-8 aware functions (somewhat crude implementations)
 unsigned int utf8_strlen(const char *str);
 unsigned int utf8_charindex(const char *str, unsigned long idx);
-unsigned int utf8_charlen(char c);
+unsigned int utf8_charlen(const char *p);
 
 
 #endif // _TOOLS_H

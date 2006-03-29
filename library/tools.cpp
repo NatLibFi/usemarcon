@@ -492,7 +492,7 @@ unsigned int utf8_strlen(const char *str)
     while (*p)
     {
         ++i;
-        unsigned int clen = utf8_charlen(*p);
+        unsigned int clen = utf8_charlen(p);
         while (*p && clen > 0)
         {
             ++p;
@@ -513,7 +513,7 @@ unsigned int utf8_charindex(const char *str, unsigned long idx)
             ++utf8_idx;
             continue;
         }
-        unsigned int clen = utf8_charlen(*p);
+        unsigned int clen = utf8_charlen(p);
 //printf("** charlen for 0x%02x (%ud) is %d\n", (unsigned char)*p, (unsigned char)*p, clen);
         utf8_idx += clen;
         while (*p && clen > 0)
@@ -525,10 +525,9 @@ unsigned int utf8_charindex(const char *str, unsigned long idx)
     return utf8_idx;
 }
 
-unsigned int utf8_charlen(char c)
+unsigned int utf8_charlen(const char *p)
 {
-    /* Check the first byte to determine the length of the sequence. Possible sequences:
-    U-00000000 – U-0000007F: 	0xxxxxxx
+    /* Check the second byte after the base char to determine the length of the sequence. Possible sequences:
     U-00000080 – U-000007FF: 	110xxxxx 10xxxxxx
     U-00000800 – U-0000FFFF: 	1110xxxx 10xxxxxx 10xxxxxx
     U-00010000 – U-001FFFFF: 	11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
@@ -536,18 +535,23 @@ unsigned int utf8_charlen(char c)
     U-04000000 – U-7FFFFFFF: 	1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
     */
 
+    unsigned char c = *(p+1);
+
     if ((c & 0x80) == 0)
         return 1;
-    if ((c & 0xE0) == 0xC0)
-        return 2;
-    if ((c & 0xF0) == 0xE0)
-        return 3;
-    if ((c & 0xF8) == 0xF0)
-        return 4;
-    if ((c & 0xFC) == 0xF8)
-        return 5;
+
     if ((c & 0xFE) == 0xFC)
+        return 7;
+    if ((c & 0xFC) == 0xF8)
         return 6;
+    if ((c & 0xF8) == 0xF0)
+        return 5;
+    if ((c & 0xF0) == 0xE0)
+        return 4;
+    if ((c & 0xE0) == 0xC0)
+        return 3;
+    if ((c & 0x80) == 0x80)
+        return 2;
 
     return 1;
 }
