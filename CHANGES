@@ -2,6 +2,19 @@ USEMARCON Change Log
 
 **************************
 **************************
+version 1.71
+
+29th March 2006
+
+The National Library of Finland
+Ere Maijala
+http://www.lib.helsinki.fi/
+ere.maijala at helsinki.fi
+
+- Fixed UTF-8 mode to work correctly with 3+ byte entities
+
+**************************
+**************************
 version 1.70
 
 2nd February 2006
