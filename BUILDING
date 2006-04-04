@@ -10,7 +10,8 @@ under Windows XP.
 
 Building in other systems:
 
-(chmod +x Makefile.am buildconf.sh config.guess config.status config.sub configure install-sh libtool missing mkinstalldirs usemarcon-config.in)
+(chmod +x Makefile.am buildconf.sh config.guess config.status config.sub configure install-sh missing mkinstalldirs usemarcon-config.in)
 ./configure
 make
 
+Iif Autoconf, Automake and Libtool are present, the build system can also be created or updated by running buildconf.sh.
