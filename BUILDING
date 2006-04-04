@@ -14,4 +14,4 @@ Building in other systems:
 ./configure
 make
 
-Iif Autoconf, Automake and Libtool are present, the build system can also be created or updated by running buildconf.sh.
+If Autoconf, Automake and Libtool are present, the build system can also be created or updated by running buildconf.sh.
