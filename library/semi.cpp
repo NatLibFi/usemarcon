@@ -71,8 +71,8 @@ void *semi::cherche(unsigned char *ch, int *i)
     int ii =1;
     void *remp = NULL;
     if(*ch == '\0')return(NULL);
-    // le premier caractere de ch beneficie d'un traitement particulier
-    // on trouve le sous arbre qui lui est associe directement dans une table
+    // A special optimization treatment for the first character. 
+    // It's quickly found in a table.
     doublet *d = racine + *ch;
     if(d->remplacant != NULL)
     {
@@ -100,16 +100,14 @@ void *semi::cherche(unsigned char *ch, int *i)
 
 void semi::insere(unsigned char *ch, void *remp)
 {
-    // pour inserer une nouvelle entree dans l'arbre
-    // ch designe la chaine de caracteres a inserer
-    // remp designe la chaine a associer a la nouvelle entree
+    // Inserting a new entry into the tree. ch indicates the string to
+    // replace and remp is the replacement
 
     quadruplet *dn;
 
     if(*ch != '\0')
     {
-        // si ch est vide, il ne faut rien faire
-        // le premier caractere est place directement dans une table
+        // The first character is put directly on the table
         doublet *d = racine + *ch;
         void **pavant = &(d->remplacant);
         quadruplet **pprec = &(d->bas);
@@ -125,7 +123,7 @@ void semi::insere(unsigned char *ch, void *remp)
             }
             if((r == NULL)||(r->valeur >*c))
             {
-                // il faut ajouter un quadruplet dans la liste
+                // Need to add a quadruplet into the list
                 dn = new quadruplet(*c,r,NULL,NULL);
                 c++;
                 *pprec = dn;
@@ -141,7 +139,7 @@ void semi::insere(unsigned char *ch, void *remp)
                 c++;
             }
         }
-        // dans tous les cas, on peut placer remp dans pavant->remplacant
+        // In all cases replacement can be assigned to pavant->remplacant
         if(*pavant == NULL)
             *pavant = remp;
         else
