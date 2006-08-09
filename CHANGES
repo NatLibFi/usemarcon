@@ -2,6 +2,43 @@ USEMARCON Change Log
 
 **************************
 **************************
+version 1.80
+
+August 9 2006
+
+The National Library of Finland
+Ere Maijala
+http://www.kansalliskirjasto.fi/
+ere.maijala at helsinki.fi
+
+- Separated interactive mode from file/buffer mode. Now files are used if 
+  buffers are not specified regardless of the mode.
+- Added possibility to use question mark as a wildcard in rules. A question 
+  mark can replace any single character in field code or subfield code. For 
+  example the following rules would convert all fields as is (it is assumed 
+  that 00? are control fields, thus no indicators or subfield codes):
+  
+  00? | 00? | S
+  ???I1 | ???I1 | S
+  ???I2 | ???I2 | S
+  ???$? | ???$? | S     
+
+**************************
+**************************
+version 1.72
+
+1st June 2006
+
+The National Library of Finland
+Ere Maijala
+http://www.lib.helsinki.fi/
+ere.maijala at helsinki.fi
+
+- Separated file/buffer usage from interactive mode. Interactive mode now
+  controls only whether USEMARCON outputs anything on the console.
+
+**************************
+**************************
 version 1.71
 
 29th March 2006
@@ -25,24 +62,24 @@ http://www.lib.helsinki.fi/
 ere.maijala at helsinki.fi
 
 - Added support to peeking at the previous contents of the destination field
-  using variable D (requires of course that there is already data in the 
+  using variable D (requires of course that there is already data in the
   destination field). This allows for example comparisons between the old
   and new value and concatenation of old value to the new one.
-- Added experimental support for simple regular expressions. Three new 
+- Added experimental support for simple regular expressions. Three new
   functions are provided:
-  RegFind('expression') returns >= 0 if the expression was found. 
+  RegFind('expression') returns >= 0 if the expression was found.
   RegMatch(index) returns matched parts by index (0-9).
-  RegReplace('expression', 'expression') replaces expression by another. 
+  RegReplace('expression', 'expression') replaces expression by another.
   \1 \2 etc. can be used to reference the matched parts. Thoroughly untested.
 - Added possibility to do the conversion in field order instead of the classic
-  rule order. In this new mode the record is processed field by field and all 
-  matching rules are applied. Enabled by setting ConvertInFieldOrder=TRUE in 
+  rule order. In this new mode the record is processed field by field and all
+  matching rules are applied. Enabled by setting ConvertInFieldOrder=TRUE in
   section DEFAULT_STATES of the ini file.
-- Added possibility to specify the absolute field or subfield index in input 
+- Added possibility to specify the absolute field or subfield index in input
   or output CD (for example rule "245(1)$a | 240(2)$a | S" would copy $a from
   first 245 to the second 240 in the destination.
-- Added possibility to use "If Then Translation Else Condition" and 
-  "If Then Condition". This allows more complicated conditional rules. 
+- Added possibility to use "If Then Translation Else Condition" and
+  "If Then Condition". This allows more complicated conditional rules.
 - Fixed a crash if the destination record doesn't contain any fields.
 - Fixed a hang when UTF-8 mode was active and To command was used.
 - Fixed a problem where transcoding a string with Table command would return
