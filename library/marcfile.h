@@ -67,6 +67,9 @@ public:
     char      GetMarcInfoPaddingChar  (void)                  { return itsMarcInfo.PaddingChar; };
     bool      GetMarcInfoLastBlock    (void)                  { return itsMarcInfo.LastBlock; };
 
+    virtual long GetSize(void);
+    virtual long GetPos(void);
+
 private:
     unsigned char     *Buffer;
     unsigned long     NumNotice;

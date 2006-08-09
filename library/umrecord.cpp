@@ -459,12 +459,16 @@ int TUMRecord::ToCD(void)
 ///////////////////////////////////////////////////////////////////////////////
 int TUMRecord::NextCD(TCDLib **CDLib, TCD *CD)
 {
-    // Check if a field with this code exists at all
-    long tagnum = atol(CD->GetTag());
-    if (tagnum == 0 && strcmp(CD->GetTag(), "000"))
-        tagnum = -1;
-    if (tagnum >= 0 && tagnum <= 999 && !itsExistingFields[tagnum])
-        return 0;
+    // Check if a field with this code exists at all, unless a wildcard is used
+    char *tag = CD->GetTag();
+    if (!strchr(tag, '?'))
+    {
+        long tagnum = atol(tag);
+        if (tagnum == 0 && strcmp(CD->GetTag(), "000"))
+            tagnum = -1;
+        if (tagnum >= 0 && tagnum <= 999 && !itsExistingFields[tagnum])
+            return 0;
+    }
 
     TCDLib* Search=*CDLib;
     while (Search)

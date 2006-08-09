@@ -125,7 +125,7 @@ int TUMApplication::StartUp(CDetails *Details)
     if (itsDetails->GetInteractive())
         itsErrorHandler->SetMode(INTERACTIVE);
     else
-        itsErrorHandler->SetMode(BATCH);
+        itsErrorHandler->SetMode(NONINTERACTIVE);
 
 
     if (!*itsIniFile)
@@ -249,7 +249,7 @@ int TUMApplication::StartUp(CDetails *Details)
     itsMarcDoc->SetConfInputFileSpec(&FileSpec);
 
     memset(&FileSpec,0,sizeof(FILE_SPEC));
-    if (itsDetails->GetInteractive())
+    if (!itsDetails->GetMarcRecordAvailable())
     {
         if (itsDetails->GetInputMarcFileName())
         {
@@ -340,7 +340,7 @@ int TUMApplication::StartUp(CDetails *Details)
     }
 
     memset(&FileSpec,0,sizeof(FILE_SPEC));
-    if (itsDetails->GetInteractive())
+    if (!itsDetails->GetMarcRecordAvailable())
     {
         if (itsDetails->GetOutputMarcFileName())
         {
@@ -459,7 +459,6 @@ int TUMApplication::Convert(void)
 
     itsSize = (double)itsMarcDoc->GetInputFile()->GetSize();
 
-    // John Hough - added if
     if (itsDetails->GetInteractive())
     {
         printf("Size of input file: %ld bytes\n", (long)itsSize);
@@ -514,8 +513,8 @@ int TUMApplication::Convert(void)
             return -1;
         }
         itsRecordsProcessed++;
-        // We're done if not running in interactive mode (the data has been replaced)
-        if (!itsDetails->GetInteractive())
+        // We're done if converting a buffer (the data has been replaced)
+        if (itsDetails->GetMarcRecordAvailable())
             break;
     }
 

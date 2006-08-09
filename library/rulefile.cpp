@@ -169,8 +169,7 @@ int TRuleFile::ConvertInRuleOrder( TUMRecord* In, TUMRecord* Out )
     // On parcourt chaque regle, et on en fait l'evaluation
     while( aRule )
     {
-
-        if (*(aRule->GetOutputCD()->GetTag())!='?')
+        //if (*(aRule->GetOutputCD()->GetTag())!='?')
         {
             if (aRule->GetOutputCD()->GetIN())
             {
@@ -202,26 +201,42 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
     TCDLib* Last = In->GetLastCDLib();
     while (CDLIn)
     {
+        bool can_match_boolean = true;
         TRule* aRule=itsFirstRule;
         while(aRule)
         {
             TCD *RuleCD = aRule->GetInputCD();
             if (*CDLIn == *RuleCD)
             {
-                if (*(aRule->GetOutputCD()->GetTag())!='?')
+                do
                 {
-                    if (aRule->GetOutputCD()->GetIN())
+                    // If the rule contains wildcard, it's only accepted if non-wildcard
+                    // rules for the field have not been processed already
+                    if (strchr(RuleCD->GetTag(), '?'))
                     {
-                        itsEvaluateRule.Evaluate_Rule( In, In, aRule, CDLIn );
-                        // Only added fields can be sorted here, otherwise our
-                        // processing order would be broken
-                        In->PartialSort((TCDLib *) Last->GetNext());
+                        if (!can_match_boolean)
+                            break;
                     }
                     else
                     {
-                        itsEvaluateRule.Evaluate_Rule( In, Out, aRule, CDLIn );
+                        can_match_boolean = false;
                     }
-                }
+                    //if (*(aRule->GetOutputCD()->GetTag())!='?')
+                    {
+                        if (aRule->GetOutputCD()->GetIN())
+                        {
+                            itsEvaluateRule.Evaluate_Rule( In, In, aRule, CDLIn );
+                            // Only added fields can be sorted here, otherwise our
+                            // processing order would be broken
+                            In->PartialSort((TCDLib *) Last->GetNext());
+                        }
+                        else
+                        {
+                            itsEvaluateRule.Evaluate_Rule( In, Out, aRule, CDLIn );
+                        }
+                    }
+                } 
+                while (false);
             }
             aRule=aRule->GetNextRule();
         }

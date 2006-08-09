@@ -39,9 +39,10 @@ AUTHOR
 #define DISPLAY           3
 #define FORCER            4
 #define NOTICE            5
+#define NONERROR          6
 #define STOP              0
 #define CONTINUE          1
-#define BATCH             0
+#define NONINTERACTIVE    0
 #define INTERACTIVE       1
 #define DEFAULT_ERR_FILE_NAME        "errcodes.txt"
 #define DEFAULT_LOG_FILE_NAME        "errlog.txt"

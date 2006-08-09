@@ -495,4 +495,16 @@ int TCD::ToString(char *String, int InputOrOutput)
     return 0;
 }
 
-
+void TCD::ReplaceWildcards(const char *field, const char *subfield)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (itsTag[i] == '?')
+            itsTag[i] = field[i];
+    }
+    for (int i = 0; i < 2; i++)
+    {
+        if (itsSubfield[i] == '?')
+            itsSubfield[i] = subfield[i];
+    }
+}

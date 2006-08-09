@@ -78,6 +78,8 @@ public:
     virtual int   SetFixedPos             (char *String);
     virtual int   SetIN                   (int aIN)   { _IN=aIN; return 0; };
 
+    void ReplaceWildcards(const char *field, const char *subfield);
+
     TError    *GetErrorHandler() { return itsErrorHandler; };
 
 private:

@@ -100,6 +100,7 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,int
         case WARNING: strcpy(categorie,"WARNING "); break;
         case ERROR: strcpy(categorie,"ERROR "); break;
         case NOTICE: strcpy(categorie,"NOTICE "); break;
+        case NONERROR: strcpy(categorie,"NO ERROR "); break;
         default: strcpy(categorie,"FATAL "); break;
     }
 
@@ -137,8 +138,12 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,int
         if (itsMode==INTERACTIVE && itsVerboseMode)
             show_message(Message);
         break;
+    case NONERROR:
+        // Don't show non-errors
+        break;
     default:
-        show_message(Message);
+        if (itsMode==INTERACTIVE)
+            show_message(Message);
         break;
     }
     return 0-ErrorCode;

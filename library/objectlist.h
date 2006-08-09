@@ -95,6 +95,7 @@ public:
         {
             free(m_pcRecord);
             m_pcRecord = NULL;
+            m_iLength = 0;
         }
     }
 
@@ -115,12 +116,16 @@ public:
 
     bool GetInteractive(void) { return m_interactive; }
 
+    bool GetMarcRecordAvailable(void) { return m_pcRecord ? true : false; }
+
+    long GetMarcRecordLength() { return m_iLength; }
+
     void SetMarcRecord(const char *pcRecord, int iLength)
     {
-        m_iLength = iLength;
         // Remove any old instance
         DeleteData();
 
+        m_iLength = iLength;
         if (m_iLength <= TBUF)
         {
             m_pcRecord = reinterpret_cast<char *>(malloc(m_iLength + 1));
@@ -137,7 +142,7 @@ public:
 
     void GetMarcRecord(char *&pcRecord, int &iLength)
     {
-        pcRecord = strdup(m_pcRecord);
+        pcRecord = m_pcRecord ? strdup(m_pcRecord) : NULL;
         iLength = m_iLength;
     }
 

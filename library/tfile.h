@@ -68,8 +68,8 @@ public:
     void         SetMode(char aMode);
     char         GetKind(void);
     void         SetKind(char aKind);
-    long         GetSize(void);
-    long         GetPos(void);
+    virtual long GetSize(void);
+    virtual long GetPos(void);
 
 protected:
     int          itsLineNumber;

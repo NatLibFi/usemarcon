@@ -211,6 +211,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         aCDLIn = In->GetFirstCDLib();
     while(true)
     {
+        // Make sure that if ProcessCDL is set we process it once and break out when done
         if (ProcessCDL)
         {
             if (aCDLIn)
@@ -269,6 +270,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         {
             // On cree une copie du CDOut (on va peut-etre le modifier)
             TCD* aCDOut=new TCD(Rule->GetOutputCD());
+
+            aCDOut->ReplaceWildcards(CDIn->Field, CDIn->SubField);
 
             // Si n, ns ou nt apparaissent dans CDOut, on les remplace par leur valeur
             aCDOut->SetOccurenceNumber(
@@ -519,9 +522,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
 
         if (!ProcessCDL)
         {
-            // On passe au champ suivant en entree
-
-            TCD Courant(Rule->GetInputCD());
+            // Move to the next field in input
+            TCD Courant(CDIn, itsErrorHandler);
             Courant.SetTagOccurenceNumber(NT->val);
             Courant.SetSubOccurenceNumber(NS->val);
 

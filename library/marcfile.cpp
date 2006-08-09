@@ -55,11 +55,6 @@ TMarcFile::TMarcFile( FILE_SPEC *FileSpec, TUMApplication *Application, char Mod
 ///////////////////////////////////////////////////////////////////////////////
 TMarcFile::~TMarcFile()
 {
-    if (iFile!=-1)
-    {
-        Close();
-        iFile   = -1;
-    }
     if (Buffer)
     {
         free(Buffer);
@@ -81,7 +76,7 @@ TMarcFile::~TMarcFile()
 ///////////////////////////////////////////////////////////////////////////////
 int TMarcFile::Open()
 {
-    if (itsApplication->GetDetails()->GetInteractive())
+    if (!itsApplication->GetDetails()->GetMarcRecordAvailable())
     {
         if (TFile::Open())          // Echec d'ouverture du fichier
             return 1;
@@ -221,13 +216,13 @@ int TMarcFile::lire(unsigned short taille, unsigned char * buffer)
             pbuf = (unsigned short)(pbuf + Reste);
             lreste = (unsigned short)(lreste - Reste);
 
-            if (itsApplication->GetDetails()->GetInteractive())
-                lng = (short)::read(iFile,Buf,TB);
-            else
+            // Use buffered data if available, otherwise use a file
+            if (itsApplication->GetDetails()->GetMarcRecordAvailable())
             {
                 char *pcRecord;
                 int iLength = 0;
                 itsApplication->GetDetails()->GetMarcRecord(pcRecord, iLength);
+
                 iLength -= itsCharsRead;
                 if (iLength > TB)
                     iLength = TB;
@@ -237,6 +232,8 @@ int TMarcFile::lire(unsigned short taille, unsigned char * buffer)
                 itsCharsRead += iLength;
                 free(pcRecord);
             }
+            else
+                lng = (short)::read(iFile,Buf,TB);
 
             if (lng==-1)
                 return itsErrorHandler->SetError(1502,ERROR);
@@ -315,7 +312,7 @@ int TMarcFile::Read(TUMRecord *Record)
         // donc de les lire
     {
         if (lire(5,Buffer))
-            return itsErrorHandler->SetError(1003,NOTICE);
+            return itsErrorHandler->SetError(1003,NONERROR);
 
         PosCour+=5;
     }
@@ -390,7 +387,7 @@ int TMarcFile::Write(TUMRecord *Record)
 
     lreste=LngNotice=strlen((const char *)Buffer);
 
-    if (!itsApplication->GetDetails()->GetInteractive())
+    if (itsApplication->GetDetails()->GetMarcRecordAvailable())
     {
         itsApplication->GetDetails()->SetMarcRecord((char *)Buffer, lreste);
         return 0;
@@ -554,4 +551,28 @@ int TMarcFile::Close()
 
     TFile::Close();
     return 0;
+}
+
+long TMarcFile::GetSize(void)
+{
+    if (itsApplication->GetDetails()->GetMarcRecordAvailable())
+    {
+        return itsApplication->GetDetails()->GetMarcRecordLength();
+    }
+    else
+    {
+        return TFile::GetSize();
+    }
+}
+
+long TMarcFile::GetPos(void)
+{
+    if (itsApplication->GetDetails()->GetMarcRecordAvailable())
+    {
+        return itsCharsRead;
+    }
+    else
+    {
+        return TFile::GetPos();
+    }
 }
