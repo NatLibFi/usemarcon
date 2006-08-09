@@ -11,8 +11,16 @@ Ere Maijala
 http://www.kansalliskirjasto.fi/
 ere.maijala at helsinki.fi
 
+- Updated documentation for new features and revised parts of the old docs.
 - Separated interactive mode from file/buffer mode. Now files are used if 
-  buffers are not specified regardless of the mode.
+  buffers are not specified regardless of the mode. Interactive mode 
+  controls only whether USEMARCON outputs anything on the console.
+- Added possibility to copy the input to output as the default action in 
+  translation tables. This can be accomplished with a magic token COPY in 
+  #DEFAULT declaration:
+  
+  #DEFAULT | COPY
+  
 - Added possibility to use question mark as a wildcard in rules. A question 
   mark can replace any single character in field code or subfield code. For 
   example the following rules would convert all fields as is (it is assumed 
@@ -22,20 +30,6 @@ ere.maijala at helsinki.fi
   ???I1 | ???I1 | S
   ???I2 | ???I2 | S
   ???$? | ???$? | S     
-
-**************************
-**************************
-version 1.72
-
-1st June 2006
-
-The National Library of Finland
-Ere Maijala
-http://www.lib.helsinki.fi/
-ere.maijala at helsinki.fi
-
-- Separated file/buffer usage from interactive mode. Interactive mode now
-  controls only whether USEMARCON outputs anything on the console.
 
 **************************
 **************************
