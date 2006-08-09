@@ -49,5 +49,6 @@ protected:
   int           GetValues   (const char *src, typestr *dest);
   typestr       itsDefaultValue;
   bool          itsDefaultValueValid;
+  bool          itsDefaultCopy;
 };
 #endif

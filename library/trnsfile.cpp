@@ -32,6 +32,7 @@ TTransFile::TTransFile( FILE_SPEC *FileSpec, TError *ErrorHandler)
     if (itsFileInfo)
         memcpy(itsFileInfo,FileSpec,sizeof(FILE_SPEC));
     itsDefaultValueValid = false;
+    itsDefaultCopy = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,9 +78,16 @@ int TTransFile::Open()
             // Test de la valeur par defaut
             if (memcmp(InChar,"#DEFAULT",8)==0)
             {
-                GetValues(OutChar,&OutListe);
-                itsDefaultValue = OutListe;
-                itsDefaultValueValid = true;
+                if (strstr(OutChar, "COPY"))
+                {
+                    itsDefaultCopy = true;
+                }
+                else
+                {
+                    GetValues(OutChar,&OutListe);
+                    itsDefaultValue = OutListe;
+                    itsDefaultValueValid = true;
+                }
             }
             else
             {
@@ -185,7 +193,13 @@ const char* TTransFile::Transcode( char* In, typestr *Out, char *Notice, char *F
         r  = (char *)cherche((unsigned char*)c,&iaux);
         if((iaux == 0) || (r == NULL))
         {
-            if (itsDefaultValueValid)
+            if (itsDefaultCopy)
+            {
+                Out->append_char(*c);
+                ++c;
+                continue;
+            }
+            else if (itsDefaultValueValid)
             {
                 Out->append(itsDefaultValue.str());
                 ++c;
