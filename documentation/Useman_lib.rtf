@@ -1,430 +1,477 @@
-{\rtf1\ansi\ansicpg1252\deff0\deflang1033\deflangfe1033{\fonttbl{\f0\fnil\fprq2\fcharset0 Bembo;}{\f1\froman\fprq2\fcharset0 Times New Roman;}{\f2\fswiss\fprq2\fcharset0 Arial;}{\f3\fswiss\fcharset0 Arial;}{\f4\fmodern\fprq1\fcharset0 Courier New;}{\f5\fnil\fcharset2 Symbol;}}
-{\colortbl ;\red0\green0\blue0;}
-{\stylesheet{ Normal;}{\s1 heading 1;}{\s2 heading 2;}{\s3 heading 3;}}
-{\*\generator Msftedit 5.41.15.1507;}\viewkind4\uc1\pard\li709\qc\lang1036\b\f0\fs48\par
-\par
-\par
-\pard\brdrl\brdrs\brdrw15\brsp20 \brdrt\brdrs\brdrw15\brsp20 \brdrr\brdrs\brdrw15\brsp20 \brdrb\brdrs\brdrw15\brsp20 \li709\qc\fs72 USEMARCON\par
-\pard\brdrl\brdrs\brdrw15\brsp20 \brdrt\brdrs\brdrw15\brsp20 \brdrr\brdrs\brdrw15\brsp20 \brdrb\brdrs\brdrw15\brsp20 \li709\b0\fs24\par
-\pard\brdrl\brdrs\brdrw15\brsp20 \brdrt\brdrs\brdrw15\brsp20 \brdrr\brdrs\brdrw15\brsp20 \brdrb\brdrs\brdrw15\brsp20 \li709\qc\fs48 User Controlled Generic MARC Converter\par
-\pard\li709\qc\fs24\par
-\par
-\par
-\fs40 User Manual\par
-\fs24\par
-\fs36\par
-\par
-\par
-\par
-\par
-\pard\qc\lang1033\b\f1\fs24 USEMARCON - MARC record converter\par
-Version 1.51\par
-Adapted by Crossnet Systems Limited under contract to The British Library\par
-Adapted by ATP Library Systems Ltd, Finland, 2002-2004\par
-Adapted by Helsinki University Library, the National Library of Finland, 2004\par
-Copyright 2000 - The British Library, The USEMARCON Consortium\par
-\pard\li709\qc\lang1036\b0\f0\fs36\par
-\par
-\par
-\par
-\par
-\par
-\par
-\par
-April 2004\par
-\pard\s1\sb240\cf1\f1\fs28\page\lang1035\b\caps\f2\par
-\pard\sb360\tx480\tqr\tx9027\cf0\fs24 1.\tab INTRODUCTION\tab 3\par
-\pard\li240\sb240\tqr\tx9027\caps0\f1\fs20 Background to the Project\tab 4\par
-Background to the Standalone Batch Version\tab 5\par
-Basic Concepts\tab 5\par
-\pard\li480\tqr\tx9027\b0 MARC Formats\tab 5\par
-\pard\li240\sb240\tqr\tx9027\b Brief Description of Functionality\tab 7\par
-\pard\li480\tqr\tx9027\b0 Modular Design\tab 7\par
-Use of Tables\tab 7\par
-\pard\li240\sb240\tqr\tx9027\b MARC Formats Which May be Translated by USEMARCON\tab 7\par
-Conversions Available\tab 7\par
-\pard\sb360\tx480\tqr\tx9027\caps\f2\fs24 2.\tab INSTALLATION and getting started\tab 7\par
-\pard\li240\sb240\tqr\tx9027\caps0\f1\fs20 Introduction\tab 7\par
-MS Windows \lquote 95, 98 and NT 4\tab 7\par
-\pard\li480\tqr\tx9027\b0 Installation\tab 7\par
-Running the USEMARCON Batch Software\tab 7\par
-\pard\sb360\tx480\tqr\tx9027\b\caps\f2\fs24 3.\tab system components\tab 7\par
-\pard\li240\sb240\tqr\tx9027\caps0\f1\fs20 File Names\tab 7\par
-\pard\li480\tqr\tx9027\b0 Creation and Maintenance of System Files\tab 7\par
-File/Directory Naming Conventions\tab 7\par
-\pard\li240\sb240\tqr\tx9027\b Description of System Files\tab 7\par
-\pard\li480\tqr\tx9027\b0 Program Initialization Files\tab 7\par
-Rules Files\tab 7\par
-Look Up Tables\tab 7\par
-Format Checking Tables\tab 7\par
-Character Set Translation Tables\tab 7\par
-MARC Format Configuration Files\tab 7\par
-\pard\cf1\lang2057\b\caps\f2\fs28\page\pard\s1\sb240 1.\tab INTRODUCTION\par
-\pard\cf0\lang1033\b0\caps0\f1\fs24\par
-\pard\brdrb\brdrs\brdrw30\brsp20 \li709\b\par
-\par
-\pard\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\fi-425\li709 Background to the Project\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-360\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\fi-425\li709 Basic Concepts\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\tx1134\b0\tab MARC Formats\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-360\b\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\fi-425\li709 Brief Description of Functionality\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\tx1134\b0\tab Modular Design\b\par
-\b0{\pntext\f5\'B7\tab}\tab Rule Editing Mode\par
-{\pntext\f5\'B7\tab}\tab Conversion Mode\par
-{\pntext\f5\'B7\tab}\tab Use of Tables\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\fi-425\li709\b MARC Formats That May be Translated by USEMARCON \line\par
-{\pntext\f5\'B7\tab}Conversions Supplied\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\b0\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\s2\sb120\lang2057\b\f2\fs28 Background to the Project\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\lang1033\b0\f1\fs20\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036\fs24 Different national MARC (MAchine Readable Catalogue) standards are seen as barriers to wider exchange of bibliographic records in Europe and beyond. Throughout the world nearly 50 different MARC formats are currently in use, with 10 employed in the national libraries of European Community countries. Such variation is a fundamental problem for libraries wishing to obtain or supply data internationally and often results in the re-cataloguing of material for which records are readily available in formats other than the library\rquote s own. Lack of language expertise or knowledge of the context of publication can lead to the creation of records of a significantly inferior quality to those which might otherwise have been obtained from an agency in the country of publication.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The aim of the USEMARCON Project is to develop a generic conversion program capable of translating bibliographic records created in any ISO 2709 compatible MARC format (e.g UKMARC) into any other ISO 2709 MARC format (e.g. InterMARC) using UNIMARC as a central switching format.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The development of the USEMARCON software was supported by the European Union\rquote s Telematics Applications Programme (DG XIII-E).\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The partners of the USEMARCON consortium are drawn from a variety of library and information technology backgrounds and comprise the following:\par
-\expndtw-8\ul\i{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}Co-ordinating Partner\expndtw0\par
-\ulnone\i0{\pntext\f5\'B7\tab}Koninklijke Bibliotheek, Holland\par
-{\pntext\f5\'B7\tab}\par
-\ul\i{\pntext\f5\'B7\tab}Full Partners\par
-\ulnone\i0{\pntext\f5\'B7\tab}Instituto da Biblioteca Nacional e do Livro, Portugal \par
-{\pntext\f5\'B7\tab}The British Library, UK\par
-{\pntext\f5\'B7\tab}\par
-\ul\i{\pntext\f5\'B7\tab}Associate Partner\par
-\ulnone\i0{\pntext\f5\'B7\tab}Die Deutsche Bibliothek, Germany\par
-{\pntext\f5\'B7\tab}\par
-\ul\i{\pntext\f5\'B7\tab}Original Software Developer\par
-\ulnone\i0{\pntext\f5\'B7\tab}Jouve, Syst\'e8mes d'Information, France\ul\par
-\ulnone{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The USEMARCON software was designed to provide users with two specific services. \par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-450\li709\qj\lang2057\f2\fs20\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036\f1\fs24 1.\tab The facility to convert MARC records compliant with a specified input format into MARC records compliant with a specified output format.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}2.\tab The facility to create and modify rules files, used to achieve MARC conversions, in order to meet specific local requirements. The present software is designed to be used by senior cataloguers or others with a detailed knowledge of the structure of the MARC formats they wish to convert between.\par
-{\pntext\f5\'B7\tab}\tab\par
-{\pntext\f5\'B7\tab}The USEMARCON Graphical User Interface (GUI) was designed for use with both MS Windows (3.1x and \lquote 95) and Unix Motif environments, in the latter case running under the Sunsoft Solaris operating system. In the Windows environment USEMARCON used a Multiple Display Interface.\par
-{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\s2\sb120\lang2057\b\f2\fs28 Background to the Standalone Batch Version\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036\b0\f1\fs24\par
-{\pntext\f5\'B7\tab}The USEMARCON software developed on the USEMARCON project was heavily reliant on the XVT toolkit. Any modifications to the software by anyone required the XVT DSP++ development package. \par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The British Library published "A Feasibility Study To Investigate If The Usemarcon Software Can Be Adapted To A Command-Line Environment" in August 1999, which concluded that portability to command line scenario was possible, and this has been performed under contract.  This version of the User Manual is applicable to the Standalone Batch version.\par
-{\pntext\f5\'B7\tab}\par
-\ul\i{\pntext\f5\'B7\tab}Batch Version Software Developer\par
-\ulnone\i0{\pntext\f5\'B7\tab}Crossnet Systems Limited, UK\ul\par
-\ulnone{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The batch version has been modified by ATP Library Systems Ltd. See the CHANGES file in the root directory of the package for more information.\par
-{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\s2\sb120\lang2057\b\f2\fs28 Basic Concepts\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036\b0\f1\fs24\par
-{\pntext\f5\'B7\tab}Bibliographic data conversion requires the processing of:\par
-{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent283{\pntxtb\'B7}}\li709 MARC bibliographic data, including related blocking and padding characters\par
-{\pntext\f5\'B7\tab}Conversion rules for specifying the conversion of each data element of the input format into each data element of the output format\par
-{\pntext\f5\'B7\tab}Coded data tables corresponding to sets of codes used by the format, e.g. language of publication, country of publication\par
-{\pntext\f5\'B7\tab}Character set tables specifying the translation of individual character codes between input and output formats\par
-{\pntext\f5\'B7\tab}Format checking tables specifying valid elements of input and output formats\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\keepn\s3\lang1033\b\f2 MARC Formats\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\b0\f1\fs20\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036\fs24 The MARC format family was created through a Library of Congress project, initiated in 1964, to prepare bibliographic information for automated processing.  Different national MARC formats were created in response to specific national needs according to their local cataloguing rules and operating environments.  The principles of MARC formats are to structure the bibliographic data into fields and subfields as in the following UNIMARC example:\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}\par
-\trowd\trgaph108\trleft709\trbrdrl\brdrs\brdrw30 \trbrdrt\brdrs\brdrw30 \trbrdrr\brdrs\brdrw15 \trbrdrb\brdrs\brdrw30 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
-\clbrdrl\brdrw30\brdrs\clbrdrt\brdrw30\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw15\brdrs \cellx1560\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw30\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw15\brdrs \cellx2835\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw30\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw15\brdrs \cellx4253\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw30\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw15\brdrs \cellx5812\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw30\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw15\brdrs \cellx7137\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw30\brdrs\clbrdrr\brdrw30\brdrs\clbrdrb\brdrw15\brdrs \cellx9639\pard\intbl{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\qc\b Tag\cell Indicators\cell Subfield delimiter\cell Title proper\b0\cell\b Subfield \par
-{\pntext\f5\'B7\tab}delimiter\b0\cell\b Sub-title\cell\row\trowd\trgaph108\trleft709\trbrdrl\brdrs\brdrw30 \trbrdrt\brdrs\brdrw30 \trbrdrr\brdrs\brdrw15 \trbrdrb\brdrs\brdrw30 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
-\clbrdrl\brdrw30\brdrs\clbrdrt\brdrw15\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw30\brdrs \cellx1560\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw15\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw30\brdrs \cellx2835\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw15\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw30\brdrs \cellx4253\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw15\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw30\brdrs \cellx5812\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw15\brdrs\clbrdrr\brdrw15\brdrs\clbrdrb\brdrw30\brdrs \cellx7137\clbrdrl\brdrw15\brdrs\clbrdrt\brdrw15\brdrs\clbrdrr\brdrw30\brdrs\clbrdrb\brdrw30\brdrs \cellx9639\pard\intbl{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\b0 200\cell 1\strike b\strike0\cell $a\cell UNIMARC\cell $e\cell Cataloguing Manual\cell\row\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li709\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}A tag is a three digit number that defines a bibliographic condition. Indicators are two single digit numbers which supply additional information about the contents of the field. Where an indicator is undefined the character position generally contains a blank (represented by \strike b\strike0 ). Subfield delimiters are introduced by a special control character (often conventionally represented by$) followed by a letter or a number qualifying the data element in the field. ($a, $b or $1, $2). Some fields contain a single fixed length subfield with the data coded in fixed positions. The format specifies whether each field and subfield are mandatory, optional or conditional upon another data element.\par
-{\pntext\f5\'B7\tab}\par
-\pard{\*\pn\pnlvlcont\pnf2\pnindent0\pnstart1\pndec }
-\s2\sb120\lang2057\b\f2\fs28 Brief Description of Functionality\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li709\lang1036\b0\f1\fs24\par
-\pard{\*\pn\pnlvlcont\pnf2\pnindent0\pnstart1\pndec }
-\keepn\s3\lang1033\b\f2 Modular Design\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li709\lang1036\b0\f1\par
-{\pntext\f5\'B7\tab}The software has been developed to work on a modular basis allowing the user to perform at several levels of conversion. These can range from simple character set or exchange format translations using individual tables to full MARC format conversions using an entire \lquote cluster\rquote  of tables and rules.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The Standalone batch version of USEMARCON only permits batch conversion runs, and all software associated with the creation, editing and testing of rules has been removed.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The Standalone batch version reads all conversion parameters from an INI file. This INI file is a mandatory command line parameter to the program.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}As the program is performing its conversion, it display a running total of how many records have been read from the input file, and an approximate percentage of completion.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}Details of processing problems are stored in a report file and classified by the following error types: input format, MARC checking in input, character translation, coded data translation, conversion, MARC checking in output and building of the output MARC file.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}Diacritics and other extended characters are always displayed in hexadecimal code in order to allow users to check the accuracy of character translations.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}\par
-\pard{\*\pn\pnlvlcont\pnf2\pnindent0\pnstart1\pndec }
-\keepn\s3\lang1033\b\f2 Use of Tables\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li720\b0\f1\fs20\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\fi11\li709\lang1036\fs24 As the software makes use of simple ASCII tables rather than compiled rules to guide conversions, users can create or customise these files to ensure conversions accurately reflect local requirements. All tables may be edited using a text editor such as MS DOS Edit\b  \b0  or MS Windows Notepad. Visual representations of how USEMARCON makes use of tables to facilitate record conversion is shown below. \par
-{\pntext\f5\'B7\tab}\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li709\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li720\qc\lang1033\f3\fs20{\pict\wmetafile8\picw15612\pich11113\picwgoal5576\pichgoal4095 
-010009000003e90500000a00180000000000050000000b0200000000050000000c02410a680e05
-0000000902c0c0c000050000000102000000000400000002010200050000000102000000000700
-0000fc020000c0c0c0000200040000002d01000008000000fa0200000300000000000000040000
-002d0101000e00000024030500340a210548032105be039705aa0a9705340a210508000000fa02
-00000000000000000000040000002d01020007000000fc020100000000000000040000002d0103
-0004000000f001000004000000f0010100050000000902c0c0c000050000000102000000000400
-0000020102000500000001020000000007000000fc020000c0c0c0000200040000002d01000008
-000000fa0200000300000000000000040000002d0101000e00000024030500aa0a9705340a2105
-340a4803aa0abe03aa0a9705040000002d010200040000002d01030004000000f0010000040000
-00f0010100050000000902ffffff00050000000102000000000400000002010200050000000102
-0000000007000000fc020000ffffff000200040000002d01000008000000fa0200000300000000
-000000040000002d0101000e00000024030500340a21054803210548034803340a4803340a2105
-040000002d010200040000002d01030004000000f001000004000000f001010010000000fb028b
-ff380000000000bc020000000000000020417269616c000200040000002d01000010000000fb02
-1000070000000000bc02000000000102022253797374656d0005040000002d0101000400000008
-010000050000000a02000000000400000002010100040000002e01180005000000090200000000
-040000002d0100000b000000210509005553454d4152434f4e0011044005060000002105000011
-043c081200000021051800436f6e76657273696f6e2046756e6374696f6e616c6974799d040104
-06000000210500009d047b09040000002d010100050000000902ffffff00050000000102000000
-0004000000020102000500000001020000000007000000fc020000ffffff000200040000002d01
-040008000000fa0200000300000000000000040000002d0105001800000024030a00d20234048b
-02c2044402c20469027b040d007b040d00ee036902ee034402a7038b02a703d202340404000000
-2d010200040000002d01030004000000f001040004000000f001050010000000fb029cff2c0000
-00000090010000000000000020417269616c004b8e040000002d010400040000002d0101000400
-000008010000050000000a02000000000400000002010100040000002e01180005000000090200
-000000040000002d0104000c00000021050c004d4152432046696c6520496e5204460004000000
-2d010100050000000902ffffff0005000000010200000000040000000201020005000000010200
-00000007000000fc020000ffffff000200040000002d01050008000000fa020000030000000000
-0000040000002d0106001800000024030a005b0e3404140ec204cd0dc204f20d7b04200b7b0420
-0bee03f20dee03cd0da703140ea7035b0e3404040000002d010200040000002d01030004000000
-f001050004000000f0010600040000002d010400040000002d0101000400000008010000050000
-000a02000000000400000002010100040000002e01180005000000090200000000040000002d01
-04000d00000021050d004d4152432046696c65204f75740052046d0b040000002d010100050000
-000902ffffff000500000001020000000004000000020102000500000001020000000007000000
-fc020000ffffff000200040000002d01050008000000fa0200000300000000000000040000002d
-0106001800000024030a00f906d20254068b026b064402b2066902b2060d0040070d0040076902
-870744029e078b02f906d202040000002d010200040000002d01030004000000f0010500040000
-00f001060010000000fb029cff2c008403840390010000000000000020417269616c0000000400
-00002d010500040000002d0101000400000008010000050000000a020000000004000000020101
-00040000002e01180005000000090200000000040000002d0105000d00000021050e0055736572
-20496e74657266616365ab021707040000002d010100050000000902ffffff0005000000010200
-00000004000000020102000500000001020000000007000000fc020000ffffff00020004000000
-2d01060008000000fa0200000300000000000000040000002d0107001800000024030a0034040d
-06f1048306c2049b067b0476067b04340aee03340aee037606a7039b067703830634040d060400
-00002d010200040000002d01030004000000f001060004000000f0010700040000002d01050004
-0000002d0101000400000008010000050000000a02000000000400000002010100040000002e01
-180005000000090200000000040000002d0105000d00000021050e00496e70757420436865636b
-696e676f095204040000002d010100050000000902ffffff000500000001020000000004000000
-020102000500000001020000000007000000fc020000ffffff000200040000002d010600080000
-00fa0200000300000000000000040000002d0107001800000024030a000d060d069b0654069b06
-9b06540676065406340ac605340ac60576067f059b067f0554060d060d06040000002d01020004
-0000002d01030004000000f001060004000000f0010700040000002d01050010000000fb02adff
-25008403840390010000000000000020417269616c000000040000002d010600040000002d0101
-000400000008010000050000000a02000000000400000002010100040000002e01180005000000
-090200000000040000002d0105001100000021051500436861726163746572205472616e736c61
-74696f6e00020a2b06040000002d01060006000000210500003e062b0606000000210500003e06
-2b06040000002d010100050000000902ffffff0005000000010200000000040000000201020005
-00000001020000000007000000fc020000ffffff000200040000002d01070008000000fa020000
-0300000000000000040000002d0108001800000024030a00e5070d067308540673089b062c0876
-062c08340a9e07340a9e07760658079b0658075406e5070d06040000002d010200040000002d01
-030004000000f001070004000000f0010800040000002d010500040000002d0101000400000008
-010000050000000a02000000000400000002010100040000002e01180005000000090200000000
-040000002d0105000e0000002105100052756c6573202f204c6f6f6b2d75707399090308040000
-002d010100050000000902ffffff00050000000102000000000400000002010200050000000102
-0000000007000000fc020000ffffff000200040000002d01070008000000fa0200000300000000
-000000040000002d0108001800000024030a00f80ce507620c1708300ce5077c0ccd07ee0a3f06
-520bdb05e00c6907f80c1d072b0d4f07f80ce507040000002d010200040000002d010300040000
-00f001070004000000f001080010000000fb029cff2c003efe3efe900100000000000000204172
-69616c001769040000002d010700040000002d0101000400000008010000050000000a02000000
-000400000002010100040000002e01180005000000090200000000040000002d01070009000000
-210506005265706f7274a4068c0b040000002d010100050000000902ffffff0005000000010200
-00000004000000020102000500000001020000000007000000fc020000ffffff00020004000000
-2d01080008000000fa0200000300000000000000040000002d0109001800000024030a00be090d
-064b0a54064b0a9b06050a7606050a340a7709340a7709760630099b0630095406be090d060400
-00002d010200040000002d01030004000000f001080004000000f0010900040000002d01050004
-0000002d0101000400000008010000050000000a02000000000400000002010100040000002e01
-180005000000090200000000040000002d0105000e00000021050f004f75747075742043686563
-6b696e67009609dc09040000002d010100030000000000
-}\f1\fs24\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\fs22\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li720\qc\i\fs24\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li720\i0\par
-\pard{\*\pn\pnlvlcont\pnf2\pnindent0\pnstart1\pndec }
-\s2\sb120\lang2057\b\f2\fs28 MARC Formats That May be Translated by USEMARCON\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li709\lang1036\b0\f1\fs24\par
-{\pntext\f5\'B7\tab}The USEMARCON program can only deal with input records compliant with the ISO 2709 standard for the exchange of bibliographic information. This format is commonly known as the MARC Communications or Exchange format. All output files produced by USEMARCON must also be fully compliant with ISO 2709. USEMARCON cannot therefore process data in formats which do not conform to this standard, for example, the German MAB or Dutch PICAPLUS formats.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}In order to assist the processing of data from a variety of sources, users are provided with the facility to specify many details of structure used for input and output files, including: blocking factors, use of segmentation characters, minimum size of usable data blocks and padding characters.\par
-{\pntext\f5\'B7\tab}\par
-\pard{\*\pn\pnlvlcont\pnf2\pnindent0\pnstart1\pndec }
-\s2\sb120\lang2057\b\f2\fs28 Conversions Available\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li709\lang1036\b0\f1\fs24\par
-{\pntext\f5\'B7\tab}The GUI version of the USEMARCON software provides rules files and related format conversion tables for the following conversions:\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}UNIMARC to UKMARC \i (Bibliographic)\i0\par
-{\pntext\f5\'B7\tab}UKMARC to UNIMARC \i (Bibliographic)\par
-\i0{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}UKMARC to UNIMARC \i (Authorities)\par
-\i0{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}USMARC to UNIMARC \i (Bibliographic)\par
-\i0{\pntext\f5\'B7\tab}UNIMARC to USMARC \i (Bibliographic)\par
-\i0{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}Other formats and conversion criteria have been developed by different organisations.\par
-{\pntext\f5\'B7\tab}\par
-\pard{\*\pn\pnlvlcont\pnf2\pnindent0\pnstart1\pndec }
-\s1\sb240\cf1\lang2057\b\caps\f2\fs28 2.\tab INSTALLATION and getting started\par
-\pard\brdrb\brdrs\brdrw30\brsp20 {\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li709\cf0\lang1033\caps0\f1\fs24\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}In this Chapter\par
-\pard{\*\pn\pnlvlcont\pnf1\pnindent0\pnstart1\pndec }
-\li720\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\fi-425\li709 Introduction\b0\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-425\li709\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\fi-425\li709\b MS Windows versions\b0\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-425\li709\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\tx1134\tab Installation\par
-{\pntext\f5\'B7\tab}\tab Running the USEMARCON Software \par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\s2\sb120\lang2057\b\f2\fs28 Introduction\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\lang1033\f1\fs24\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036\b0 The following notes show how to install and run the USEMARCON software under different MS Windows versions. While the latest version has only been tested under Windows 2000 and Windows XP, it should run under older versions too.\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\s2\fi-720\li720\sb120\lang2057\b\f2\fs28 MS Windows versions\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-720\li720\lang1033\b0\f1\fs24\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\keepn\s3\b\f2 Installation\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\b0\f1\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036 Please refer to the document called install_lib.rtf for details on installation of the software.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\keepn\s3\lang1033\b\f2 Running the USEMARCON Batch Software \par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036\b0\f1\par
-{\pntext\f5\'B7\tab}To run the USEMARCON Standalone Batch version:\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}1) Open a command line window\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}2) Change directory to where the USEMARCON executable was installed or refer to the program using a valid path\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}3) Ensure that you have prepared a .ini file and that the associated conversion files are located as per the .ini file.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}4) Run the software like:\par
-{\pntext\f5\'B7\tab}   usemarcon <path>\\my.ini [input file] [output file]\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}where path is the full or relative path name to where the .ini file is located.\par
-{\pntext\f5\'B7\tab}You can substitute my.ini for your actual ini file name.\par
-{\pntext\f5\'B7\tab}Input and output files are optional. If specified, they override the settings in the ini file. This could be used for example for batch processing of multiple files or creating a drag target on the desktop.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}The software will then initialise and display the USEMARCON opening message:\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}\par
-\b{\pntext\f5\'B7\tab}USEMARCON - MARC record converter\par
-{\pntext\f5\'B7\tab}Standalone Batch version 1.41\par
-{\pntext\f5\'B7\tab}Adapted by Crossnet Systems Limited under contract to The British Library\par
-{\pntext\f5\'B7\tab}Adapted by ATP Library Systems Ltd, Finland, 2002-2004\par
-{\pntext\f5\'B7\tab}Copyright 2001 - The British Library, The USEMARCON Consortium\par
-\b0{\pntext\f5\'B7\tab}\par
-\b{\pntext\f5\'B7\tab}Loading .ini file parameters...\par
-{\pntext\f5\'B7\tab}Size of input file: 59877 bytes\par
-{\pntext\f5\'B7\tab}Conversion progress:\par
-{\pntext\f5\'B7\tab}64%   49 input records\par
-\b0{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\s1\sb240\cf1\lang2057\b\caps\f2\fs28  3.\tab system components\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\cf0\lang1033\b0\caps0\f1\fs24\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-425\li709\par
-\pard\brdrb\brdrs\brdrw30\brsp20 {\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\b In this Chapter\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-425\li709\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\fi-425\li709 File Names\b0\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-425\li709\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\tx1134\b\tab\b0 Creation and Maintenance of System Files\par
-{\pntext\f5\'B7\tab}\tab File/Directory Naming Conventions\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\fi-425\li709\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\fi-425\li709\b Description of System Files\b0\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\tx1134\b\tab\b0 Program Initialization Files\par
-{\pntext\f5\'B7\tab}\tab Rules Files\par
-{\pntext\f5\'B7\tab}\tab Look Up Tables\par
-{\pntext\f5\'B7\tab}\tab Format Checking Tables\par
-{\pntext\f5\'B7\tab}\tab Character Set Translation Tables\par
-{\pntext\f5\'B7\tab}\tab MARC Format Configuration Files\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\s2\sb120\lang2057\b\f2\fs28 File Names\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\qj\lang1033\b0\f1\fs24\par
-{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\keepn\s3\b\f2 Creation and Maintenance of System Files\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036\b0\f1\par
-{\pntext\f5\'B7\tab}New directories for new conversions may be created at any time using any preferred file manager program or from the system command line. The files and tables required for the conversion may then be copied to or created in the new directory by the user. The system files supplied with the USEMARCON software are given defined suffixes detailed below in Description of System Files. In order to access easily the supplied system files it is recommended that the MS Windows Associate Application option is used to launch the preferred editor automatically after double clicking on a USEMARCON table or rules file. For further information on associating applications please refer to the MS Windows Help system.\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\qj\lang1033\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\keepn\s3\b\f2 File/Directory Naming Conventions\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\b0\f1\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036 Since the program does not offer any form of rule editing, we advise that you retain any conventions for file names and extensions that you currently use.\par
-{\pntext\f5\'B7\tab}\par
-{\pntext\f5\'B7\tab}Three letter filename suffixes must be used to denote the use of particular files. Suggested suffixes are:\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\qj\lang1033\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\b\f4 .ini\b0\f1   - program initialization file \i - used with each conversion \par
-{\pntext\f5\'B7\tab}\par
-\b\i0\f4{\pntext\f5\'B7\tab}.rul\b0\f1   - conversion rules file - \i used with each conversion \par
-{\pntext\f5\'B7\tab}\par
-\b\i0\f4{\pntext\f5\'B7\tab}.tbl\b0\f1   - conversion look up table -\i  only used in combination with a rules file.\i0\par
-{\pntext\f5\'B7\tab}\par
-\b\f4{\pntext\f5\'B7\tab}.chk\b0\f1   - MARC format checking table - \i (optional) used to validate MARC input and/or output files \par
-{\pntext\f5\'B7\tab}\par
-\b\i0\f4{\pntext\f5\'B7\tab}.trs\b0\f1   - character set translation table - \i (optional) used to convert from the character set of the input MARC format to that of the output format \i0\par
-{\pntext\f5\'B7\tab}\par
-\b\f4{\pntext\f5\'B7\tab}.cnf\b0\f1   - MARC format configuration file - \i only used in combination with MARC input and output files\par
-\i0{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\qj\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\s2\fi-720\li720\sb120\lang2057\b\f2\fs28 Description of System Files\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\lang1033\b0\f1\fs24\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\keepn\s3\b\f2 Program Initialization Files\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\b0\f1\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036 A program initialization (.ini) file lists all parameters necessary to perform a particular conversion. These include the names for each default system file, default parameters for processing input and output MARC files and preferred operation modes. The values contained in the .ini file may be modified using any Windows text editor such as Notepad. Beginning with version 1.3 the full paths for the files are not required anymore nor encouraged if they reside in the same directory as the INI file.\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\par
-\lang1033{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\keepn\s3\b\f2 Rules Files\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li720\b0\f1\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlcont\pnf5\pnindent0{\pntxtb\'B7}}\li709\lang1036 The rules governing a specific MARC conversion are held in a single rules file (.rul). The rules file describes precisely how the fields and subfields of the input MARC records should be converted into their counterparts in the output MARC format. This is achieved through the manipulation of input and output Content Designators (CDs), specific to each format, using a sophisticated rule syntax. The language used to create rules includes six main types of instruction:\par
-{\pntext\f5\'B7\tab}\par
-\pard{\pntext\f5\'B7\tab}{\*\pn\pnlvlblt\pnf5\pnindent360{\pntxtb\'B7}}\li709\qj conditional\par
-{\pntext\f5\'B7\tab}boolean\par
-{\pntext\f5\'B7\tab}loop\par
-{\pntext\f5\'B7\tab}memory\par
-{\pntext\f5\'B7\tab}conversion\par
-{\pntext\f5\'B7\tab}translation\par
-\pard\li709\qj\par
-A rules file can be created or edited either with the USEMARCON Rule Editing tool or with any standard text processing program e.g. MS Windows Notepad.\par
-\pard\li720\lang1033\par
-\pard\keepn\s3\b\f2 Look Up Tables\par
-\pard\li720\b0\f1\par
-\pard\li709\lang1036 Look up Tables (.tbl) are used to hold large amounts of tabular information (e.g. ISO Standard country codes) which are required by a conversion rules file. Data is held separately in a table to allow easier maintenance of the main rules file. Unlike other conversion files Look up Tables are commonly named to reflect their function e.g. ill.tbl for a table of illustration codes.\par
-\par
-\pard\keepn\s3\lang1033\b\f2 Format Checking Tables\par
-\pard\li720\b0\f1\par
-\pard\li709\lang1036 A MARC Format Checking Table (.chk) describes the valid features of a particular MARC format. The table lists all fields and subfields of the format together with occurrence qualifiers and field indicator values. Use of these tables allows the input and output data to be checked for compliance with the specified format.\par
-\pard\li709\qj\par
-\pard\keepn\s3\lang1033\b\f2 Character Set Translation Tables\par
-\pard\li709\lang1036\b0\f1\par
-Different MARC formats often require the use of different character sets. The USEMARCON system therefore incorporates the ability to convert between different specified character sets. This process is handled by the use of Character Set Translation Tables (.trs) which map individual input to output characters. The character set table need only deal with non-standard characters as conventional ASCII characters (e.g A-Z, a-z 1-9 etc.) are specified in a default character set table (standard.trs).\par
-\pard\li709\qj\par
-\pard\keepn\s3\lang1033\b\f2 MARC Format Configuration Files\par
-\pard\li720\b0\f1\par
-Format Configuration Files are used to signify fields in a particular MARC format which have no indicator values e.g. 001 or 008 in the UKMARC format.\par
-}
- 
+{\rtf1\ansi\ansicpg1252\uc1\deff37\stshfdbch0\stshfloch0\stshfhich0\stshfbi0\deflang1033\deflangfe1033{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f1\fswiss\fcharset0\fprq2{\*\panose 020b0604020202020204}Arial;}
+{\f2\fmodern\fcharset0\fprq1{\*\panose 02070309020205020404}Courier New;}{\f3\froman\fcharset2\fprq2{\*\panose 05050102010706020507}Symbol;}{\f37\fnil\fcharset0\fprq2{\*\panose 00000000000000000000}Bembo;}
+{\f129\froman\fcharset238\fprq2 Times New Roman CE;}{\f130\froman\fcharset204\fprq2 Times New Roman Cyr;}{\f132\froman\fcharset161\fprq2 Times New Roman Greek;}{\f133\froman\fcharset162\fprq2 Times New Roman Tur;}
+{\f134\froman\fcharset177\fprq2 Times New Roman (Hebrew);}{\f135\froman\fcharset178\fprq2 Times New Roman (Arabic);}{\f136\froman\fcharset186\fprq2 Times New Roman Baltic;}{\f137\froman\fcharset163\fprq2 Times New Roman (Vietnamese);}
+{\f139\fswiss\fcharset238\fprq2 Arial CE;}{\f140\fswiss\fcharset204\fprq2 Arial Cyr;}{\f142\fswiss\fcharset161\fprq2 Arial Greek;}{\f143\fswiss\fcharset162\fprq2 Arial Tur;}{\f144\fswiss\fcharset177\fprq2 Arial (Hebrew);}
+{\f145\fswiss\fcharset178\fprq2 Arial (Arabic);}{\f146\fswiss\fcharset186\fprq2 Arial Baltic;}{\f147\fswiss\fcharset163\fprq2 Arial (Vietnamese);}{\f149\fmodern\fcharset238\fprq1 Courier New CE;}{\f150\fmodern\fcharset204\fprq1 Courier New Cyr;}
+{\f152\fmodern\fcharset161\fprq1 Courier New Greek;}{\f153\fmodern\fcharset162\fprq1 Courier New Tur;}{\f154\fmodern\fcharset177\fprq1 Courier New (Hebrew);}{\f155\fmodern\fcharset178\fprq1 Courier New (Arabic);}
+{\f156\fmodern\fcharset186\fprq1 Courier New Baltic;}{\f157\fmodern\fcharset163\fprq1 Courier New (Vietnamese);}}{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;
+\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;}{\stylesheet{
+\ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \snext0 Normal;}{\s1\ql \li0\ri0\nowidctlpar\faauto\outlinelevel0\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 
+\sbasedon0 \snext0 heading 1;}{\s2\ql \li0\ri0\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 heading 2;}{\s3\ql \li0\ri0\nowidctlpar\faauto\outlinelevel2\rin0\lin0\itap0 
+\f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 \sbasedon0 \snext0 heading 3;}{\*\cs10 \additive \ssemihidden Default Paragraph Font;}{\*
+\ts11\tsrowd\trftsWidthB3\trpaddl108\trpaddr108\trpaddfl3\trpaddft3\trpaddfb3\trpaddfr3\tscellwidthfts0\tsvertalt\tsbrdrt\tsbrdrl\tsbrdrb\tsbrdrr\tsbrdrdgl\tsbrdrdgr\tsbrdrh\tsbrdrv 
+\ql \li0\ri0\widctlpar\aspalpha\aspnum\faauto\adjustright\rin0\lin0\itap0 \fs20\lang1024\langfe1024\cgrid\langnp1024\langfenp1024 \snext11 \ssemihidden Normal Table;}{\*\cs15 \additive \ul\cf2 \sbasedon10 \styrsid2064186 Hyperlink;}}
+{\*\latentstyles\lsdstimax156\lsdlockeddef0}{\*\listtable{\list\listtemplateid-133687878\listsimple{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat0\levelspace0\levelindent0{\leveltext\'01*;}{\levelnumbers;}}{\listname 
+;}\listid-2}}{\*\listoverridetable{\listoverride\listid-2\listoverridecount1{\lfolevel\listoverrideformat{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat0\levelold\levelspace0\levelindent360{\leveltext
+\'01\u-3913 ?;}{\levelnumbers;}\f3\fbias0 }}\ls1}{\listoverride\listid-2\listoverridecount1{\lfolevel\listoverrideformat{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat0\levelold\levelspace0\levelindent283{\leveltext
+\'01\u-3913 ?;}{\levelnumbers;}\f3\fbias0 }}\ls2}}{\*\rsidtbl \rsid1466780\rsid2064186\rsid6041622}{\*\generator Microsoft Word 11.0.6568;}{\info{\author Ere Maijala}{\operator Ere Maijala}{\creatim\yr2006\mo8\dy9\hr11\min1}
+{\revtim\yr2006\mo8\dy9\hr11\min20}{\version2}{\edmins19}{\nofpages11}{\nofwords2374}{\nofchars13537}{\*\company University of Helsinki}{\nofcharsws15880}{\vern24579}}
+\widowctrl\ftnbj\aenddoc\noxlattoyen\expshrtn\noultrlspc\dntblnsbdb\nospaceforul\hyphcaps0\horzdoc\dghspace120\dgvspace120\dghorigin1701\dgvorigin1984\dghshow0\dgvshow3\jcompress\viewkind4\viewscale100\nolnhtadjtbl\rsidroot1466780 \fet0\sectd 
+\linex0\sectdefaultcl\sftnbj {\*\pnseclvl1\pnucrm\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang {\pntxta .}}{\*\pnseclvl4
+\pnlcltr\pnstart1\pnindent720\pnhang {\pntxta )}}{\*\pnseclvl5\pndec\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang {\pntxtb (}
+{\pntxta )}}{\*\pnseclvl8\pnlcltr\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang {\pntxtb (}{\pntxta )}}\pard\plain \qc \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 
+\f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\fs48\lang1036\langfe1033\langnp1036\insrsid6041622 
+\par 
+\par 
+\par }\pard \qc \li709\ri0\nowidctlpar\brdrt\brdrs\brdrw15\brsp20 \brdrl\brdrs\brdrw15\brsp20 \brdrb\brdrs\brdrw15\brsp20 \brdrr\brdrs\brdrw15\brsp20 \faauto\rin0\lin709\rtlgutter\itap0 {\b\fs72\insrsid6041622\charrsid2064186 USEMARCON
+\par }\pard \ql \li709\ri0\nowidctlpar\brdrt\brdrs\brdrw15\brsp20 \brdrl\brdrs\brdrw15\brsp20 \brdrb\brdrs\brdrw15\brsp20 \brdrr\brdrs\brdrw15\brsp20 \faauto\rin0\lin709\rtlgutter\itap0 {\insrsid6041622\charrsid2064186 
+\par }\pard \qc \li709\ri0\nowidctlpar\brdrt\brdrs\brdrw15\brsp20 \brdrl\brdrs\brdrw15\brsp20 \brdrb\brdrs\brdrw15\brsp20 \brdrr\brdrs\brdrw15\brsp20 \faauto\rin0\lin709\rtlgutter\itap0 {\fs48\insrsid6041622\charrsid2064186 
+User Controlled Generic MARC Converter
+\par }\pard \qc \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 {\insrsid6041622\charrsid2064186 
+\par 
+\par 
+\par }{\fs40\insrsid6041622\charrsid2064186 User Manual
+\par }{\insrsid6041622\charrsid2064186 
+\par }{\fs36\insrsid6041622\charrsid2064186 
+\par 
+\par 
+\par 
+\par 
+\par }\pard \qc \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\b\f0\insrsid6041622 USEMARCON - MARC record converter
+\par }{\b\f0\insrsid2064186 Version 1.80}{\b\f0\insrsid6041622 
+\par Adapted by Crossnet Systems Limited under contract to The British Library
+\par Adapted by ATP Library Systems Ltd, Finland, 2002-2004
+\par Adapted by Helsinki University Library, the National Library of Finland, 2004
+\par Copyright 2000 - The British Library, The USEMARCON Consortium
+\par }\pard \qc \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 {\fs36\insrsid6041622\charrsid2064186 
+\par 
+\par 
+\par 
+\par 
+\par 
+\par 
+\par 
+\par April 2004
+\par }\pard\plain \s1\ql \li0\ri0\sb240\nowidctlpar\faauto\outlinelevel0\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\fs28\cf1\insrsid6041622\charrsid2064186 \page }{\b\caps\f1\fs28\cf1\insrsid6041622\charrsid2064186 
+\par }\pard\plain \ql \li0\ri0\sb360\nowidctlpar\tx480\tqr\tx9027\faauto\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\caps\f1\insrsid6041622\charrsid2064186 1.\tab INTRODUCTION\tab 3
+\par }\pard \ql \li240\ri0\sb240\nowidctlpar\tqr\tx9027\faauto\rin0\lin240\itap0 {\b\f0\fs20\insrsid6041622\charrsid2064186 Background to the Project\tab 4
+\par Background to the Standalone Batch Version\tab 5
+\par Basic Concepts\tab 5
+\par }\pard \ql \li480\ri0\nowidctlpar\tqr\tx9027\faauto\rin0\lin480\itap0 {\f0\fs20\insrsid6041622\charrsid2064186 MARC Formats\tab 5
+\par }\pard \ql \li240\ri0\sb240\nowidctlpar\tqr\tx9027\faauto\rin0\lin240\itap0 {\b\f0\fs20\insrsid6041622\charrsid2064186 Brief Description of Functionality\tab 7
+\par }\pard \ql \li480\ri0\nowidctlpar\tqr\tx9027\faauto\rin0\lin480\itap0 {\f0\fs20\insrsid6041622\charrsid2064186 Modular Design\tab 7
+\par Use of Tables\tab 7
+\par }\pard \ql \li240\ri0\sb240\nowidctlpar\tqr\tx9027\faauto\rin0\lin240\itap0 {\b\f0\fs20\insrsid6041622\charrsid2064186 MARC Formats Which May be Translated by USEMARCON\tab 7
+\par Conversions Available\tab 7
+\par }\pard \ql \li0\ri0\sb360\nowidctlpar\tx480\tqr\tx9027\faauto\rin0\lin0\itap0 {\b\caps\f1\insrsid6041622\charrsid2064186 2.\tab INSTALLATION and getting started\tab 7
+\par }\pard \ql \li240\ri0\sb240\nowidctlpar\tqr\tx9027\faauto\rin0\lin240\itap0 {\b\f0\fs20\insrsid6041622\charrsid2064186 Introduction\tab 7
+\par MS Windows \lquote 95, 98 and NT 4\tab 7
+\par }\pard \ql \li480\ri0\nowidctlpar\tqr\tx9027\faauto\rin0\lin480\itap0 {\f0\fs20\insrsid6041622\charrsid2064186 Installation\tab 7
+\par Running the USEMARCON Software\tab 7
+\par }\pard \ql \li0\ri0\sb360\nowidctlpar\tx480\tqr\tx9027\faauto\rin0\lin0\itap0 {\b\caps\f1\insrsid6041622\charrsid2064186 3.\tab system components\tab 7
+\par }\pard \ql \li240\ri0\sb240\nowidctlpar\tqr\tx9027\faauto\rin0\lin240\itap0 {\b\f0\fs20\insrsid6041622\charrsid2064186 File Names\tab 7
+\par }\pard \ql \li480\ri0\nowidctlpar\tqr\tx9027\faauto\rin0\lin480\itap0 {\f0\fs20\insrsid6041622\charrsid2064186 Creation and Maintenance of System Files\tab 7
+\par File/Directory Naming Conventions\tab 7
+\par }\pard \ql \li240\ri0\sb240\nowidctlpar\tqr\tx9027\faauto\rin0\lin240\itap0 {\b\f0\fs20\insrsid6041622\charrsid2064186 Description of System Files\tab 7
+\par }\pard \ql \li480\ri0\nowidctlpar\tqr\tx9027\faauto\rin0\lin480\itap0 {\f0\fs20\insrsid6041622\charrsid2064186 Program Initialization Files\tab 7
+\par Rules Files\tab 7
+\par Look Up Tables\tab 7
+\par Format Checking Tables\tab 7
+\par }{\f0\fs20\lang1035\langfe1033\langnp1035\insrsid6041622 Character Set Translation Tables\tab 7
+\par MARC Format Configuration Files\tab 7
+\par }\pard\plain \s1\ql \li0\ri0\sb240\nowidctlpar\faauto\outlinelevel0\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\caps\f1\fs28\cf1\lang2057\langfe1033\langnp2057\insrsid6041622 \page 1.\tab INTRODUCTION
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar\brdrb\brdrs\brdrw30\brsp20 \faauto\rin0\lin709\itap0 {\b\f0\insrsid6041622 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\b\f0\insrsid6041622 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+Background to the Project
+\par }\pard \ql \fi-360\li0\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 Basic Concepts
+\par }\pard \ql \li0\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx1134{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\f0\insrsid6041622 \tab MARC Formats
+\par }\pard \ql \fi-360\li0\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+Brief Description of Functionality
+\par }\pard \ql \li0\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx1134{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\f0\insrsid6041622 \tab Modular Design}{\b\f0\insrsid6041622 
+\par }{\f0\insrsid6041622 \tab Rule Editing Mode
+\par \tab Conversion Mode
+\par \tab Use of Tables
+\par }\pard \ql \li0\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+MARC Formats That May be Translated by USEMARCON \line 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}Conversions Supplied
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard\plain \s2\ql \li0\ri0\sb120\nowidctlpar\faauto\ilvl12\outlinelevel1\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 Background to the Project
+
+\par }\pard\plain \ql \li720\ri0\nowidctlpar\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\fs20\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+Different national MARC (MAchine Readable Catalogue) standards are seen as barriers to wider exchange of bibliographic records in Europe and beyond. 
+Throughout the world nearly 50 different MARC formats are currently in use, with 10 employed in the national libraries of European Community countries. 
+Such variation is a fundamental problem for libraries wishing to obtain or supply data internationally and often results in the re-cataloguing of material for which records are readily available in formats other than the library\rquote s own. 
+Lack of language expertise or knowledge of the context of publication can lead to the creation of records of a significantly inferior quality to those which might otherwise have been obtained from an agency in the country of publication.
+\par 
+\par The aim of the USEMARCON Project is to develop a generic conversion program capable of translating bibliographic records created in any ISO 2709 compatible MARC format (e.g UKMARC) into any other ISO 2709 MARC format (e.g. InterMARC) using UNIMARC as a ce
+ntral switching format.
+\par 
+\par The development of the USEMARCON software was supported by the European Union\rquote s Telematics Applications Programme (DG XIII-E).
+\par 
+\par The partners of the USEMARCON consortium are drawn from a variety of library and information technology backgrounds and comprise the following:
+\par }{\i\f0\ul\expnd-1\expndtw-8\insrsid6041622\charrsid2064186 
+\par Co-ordinating Partner}{\i\f0\ul\insrsid6041622\charrsid2064186 
+\par }{\f0\insrsid6041622\charrsid2064186 Koninklijke Bibliotheek, Holland
+\par 
+\par }{\i\f0\ul\insrsid6041622\charrsid2064186 Full Partners
+\par }{\f0\insrsid6041622\charrsid2064186 Instituto da Biblioteca Nacional e do Livro, Portugal 
+\par The British Library, UK
+\par 
+\par }{\i\f0\ul\insrsid6041622\charrsid2064186 Associate Partner
+\par }{\f0\insrsid6041622\charrsid2064186 Die Deutsche Bibliothek, Germany
+\par 
+\par }{\i\f0\ul\insrsid6041622\charrsid2064186 Original Software Developer
+\par }{\f0\insrsid6041622\charrsid2064186 Jouve, Syst\'e8mes d'Information, France}{\f0\ul\insrsid6041622\charrsid2064186 
+\par }{\f0\insrsid6041622\charrsid2064186 
+\par The USEMARCON software was designed to provide users with two specific services. 
+\par }\pard \qj \fi-450\li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f1\fs20\lang2057\langfe1033\langnp2057\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 1.\tab The facility to convert MARC records compliant with a
+ specified input format into MARC records compliant with a specified output format.
+\par 
+\par 2.\tab The facility to create and modify rules files, used to achieve MARC conversions, in order to meet specific local requirements. 
+The present software is designed to be used by senior cataloguers or others with a detailed knowledge of the structure of the MARC formats they wish to convert between.
+\par \tab 
+\par The USEMARCON Graphical User Interface (GUI) was designed for use with both MS Windows (3.1x and \lquote 95) and Unix Motif environments, in the latter case running under the Sunsoft Solaris operating system. 
+In the Windows environment USEMARCON used a Multiple Display Interface.
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb120\nowidctlpar\faauto\ilvl12\outlinelevel1\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 Background to the Standalone 
+Batch Version
+\par }\pard\plain \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par The USEMARCON software developed on the USEMARCON project was heavily reliant on the XVT toolkit. Any modifications to the software by anyone required the XVT DSP++ development package. 
+\par 
+\par The British Library published "A Feasibility Study To Investigate If The Usemarcon Softwa
+re Can Be Adapted To A Command-Line Environment" in August 1999, which concluded that portability to command line scenario was possible, and this has been performed under contract.  This version of the User Manual is applicable to the Standalone Batch 
+version.
+\par 
+\par }{\i\f0\ul\insrsid2064186 Initial }{\i\f0\ul\insrsid6041622\charrsid2064186 Batch Version Software Developer
+\par }{\f0\insrsid6041622\charrsid2064186 Crossnet Systems Limited, UK}{\f0\ul\insrsid6041622\charrsid2064186 
+\par }{\f0\insrsid6041622\charrsid2064186 
+\par }{\f0\insrsid2064186 Since the initial version the b}{\f0\insrsid6041622\charrsid2064186 atch version }{\f0\insrsid2064186 was}{\f0\insrsid6041622\charrsid2064186  modified by ATP Library Systems Ltd. }{\f0\insrsid2064186 It is currently (as of 2005) 
+maintained by Ere Maijala at the National Library of Finland. }{\f0\insrsid6041622\charrsid2064186 See the CHANGES file in the root directory of the package for more information.
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb120\nowidctlpar\faauto\ilvl12\outlinelevel1\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 Basic Concepts
+\par }\pard\plain \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par Bibliographic data conversion requires the processing of:
+\par 
+\par {\pntext\pard\plain\f3\charrsid2064186 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls2\pnrnot0\pnf3\pnindent283 {\pntxtb \'b7}}\faauto\ls2\rin0\lin709\itap0\pararsid2064186 {
+\f0\insrsid6041622\charrsid2064186 MARC bibliographic data, including related blocking and padding characters
+\par {\pntext\pard\plain\f3\charrsid2064186 \loch\af3\dbch\af0\hich\f3 \'b7\tab}Conversion rules for specifying the conversion of each data element of the input format into each data element of the output format
+\par {\pntext\pard\plain\f3\charrsid2064186 \loch\af3\dbch\af0\hich\f3 \'b7\tab}Coded data tables corresponding to sets of codes used by the format, e.g. language of publication, country of publication
+\par {\pntext\pard\plain\f3\charrsid2064186 \loch\af3\dbch\af0\hich\f3 \'b7\tab}Character set tables specifying the translation of individual character codes between input and output formats
+\par {\pntext\pard\plain\f3\charrsid2064186 \loch\af3\dbch\af0\hich\f3 \'b7\tab}Format checking tables specifying valid elements of input and output formats
+\par }\pard \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 MARC Formats
+\par }\pard\plain \ql \li720\ri0\nowidctlpar\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\fs20\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+The MARC format family was created through a Library of Congress project, initiated in 1964, to prepare bibliographic information for automated processing.  
+Different national MARC formats were created in response to specific national needs according to their local cataloguing rules and operating environments.  
+The principles of MARC formats are to structure the bibliographic data into fields and subfields as in the following UNIMARC example:
+\par 
+\par 
+\par }\trowd \irow0\irowband0\ts11\trgaph108\trleft709\trbrdrt\brdrs\brdrw30 \trbrdrl\brdrs\brdrw30 \trbrdrb\brdrs\brdrw30 \trbrdrr\brdrs\brdrw15 \trftsWidth1\trpaddl108\trpaddr108\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw30 
+\clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth851\clshdrawnil \cellx1560\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1275\clshdrawnil 
+\cellx2835\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1418\clshdrawnil \cellx4253\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 
+\clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1559\clshdrawnil \cellx5812\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1325\clshdrawnil \cellx7137\clvertalt
+\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw30 \cltxlrtb\clftsWidth3\clwWidth2502\clshdrawnil \cellx9639\pard \qc \li0\ri0\nowidctlpar\intbl\faauto\ilvl12\rin0\lin0\pararsid2064186 {
+\b\f0\lang1036\langfe1033\langnp1036\insrsid6041622 Tag\cell Indicators\cell Subfield delimiter\cell Title proper}{\f0\lang1036\langfe1033\langnp1036\insrsid6041622 \cell }{\b\f0\lang1036\langfe1033\langnp1036\insrsid6041622 Subfield 
+\par delimiter}{\f0\lang1036\langfe1033\langnp1036\insrsid6041622 \cell }{\b\f0\lang1036\langfe1033\langnp1036\insrsid6041622 Sub-title\cell }\pard \ql \li0\ri0\widctlpar\intbl\aspalpha\aspnum\faauto\adjustright\rin0\lin0 {
+\b\f0\lang1036\langfe1033\langnp1036\insrsid6041622 \trowd \irow0\irowband0\ts11\trgaph108\trleft709\trbrdrt\brdrs\brdrw30 \trbrdrl\brdrs\brdrw30 \trbrdrb\brdrs\brdrw30 \trbrdrr\brdrs\brdrw15 \trftsWidth1\trpaddl108\trpaddr108\trpaddfl3\trpaddfr3 
+\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw30 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth851\clshdrawnil \cellx1560\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr
+\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1275\clshdrawnil \cellx2835\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1418\clshdrawnil \cellx4253\clvertalt\clbrdrt
+\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1559\clshdrawnil \cellx5812\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw15 
+\cltxlrtb\clftsWidth3\clwWidth1325\clshdrawnil \cellx7137\clvertalt\clbrdrt\brdrs\brdrw30 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw15 \clbrdrr\brdrs\brdrw30 \cltxlrtb\clftsWidth3\clwWidth2502\clshdrawnil \cellx9639\row }\trowd \irow1\irowband1\lastrow 
+\ts11\trgaph108\trleft709\trbrdrt\brdrs\brdrw30 \trbrdrl\brdrs\brdrw30 \trbrdrb\brdrs\brdrw30 \trbrdrr\brdrs\brdrw15 \trftsWidth1\trpaddl108\trpaddr108\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw30 \clbrdrb\brdrs\brdrw30 
+\clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth851\clshdrawnil \cellx1560\clvertalt\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1275\clshdrawnil \cellx2835\clvertalt
+\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1418\clshdrawnil \cellx4253\clvertalt\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 
+\cltxlrtb\clftsWidth3\clwWidth1559\clshdrawnil \cellx5812\clvertalt\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1325\clshdrawnil \cellx7137\clvertalt\clbrdrt\brdrs\brdrw15 
+\clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw30 \cltxlrtb\clftsWidth3\clwWidth2502\clshdrawnil \cellx9639\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\ilvl12\rin0\lin0\pararsid2064186 {\f0\lang1036\langfe1033\langnp1036\insrsid6041622 
+200\cell 1}{\strike\f0\lang1036\langfe1033\langnp1036\insrsid6041622 b}{\f0\lang1036\langfe1033\langnp1036\insrsid6041622 \cell $a\cell UNIMARC\cell $e\cell Cataloguing Manual\cell }\pard 
+\ql \li0\ri0\widctlpar\intbl\aspalpha\aspnum\faauto\adjustright\rin0\lin0 {\f0\lang1036\langfe1033\langnp1036\insrsid6041622 \trowd \irow1\irowband1\lastrow \ts11\trgaph108\trleft709\trbrdrt\brdrs\brdrw30 \trbrdrl\brdrs\brdrw30 \trbrdrb\brdrs\brdrw30 
+\trbrdrr\brdrs\brdrw15 \trftsWidth1\trpaddl108\trpaddr108\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw30 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth851\clshdrawnil \cellx1560\clvertalt\clbrdrt
+\brdrs\brdrw15 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1275\clshdrawnil \cellx2835\clvertalt\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 
+\cltxlrtb\clftsWidth3\clwWidth1418\clshdrawnil \cellx4253\clvertalt\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1559\clshdrawnil \cellx5812\clvertalt\clbrdrt\brdrs\brdrw15 
+\clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw15 \cltxlrtb\clftsWidth3\clwWidth1325\clshdrawnil \cellx7137\clvertalt\clbrdrt\brdrs\brdrw15 \clbrdrl\brdrs\brdrw15 \clbrdrb\brdrs\brdrw30 \clbrdrr\brdrs\brdrw30 
+\cltxlrtb\clftsWidth3\clwWidth2502\clshdrawnil \cellx9639\row }\pard \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\lang1036\langfe1033\langnp1036\insrsid6041622 
+\par 
+\par }{\f0\insrsid6041622\charrsid2064186 A tag is a three digit number that defines a bibliographic condition. Indicators are two single digit numbers which supply additional information about the contents of the field. 
+Where an indicator is undefined the character position generally contains a blank (represented by }{\strike\f0\insrsid6041622\charrsid2064186 b}{\f0\insrsid6041622\charrsid2064186 ). Subfield de
+limiters are introduced by a special control character (often conventionally represented by$) followed by a letter or a number qualifying the data element in the field. 
+($a, $b or $1, $2). Some fields contain a single fixed length subfield with the data coded in fixed positions. The format specifies whether each field and subfield are mandatory, optional or conditional upon another data element.
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb120\nowidctlpar\faauto\ilvl12\outlinelevel1\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 
+Brief Description of Functionality
+\par }\pard\plain \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 Modular Design
+\par }\pard\plain \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par The software has been developed to work on a modular basis allowing the user to perform at several levels of conversion. 
+These can range from simple character set or exchange format translations using individual tables to full MARC format conversions using an entire \lquote cluster\rquote  of tables and rules.
+\par 
+\par The Standalone version of USEMARCON only permits batch conversion runs, and all software associated with the creation, editing and testing of rules has been removed.
+\par 
+\par The Standalone version reads all conversion parameters from an INI file. This INI file is a mandatory command line parameter to the program.
+\par 
+\par As the program is performing its conversion, it display a running total of how many records have been read from the input file, and an approximate percentage of completion.
+\par 
+\par Details of processing problems are stored in a report file and classified by the following error types: input format, MARC checking in input, character translation, coded data transl
+ation, conversion, MARC checking in output and building of the output MARC file.
+\par 
+\par Diacritics and other extended characters are always displayed in hexadecimal code in order to allow users to check the accuracy of character translations.
+\par 
+\par 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 Use of Tables
+\par }\pard\plain \ql \li720\ri0\nowidctlpar\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\fs20\insrsid6041622 
+\par }\pard \ql \fi11\li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+As the software makes use of simple ASCII tables rather than compiled rules to guide conversions, users can create or customise these files to ensure conversions accurately reflect local requirements. 
+All tables may be edited using a text editor such as MS DOS Edit}{\b\f0\insrsid6041622\charrsid2064186  }{\f0\insrsid6041622\charrsid2064186  or MS Windows Notepad. 
+Visual representations of how USEMARCON makes use of tables to facilitate record conversion is shown below. 
+\par 
+\par }\pard \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+\par }\pard \qc \li720\ri0\nowidctlpar\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f1\fs20\insrsid1466780 {\pict{\*\picprop\shplid1025{\sp{\sn shapeType}{\sv 75}}{\sp{\sn fFlipH}{\sv 0}}
+{\sp{\sn fFlipV}{\sv 0}}{\sp{\sn fLine}{\sv 0}}{\sp{\sn fLayoutInCell}{\sv 1}}}\picscalex100\picscaley100\piccropl0\piccropr0\piccropt0\piccropb0
+\picw9835\pich7223\picwgoal5576\pichgoal4095\wmetafile8\bliptag263334975\blipupi153{\*\blipuid 0fb22c3f4022bafbf93f8dfebc153bcb}
+010009000003e90500000a00180000000000050000000b0200000000050000000c02410a680e050000000902c0c0c00005000000010200000000040000000201
+02000500000001020000000007000000fc020000c0c0c0000200040000002d01000008000000fa0200000300000000000000040000002d0101000e0000002403
+0500340a210548032105be039705aa0a9705340a210508000000fa0200000000000000000000040000002d01020007000000fc02010000000000000004000000
+2d01030004000000f001000004000000f0010100050000000902c0c0c0000500000001020000000004000000020102000500000001020000000007000000fc02
+0000c0c0c0000200040000002d01000008000000fa0200000300000000000000040000002d0101000e00000024030500aa0a9705340a2105340a4803aa0abe03
+aa0a9705040000002d010200040000002d01030004000000f001000004000000f0010100050000000902ffffff00050000000102000000000400000002010200
+0500000001020000000007000000fc020000ffffff000200040000002d01000008000000fa0200000300000000000000040000002d0101000e00000024030500
+340a21054803210548034803340a4803340a2105040000002d010200040000002d01030004000000f001000004000000f001010010000000fb028bff38000000
+0000bc020000000000000020417269616c000200040000002d01000010000000fb021000070000000000bc02000000000102022253797374656d000504000000
+2d0101000400000008010000050000000a02000000000400000002010100040000002e01180005000000090200000000040000002d0100000b00000021050900
+5553454d4152434f4e0011044005060000002105000011043c081200000021051800436f6e76657273696f6e2046756e6374696f6e616c6974799d0401040600
+0000210500009d047b09040000002d010100050000000902ffffff000500000001020000000004000000020102000500000001020000000007000000fc020000
+ffffff000200040000002d01040008000000fa0200000300000000000000040000002d0105001800000024030a00d20234048b02c2044402c20469027b040d00
+7b040d00ee036902ee034402a7038b02a703d2023404040000002d010200040000002d01030004000000f001040004000000f001050010000000fb029cff2c00
+0000000090010000000000000020417269616c004b8e040000002d010400040000002d0101000400000008010000050000000a02000000000400000002010100
+040000002e01180005000000090200000000040000002d0104000c00000021050c004d4152432046696c6520496e52044600040000002d010100050000000902
+ffffff000500000001020000000004000000020102000500000001020000000007000000fc020000ffffff000200040000002d01050008000000fa0200000300
+000000000000040000002d0106001800000024030a005b0e3404140ec204cd0dc204f20d7b04200b7b04200bee03f20dee03cd0da703140ea7035b0e34040400
+00002d010200040000002d01030004000000f001050004000000f0010600040000002d010400040000002d0101000400000008010000050000000a0200000000
+0400000002010100040000002e01180005000000090200000000040000002d0104000d00000021050d004d4152432046696c65204f75740052046d0b04000000
+2d010100050000000902ffffff000500000001020000000004000000020102000500000001020000000007000000fc020000ffffff000200040000002d010500
+08000000fa0200000300000000000000040000002d0106001800000024030a00f906d20254068b026b064402b2066902b2060d0040070d004007690287074402
+9e078b02f906d202040000002d010200040000002d01030004000000f001050004000000f001060010000000fb029cff2c008403840390010000000000000020
+417269616c000000040000002d010500040000002d0101000400000008010000050000000a02000000000400000002010100040000002e011800050000000902
+00000000040000002d0105000d00000021050e005573657220496e74657266616365ab021707040000002d010100050000000902ffffff000500000001020000
+000004000000020102000500000001020000000007000000fc020000ffffff000200040000002d01060008000000fa0200000300000000000000040000002d01
+07001800000024030a0034040d06f1048306c2049b067b0476067b04340aee03340aee037606a7039b067703830634040d06040000002d010200040000002d01
+030004000000f001060004000000f0010700040000002d010500040000002d0101000400000008010000050000000a0200000000040000000201010004000000
+2e01180005000000090200000000040000002d0105000d00000021050e00496e70757420436865636b696e676f095204040000002d010100050000000902ffff
+ff000500000001020000000004000000020102000500000001020000000007000000fc020000ffffff000200040000002d01060008000000fa02000003000000
+00000000040000002d0107001800000024030a000d060d069b0654069b069b06540676065406340ac605340ac60576067f059b067f0554060d060d0604000000
+2d010200040000002d01030004000000f001060004000000f0010700040000002d01050010000000fb02adff2500840384039001000000000000002041726961
+6c000000040000002d010600040000002d0101000400000008010000050000000a02000000000400000002010100040000002e01180005000000090200000000
+040000002d0105001100000021051500436861726163746572205472616e736c6174696f6e00020a2b06040000002d01060006000000210500003e062b060600
+0000210500003e062b06040000002d010100050000000902ffffff000500000001020000000004000000020102000500000001020000000007000000fc020000
+ffffff000200040000002d01070008000000fa0200000300000000000000040000002d0108001800000024030a00e5070d067308540673089b062c0876062c08
+340a9e07340a9e07760658079b0658075406e5070d06040000002d010200040000002d01030004000000f001070004000000f0010800040000002d0105000400
+00002d0101000400000008010000050000000a02000000000400000002010100040000002e01180005000000090200000000040000002d0105000e0000002105
+100052756c6573202f204c6f6f6b2d75707399090308040000002d010100050000000902ffffff00050000000102000000000400000002010200050000000102
+0000000007000000fc020000ffffff000200040000002d01070008000000fa0200000300000000000000040000002d0108001800000024030a00f80ce507620c
+1708300ce5077c0ccd07ee0a3f06520bdb05e00c6907f80c1d072b0d4f07f80ce507040000002d010200040000002d01030004000000f001070004000000f001
+080010000000fb029cff2c003efe3efe90010000000000000020417269616c001769040000002d010700040000002d0101000400000008010000050000000a02
+000000000400000002010100040000002e01180005000000090200000000040000002d01070009000000210506005265706f7274a4068c0b040000002d010100
+050000000902ffffff000500000001020000000004000000020102000500000001020000000007000000fc020000ffffff000200040000002d01080008000000
+fa0200000300000000000000040000002d0109001800000024030a00be090d064b0a54064b0a9b06050a7606050a340a7709340a7709760630099b0630095406
+be090d06040000002d010200040000002d01030004000000f001080004000000f0010900040000002d010500040000002d010100040000000801000005000000
+0a02000000000400000002010100040000002e01180005000000090200000000040000002d0105000e00000021050f004f757470757420436865636b696e67009609dc09040000002d010100030000000000}}{\f0\insrsid6041622 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\f0\fs22\insrsid6041622 
+\par }\pard \qc \li720\ri0\nowidctlpar\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\i\f0\insrsid6041622 
+\par }\pard \ql \li720\ri0\nowidctlpar\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard\plain \s2\ql \li0\ri0\sb120\nowidctlpar\faauto\ilvl12\outlinelevel1\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 
+MARC Formats That May be Translated by USEMARCON
+\par }\pard\plain \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par The USEMARCON program can only deal with input records compliant with the ISO 2709 standard for the exchange of bibliographic information. This format is commonly known as the MARC Communications or Exchange format. 
+All output files produced by USEMARCON must also be fully compliant with ISO 2709. USEMARCON cannot therefore process data in formats which do not conform to this standard, for example, the German MAB or Dutch PICAPLUS formats.
+\par 
+\par In order to assist the processing of data from a variety of sources, users are provided with the facility to specify many details of structure used for input and output files, including: b
+locking factors, use of segmentation characters, minimum size of usable data blocks and padding characters.
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb120\nowidctlpar\faauto\ilvl12\outlinelevel1\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 Conversions Available
+\par }\pard\plain \ql \li709\ri0\nowidctlpar\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par The GUI version of the USEMARCON software provides rules files and related format conversion tables for the following conversions:
+\par 
+\par UNIMARC to UKMARC }{\i\f0\insrsid6041622\charrsid2064186 (Bibliographic)}{\f0\insrsid6041622\charrsid2064186 
+\par UKMARC to UNIMARC }{\i\f0\insrsid6041622\charrsid2064186 (Bibliographic)
+\par }{\f0\insrsid6041622\charrsid2064186 
+\par UKMARC to UNIMARC }{\i\f0\insrsid6041622\charrsid2064186 (Authorities)
+\par }{\f0\insrsid6041622\charrsid2064186 
+\par USMARC to UNIMARC }{\i\f0\insrsid6041622\charrsid2064186 (Bibliographic)
+\par }{\f0\insrsid6041622\charrsid2064186 UNIMARC to USMARC }{\i\f0\insrsid6041622\charrsid2064186 (Bibliographic)
+\par }{\f0\insrsid6041622\charrsid2064186 
+\par Other formats and conversion criteria have been developed by different organisations.
+\par 
+\par }\pard\plain \s1\ql \li0\ri0\sb240\nowidctlpar\faauto\ilvl12\outlinelevel0\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\caps\f1\fs28\cf1\lang2057\langfe1033\langnp2057\insrsid6041622 2.\tab 
+INSTALLATION and getting started
+\par }\pard\plain \ql \li709\ri0\nowidctlpar\brdrb\brdrs\brdrw30\brsp20 \faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f0\insrsid6041622 
+\par 
+\par In this Chapter
+\par }\pard \ql \li720\ri0\nowidctlpar\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 Introduction}{
+\f0\insrsid6041622 
+\par }\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 MS Windows versions}{
+\f0\insrsid6041622 
+\par }\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx1134{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\f0\insrsid6041622 \tab Installation
+\par \tab Running the USEMARCON Software 
+\par }\pard \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard\plain \s2\ql \li0\ri0\sb120\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel1\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 Introduction
+\par }\pard\plain \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+The following notes show how to install and run the USEMARCON software under different MS Windows versions. While the latest version has only been tested under Windows 2000 and Windows XP, it should run under older versions too.
+\par }\pard \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+\par }\pard \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+\par }\pard\plain \s2\ql \fi-720\li720\ri0\sb120\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel1\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 MS Windows versions
+\par }\pard\plain \ql \fi-720\li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 
+Installation
+\par }\pard\plain \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+Please refer to the document called install_lib.rtf for details on installation of the software.
+\par 
+\par 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 
+Running the USEMARCON Software 
+\par }\pard\plain \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par To run the USEMARCON Standalone version:
+\par 
+\par 1) Open a command line window
+\par 
+\par 2) Change directory to where the USEMARCON executable was installed or refer to the program using a valid path
+\par 
+\par 3) Ensure that you have prepared a .ini file and that the associated conversion files are located as per the .ini file.
+\par 
+\par 4) Run the software like:
+\par    usemarcon <path>\\my.ini [input file] [output file]
+\par 
+\par where path is the full or relative path name to where the .ini file is located.
+\par You can substitute my.ini for your actual ini file name.
+\par Input and output files are optional. If specified, they override the settings in the ini file. This could be used for example for batch processing of multiple files or creating a drag target on the desktop.
+\par 
+\par The software will then }{\f0\insrsid2064186 start the conversion and show status and possible errors. }{\f0\insrsid6041622\charrsid2064186 
+\par 
+\par }\pard\plain \s1\ql \li0\ri0\sb240\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel0\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+\b\caps\f1\fs28\cf1\lang2057\langfe1033\langnp2057\insrsid6041622  3.\tab system components
+\par }\pard\plain \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar\brdrb\brdrs\brdrw30\brsp20 {\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 In this Chapter
+\par }\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 File Names}{
+\f0\insrsid6041622 
+\par }\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx1134{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\b\f0\insrsid6041622 \tab }{\f0\insrsid6041622 Creation and Maintenance of System Files
+\par \tab File/Directory Naming Conventions
+\par }\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par {\pntext\pard\plain\f3 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \ql \fi-425\li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {\b\f0\insrsid6041622 
+Description of System Files}{\f0\insrsid6041622 
+\par }\pard \ql \li0\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx1134{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin0\itap0\pararsid2064186 {\b\f0\insrsid6041622 \tab }{\f0\insrsid6041622 Program Initialization Files
+\par \tab Rules Files
+\par \tab Look Up Tables
+\par \tab Format Checking Tables
+\par \tab Character Set Translation Tables
+\par \tab MARC Format Configuration Files
+\par }\pard\plain \s2\ql \li0\ri0\sb120\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel1\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 File Names
+\par }\pard\plain \qj \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 
+Creation and Maintenance of System Files
+\par }\pard\plain \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par New directories for new conversions may be created at any time using any preferred file manager program or from the system command line. The files and tables required for the conversion may then be copied to or created in the new directory by the user. 
+The system files supplied with the USEMARCON software are given defined suffixes detailed below in Description of System Files. 
+In order to access easily the supplied system files it is recommended that the MS Windows Associate Application option is used to launch the preferred editor automatically after double clicking on a USEMARCON table or rules file. 
+For further information on associating applications please refer to the MS Windows Help system.
+\par }\pard \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }{\f0\insrsid2064186 A separate simple graphical user interface, USEMARCON GUI, is available from the National Library of Finland. It makes it somewhat easier to develop new conversions and test them. See }{\field{\*\fldinst {\f0\insrsid2064186  
+HYPERLINK "}{\f0\insrsid2064186\charrsid2064186 http://www.lib.helsinki.fi/kirjastoala/formaatti/konversiot/gui.htm}{\f0\insrsid2064186 " }{\f0\insrsid2064186\charrsid12089297 {\*\datafield 
+00d0c9ea79f9bace118c8200aa004ba90b02000000170000004400000068007400740070003a002f002f007700770077002e006c00690062002e00680065006c00730069006e006b0069002e00660069002f006b00690072006a006100730074006f0061006c0061002f0066006f0072006d00610061007400740069002f00
+6b006f006e00760065007200730069006f0074002f006700750069002e00680074006d000000e0c9ea79f9bace118c8200aa004ba90b8800000068007400740070003a002f002f007700770077002e006c00690062002e00680065006c00730069006e006b0069002e00660069002f006b00690072006a006100730074006f
+0061006c0061002f0066006f0072006d00610061007400740069002f006b006f006e00760065007200730069006f0074002f006700750069002e00680074006d000000}}}{\fldrslt {\cs15\f0\ul\cf2\insrsid2064186\charrsid12089297 
+http://www.lib.helsinki.fi/kirjastoala/formaatti/konversiot/gui.htm}}}{\f0\insrsid2064186  for more information (sorry, the page is currently only available in Finnish, but the program itself is in English).}{\f0\insrsid2064186\charrsid2064186 
+\par }\pard \qj \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f0\insrsid2064186 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 
+File/Directory Naming Conventions
+\par }\pard\plain \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+Since the program does not offer any form of rule editing, we advise that you retain any conventions for file names and extensions that you currently use.
+\par 
+\par Three letter filename suffixes must be used to denote the use of particular files. Suggested suffixes are:
+\par }\pard \qj \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\b\f2\insrsid6041622 .ini}{\f0\insrsid6041622   - program initialization file }{\i\f0\insrsid6041622 
+- used with each conversion 
+\par 
+\par }{\b\f2\insrsid6041622 .rul}{\f0\insrsid6041622   - conversion rules file - }{\i\f0\insrsid6041622 used with each conversion 
+\par 
+\par }{\b\f2\insrsid6041622 .tbl}{\f0\insrsid6041622   - conversion look up table -}{\i\f0\insrsid6041622  only used in combination with a rules file.}{\f0\insrsid6041622 
+\par 
+\par }{\b\f2\insrsid6041622 .chk}{\f0\insrsid6041622   - MARC format checking table - }{\i\f0\insrsid6041622 (optional) used to validate MARC input and/or output files 
+\par 
+\par }{\b\f2\insrsid6041622 .trs}{\f0\insrsid6041622   - character set translation table - }{\i\f0\insrsid6041622 (optional) used to convert from the character set of the input MARC format to that of the output format }{\f0\insrsid6041622 
+\par 
+\par }{\b\f2\insrsid6041622 .cnf}{\f0\insrsid6041622   - MARC format configuration file - }{\i\f0\insrsid6041622 only used in combination with MARC input and output files
+\par }{\f0\insrsid6041622 
+\par }\pard \qj \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f0\insrsid6041622 
+\par }\pard\plain \s2\ql \fi-720\li720\ri0\sb120\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel1\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {
+\b\f1\fs28\lang2057\langfe1033\langnp2057\insrsid6041622 Description of System Files
+\par }\pard\plain \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 
+Program Initialization Files
+\par }\pard\plain \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+A program initialization (.ini) file lists all parameters necessary to perform a particular conversion. These include the names for each default system file, default parameters for processing input and output MARC files and preferred operation modes. 
+The values contained in the .ini file may be modified using any Windows text editor such as Notepad. Beginning with version 1.3 the full paths for the files are not required anymore nor encouraged if they reside in the same directory as the INI file.
+
+\par }\pard \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+\par }{\f0\insrsid6041622 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\outlinelevel2\rin0\lin0\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 Rule}{
+\b\f1\insrsid6041622 s}{\b\f1\insrsid6041622  Files
+\par }\pard\plain \ql \li720\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin720\itap0\pararsid2064186 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar{\*\pn \pnlvlcont\ilvl12\ls0\pnrnot0\pnf3 {\pntxtb \'b7}}\faauto\ilvl12\rin0\lin709\itap0\pararsid2064186 {\f0\insrsid6041622\charrsid2064186 
+The rules governing a specific MARC conversion are held in a single rules file (.rul). The rules file describes precisely how the fields and subfields of the input MARC records should be converted into their counterparts in the output MARC format. 
+This is achieved through the manipulation of input and output Content Designators (CDs), specific to each format, using a sophisticated rule syntax. The language used to create rules includes six main types of instruction:
+\par 
+\par {\pntext\pard\plain\f3\lang1036\langfe1033\langnp1036 \loch\af3\dbch\af0\hich\f3 \'b7\tab}}\pard \qj \li709\ri0\nowidctlpar{\*\pn \pnlvlblt\ilvl0\ls1\pnrnot0\pnf3\pnindent360 {\pntxtb \'b7}}\faauto\ls1\rin0\lin709\itap0\pararsid2064186 {
+\f0\lang1036\langfe1033\langnp1036\insrsid6041622 conditional
+\par {\pntext\pard\plain\f3\lang1036\langfe1033\langnp1036 \loch\af3\dbch\af0\hich\f3 \'b7\tab}boolean
+\par {\pntext\pard\plain\f3\lang1036\langfe1033\langnp1036 \loch\af3\dbch\af0\hich\f3 \'b7\tab}loop
+\par {\pntext\pard\plain\f3\lang1036\langfe1033\langnp1036 \loch\af3\dbch\af0\hich\f3 \'b7\tab}memory
+\par {\pntext\pard\plain\f3\lang1036\langfe1033\langnp1036 \loch\af3\dbch\af0\hich\f3 \'b7\tab}conversion
+\par {\pntext\pard\plain\f3\lang1036\langfe1033\langnp1036 \loch\af3\dbch\af0\hich\f3 \'b7\tab}translation
+\par }\pard \qj \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 {\f0\lang1036\langfe1033\langnp1036\insrsid6041622 
+\par }{\f0\insrsid6041622\charrsid2064186 A rules file can be created or edited with any standard text processing program e.g. MS Windows Notepad}{\f0\insrsid6041622  or using the separate USEMARCON GUI}{\f0\insrsid6041622\charrsid2064186 .
+\par }\pard \ql \li720\ri0\nowidctlpar\faauto\rin0\lin720\itap0 {\f0\insrsid6041622 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar\faauto\outlinelevel2\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 Look Up Tables
+\par }\pard\plain \ql \li720\ri0\nowidctlpar\faauto\rin0\lin720\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 {\f0\insrsid6041622\charrsid2064186 Look up Tables (.tbl) are used to hold large amounts of tabular information (e.g. ISO Standard country codes) which are required by a conversion rules file. 
+Data is held separately in a table to allow easier maintenance of the main rules file. Unlike other conversion files Look up Tables are commonly named to reflect their function e.g. ill.tbl for a table of illustration codes.
+\par 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar\faauto\outlinelevel2\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 Format Checking Tables
+\par }\pard\plain \ql \li720\ri0\nowidctlpar\faauto\rin0\lin720\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par }\pard \ql \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 {\f0\insrsid6041622\charrsid2064186 A MARC Format Checking Table (.chk) describes the valid features of a particular MARC format. The table lists all fields and subfields of th
+e format together with occurrence qualifiers and field indicator values. Use of these tables allows the input and output data to be checked for compliance with the specified format.
+\par }\pard \qj \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 {\f0\insrsid6041622\charrsid2064186 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar\faauto\outlinelevel2\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 Character Set Translation Tables
+\par }\pard\plain \ql \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622\charrsid2064186 
+\par Different MARC formats often require the use of different character sets. The USEMARCON system therefore incorporates the ability to convert between different specified character sets. 
+This process is handled by the use of Character Set Translation Tables (.trs) which map individual input to output characters. 
+The character set table need only deal with non-standard characters as conventional ASCII characters (e.g A-Z, a-z 1-9 etc.) are specified in a default character set table (standard.trs).
+\par }\pard \qj \li709\ri0\nowidctlpar\faauto\rin0\lin709\itap0 {\f0\insrsid6041622\charrsid2064186 
+\par }\pard\plain \s3\ql \li0\ri0\keepn\nowidctlpar\faauto\outlinelevel2\rin0\lin0\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\b\f1\insrsid6041622 MARC Format Configuration Files
+\par }\pard\plain \ql \li720\ri0\nowidctlpar\faauto\rin0\lin720\itap0 \f37\fs24\lang1033\langfe1033\cgrid\langnp1033\langfenp1033 {\f0\insrsid6041622 
+\par Format Configuration Files are used to signify fields in a particular MARC format which have no indicator values e.g. 001 or 008 in the UKMARC format.
+\par }}
