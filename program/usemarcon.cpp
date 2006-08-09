@@ -70,7 +70,7 @@ int main( int argc, char** argv )
 #else // api based run
 
     myrun.SetInteractive(false);
-    myrun.SetIniFileName("c:\\usemarcon_devel\\software_master\\runtime\\pc.ini"); // could use argv[1]
+    myrun.SetIniFileName("c:\\usemarcon\\mafi2ma\\mafi2ma.ini"); // could use argv[1]
 
     // Load and convert 2 marc records - the first conversion will be slower than others because .ini file details are loaded
     for (int iLoop = 0; iLoop < 1; iLoop++)
@@ -79,7 +79,7 @@ int main( int argc, char** argv )
         FILE *fp;
         int iInLength = 0;
         char acInRecord[TBUF + 1];
-        fp = fopen("hough2.bex", "r");
+        fp = fopen("input.bib", "r");
         if (fp)
         {
             iInLength = fread( acInRecord, sizeof( char ), TBUF, fp );
@@ -91,7 +91,10 @@ int main( int argc, char** argv )
         int res;
         res = myrun.Start();          // do the conversion
         if (res)
+        {
+            printf("Conversion failed. Last error: %s\n", myrun.GetLastErrorMessage());
             return res;
+        }
 
         // Get marc record produced by the conversion
         char *pcOutRecord;
