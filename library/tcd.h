@@ -80,6 +80,9 @@ public:
 
     void ReplaceWildcards(const char *field, const char *subfield);
 
+    bool TagContainsWildcard(); // There is at least one question mark in the tag
+    bool TagIsWildcard(); // Tag is three question marks
+
     TError    *GetErrorHandler() { return itsErrorHandler; };
 
 private:

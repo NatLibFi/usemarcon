@@ -169,7 +169,7 @@ int TRuleFile::ConvertInRuleOrder( TUMRecord* In, TUMRecord* Out )
     // On parcourt chaque regle, et on en fait l'evaluation
     while( aRule )
     {
-        //if (*(aRule->GetOutputCD()->GetTag())!='?')
+        if (aRule->GetInputCD()->TagContainsWildcard() || !aRule->GetOutputCD()->TagIsWildcard())
         {
             if (aRule->GetOutputCD()->GetIN())
             {
@@ -208,11 +208,11 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
             TCD *RuleCD = aRule->GetInputCD();
             if (*CDLIn == *RuleCD)
             {
-                do
+                do // for easy exit only
                 {
                     // If the rule contains wildcard, it's only accepted if non-wildcard
                     // rules for the field have not been processed already
-                    if (strchr(RuleCD->GetTag(), '?'))
+                    if (RuleCD->TagContainsWildcard())
                     {
                         if (!can_match_boolean)
                             break;
@@ -221,7 +221,7 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
                     {
                         can_match_boolean = false;
                     }
-                    //if (*(aRule->GetOutputCD()->GetTag())!='?')
+                    if (RuleCD->TagContainsWildcard() || !aRule->GetOutputCD()->TagIsWildcard())
                     {
                         if (aRule->GetOutputCD()->GetIN())
                         {

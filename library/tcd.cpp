@@ -508,3 +508,13 @@ void TCD::ReplaceWildcards(const char *field, const char *subfield)
             itsSubfield[i] = subfield[i];
     }
 }
+
+bool TCD::TagContainsWildcard()
+{
+    return itsTag[0] == '?' || itsTag[1] == '?' || itsTag[2] == '?';
+}
+
+bool TCD::TagIsWildcard()
+{
+    return itsTag[0] == '?' && itsTag[1] == '?' && itsTag[2] == '?';
+}
