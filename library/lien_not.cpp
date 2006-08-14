@@ -313,8 +313,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                     NSO->val=0;
                     NO->val=NTO->val=aCDLOut->GetTagOccurenceNumber();
 
-                    // Position at the beginning of this CDLib representing a complete field
-                    // On va se positionner au debut de ce CDLib representant un champ complet
+                    // Position at the beginning of the CDLib representing a complete field
                     TCDLib* Courant=(TCDLib*)aCDLOut->GetPrevious();
                     TCD ToSearch(itsErrorHandler);
                     ToSearch.SetTag(aCDLOut->GetTag());
@@ -523,7 +522,12 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         if (!ProcessCDL)
         {
             // Move to the next field in input
-            TCD Courant(CDIn, itsErrorHandler);
+            TCD Courant(Rule->GetInputCD());
+            if (Courant.TagContainsWildcard())
+                Courant.SetTag(CDIn->Field);
+            if (Courant.SubfieldContainsWildcard())
+                Courant.SetSubfield(CDIn->SubField);
+            
             Courant.SetTagOccurenceNumber(NT->val);
             Courant.SetSubOccurenceNumber(NS->val);
 

@@ -51,37 +51,37 @@ public:
     TCD             (TypeCD*, TError *ErrorHandler);
     virtual ~TCD    ();
 
-    virtual int   FromString      (char *aString, TCD *Last, int InputOrOutput);
-    virtual int   ToString        (char *String, int InputOrOutput);
+    int   FromString      (char *aString, TCD *Last, int InputOrOutput);
+    int   ToString        (char *String, int InputOrOutput);
 
-    virtual TCD   *GetPrevious            (void)      { return itsPrevious; };
-    virtual TCD   *GetNext                (void)      { return itsNext; };
-    virtual char  *GetTag                 (void)      { return itsTag; };
-    virtual char  *GetSubfield            (void)      { return itsSubfield; };
-    virtual int   GetOccurenceNumber      (void)      { return itsOccurenceNumber; };
-    virtual int   GetTagOccurenceNumber   (void)      { return itsTagOccurenceNumber; };
-    virtual int   GetSubOccurenceNumber   (void)      { return itsSubOccurenceNumber; };
-    virtual int   GetBegining             (void)      { return itsBegining; };
-    virtual int   GetEnd                  (void)      { return itsEnd; };
-    virtual int   GetIN                   ()      { return _IN; };
+    TCD   *GetPrevious            (void)      { return itsPrevious; };
+    TCD   *GetNext                (void)      { return itsNext; };
+    char  *GetTag                 (void)      { return itsTag; };
+    char  *GetSubfield            (void)      { return itsSubfield; };
+    int   GetOccurenceNumber      (void)      { return itsOccurenceNumber; };
+    int   GetTagOccurenceNumber   (void)      { return itsTagOccurenceNumber; };
+    int   GetSubOccurenceNumber   (void)      { return itsSubOccurenceNumber; };
+    int   GetBegining             (void)      { return itsBegining; };
+    int   GetEnd                  (void)      { return itsEnd; };
+    int   GetIN                   ()      { return _IN; };
 
-    virtual int   SetPrevious             (TCD *aCD)                  { itsPrevious=aCD; return 0; };
-    virtual int   SetNext                 (TCD *aCD)                  { itsNext=aCD; return 0; };
-    virtual int   SetTag                  (char *aTagString)          { memcpy(itsTag,aTagString, 3); itsTag[3]=0; return 0; };
-    virtual int   SetTag                  (int aTagNumber)            { sprintf(itsTag,"%03d",aTagNumber); return 0; };
-    virtual int   SetSubfield             (const char *aSubfield)     { memcpy(itsSubfield,aSubfield,2); itsSubfield[2]=0; return 0; };
-    virtual int   SetOccurenceNumber      (int anOccurenceNumber)     { itsOccurenceNumber=anOccurenceNumber; return 0; };
-    virtual int   SetTagOccurenceNumber   (int aTagOccurenceNumber)   { itsTagOccurenceNumber=aTagOccurenceNumber; return 0; };
-    virtual int   SetSubOccurenceNumber   (int aSubOccurenceNumber)   { itsSubOccurenceNumber=aSubOccurenceNumber; return 0; };
-    virtual int   SetBegining             (int aBegining)             { itsBegining=aBegining; return 0; };
-    virtual int   SetEnd                  (int aEnd)                  { itsEnd=aEnd; return 0; };
-    virtual int   SetFixedPos             (char *String);
-    virtual int   SetIN                   (int aIN)   { _IN=aIN; return 0; };
+    int   SetPrevious             (TCD *aCD)                  { itsPrevious=aCD; return 0; };
+    int   SetNext                 (TCD *aCD)                  { itsNext=aCD; return 0; };
+    int   SetTag                  (char *aTagString)          { memcpy(itsTag, aTagString, 3); itsTag[3]=0; update_tag_wildcard(); return 0; };
+    int   SetSubfield             (const char *aSubfield)     { memcpy(itsSubfield, aSubfield, 2); itsSubfield[2]=0; update_subfield_wildcard(); return 0; };
+    int   SetOccurenceNumber      (int anOccurenceNumber)     { itsOccurenceNumber=anOccurenceNumber; return 0; };
+    int   SetTagOccurenceNumber   (int aTagOccurenceNumber)   { itsTagOccurenceNumber=aTagOccurenceNumber; return 0; };
+    int   SetSubOccurenceNumber   (int aSubOccurenceNumber)   { itsSubOccurenceNumber=aSubOccurenceNumber; return 0; };
+    int   SetBegining             (int aBegining)             { itsBegining=aBegining; return 0; };
+    int   SetEnd                  (int aEnd)                  { itsEnd=aEnd; return 0; };
+    int   SetFixedPos             (char *String);
+    int   SetIN                   (int aIN)   { _IN=aIN; return 0; };
 
     void ReplaceWildcards(const char *field, const char *subfield);
 
-    bool TagContainsWildcard(); // There is at least one question mark in the tag
-    bool TagIsWildcard(); // Tag is three question marks
+    bool TagContainsWildcard() { return itsTagContainsWildcard; } // There is at least one question mark in the tag
+    bool TagIsWildcard() { return itsTagIsWildcard; } // Tag is three question marks
+    bool SubfieldContainsWildcard() { return itsSubfieldContainsWildcard; } // There is at least one question mark in the subfield
 
     TError    *GetErrorHandler() { return itsErrorHandler; };
 
@@ -99,6 +99,12 @@ protected:
     TCD           *itsPrevious;
     TCD           *itsNext;
     TError        *itsErrorHandler;
+    bool          itsTagContainsWildcard;
+    bool          itsTagIsWildcard;
+    bool          itsSubfieldContainsWildcard;
+
+    void          update_tag_wildcard();
+    void          update_subfield_wildcard();
 };
 
 #endif

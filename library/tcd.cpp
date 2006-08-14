@@ -40,6 +40,9 @@ TCD::TCD(TError *ErrorHandler)
     itsBegining         = 0;
     itsEnd                  = 0;
     itsErrorHandler     = ErrorHandler;
+    itsTagContainsWildcard = false;
+    itsTagIsWildcard = false;
+    itsSubfieldContainsWildcard = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,8 +52,8 @@ TCD::TCD(TError *ErrorHandler)
 ///////////////////////////////////////////////////////////////////////////////
 TCD::TCD(TypeCD* atcd, TError *ErrorHandler)
 {
-    strcpy(itsTag,atcd->Field);
-    strcpy(itsSubfield,atcd->SubField);
+    SetTag(atcd->Field);
+    SetSubfield(atcd->SubField);
     itsOccurenceNumber  = 0;
     itsTagOccurenceNumber   = atcd->nt;
     itsSubOccurenceNumber   = atcd->ns;
@@ -69,8 +72,8 @@ TCD::TCD(TypeCD* atcd, TError *ErrorHandler)
 TCD::TCD(TCD *aCD)
 {
     _IN=aCD->GetIN();
-    strcpy(itsTag,aCD->GetTag());
-    strcpy(itsSubfield,aCD->GetSubfield());
+    SetTag(aCD->GetTag());
+    SetSubfield(aCD->GetSubfield());
     itsOccurenceNumber=aCD->GetOccurenceNumber();
     itsTagOccurenceNumber=aCD->GetTagOccurenceNumber();
     itsSubOccurenceNumber=aCD->GetSubOccurenceNumber();
@@ -497,24 +500,37 @@ int TCD::ToString(char *String, int InputOrOutput)
 
 void TCD::ReplaceWildcards(const char *field, const char *subfield)
 {
-    for (int i = 0; i < 4; i++)
+    if (itsTagContainsWildcard)
     {
-        if (itsTag[i] == '?')
-            itsTag[i] = field[i];
+        if (itsTag[0] == '?')
+            itsTag[0] = field[0];
+        if (itsTag[1] == '?')
+            itsTag[1] = field[1];
+        if (itsTag[2] == '?')
+            itsTag[2] = field[2];
     }
-    for (int i = 0; i < 2; i++)
+
+    if (itsSubfieldContainsWildcard)
     {
-        if (itsSubfield[i] == '?')
-            itsSubfield[i] = subfield[i];
+        if (itsSubfield[0] == '?')
+            itsSubfield[0] = subfield[0];
+        if (itsSubfield[1] == '?')
+            itsSubfield[1] = subfield[1];
     }
 }
 
-bool TCD::TagContainsWildcard()
+void TCD::update_tag_wildcard()
 {
-    return itsTag[0] == '?' || itsTag[1] == '?' || itsTag[2] == '?';
+    itsTagContainsWildcard = itsTag[0] == '?' || itsTag[1] == '?' || itsTag[2] == '?';
+
+    if (itsTagContainsWildcard)
+        itsTagIsWildcard = itsTag[0] == '?' && itsTag[1] == '?' && itsTag[2] == '?';
+    else
+        itsTagIsWildcard = false;
 }
 
-bool TCD::TagIsWildcard()
+void TCD::update_subfield_wildcard()
 {
-    return itsTag[0] == '?' && itsTag[1] == '?' && itsTag[2] == '?';
+    itsSubfieldContainsWildcard = itsSubfield[0] == '?' || itsSubfield[1] == '?';
 }
+

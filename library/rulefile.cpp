@@ -169,9 +169,10 @@ int TRuleFile::ConvertInRuleOrder( TUMRecord* In, TUMRecord* Out )
     // On parcourt chaque regle, et on en fait l'evaluation
     while( aRule )
     {
-        if (aRule->GetInputCD()->TagContainsWildcard() || !aRule->GetOutputCD()->TagIsWildcard())
+        TCD *OutputCD = aRule->GetOutputCD();
+        if (aRule->GetInputCD()->TagContainsWildcard() || !OutputCD->TagIsWildcard())
         {
-            if (aRule->GetOutputCD()->GetIN())
+            if (OutputCD->GetIN())
             {
                 itsEvaluateRule.Evaluate_Rule( In, In, aRule );
                 In->SortCD();

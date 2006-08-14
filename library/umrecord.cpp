@@ -277,7 +277,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
     }
 
     // On recherche le CD de tag '000', pour remplir le label
-    CD.SetTag(0);
+    CD.SetTag("000");
     TCDLib* Search=(TCDLib*)itsFirstCDLib;
     if (!NextCD(&Search,&CD))
         itsErrorHandler->SetError(9202,ERROR);
@@ -393,7 +393,7 @@ int TUMRecord::ToCD(void)
     // On cree un premier CDLib qui contiendra le label.
     // Ce CDLib sera identifie par un numero de champ '000'
     // On insere ensuite ce CDLib dans la liste des CDLib.
-    CDLib.SetTag(0);
+    CDLib.SetTag("000");
     CDLib.SetContent(itsLabel);
     CDLib.SetTagOccurenceNumber(1);
     InsereCDLib(&CDLib);  // if != 0 ERREUR
@@ -460,11 +460,11 @@ int TUMRecord::ToCD(void)
 int TUMRecord::NextCD(TCDLib **CDLib, TCD *CD)
 {
     // Check if a field with this code exists at all, unless a wildcard is used
-    char *tag = CD->GetTag();
-    if (!strchr(tag, '?'))
+    if (!CD->TagContainsWildcard())
     {
-        long tagnum = atol(tag);
-        if (tagnum == 0 && strcmp(CD->GetTag(), "000"))
+        char *cdtag = CD->GetTag();
+        long tagnum = atol(cdtag);
+        if (tagnum == 0 && (cdtag[0] != '0' || cdtag[1] != '0' || cdtag[2] != '0'))
             tagnum = -1;
         if (tagnum >= 0 && tagnum <= 999 && !itsExistingFields[tagnum])
             return 0;

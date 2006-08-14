@@ -40,23 +40,23 @@ class TRule
 public:
     TRule           (TCD *LastInputCD, TCD *LastOutputCD, TError *ErrorHandler);
     TRule           (TRule *aRule);
-    virtual ~TRule          ();
+    virtual ~TRule  ();
 
-    virtual int   FromString      (char *aString);
-    virtual int   ToString        (char *aString);
-    virtual void  ResetLib        (void)              { itsLib.freestr(); };
+    int   FromString      (char *aString);
+    int   ToString        (char *aString);
+    void  ResetLib        (void)              { itsLib.freestr(); };
 
-    virtual TCD   *GetInputCD     (void)              { return itsInputCD; };
-    virtual TCD   *GetOutputCD    (void)              { return itsOutputCD; };
-    virtual char  *GetLib         (void)              { return itsLib.str(); };
-    virtual TRule *GetNextRule    (void)              { return itsNextRule; };
-    virtual TRule *GetPreviousRule(void)              { return itsPreviousRule; };
+    inline TCD   *GetInputCD     (void)              { return itsInputCD; };
+    inline TCD   *GetOutputCD    (void)              { return itsOutputCD; };
+    inline char  *GetLib         (void)              { return itsLib.str(); };
+    inline TRule *GetNextRule    (void)              { return itsNextRule; };
+    inline TRule *GetPreviousRule(void)              { return itsPreviousRule; };
 
-    virtual int   SetInputCD      (TCD* aCD)          { itsInputCD=aCD; return 0; };
-    virtual int   SetOutputCD     (TCD *aCD)          { itsOutputCD=aCD; return 0; };
-    virtual int   SetLib          (const char *aLib);
-    virtual int   SetNextRule     (TRule *NextRule)   { itsNextRule=NextRule; return 0; };
-    virtual int   SetPreviousRule (TRule *PreviousRule)   { itsPreviousRule=PreviousRule; return 0; };
+    int   SetInputCD      (TCD* aCD)          { itsInputCD=aCD; return 0; };
+    int   SetOutputCD     (TCD *aCD)          { itsOutputCD=aCD; return 0; };
+    int   SetLib          (const char *aLib);
+    int   SetNextRule     (TRule *NextRule)   { itsNextRule=NextRule; return 0; };
+    int   SetPreviousRule (TRule *PreviousRule)   { itsPreviousRule=PreviousRule; return 0; };
 
 protected:
     TCD           *itsInputCD;

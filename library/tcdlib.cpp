@@ -38,6 +38,10 @@ TCDLib::TCDLib(TCDLib *aCDLib, TCD*aCD):TCD(aCDLib->itsErrorHandler)
     _IN=aCDLib->GetIN();
     strcpy(itsTag,aCDLib->GetTag());
     strcpy(itsSubfield,aCDLib->GetSubfield());
+    itsTagContainsWildcard = aCDLib->TagContainsWildcard();
+    itsTagIsWildcard = aCDLib->TagIsWildcard();
+    itsSubfieldContainsWildcard = aCDLib->SubfieldContainsWildcard();
+
     itsOccurenceNumber=aCDLib->GetOccurenceNumber();
     itsTagOccurenceNumber=aCDLib->GetTagOccurenceNumber();
     itsSubOccurenceNumber=aCDLib->GetSubOccurenceNumber();
@@ -65,6 +69,10 @@ TCDLib::TCDLib(TCD *aCD):TCD(aCD->GetErrorHandler())
     _IN=aCD->GetIN();
     strcpy(itsTag,aCD->GetTag());
     strcpy(itsSubfield,aCD->GetSubfield());
+    itsTagContainsWildcard = aCD->TagContainsWildcard();
+    itsTagIsWildcard = aCD->TagIsWildcard();
+    itsSubfieldContainsWildcard = aCD->SubfieldContainsWildcard();
+
     itsOccurenceNumber=aCD->GetOccurenceNumber();
     itsTagOccurenceNumber=aCD->GetTagOccurenceNumber();
     itsSubOccurenceNumber=aCD->GetSubOccurenceNumber();
@@ -295,38 +303,21 @@ int TCDLib::IsEqual( TCD* aCD, int aTagOccurrenceNumberOverride /*= -1*/ )
 {
     // CDLib equals CD provided:
 
-    // 1 - The tags are identical
+    // 1 - The tags are identical or aCD has a matching wildcard
     char *tag = aCD->GetTag();
-    // Both are char[4]
-    char tmptag[4];
-    strncpy(tmptag, tag, 4);
-    // Prepare wildcard matching
-    for (int i = 0; i <= 3; i++)
-    {
-        if (tmptag[i] == '?')
-            tmptag[i] = itsTag[i];
-    }
-    if (tmptag[0] != itsTag[0] ||
-        tmptag[1] != itsTag[1] ||
-        (tmptag[1] != '\0' && tmptag[2] != itsTag[2]) ||
-        (tmptag[2] != '\0' && tmptag[3] != itsTag[3]))
+    if ((tag[0] != '?' && tag[0] != itsTag[0]) ||
+        (tag[1] != '?' && tag[1] != itsTag[1]) ||
+        (tag[1] != '\0' && (tag[2] != '?' && tag[2] != itsTag[2])) ||
+        (tag[2] != '\0' && (tag[3] != '?' && tag[3] != itsTag[3])))
         return 0;
 
-    // 2 - Subfield isn't specified or is identical
+    // 2 - Subfield isn't specified or is identical or aCD has 
+    // a matching wildcard
     char *subfield = aCD->GetSubfield();
     if (*subfield)
     {
-        // Both are char[3]
-        char tmpsubfield[3];
-        // Prepare wildcard matching
-        strncpy(tmpsubfield, subfield, 3);
-        for (int i = 0; i <= 1; i++)
-        {
-            if (tmpsubfield[i] == '?')
-                tmpsubfield[i] = itsSubfield[i];
-        }
-        if (tmpsubfield[0] != itsSubfield[0] ||
-            tmpsubfield[1] != itsSubfield[1])
+        if ((subfield[0] != '?' && subfield[0] != itsSubfield[0]) ||
+            (subfield[1] != '?' && subfield[1] != itsSubfield[1]))
             return 0;
 
         // 3 - Subfield occurrence position isn't specified or is identical
@@ -354,7 +345,6 @@ int TCDLib::IsLess( TCD* aCD )
     if (rc>0) return 0;
 
     if (itsTagOccurenceNumber<aCD->GetTagOccurenceNumber()) return 1;
-    if (itsTagOccurenceNumber>aCD->GetTagOccurenceNumber()) return 0;
     return 0;
 }
 

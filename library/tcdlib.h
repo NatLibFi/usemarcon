@@ -39,16 +39,16 @@ public:
     TCDLib          (TCD* aCD);
     ~TCDLib         (void);
 
-    const char *GetContent     (TCD* aCD=NULL);
+    const char *GetContent    (TCD* aCD=NULL);
     int       SetContent      (const char *aContent, TCD* aCD=NULL);
-    void      ResetContent        (void);
+    void      ResetContent    (void);
     int       IsEqual         (TCD* aCD, int aTagOccurrenceNumberOverride = -1);
     int       IsLess          (TCD* aCD);
-    int       NextSubCDLib        (TCDLib** pCDLib, int*, char*);
+    int       NextSubCDLib    (TCDLib** pCDLib, int*, char*);
 
-    friend  int  operator ==          (TCDLib& aCDLib, TCD& aCD) { return aCDLib.IsEqual(&aCD); };
-    friend  int  operator !=          (TCDLib& aCDLib, TCD& aCD) { return !aCDLib.IsEqual(&aCD); };
-    friend  int  operator <           (TCDLib& aCDLib, TCD& aCD) { return aCDLib.IsLess(&aCD); };
+    friend  int  operator ==  (TCDLib& aCDLib, TCD& aCD) { return aCDLib.IsEqual(&aCD); };
+    friend  int  operator !=  (TCDLib& aCDLib, TCD& aCD) { return !aCDLib.IsEqual(&aCD); };
+    friend  int  operator <   (TCDLib& aCDLib, TCD& aCD) { return aCDLib.IsLess(&aCD); };
 
 protected:
     typestr itsContent;
