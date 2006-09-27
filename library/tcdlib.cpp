@@ -305,11 +305,23 @@ int TCDLib::IsEqual( TCD* aCD, int aTagOccurrenceNumberOverride /*= -1*/ )
 
     // 1 - The tags are identical or aCD has a matching wildcard
     char *tag = aCD->GetTag();
-    if ((tag[0] != '?' && tag[0] != itsTag[0]) ||
-        (tag[1] != '?' && tag[1] != itsTag[1]) ||
-        (tag[1] != '\0' && (tag[2] != '?' && tag[2] != itsTag[2])) ||
-        (tag[2] != '\0' && (tag[3] != '?' && tag[3] != itsTag[3])))
+    if (tag[0] != '?' && tag[0] != itsTag[0])
         return 0;
+    if (tag[0] != '\0')
+    {
+        if (tag[1] != '?' && tag[1] != itsTag[1])
+            return 0;
+        if (tag[1] != '\0')
+        {
+            if (tag[2] != '?' && tag[2] != itsTag[2])
+                return 0;
+            if (tag[2] != '\0')
+            {
+                if (tag[3] != '?' && tag[3] != itsTag[3])
+                    return 0;
+            }
+        }
+    }
 
     // 2 - Subfield isn't specified or is identical or aCD has 
     // a matching wildcard
