@@ -492,7 +492,7 @@ unsigned int utf8_strlen(const char *str)
     while (*p)
     {
         ++i;
-        unsigned int clen = utf8_charlen(p);
+        unsigned int clen = utf8_glypheme_length(p);
         while (*p && clen > 0)
         {
             ++p;
@@ -513,8 +513,7 @@ unsigned int utf8_charindex(const char *str, unsigned long idx)
             ++utf8_idx;
             continue;
         }
-        unsigned int clen = utf8_charlen(p);
-//printf("** charlen for 0x%02x (%ud) is %d\n", (unsigned char)*p, (unsigned char)*p, clen);
+        unsigned int clen = utf8_glypheme_length(p);
         utf8_idx += clen;
         while (*p && clen > 0)
         {
@@ -525,9 +524,85 @@ unsigned int utf8_charindex(const char *str, unsigned long idx)
     return utf8_idx;
 }
 
-unsigned int utf8_charlen(const char *p)
+unsigned long c2l(char c, int bits, int shift)
 {
-    /* Check the second byte after the base char to determine the length of the sequence. Possible sequences:
+    unsigned long i = c;
+    unsigned long mask = 0xFFFFFFFF;
+    mask <<= 32-bits;
+    mask >>= 32-bits;
+    i &= mask;
+    return i << shift;
+}
+
+unsigned long utf8_to_cp(const char *p)
+{
+    /* Possible multibyte sequences:
+    U-00000080 – U-000007FF: 	110xxxxx 10xxxxxx
+    U-00000800 – U-0000FFFF: 	1110xxxx 10xxxxxx 10xxxxxx
+    U-00010000 – U-001FFFFF: 	11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+    U-00200000 – U-03FFFFFF: 	111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+    U-04000000 – U-7FFFFFFF: 	1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+    */
+    char c = *p;
+
+    if ((c & 0x80) == 0)
+        return (unsigned long) c;
+
+    if ((c & 0xFE) == 0xFC)
+    {
+        if (strlen(p) < 6)
+            return (unsigned long) c; // incomplete sequence
+        return c2l(c, 1, 30) + c2l(p[1], 6, 24) + c2l(p[2], 6, 18) + c2l(p[3], 6, 12) + c2l(p[4], 6, 6) + c2l(p[5], 6, 0);
+    }
+    if ((c & 0xFC) == 0xF8)
+    {
+        if (strlen(p) < 5)
+            return (unsigned long) c; // incomplete sequence
+        return c2l(c, 2, 24) + c2l(p[1], 6, 18) + c2l(p[2], 6, 12) + c2l(p[3], 6, 6) + c2l(p[4], 6, 0);
+    }
+    if ((c & 0xF8) == 0xF0)
+    {
+        if (strlen(p) < 4)
+            return (unsigned long) c; // incomplete sequence
+        return c2l(c, 3, 18) + c2l(p[1], 6, 12) + c2l(p[2], 6, 6) + c2l(p[3], 6, 0);
+    }
+    if ((c & 0xF0) == 0xE0)
+    {
+        if (strlen(p) < 3)
+            return (unsigned long) c; // incomplete sequence
+        return c2l(c, 4, 12) + c2l(p[1], 6, 6) + c2l(p[2], 6, 0);
+    }
+    if ((c & 0xE0) == 0xC0)
+    {
+        if (strlen(p) < 2)
+            return (unsigned long) c; // incomplete sequence
+        return c2l(c, 5, 6) + c2l(p[1], 6, 0);
+    }
+    return (unsigned long) c;
+}
+
+bool utf8_is_nonspacing(const char *p)
+{
+    /* This function checks for the following:
+    0300 - 036F Combining Diacritical marks
+    1DC0 – 1DFF Combining Diacritical Marks Supplement
+    20D0 - 20FF Combining Diacritical Marks for Symbols
+    */
+
+    unsigned long cp = utf8_to_cp(p);
+
+    if ((cp >= 0x0300 && cp <= 0x036F) ||
+        (cp >= 0x1DC0 && cp <= 0x1DFF) ||
+        (cp >= 0x20D0 && cp <= 0x20FF))
+    {
+        return true;
+    }
+    return false;
+}
+
+unsigned int utf8_charlen(const char c)
+{
+    /* Check the high bits to determine the length of the sequence. Possible sequences:
     U-00000080 – U-000007FF: 	110xxxxx 10xxxxxx
     U-00000800 – U-0000FFFF: 	1110xxxx 10xxxxxx 10xxxxxx
     U-00010000 – U-001FFFFF: 	11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
@@ -535,24 +610,39 @@ unsigned int utf8_charlen(const char *p)
     U-04000000 – U-7FFFFFFF: 	1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
     */
 
-    unsigned char c = *(p+1);
-
     if ((c & 0x80) == 0)
         return 1;
 
     if ((c & 0xFE) == 0xFC)
-        return 7;
-    if ((c & 0xFC) == 0xF8)
         return 6;
-    if ((c & 0xF8) == 0xF0)
+    if ((c & 0xFC) == 0xF8)
         return 5;
-    if ((c & 0xF0) == 0xE0)
+    if ((c & 0xF8) == 0xF0)
         return 4;
-    if ((c & 0xE0) == 0xC0)
+    if ((c & 0xF0) == 0xE0)
         return 3;
-    if ((c & 0x80) == 0x80)
+    if ((c & 0xE0) == 0xC0)
         return 2;
 
     return 1;
+}
+
+unsigned int utf8_glypheme_length(const char *p)
+{
+    unsigned int len = utf8_charlen(*p);
+
+    // Check for combining characters
+    const char *p2 = p + len;
+    while (*p2)
+    {
+        if (!utf8_is_nonspacing(p2))
+        {
+            break;
+        }
+        unsigned int comb_len = utf8_charlen(*p2);
+        len += comb_len;
+        p2 += comb_len;
+    }
+    return len;
 }
 
