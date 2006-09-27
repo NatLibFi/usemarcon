@@ -187,6 +187,9 @@ const char* TTransFile::Transcode( char* In, typestr *Out, char *Notice, char *F
 
     Out->str("");
 
+    if (!In)
+        return (Out->str());
+
     while(*c != '\0')
     {
         int iaux;
