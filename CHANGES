@@ -4,7 +4,7 @@ USEMARCON Change Log
 **************************
 version 1.80
 
-August 14 2006
+September 27 2006
 
 The National Library of Finland
 Ere Maijala
@@ -30,6 +30,13 @@ ere.maijala at helsinki.fi
   ???I1 | ???I1 | S
   ???I2 | ???I2 | S
   ???$? | ???$? | S     
+
+- Fixed UTF-8 handling. Now it should finally actually work correctly, but
+  it's still a bit limited in that it cannot handle all non-spacing 
+  characters correctly. Now the functions work on complete glypheme clusters
+  (=perceived characters) in the supported ranges.
+
+- Bulletproofed several functions to cope better with broken fields.
 
 **************************
 **************************
