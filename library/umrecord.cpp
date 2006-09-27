@@ -365,12 +365,15 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
                 delete NewField;
             }
 
+            // Pour passer au champ suivant, il faut avancer jusqu'a ce qu'on soit sur
+            // un nouveau debut de champ
+            while( CDLib && *CDLib==CD )
+                CDLib = (TCDLib *)CDLib->GetNext();
         }
-
-        // Pour passer au champ suivant, il faut avancer jusqu'a ce qu'on soit sur
-        // un nouveau debut de champ
-        while( CDLib && *CDLib==CD )
+        else
+        {
             CDLib = (TCDLib *)CDLib->GetNext();
+        }
     }
     return itsErrorHandler->GetErrorCode();
 }
