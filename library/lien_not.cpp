@@ -188,8 +188,6 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
 // a une regle.
 //
 
-static int it_count = 0;
-
 int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TCDLib* ProcessCDL /* = NULL */ )
 {
     int rc,concr;
@@ -496,7 +494,6 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             RedoFlag=0;
             itsScanner.RewindBuffer();
             theCDOut=aCDOut;
-            it_count++;
             rc=yyparse();
 
             if (rc!=2)
