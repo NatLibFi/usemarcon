@@ -311,9 +311,32 @@ YY_MarcScanner_LEX_PARAM_DEF
 #endif
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 
+typedef int yy_state_type;
+
+/* amount of stuff to slurp up with each read */
+#ifndef YY_READ_BUF_SIZE
+#define YY_READ_BUF_SIZE 8192
+#endif
+/* size of default input buffer */
+#ifndef YY_BUF_SIZE
+#define YY_BUF_SIZE (YY_READ_BUF_SIZE * 2) 
+#endif
+
+#ifndef YY_CHAR
+#define YY_CHAR char
+#endif
+
 class YY_MarcScanner_CLASS YY_MarcScanner_INHERIT
 {
  private:/* data */
+ yy_state_type yy_state_buf[YY_BUF_SIZE + 2], *yy_state_ptr;
+ YY_CHAR *yy_full_match;
+ int yy_lp;
+ int yy_looking_for_trail_begin;
+ int yy_full_lp;
+ int *yy_full_state;
+
+
  YY_MarcScanner_CHAR  *yy_c_buf_p;
  YY_MarcScanner_CHAR  yy_hold_char;
  int yy_n_chars;
