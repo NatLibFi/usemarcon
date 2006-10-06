@@ -38,6 +38,10 @@ ere.maijala at helsinki.fi
 
 - Bulletproofed several functions to cope better with broken fields.
 
+- Removed dangerous static declarations from the scanner. It's no more 
+  directly recreatable from analyse.l, pending rewrite with better 
+  techniques.
+
 **************************
 **************************
 version 1.71
