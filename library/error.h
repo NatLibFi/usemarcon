@@ -88,6 +88,8 @@ public:
     bool          GetUTF8Mode           (void) { return itsUTF8Mode; }
     void          SetUTF8Mode           (bool UTF8Mode) { itsUTF8Mode = UTF8Mode; }
 
+    TUMApplication *GetApplication      (void) { return itsApplication; }
+
     // Temporary buffers for all to use
     unsigned char Temporary[TBUF];
     unsigned char Temporary2[TBUF];

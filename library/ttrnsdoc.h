@@ -32,6 +32,12 @@ AUTHOR
 #include "trnsfile.h"
 #include "error.h"
 
+enum CHARSET 
+{
+    CHARSET_DEFAULT = 0,
+    CHARSET_MARC8 = 1
+};
+
 class TTransDoc
 {
 public:
@@ -42,13 +48,19 @@ public:
     virtual bool          OpenTransFile   (char *DefaultFile);
     virtual TTransFile    *GetFile        (void)  { return itsFile; };
     virtual FILE_SPEC     *GetTransSpec   (void)  { return itsTransSpec; };
+    bool                  SetInputFileCharacterSet(const char *charset);
+    int                   Convert (TMarcRecord* In, TMarcRecord* Out);
 
 private:
     TTransFile            *itsFile;
     FILE_SPEC             *itsTransSpec;
     FILE_SPEC             *itsXVTFilePointer;
+    CHARSET               itsCharset;
 
     TError                *itsErrorHandler;
+
+    int ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut);
+    const char* Transcode(char* In, typestr *Out, char *Notice, char *Field);
 };
 
 #endif // TTransDoc_H

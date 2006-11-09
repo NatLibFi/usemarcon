@@ -597,6 +597,9 @@
 				RelativePath="lien_not.h">
 			</File>
 			<File
+				RelativePath=".\marc8.h">
+			</File>
+			<File
 				RelativePath="marcfile.h">
 			</File>
 			<File

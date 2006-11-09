@@ -4,18 +4,12 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2004
+ *  Adapted by The National Library of Finland, 2004-2006
  *
  *  File:  tmpplctn.cpp
  *
  *  implements the main operations of the software
  *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
- *
- *  Rev history:
- *  17 Aug 2000 -  version raised to v1.1 - will not exit if the input or output
-    checking files are not present in the .ini file.
-
  */
 
 #define _MAIN_
@@ -193,6 +187,13 @@ int TUMApplication::StartUp(CDetails *Details)
     if (*itsErrorHandler->Temporary && itsTransDoc->OpenTransFile((char *)itsErrorHandler->Temporary) == false)
     {
         itsErrorHandler->WriteError("Unable to open transcoding file\n");
+        return -1;
+    }
+
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES","InputFileCharacterSet","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
+    if (itsTransDoc->SetInputFileCharacterSet((char *)itsErrorHandler->Temporary) == false)
+    {
+        itsErrorHandler->WriteError("Specified input file character set not supported\n");
         return -1;
     }
 

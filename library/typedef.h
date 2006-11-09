@@ -93,6 +93,13 @@ public:
         m_size = 0;
     }
 
+    bool is_empty()
+    {
+        if (m_str && *m_str)
+            return false;
+        return true;
+    }
+
     char* str(const char *str)
     {
         if (!str)
@@ -114,10 +121,12 @@ public:
         return m_str;
     }
 
-    char *append(const char *str)
+    char *append(const char *a_str)
     {
+        if (!m_str) 
+            return str(a_str);
         unsigned long existing_len = strlen(m_str);
-        unsigned long append_len = strlen(str);
+        unsigned long append_len = strlen(a_str);
 
         unsigned long needed = existing_len + append_len + 1;
         if (m_size < needed)
@@ -127,7 +136,7 @@ public:
             allocstr(needed);
             strcpy(m_str, tmpstr.str());
         }
-        strcat(m_str, str);
+        strcat(m_str, a_str);
         return m_str;
     }
 

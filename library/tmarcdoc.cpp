@@ -338,7 +338,7 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
   // Si un fichier existe, alors on convertit itsInputRecord en itsTransRecord conformement
   // a la table de transco chargee
   
-  if (itsApplication->GetDetails()->GetDisableCharacterConversion() || aTransDoc->GetFile()==NULL)
+  if (itsApplication->GetDetails()->GetDisableCharacterConversion())
   {
     itsTransRecord=new TUMRecord( itsInputRecord );
     if (!itsTransRecord)
@@ -349,7 +349,7 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
     itsTransRecord=new TUMRecord(itsApplication);
     if (!itsTransRecord)
       itsErrorHandler->SetErrorD( 3000, ERROR, "When creating a new Trans record" );
-    aTransDoc->GetFile()->Convert( itsInputRecord, itsTransRecord );
+    aTransDoc->Convert( itsInputRecord, itsTransRecord );
   }
   
   return itsErrorHandler->GetErrorCode();
