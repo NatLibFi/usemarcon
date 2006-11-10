@@ -119,7 +119,7 @@ bool TTransDoc::OpenTransFile(char *DefaultFile)
 ///////////////////////////////////////////////////////////////////////////////
 bool TTransDoc::SetInputFileCharacterSet(const char *charset)
 {
-    if (strcasecmp(charset, "UTF-8") == 0 || strcasecmp(charset, "UTF8") == 0)
+    if (*charset == '\0' || strcasecmp(charset, "UTF-8") == 0 || strcasecmp(charset, "UTF8") == 0 || strcasecmp(charset, "DEFAULT") == 0)
     {
         itsCharset = CHARSET_DEFAULT;
     }
@@ -304,18 +304,18 @@ const char* TTransDoc::Transcode(char* In, typestr *Out, char *Notice, char *Fie
                                 if (esc2 == MARC8_SET_G1_MULTIBYTE_A || esc2 == MARC8_SET_G1_MULTIBYTE_B)
                                 {
                                     g1 = esc3;
-                                    c += 3;
+                                    c += 4;
                                     continue;
                                 }
                                 if (esc2 == MARC8_SET_G0_MULTIBYTE_B)
                                 {
                                     g0 = esc3;
-                                    c += 3;
+                                    c += 4;
                                     continue;
                                 }
                                 // G0 is default if no other designation is given
-                                g0 = esc3;
-                                c += 2;
+                                g0 = esc2;
+                                c += 3;
                                 continue;
                             }
                         default:
