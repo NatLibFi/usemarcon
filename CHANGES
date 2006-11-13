@@ -2,6 +2,19 @@ USEMARCON Change Log
 
 **************************
 **************************
+version 1.81
+
+November 10 2006
+
+The National Library of Finland
+Ere Maijala
+http://www.kansalliskirjasto.fi/
+ere.maijala at helsinki.fi
+
+- Added possibility to convert incoming records from MARC-8 to UTF-8
+
+**************************
+**************************
 version 1.80
 
 September 27 2006
