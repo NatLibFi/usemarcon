@@ -24,7 +24,7 @@ AUTHOR
 #ifndef _Defines_H
 #define _Defines_H
 
-#define USEMARCON_VERSION "1.80"
+#define USEMARCON_VERSION "1.81"
 
 #define UNKNOWN 0
 #define INPUT 1
@@ -54,6 +54,13 @@ AUTHOR
 #endif
 
 #define MAXPATH 1024
+
+typedef enum MARC_FILE_FORMAT
+{
+    MFF_NONSEGMENTED = 0,
+    MFF_SEGMENTED = 1,
+    MFF_XML = 2,
+} MARC_FILE_FORMAT;
 
 #endif
 
