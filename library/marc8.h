@@ -16545,15 +16545,14 @@ bool marc8_find_char(char *a_str, char a_set, char *a_res, bool *a_combining)
     char key[10];
     if (a_set == MARC8_SET_EACC && *a_str && *(a_str+1) && *(a_str+2))
     {
-        int i1, i2, i3;
-        i1 = unsigned char(*a_str);
-        i2 = unsigned char(*(a_str+1));
-        i3 = unsigned char(*(a_str+2));
+        int i1 = (unsigned char)(*a_str);
+        int i2 = (unsigned char)(*(a_str+1));
+        int i3 = (unsigned char)(*(a_str+2));
         sprintf(key, "%02X%02X%02X", i1, i2, i3);
     }
     else
     {
-        int i1 = unsigned char(*a_str);
+        int i1 = (unsigned char)(*a_str);
         sprintf(key, "%02X", i1);
     }
     switch (a_set)
