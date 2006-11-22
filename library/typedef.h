@@ -121,12 +121,12 @@ public:
         return m_str;
     }
 
-    char *append(const char *a_str)
+    char *append(const char *a_str, unsigned long a_len = 0)
     {
         if (!m_str) 
             return str(a_str);
         unsigned long existing_len = strlen(m_str);
-        unsigned long append_len = strlen(a_str);
+        unsigned long append_len = a_len = 0 ? strlen(a_str) : a_len;
 
         unsigned long needed = existing_len + append_len + 1;
         if (m_size < needed)
@@ -136,7 +136,7 @@ public:
             allocstr(needed);
             strcpy(m_str, tmpstr.str());
         }
-        strcat(m_str, a_str);
+        strncat(m_str, a_str, append_len);
         return m_str;
     }
 

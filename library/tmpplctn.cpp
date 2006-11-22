@@ -269,13 +269,21 @@ int TUMApplication::StartUp(CDetails *Details)
     }
     itsMarcDoc->SetMarcInputFileSpec(&FileSpec);
 
-    itsMarcDoc->SetMarcInputFileFormat(false); //non segmente par defaut
+    itsMarcDoc->SetMarcInputFileFormat(MFF_NONSEGMENTED); // nonsegmented by default
     get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsInputBlockSegmentedChecked","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
     if (*itsErrorHandler->Temporary)
     {
         if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
         {
-            itsMarcDoc->SetMarcInputFileFormat(true);
+            itsMarcDoc->SetMarcInputFileFormat(MFF_SEGMENTED);
+        }
+    }
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsInputFileXML","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
+    if (*itsErrorHandler->Temporary)
+    {
+        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
+        {
+            itsMarcDoc->SetMarcInputFileFormat(MFF_XML);
         }
     }
 
@@ -370,13 +378,21 @@ int TUMApplication::StartUp(CDetails *Details)
     strcpy(FileSpec.name,(char *)itsErrorHandler->Temporary2);
     itsMarcDoc->SetConfOutputFileSpec(&FileSpec);
 
-    itsMarcDoc->SetMarcOutputFileFormat(false);//non segmente par defaut
+    itsMarcDoc->SetMarcOutputFileFormat(MFF_NONSEGMENTED); // nonsegmented by default
     get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsOutputBlockSegmentedChecked","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
     if (*itsErrorHandler->Temporary)
     {
         if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
         {
-            itsMarcDoc->SetMarcOutputFileFormat(true);
+            itsMarcDoc->SetMarcOutputFileFormat(MFF_SEGMENTED);
+        }
+    }
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsOutputFileXML","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
+    if (*itsErrorHandler->Temporary)
+    {
+        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
+        {
+            itsMarcDoc->SetMarcOutputFileFormat(MFF_XML);
         }
     }
 

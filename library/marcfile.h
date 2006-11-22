@@ -22,7 +22,7 @@ OVERVIEW TEXT
 AUTHOR
     Crossnet Systems Limited
     ATP Library Systems Limited
-    Helsinki University Library, the National Library of Finland
+    The National Library of Finland
 
 */
 
@@ -44,7 +44,7 @@ class TMarcFile : public TFile
 public:
     TMarcFile               (FILE_SPEC *FileSpec, TUMApplication *Application,
                              char Mode/*=FILE_READ*/,char Kind/*=FILE_ASCII*/,
-                             bool Format, short BlockSize, short MinFree,
+                             MARC_FILE_FORMAT Format, short BlockSize, short MinFree,
                              char PaddingChar, bool LastBlock);
     ~TMarcFile              (void);
 
@@ -56,12 +56,12 @@ public:
     int       Write                   (TUMRecord *Record);
     long      GetRecordNumber         (void)                  { return NumNotice; };
 
-    void      SetMarcInfoFormat       (bool theFormat)        { itsMarcInfo.Format=theFormat; };
+    void      SetMarcInfoFormat       (MARC_FILE_FORMAT theFormat) { itsMarcInfo.Format=theFormat; };
     void      SetMarcInfoBlockSize    (short theBlockSize)    { itsMarcInfo.BlockSize=theBlockSize; };
     void      SetMarcInfoMinDataFree  (short theMinDataFree)  { itsMarcInfo.MinDataFree=theMinDataFree; };
     void      SetMarcInfoPaddingChar  (char thePaddingChar)   { itsMarcInfo.PaddingChar=thePaddingChar; };
     void      SetMarcInfoLastBlock    (bool theLastBlock)     { itsMarcInfo.LastBlock=theLastBlock; };
-    bool      GetMarcInfoFormat       (void)                  { return itsMarcInfo.Format; };
+    MARC_FILE_FORMAT GetMarcInfoFormat       (void)                  { return itsMarcInfo.Format; };
     short     GetMarcInfoBlockSize    (void)                  { return itsMarcInfo.BlockSize; };
     short     GetMarcInfoMinDataFree  (void)                  { return itsMarcInfo.MinDataFree; };
     char      GetMarcInfoPaddingChar  (void)                  { return itsMarcInfo.PaddingChar; };
@@ -85,11 +85,11 @@ private:
     unsigned short    Reste;
     bool              EndOfFile;
     bool              itsEof;
-    int               lire        (unsigned short, unsigned char*);
-    int               lire_scw    (char);
+    int               read_marc   (unsigned short, unsigned char*);
+    int               read_marc_scw(char);
     int               debut_bloc  (void);
-    int               ecrire      (unsigned short, unsigned char*);
-    int               ecrire_scw  (short,unsigned short);
+    int               write_marc  (unsigned short, unsigned char*);
+    int               write_marc_scw(short,unsigned short);
     int               val         (unsigned char*, unsigned short *);
     int               longval     (unsigned char*, unsigned long *);
 
@@ -102,7 +102,7 @@ protected:
     TMarcDoc          *itsDocument;
     struct MARCINFO
     {
-      bool  Format;
+      MARC_FILE_FORMAT  Format;
       short BlockSize;
       short MinDataFree;
       char  PaddingChar;

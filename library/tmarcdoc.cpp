@@ -42,7 +42,7 @@ TMarcDoc::TMarcDoc(TUMApplication *Application)
   itsFirstOutputTagNoInd = NULL; 
   itsMarcInputFile.Spec       = NULL;
   itsMarcInputFile.Conf       = NULL;
-  itsMarcInputFile.Format    = false;
+  itsMarcInputFile.Format    = MFF_NONSEGMENTED;
   itsMarcInputFile.BlockSize  = 2048;
   itsMarcInputFile.MinDataFree= 5;
   itsMarcInputFile.PaddingChar= 0x5E;
@@ -50,7 +50,7 @@ TMarcDoc::TMarcDoc(TUMApplication *Application)
 
   itsMarcOutputFile.Spec       = NULL;
   itsMarcOutputFile.Conf       = NULL;
-  itsMarcOutputFile.Format     = false;
+  itsMarcOutputFile.Format     = MFF_NONSEGMENTED;
   itsMarcOutputFile.BlockSize  = 2048;
   itsMarcOutputFile.MinDataFree= 5;
   itsMarcOutputFile.PaddingChar= 0x5E;
@@ -296,7 +296,7 @@ int TMarcDoc::Convert(TRuleDoc *RuleDoc)
   else
   { 
     if (itsOutputRecord) { delete itsOutputRecord; itsOutputRecord=NULL; }
-    itsOutputRecord = new TUMRecord(itsTransRecord);  
+    itsOutputRecord = new TUMRecord(*itsTransRecord);  
     if (!itsOutputRecord)
       itsErrorHandler->SetErrorD(3000,ERROR,"When copying Input record to Output record" );
   }
@@ -338,9 +338,9 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
   // Si un fichier existe, alors on convertit itsInputRecord en itsTransRecord conformement
   // a la table de transco chargee
   
-  if (itsApplication->GetDetails()->GetDisableCharacterConversion())
+  if (itsApplication->GetDetails()->GetDisableCharacterConversion() || !aTransDoc->NeedTranscoding())
   {
-    itsTransRecord=new TUMRecord( itsInputRecord );
+    itsTransRecord = new TUMRecord(*itsInputRecord);
     if (!itsTransRecord)
       itsErrorHandler->SetErrorD( 3000, ERROR, "When copying Input record to Trans record" );
   }
@@ -349,7 +349,7 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
     itsTransRecord=new TUMRecord(itsApplication);
     if (!itsTransRecord)
       itsErrorHandler->SetErrorD( 3000, ERROR, "When creating a new Trans record" );
-    aTransDoc->Convert( itsInputRecord, itsTransRecord );
+    aTransDoc->Convert(itsInputRecord, itsTransRecord);
   }
   
   return itsErrorHandler->GetErrorCode();

@@ -47,11 +47,11 @@ TUMRecord::TUMRecord(TUMApplication *Application) : TMarcRecord(Application)
 // TUMRecord : Copie constructeur
 //
 ///////////////////////////////////////////////////////////////////////////////
-TUMRecord::TUMRecord(TUMRecord* aRecord) : TMarcRecord((TMarcRecord*) aRecord)
+TUMRecord::TUMRecord(const TUMRecord &aRecord) : TMarcRecord((TMarcRecord) aRecord)
 {
-    if (aRecord->GetFirstCDLib())
+    if (aRecord.GetFirstCDLib())
     {
-        itsFirstCDLib=itsLastCDLib=new TCDLib(aRecord->GetFirstCDLib());
+        itsFirstCDLib=itsLastCDLib=new TCDLib(aRecord.GetFirstCDLib());
         itsFirstCDLib->SetPrevious(NULL);
         while(itsLastCDLib->GetNext())
             itsLastCDLib=(TCDLib*)itsLastCDLib->GetNext();

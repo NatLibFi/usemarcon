@@ -23,7 +23,7 @@ OVERVIEW TEXT
 AUTHOR
     Crossnet Systems Limited
     ATP Library Systems Limited
-    Helsinki University Library, the National Library of Finland
+    The National Library of Finland
 
 */
 

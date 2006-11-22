@@ -41,23 +41,25 @@ class TMarcRecord
 {
 public:
     TMarcRecord         (TUMApplication *Application);
-    TMarcRecord         (TMarcRecord*);
+    TMarcRecord         (const TMarcRecord &aRecord);
     virtual ~TMarcRecord        ();
+
+    TMarcRecord & operator=(const TMarcRecord &rec);
 
     virtual int           NextField           (TMarcField** Field, char *Tag);
     virtual int           FromString          (char *MarcString);
     virtual int           ToString            (char* marc,long max_size);
     virtual void          DelTree             (void);
-    virtual char          *GetLabel           (void)              { return itsLabel; };
+    virtual const char    *GetLabel           (void) const        { return itsLabel; };
     virtual int           SetLabel            (const char *aLabel);
-    TMarcField            *GetFirstField      (void)              { return itsFirstField; };
+    TMarcField            *GetFirstField      (void) const        { return itsFirstField; };
     virtual void          SetFirstField       (TMarcField *Field) { itsFirstField=Field; };
-    TTagNoInd             *GetFirstInputTNI   (void)              { return itsFirstInputTNI; };
-    TTagNoInd             *GetFirstOutputTNI  (void)              { return itsFirstOutputTNI; };
+    TTagNoInd             *GetFirstInputTNI   (void) const        { return itsFirstInputTNI; };
+    TTagNoInd             *GetFirstOutputTNI  (void) const        { return itsFirstOutputTNI; };
     virtual void          SetFirstInputTNI    (TTagNoInd *aTNI)   { itsFirstInputTNI=aTNI; };
     virtual void          SetFirstOutputTNI   (TTagNoInd *aTNI)   { itsFirstOutputTNI=aTNI; };
     virtual void          SetIndSeparatorsID  (int IO,long ID);
-    virtual long          GetIndSeparatorsID  (int IO);
+    virtual long          GetIndSeparatorsID  (int IO) const;
 
 private:
     int                   Val                 (char *buffer,unsigned long *valeur);

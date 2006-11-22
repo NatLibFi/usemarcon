@@ -38,7 +38,7 @@ class TUMRecord : public TMarcRecord
 {
 public:
     TUMRecord       (TUMApplication *Application);
-    TUMRecord       (TUMRecord*);
+    TUMRecord       (const TUMRecord &aRecord);
     ~TUMRecord      (void);
 
     virtual int       SortCD          (void);
@@ -49,8 +49,8 @@ public:
     virtual int       NextCD          (TCDLib **CDLib, TCD *CD);
     virtual int       PreviousCD      (TCDLib **CDLib, TCD *CD);
     virtual int       InsereCDLib     (TCDLib *aCDLib, TCD *CD=NULL, int Replace=0);
-    virtual TCDLib    *GetFirstCDLib  (void)          { return itsFirstCDLib; };
-    virtual TCDLib    *GetLastCDLib   (void)          { return itsLastCDLib; };
+    virtual TCDLib    *GetFirstCDLib (void) const           { return itsFirstCDLib; };
+    virtual TCDLib    *GetLastCDLib  (void) const           { return itsLastCDLib; };
     virtual void      PrintCD(void);
     virtual int       DelTreeCDLib        (void);
 

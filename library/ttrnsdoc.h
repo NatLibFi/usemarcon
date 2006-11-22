@@ -50,6 +50,7 @@ public:
     virtual FILE_SPEC     *GetTransSpec   (void)  { return itsTransSpec; };
     bool                  SetInputFileCharacterSet(const char *charset);
     int                   Convert (TMarcRecord* In, TMarcRecord* Out);
+    bool                  NeedTranscoding (void)  { return itsFile || itsCharset != CHARSET_DEFAULT ? true : false; };
 
 private:
     TTransFile            *itsFile;

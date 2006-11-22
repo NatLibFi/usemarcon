@@ -68,8 +68,10 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="1"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
+				FavorSizeOrSpeed="2"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"

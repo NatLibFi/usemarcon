@@ -41,22 +41,43 @@ TMarcRecord::TMarcRecord(TUMApplication *Application)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// TMarcRecord : copie constructeur
+// Copy constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
-TMarcRecord::TMarcRecord(TMarcRecord* aRecord)
+TMarcRecord::TMarcRecord(const TMarcRecord &aRecord)
 {
-    strcpy(itsLabel,aRecord->GetLabel());
-    itsFirstInputTNI    = aRecord->GetFirstInputTNI();
-    itsFirstOutputTNI   = aRecord->GetFirstOutputTNI();
-    if (aRecord->GetFirstField())
-        itsFirstField=new TMarcField(aRecord->GetFirstField());
-    else
-        itsFirstField=NULL;
-    itsInputIndSeparatorsID = aRecord->itsInputIndSeparatorsID;
-    itsOutputIndSeparatorsID = aRecord->itsOutputIndSeparatorsID;
-    itsErrorHandler = aRecord->itsErrorHandler;
-    itsDetails = aRecord->itsDetails;
+    strcpy(itsLabel, aRecord.GetLabel());
+
+    TMarcField* In = aRecord.GetFirstField();
+    TMarcField* Out = NULL;
+    while (In)
+    {
+        // On cree un nouveau champ en sortie
+        if (!Out)
+        {
+            Out = new TMarcField;
+            this->SetFirstField(Out);
+        }
+        else
+        {
+            Out->SetNextField(new TMarcField);
+            Out = Out->GetNextField();
+        }
+
+        // On recopie le tag et les indicateurs du champ en entree
+        Out->SetTag(In->GetTag());
+        Out->SetIndicators(In->GetIndicators());
+        Out->SetLib(In->GetLib());
+        In=In->GetNextField();
+    }
+
+
+    itsFirstInputTNI = aRecord.GetFirstInputTNI();
+    itsFirstOutputTNI = aRecord.GetFirstOutputTNI();
+    itsInputIndSeparatorsID = aRecord.itsInputIndSeparatorsID;
+    itsOutputIndSeparatorsID = aRecord.itsOutputIndSeparatorsID;
+    itsErrorHandler = aRecord.itsErrorHandler;
+    itsDetails = aRecord.itsDetails;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,6 +88,54 @@ TMarcRecord::TMarcRecord(TMarcRecord* aRecord)
 TMarcRecord::~TMarcRecord()
 {
     DelTree();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Assignment operator
+//
+///////////////////////////////////////////////////////////////////////////////
+TMarcRecord & TMarcRecord::operator=(const TMarcRecord &aRecord)
+{
+    if (this == &aRecord)
+    {
+        return *this;
+    }
+
+    strcpy(itsLabel, aRecord.GetLabel());
+
+    TMarcField* In = aRecord.GetFirstField();
+    TMarcField* Out = NULL;
+    while (In)
+    {
+        // On cree un nouveau champ en sortie
+        if (!Out)
+        {
+            Out = new TMarcField;
+            this->SetFirstField(Out);
+        }
+        else
+        {
+            Out->SetNextField(new TMarcField);
+            Out = Out->GetNextField();
+        }
+
+        // On recopie le tag et les indicateurs du champ en entree
+        Out->SetTag(In->GetTag());
+        Out->SetIndicators(In->GetIndicators());
+        Out->SetLib(In->GetLib());
+        In=In->GetNextField();
+    }
+
+
+    itsFirstInputTNI = aRecord.GetFirstInputTNI();
+    itsFirstOutputTNI = aRecord.GetFirstOutputTNI();
+    itsInputIndSeparatorsID = aRecord.itsInputIndSeparatorsID;
+    itsOutputIndSeparatorsID = aRecord.itsOutputIndSeparatorsID;
+    itsErrorHandler = aRecord.itsErrorHandler;
+    itsDetails = aRecord.itsDetails;
+
+    return *this;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -436,7 +505,7 @@ bool TMarcRecord::IsItAFieldWithIndicators(char *tag, int IO)
 // GetIndSeparatorsID
 //
 ///////////////////////////////////////////////////////////////////////////////
-long TMarcRecord::GetIndSeparatorsID(int IO)
+long TMarcRecord::GetIndSeparatorsID(int IO) const
 {
     switch (IO)
     {

@@ -14,12 +14,6 @@
  *
  */
 
-#ifdef __STDC__
-#include <limits.h>
-#else
-#include <assert.h>
-#endif
-
 #include "error.h"
 #include "defines.h"
 #include "ttrnsdoc.h"
@@ -161,7 +155,7 @@ int TTransDoc::Convert(TMarcRecord* In, TMarcRecord* Out)
     }
     else
     {
-        Out = In;
+        *Out = *In;
         return 0;
     }
 }
@@ -319,7 +313,6 @@ const char* TTransDoc::Transcode(char* In, typestr *Out, char *Notice, char *Fie
                                 continue;
                             }
                         default:
-                            assert(false);
                             c += 2;
                             continue;
                         }
