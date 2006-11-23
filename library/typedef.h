@@ -126,7 +126,7 @@ public:
         if (!m_str) 
             return str(a_str);
         unsigned long existing_len = strlen(m_str);
-        unsigned long append_len = a_len = 0 ? strlen(a_str) : a_len;
+        unsigned long append_len = a_len == 0 ? strlen(a_str) : a_len;
 
         unsigned long needed = existing_len + append_len + 1;
         if (m_size < needed)
