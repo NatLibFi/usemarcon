@@ -1740,7 +1740,7 @@ fi
 # Define the identity of the package.
  PACKAGE=usemarcon_cpp
  VERSION=1.81
-
+ 
 
 cat >>confdefs.h <<_ACEOF
 #define PACKAGE "$PACKAGE"
