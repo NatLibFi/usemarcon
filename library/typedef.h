@@ -213,6 +213,12 @@ public:
 class TypeCD
 {
 public:
+    TypeCD()
+    {
+        SubField[0] = '\0';
+        SubField[1] = '\0';
+    }
+
     char Field[4];
     int nt;
     char SubField[3];
