@@ -60,7 +60,7 @@ TUMRecord::TUMRecord(const TUMRecord &aRecord) : TMarcRecord((TMarcRecord) aReco
     else
         itsFirstCDLib = NULL;
 
-    memset(itsExistingFields, false, sizeof(itsExistingFields));
+    memcpy(itsExistingFields, aRecord.itsExistingFields, sizeof(itsExistingFields));
     itsSearchedField = NULL;
     itsSearchedFieldFound = false;
 }
