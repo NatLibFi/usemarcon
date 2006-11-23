@@ -30,8 +30,9 @@
 TCD::TCD(TError *ErrorHandler)
 {
     _IN                     = 0;
-    *itsTag             = 0;
-    *itsSubfield            = 0;
+    *itsTag                 = '\0';
+    itsSubfield[0]          = '\0';
+    itsSubfield[1]          = '\0';
     itsOccurenceNumber      = 0;
     itsTagOccurenceNumber   = 0;
     itsSubOccurenceNumber   = 0;
