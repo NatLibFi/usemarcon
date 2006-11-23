@@ -31,6 +31,9 @@ TMarcFile::TMarcFile( FILE_SPEC *FileSpec, TUMApplication *Application, char Mod
     itsApplication = Application;
     itsErrorHandler = Application->GetErrorHandler();
 
+
+    Buffer      = NULL;
+    Buf         = new unsigned char[TBLMAX];
     SetMarcInfoFormat(Format);
     SetMarcInfoBlockSize(BlockSize);
     SetMarcInfoMinDataFree(MinFree);
@@ -46,6 +49,17 @@ TMarcFile::TMarcFile( FILE_SPEC *FileSpec, TUMApplication *Application, char Mod
 ///////////////////////////////////////////////////////////////////////////////
 TMarcFile::~TMarcFile()
 {
+    if (Buffer)
+    {
+        free(Buffer);
+        Buffer  = NULL;
+    }
+    if (Buf)
+    {
+        delete [] Buf;
+        Buf     = NULL;
+    }
+
     delete itsDocument;
 }
 
@@ -66,6 +80,9 @@ int TMarcFile::Open()
     PosCour     = 0L;
     NumBloc     = 0L;
     TB              = GetMarcInfoBlockSize();
+    if (!Buffer)
+        if ((Buffer=(unsigned char *)malloc(TBUF))==NULL)
+            return itsErrorHandler->SetError(1501,ERROR);
     EndOfFile       = false;
     itsEof          = false;
     PBuf            = 0;
