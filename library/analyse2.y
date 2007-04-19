@@ -92,6 +92,11 @@ protected:
 
 */
 
+/*constructor_init
+S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NSO(NULL), NTO(NULL)
+*/
+
+
 
 %}
 
