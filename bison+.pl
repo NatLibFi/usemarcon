@@ -7,7 +7,7 @@
 use strict;
 use Getopt::Long;
 
-my $debug = 1;
+my $debug = 0;
 
 # Main
 {
@@ -48,8 +48,10 @@ my $debug = 1;
 
   my $headerdef = '';
   my $classdef = '';
-  $headerdef = "$1\n" if ($ytab =~ s/\/\*\s*headerdef(.*?)\*\///s);
-  $classdef = $1 if ($ytab =~ s/\/\*\s*classdef(.*?)\*\///s);
+  my $constructor_init = '';
+  $headerdef = "$1\n" if ($ytab =~ s/\/\*\s*headerdef\s*\n?(.*?)\*\///s);
+  $classdef = $1 if ($ytab =~ s/\/\*\s*classdef\s*\n?(.*?)\*\///s);
+  $constructor_init = $1 if ($ytab =~ s/\/\*\s*constructor_init\s*\n?(.*?)\n?\*\///s);
 
   my $class_protected = '';
   my $class_public = '';
@@ -232,15 +234,35 @@ my $debug = 1;
   virtual void yyerror(char *) = 0;
 |;
 
-  # Add header for .h file
-  print HFILE qq|#ifndef ${class_name}_h
+  # Write header file
+
+  $class_public =~ s/\s*\/\*.*?\*\///gs;
+  $class_protected =~ s/\s*\/\*.*?\*\///gs;
+
+  $class_public =~ s/\n{2,}/\n/gs;
+  $class_protected =~ s/\n{2,}/\n/gs;
+
+  print HFILE qq|\
+#ifndef ${class_name}_h
 #define ${class_name}_h
 
+$headerdef
+
+class $class_name
+{
+$classdef
+public:
+$class_public
+protected:
+$class_protected
 |;
 
-  write_class($class_name, $headerdef, $classdef, $class_protected, $class_public);
+  print HFILE "public:\n  ${class_name}() : $constructor_init {}\n" if ($constructor_init);
 
-  print HFILE "#endif ${class_name}_h\n";
+  print HFILE qq|\
+};
+#endif ${class_name}_h;
+|;
 
   close(CFILE);
   close(HFILE);
@@ -312,21 +334,8 @@ sub get_succ_cond($$)
   return $data;
 }
 
-sub write_class($$$$$)
+sub write_class($$$$$$)
 {
-  my ($class, $headerdef, $classdef, $class_protected, $class_public) = @_;
-
-  print HFILE "$headerdef\n";
-
-  print HFILE qq|class $class
-{
-$classdef
-public:
-$class_public
-protected:
-$class_protected
-};
-|;
 }
 
 sub close_class()
