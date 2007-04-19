@@ -19,6 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="."
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -591,6 +592,9 @@
 			</File>
 			<File
 				RelativePath="error.h">
+			</File>
+			<File
+				RelativePath=".\FlexLexer.h">
 			</File>
 			<File
 				RelativePath="lex.yy.h">

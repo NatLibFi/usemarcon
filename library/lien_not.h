@@ -42,7 +42,7 @@ AUTHOR
 #include "tmpplctn.h"
 #include "ytab.h"
 #include "typedef.h"
-#include "lex.yy.h"
+#include "FlexLexer.h"
 #include "mempool.h"
 #include "tools.h"
 #include "regexp.h"
@@ -54,7 +54,7 @@ class TUMRecord;
 class TRule;
 class TEvaluateRule;
 
-class TMarcScannerImpl : public MarcScanner
+class TMarcScannerImpl : public yyFlexLexer
 {
 private:
     long itsBufferLen;
@@ -64,8 +64,7 @@ private:
     MemoryPool *m_allocator;
 
 protected:
-    virtual int YY_MarcScanner_INPUT(char  *buf,int &result,int max_size);
-    virtual int YY_MarcScanner_WRAP() { return 1; }
+    virtual int LexerInput(char *buf,int max_size);
 public:
     TMarcScannerImpl() : itsBufferLen(0), itsBufferPos(0), itsBuffer(NULL), itsFirstTime(true)
     {

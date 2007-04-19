@@ -1,9 +1,8 @@
-%name MarcScanner
-%define LEX_PARAM MarcParser::YYSTYPE &yylval,bool &lex_error, void *allocator
-%define WRAP_CODE return 1;
-%define INPUT_PURE;
-%define WRAP_PURE;
+%option c++
+%option never-interactive
+%option ecs
 %{
+
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>

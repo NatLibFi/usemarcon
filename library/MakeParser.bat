@@ -1,12 +1,10 @@
 @echo off
-set bison="c:\bison\bison++"
-set flex="c:\bison\flex++"
 
 echo Creating Parser..
-%bison% --no-lines -oytab.cpp -d Analyse.y
+perl ../bison+.pl --input analyse2.y --class MarcParser --cpp ytab.cpp --hdr ytab.h --no-lines
 if errorlevel 1 goto bisonerr
 echo Creating Scanner..
-%flex% -L -hlex.yy.h -olex.yy.cpp Analyse.l
+flex -L -olex.yy.cpp Analyse2.l
 if errorlevel 1 goto flexerr
 goto end
 :bisonerr

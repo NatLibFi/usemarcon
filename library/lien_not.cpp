@@ -28,12 +28,12 @@
 #include "truledoc.h"
 #include "lien_not.h"
 
-int TMarcScannerImpl::YY_MarcScanner_INPUT(char  *buf,int &result,int max_size)
+int TMarcScannerImpl::LexerInput(char *buf, int max_size)
 {
     if (itsBufferPos >= itsBufferLen)
     {
         buf = NULL;
-        return result = 0;
+        return 0;
     }
     long num = itsBufferLen - itsBufferPos;
     if (num > max_size)
@@ -41,7 +41,7 @@ int TMarcScannerImpl::YY_MarcScanner_INPUT(char  *buf,int &result,int max_size)
     memcpy(buf, &itsBuffer[itsBufferPos], num);
     itsBufferPos += num;
 
-    return result = num;
+    return num;
 }
 
 void TMarcScannerImpl::SetRule(TRule *Rule)
@@ -64,7 +64,7 @@ void TMarcScannerImpl::SetRule(TRule *Rule)
         sprintf(itsBuffer, "S\n#");
 
     if (!itsFirstTime)
-        YY_MarcScanner_RESTART(NULL);
+        yyrestart(NULL);
 }
 
 void TMarcScannerImpl::RewindBuffer()
@@ -74,7 +74,7 @@ void TMarcScannerImpl::RewindBuffer()
     if (itsFirstTime)
         itsFirstTime = false;
     else
-        YY_MarcScanner_RESTART(NULL);
+        yyrestart(NULL);
 }
 
 // Cette fonction est appellee par l'analyseur grammatical en cas d'erreur
@@ -82,17 +82,17 @@ void TMarcScannerImpl::RewindBuffer()
 int TEvaluateRule::yylex()
 {
     bool ok = true;
-    int token=itsScanner.yylex(yylval, yylloc, ok, &m_allocator);
+    int token=itsScanner.yylex(yylval, ok, &m_allocator);
     if (!ok)
         yyerror("lex error");
-    yylloc.text=(char *)itsScanner.yytext;
+//    yylloc.text=(char *)itsScanner.yytext;
     return token;
 }
 
 void TEvaluateRule::yyerror( char *m )
 {
     if (*m=='s' || *m=='l')
-        sprintf((char*)itsErrorHandler->Temporary,"%s near `%s' in rule \"",m,yylloc.text);
+        sprintf((char*)itsErrorHandler->Temporary,"%s near `%s' in rule \"",m,itsScanner.YYText());
     else
         sprintf((char*)itsErrorHandler->Temporary,"ERROR `%s' in rule ",m);
     ++Error;
