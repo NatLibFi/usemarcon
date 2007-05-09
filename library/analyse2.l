@@ -1,6 +1,5 @@
 %option c++
 %option never-interactive
-%option ecs
 %{
 
 #include <string.h>
