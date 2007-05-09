@@ -1,85 +1,7 @@
-%name MarcParser
-%define LSP_NEEDED
-%define ERROR_BODY =0
-%define LEX_BODY =0
-%define MEMBERS \
-  virtual const char* NextSubField(TypeCD*, TypeCD*) = 0; \
-  virtual const char* LastSubField(TypeCD*,TypeCD*) = 0; \
-  virtual int Precedes(TypeCD*, TypeCD*) = 0; \
-  virtual int Exists(TypeCD*) = 0; \
-  virtual const char* LireCD(TypeCD*) = 0; \
-  virtual const char* NextBalise() = 0; \
-  virtual const char* PreviousBalise() = 0; \
-  virtual TypeCD* AllocCD() = 0; \
-  virtual void FreeCD( TypeCD* CD ) = 0; \
-  virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0; \
-  virtual TypeInst* Last_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0; \
-        virtual TypeInst* NextBal() = 0; \
-        virtual TypeInst* PreviousBal() = 0; \
-  virtual TypeInst* Soust( TypeInst* t1, TypeInst* t2 ) = 0; \
-  virtual TypeInst* Multi( TypeInst* t1, TypeInst* t2 ) = 0; \
-  virtual TypeInst* Divis( TypeInst* t1, TypeInst* t2 ) = 0; \
-  virtual TypeInst* Value( TypeInst* t ) = 0; \
-  virtual int MemSto( TypeInst* n ) = 0; \
-  virtual TypeInst* MemMem( TypeInst* n ) = 0; \
-  virtual int MemClr( TypeInst* n  ) = 0; \
-  virtual TypeInst* MemExc( TypeInst* n ) = 0; \
-\
-TypeInst* S; \
-TypeInst* T; \
-TypeInst* D; \
-TypeCD* CDIn; \
-\
-TypeInst* N; \
-TypeInst* NT; \
-TypeInst* NS; \
-TypeInst* NO; \
-TypeInst* NSO; \
-TypeInst* NTO; \
-TypeInst* Memoire[100]; \
-\
-int debug_rule; \
-char tempo[1000]; \
-int  RedoFlag; \
-unsigned long ordinal; \
-\
-virtual typestr Table( char*, char* ) = 0; \
-virtual int   MustSort( char* ) = 0; \
-\
-virtual TypeInst* AllocTypeInst() = 0; \
-virtual void FreeTypeInst( TypeInst* t ) = 0; \
-virtual int Copie( TypeInst** In, TypeInst* From ) = 0; \
-virtual int BoolEQ( TypeInst* t1, TypeInst* t2 ) = 0; \
-virtual int BoolIn( TypeInst* t1, TypeInst* t2 ) = 0; \
-virtual int BoolGT( TypeInst* t1, TypeInst* t2 ) = 0; \
-virtual int BoolGE( TypeInst* t1, TypeInst* t2 ) = 0; \
-virtual TypeInst* Ajout( TypeInst* t1, TypeInst* t2 ) = 0; \
-virtual TypeInst* AjoutOcc( TypeInst* t1, TypeInst* t2 ) = 0; \
-virtual char* ToString( TypeInst* t ) = 0; \
-virtual TypeInst* String( TypeInst* t ) = 0; \
-virtual TypeInst* Upper( TypeInst* t ) = 0; \
-virtual TypeInst* Lower( TypeInst* t ) = 0; \
-virtual TypeInst* Len( TypeInst* t ) = 0; \
-virtual TypeInst* From( TypeInst* t, int strict ) = 0; \
-virtual TypeInst* To( TypeInst* t, int strict ) = 0; \
-virtual TypeInst* Between( TypeInst* t1, TypeInst* t2, int strict ) = 0; \
-virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, int at, int strict ) = 0; \
-virtual TypeInst* ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, int strict ) = 0; \
-virtual TypeInst* BFirst( TypeInst* t, int k ) = 0; \
-virtual TypeInst* EFirst( TypeInst* t, int k ) = 0; \
-virtual TypeInst* BLast( TypeInst* t, int k ) = 0; \
-virtual TypeInst* ELast( TypeInst* t, int k ) = 0; \
-virtual TypeInst* Table_( TypeInst* Nom ) = 0; \
-virtual void PrintDebug(const char*) = 0; \
-virtual TypeInst* RegFind( TypeInst* t1, TypeInst* t2 ) = 0; \
-virtual TypeInst* RegMatch( TypeInst* t1 ) = 0; \
-virtual TypeInst* RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 ) = 0; \
-
-%define CONSTRUCTOR_INIT : S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NSO(NULL), NTO(NULL)
-
-
 %{
+/*cppdef*/
 #pragma warning( disable : 4102 )
+#pragma warning( disable : 4065 )
 
 #include <stdio.h>
 #include <ctype.h>
@@ -87,17 +9,102 @@ virtual TypeInst* RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 ) = 0; \
 #include <stdlib.h>
 #include <malloc.h>
 #include <time.h>
+
+/* Command to build:  ../bison+.pl --input analyse2.y --class MarcScanner --cpp ytab.cpp --hdr ytab.h --no-lines */
+
+/*headerdef
 #include "typedef.h"
+*/
+
+/*classdef
+protected:
+  TypeInst* S;
+  TypeInst* T;
+  TypeInst* D;
+  TypeCD* CDIn;
+
+  TypeInst* N;
+  TypeInst* NT;
+  TypeInst* NS;
+  TypeInst* NO;
+  TypeInst* NSO;
+  TypeInst* NTO;
+  TypeInst* Memoire[100];
+
+  int debug_rule;
+  char tempo[1000];
+  int  RedoFlag;
+  unsigned long ordinal;
+
+  virtual const char* NextSubField(TypeCD*, TypeCD*) = 0;
+  virtual const char* LastSubField(TypeCD*,TypeCD*) = 0;
+  virtual int Precedes(TypeCD*, TypeCD*) = 0;
+  virtual int Exists(TypeCD*) = 0;
+  virtual const char* LireCD(TypeCD*) = 0;
+  virtual const char* NextBalise() = 0;
+  virtual const char* PreviousBalise() = 0;
+  virtual TypeCD* AllocCD() = 0;
+  virtual void FreeCD( TypeCD* CD ) = 0;
+  virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
+  virtual TypeInst* Last_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
+  virtual TypeInst* NextBal() = 0;
+  virtual TypeInst* PreviousBal() = 0;
+  virtual TypeInst* Soust( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* Multi( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* Divis( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* Value( TypeInst* t ) = 0;
+  virtual int MemSto( TypeInst* n ) = 0;
+  virtual TypeInst* MemMem( TypeInst* n ) = 0;
+  virtual int MemClr( TypeInst* n  ) = 0;
+  virtual TypeInst* MemExc( TypeInst* n ) = 0;
+
+  virtual typestr Table( char*, char* ) = 0;
+  virtual int   MustSort( char* ) = 0;
+
+  virtual TypeInst* AllocTypeInst() = 0;
+  virtual void FreeTypeInst( TypeInst* t ) = 0;
+  virtual int Copie( TypeInst** In, TypeInst* From ) = 0;
+  virtual int BoolEQ( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual int BoolIn( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual int BoolGT( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual int BoolGE( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* Ajout( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* AjoutOcc( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual char* ToString( TypeInst* t ) = 0;
+  virtual TypeInst* String( TypeInst* t ) = 0;
+  virtual TypeInst* Upper( TypeInst* t ) = 0;
+  virtual TypeInst* Lower( TypeInst* t ) = 0;
+  virtual TypeInst* Len( TypeInst* t ) = 0;
+  virtual TypeInst* From( TypeInst* t, int strict ) = 0;
+  virtual TypeInst* To( TypeInst* t, int strict ) = 0;
+  virtual TypeInst* Between( TypeInst* t1, TypeInst* t2, int strict ) = 0;
+  virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, int at, int strict ) = 0;
+  virtual TypeInst* ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, int strict ) = 0;
+  virtual TypeInst* BFirst( TypeInst* t, int k ) = 0;
+  virtual TypeInst* EFirst( TypeInst* t, int k ) = 0;
+  virtual TypeInst* BLast( TypeInst* t, int k ) = 0;
+  virtual TypeInst* ELast( TypeInst* t, int k ) = 0;
+  virtual TypeInst* Table_( TypeInst* Nom ) = 0;
+  virtual void PrintDebug(const char*) = 0;
+  virtual TypeInst* RegFind( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
+  virtual TypeInst* RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 ) = 0;
+
+*/
+
+/*constructor_init
+S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NSO(NULL), NTO(NULL)
+*/
+
+
 
 %}
 
-%union
-{
+%union {
         int   code;
         TypeInst* inst;
         TypeCD*   tcd;
 }
-
 
 
 %token <code> SEP FIN WNUMBER WSTRING
