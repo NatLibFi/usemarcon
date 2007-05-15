@@ -11,19 +11,19 @@
 CLASS
     Terror
 
-    implements a class to error reporting
+    implements a class to error reporting and state storage
 
 OVERVIEW TEXT
     USEMARCON Software - Command Line version
     Copyright The British Library, The USEMarcon Consortium, 1995-2000
     Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
     Adapted by ATP Library Systems Ltd, Finland, 2002-2004
-    Adapted by The National Library of Finland, 2004-2006
+    Adapted by The National Library of Finland, 2004-2007
 
 AUTHOR
     Crossnet Systems Limited
     ATP Library Systems Limited
-    Helsinki University Library, the National Library of Finland
+    The National Library of Finland
 
 */
 
@@ -87,6 +87,8 @@ public:
     // Just an easy way to distribute this information to others
     bool          GetUTF8Mode           (void) { return itsUTF8Mode; }
     void          SetUTF8Mode           (bool UTF8Mode) { itsUTF8Mode = UTF8Mode; }
+    bool          GetConvertSubfieldCodesToLowercase(void) { return itsConvertSubfieldCodesToLowercase; }
+    void          SetConvertSubfieldCodesToLowercase(bool aValue) { itsConvertSubfieldCodesToLowercase = aValue; }
 
     TUMApplication *GetApplication      (void) { return itsApplication; }
 
@@ -101,6 +103,7 @@ private:
     int             itsErrorCode;
     char            itsLastErrorMessage[255];
     bool            itsUTF8Mode;
+    bool            itsConvertSubfieldCodesToLowercase;
 
 protected:
     unsigned int    itsTooManyErrors;

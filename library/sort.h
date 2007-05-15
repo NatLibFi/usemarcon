@@ -34,7 +34,7 @@ public:
     {
         itsCD = new TCD(aCD->GetErrorHandler());
         itsCD->SetTag(aCD->GetTag());
-        itsCD->SetTagOccurenceNumber(aCD->GetTagOccurenceNumber());
+        itsCD->SetTagOccurrenceNumber(aCD->GetTagOccurrenceNumber());
         itsLSubField=strdup(alist);
         itsNext=NULL;
     };

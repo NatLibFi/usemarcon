@@ -310,7 +310,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             // il existe une regle de controle sur le champ courant
         {
             // Control d'occurence du champ courant
-            if ((!CurrentControl->GetTagRepeatable()) && (CurrentControl->GetTagOccurency()))
+            if ((!CurrentControl->GetTagRepeatable()) && (CurrentControl->GetTagOccurrency()))
                 // le champ courant est occurent alors qu'il est thȨoriquement non rȨpȨtable
             {
                 sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s'",(char *)itsErrorHandler->Temporary2,CurrentField->GetTag());
@@ -318,7 +318,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             }
             else
                 // Comptabilisation du champ controlȨ
-                CurrentControl->SetTagOccurency();
+                CurrentControl->SetTagOccurrency();
 
             // Test des premiers indicateurs
             if (TestIndicator(CurrentField->GetI1(),CurrentControl->GetFirstIndicators()))
@@ -390,13 +390,13 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
     CurrentControl = GetFirstCheckField();
     while (CurrentControl)
     {
-        if ((CurrentControl->GetTagMandatory()) && (!CurrentControl->GetTagOccurency()))
+        if ((CurrentControl->GetTagMandatory()) && (!CurrentControl->GetTagOccurrency()))
             // le champ courant n'a pas ȨtȨ rencontrȨ malgrȿs sont caractȿre obligatoire
         {
             sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s'",(char *)itsErrorHandler->Temporary2,CurrentControl->GetTag());
             itsErrorHandler->SetErrorD(IO==INPUT ? 2106 : 7106,WARNING,(char *)itsErrorHandler->Temporary);
         }
-        CurrentControl->SetTagOccurency(0);
+        CurrentControl->SetTagOccurrency(0);
         CurrentControl=CurrentControl->GetNextTag();
     }
 

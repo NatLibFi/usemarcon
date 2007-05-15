@@ -241,6 +241,82 @@ int TMarcFile::read_marc(unsigned short taille, unsigned char * buffer)
     return 0;
 }
 
+bool TMarcFile::xml_read_tag(const char *a_tag, typestr & a_xml)
+{
+    unsigned char temp[2];
+
+    while (read_marc(1, temp) == 0)
+    {
+        if (*temp == '<')
+        {
+            // Found beginning of a tag, find the end
+            typestr tag = "<";
+            while (true)
+            {
+                if (read_marc(1, temp))
+                    return false;
+                tag.append_char(*temp);
+                if (*temp == '>')
+                    break;
+            }
+            
+            // Bypass possible namespace
+            const char *p = strchr(tag.str(), ':');
+            if (!p)
+                p = &(tag.str()[1]);
+            size_t tag_len = strlen(a_tag);
+            if (strncmp(p, a_tag, tag_len) == 0 && *(p + tag_len + 1) == '>')
+            {
+                // We have a match
+                a_xml = tag;
+                return true;
+            }            
+        }
+    }
+    return false;
+}
+
+bool TMarcFile::xml_read_until_end(const char *a_tag, typestr & a_xml)
+{
+    unsigned char temp[2];
+
+    while (read_marc(1, temp) == 0)
+    {
+        if (*temp == '<')
+        {
+            // Found beginning of a tag, find the end
+            typestr tag = "<";
+            while (true)
+            {
+                if (read_marc(1, temp))
+                    return false;
+                tag.append_char(*temp);
+                if (*temp == '>')
+                    break;
+            }
+
+            a_xml.append(tag);
+
+            // Check if this is an end tag
+            if (tag.str()[1] != '/')
+                continue;
+
+            // Bypass possible namespace
+            const char *p = strchr(tag.str(), ':');
+            if (!p)
+                p = &(tag.str()[1]);
+            size_t tag_len = strlen(a_tag);
+            if (strncmp(p, a_tag, tag_len) == 0 && *(p + tag_len + 1) == '>')
+            {
+                // We have a match
+                return true;
+            }            
+        }
+        a_xml.append_char(temp[0]);
+    }
+    return false;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Read
@@ -248,17 +324,32 @@ int TMarcFile::read_marc(unsigned short taille, unsigned char * buffer)
 ///////////////////////////////////////////////////////////////////////////////
 int TMarcFile::Read(TUMRecord *Record)
 {
-    unsigned char temp[TBLMAX];
-
-    if (GetMarcInfoFormat() == MFF_XML)
+    if (GetMarcInfoFormat() == MFF_MARCXML || GetMarcInfoFormat() == MFF_MARCXCHANGE)
     {
+        // This is somewhat crude, but we're trying to get away without actually 
+        // parsing the xml here
         typestr xml;
 
+        // Find beginning of a record
+        while (true)
+        {
+            if (!xml_read_tag("record", xml))
+                if (EndOfFile)
+                    return 1;
+                else
+                    return itsErrorHandler->SetError(1003,ERROR);
 
+            if (!xml_read_until_end("record", xml))
+                return itsErrorHandler->SetError(1003,ERROR);
+        }
+
+        Record->FromXMLString(xml);
+        ++NumNotice;
 
         return 0;
     }
 
+    unsigned char temp[TBLMAX];
     unsigned long   lalire,
         lbuf,
         lreste;

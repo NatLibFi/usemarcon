@@ -24,7 +24,7 @@ AUTHOR
 #ifndef _Defines_H
 #define _Defines_H
 
-#define USEMARCON_VERSION "1.81"
+#define USEMARCON_VERSION "2.00"
 
 #define UNKNOWN 0
 #define INPUT 1
@@ -59,7 +59,8 @@ typedef enum MARC_FILE_FORMAT
 {
     MFF_NONSEGMENTED = 0,
     MFF_SEGMENTED = 1,
-    MFF_XML = 2,
+    MFF_MARCXML = 2,
+    MFF_MARCXCHANGE = 3,
 } MARC_FILE_FORMAT;
 
 #endif

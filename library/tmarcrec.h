@@ -48,7 +48,9 @@ public:
 
     virtual int           NextField           (TMarcField** Field, char *Tag);
     virtual int           FromString          (char *MarcString);
+    virtual int           FromXMLString       (typestr &a_xml);
     virtual int           ToString            (char* marc,long max_size);
+    virtual int           ToXMLString         (typestr &a_xml);
     virtual void          DelTree             (void);
     virtual const char    *GetLabel           (void) const        { return itsLabel; };
     virtual int           SetLabel            (const char *aLabel);

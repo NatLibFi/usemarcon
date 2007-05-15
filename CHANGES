@@ -2,6 +2,22 @@ USEMARCON Change Log
 
 **************************
 **************************
+version 2.00
+
+April 19 2007
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Renewed the core scanner and parser. Parser is now built with bison 
+  and converted to C++ by a perl script. Scanner is built with flex in
+  C++ mode.  
+
+
+**************************
+**************************
 version 1.81
 
 November 10 2006

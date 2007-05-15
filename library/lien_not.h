@@ -134,12 +134,17 @@ private:
     int AfterRedo;
     int Fini;
 
-    virtual const char* NextSubField(TypeCD*,TypeCD*);
-    virtual const char* LastSubField(TypeCD*,TypeCD*);
     virtual int   Precedes(TypeCD*,TypeCD*);
     virtual int   Exists(TypeCD*);
     virtual const char* LireCD(TypeCD*);
     virtual typestr Table(char* Nom,char* str);
+
+    const char* NextBalise();
+    const char* PreviousBalise();
+    const char* NextSubField(TypeCD*, TypeCD*);
+    const char* PreviousSubField(TypeCD*, TypeCD*);
+    bool CompareOccurrence(TypeInst* aCondition, int aOccurrence);
+
 
     int   IsConcat(char* lib);
     int   Replace_N_NT_NS(int val,int N,int NT,int NS);
@@ -151,8 +156,6 @@ private:
     void  PrCD(TypeCD* CD);
     void  ResetSort();
     virtual int   MustSort(char* n);
-    virtual const char* NextBalise();
-    virtual const char* PreviousBalise();
 
     virtual TypeCD* AllocCD();
     virtual void FreeCD( TypeCD* CD );
@@ -176,12 +179,12 @@ private:
     /*
     NEXTSUB
     */
-    virtual TypeInst* NextBal();
+    virtual TypeInst* NextSub(TypeCD* aFindCD, TypeInst *aOccurrence);
 
     /*
     PREVIOUSSUB
     */
-    virtual TypeInst* PreviousBal();
+    virtual TypeInst* PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence);
 
     /*
         Instruction - Instruction

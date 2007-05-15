@@ -278,12 +278,25 @@ int TUMApplication::StartUp(CDetails *Details)
             itsMarcDoc->SetMarcInputFileFormat(MFF_SEGMENTED);
         }
     }
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsInputFileXML","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES","InputFileFormat","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
     if (*itsErrorHandler->Temporary)
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
+        if (!strcasecmp((char *)itsErrorHandler->Temporary,"iso2709"))
         {
-            itsMarcDoc->SetMarcInputFileFormat(MFF_XML);
+            // default, see above
+        }
+        else if (!strcasecmp((char *)itsErrorHandler->Temporary,"marcxml"))
+        {
+            itsMarcDoc->SetMarcInputFileFormat(MFF_MARCXML);
+        }
+        else if (!strcasecmp((char *)itsErrorHandler->Temporary,"marcxchange"))
+        {
+            itsMarcDoc->SetMarcInputFileFormat(MFF_MARCXCHANGE);
+        }
+        else
+        {
+            itsErrorHandler->WriteError("END non OK : Unknown input file format");
+            return -1;
         }
     }
 
@@ -348,6 +361,18 @@ int TUMApplication::StartUp(CDetails *Details)
         }
     }
 
+    bool convertSubfieldCodes = false;
+    get_ini_string("DEFAULT_STATES","ConvertSubfieldCodesToLowercase","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
+    if (*itsErrorHandler->Temporary)
+    {
+        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
+        {
+            convertSubfieldCodes = true;
+        }
+    }
+    itsErrorHandler->SetConvertSubfieldCodesToLowercase(convertSubfieldCodes);
+
+
     memset(&FileSpec,0,sizeof(FILE_SPEC));
     if (!itsDetails->GetMarcRecordAvailable())
     {
@@ -387,12 +412,25 @@ int TUMApplication::StartUp(CDetails *Details)
             itsMarcDoc->SetMarcOutputFileFormat(MFF_SEGMENTED);
         }
     }
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsOutputFileXML","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputFileFormat","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
     if (*itsErrorHandler->Temporary)
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
+        if (!strcasecmp((char *)itsErrorHandler->Temporary,"iso2709"))
         {
-            itsMarcDoc->SetMarcOutputFileFormat(MFF_XML);
+            // default, see above
+        }
+        else if (!strcasecmp((char *)itsErrorHandler->Temporary,"marcxml"))
+        {
+            itsMarcDoc->SetMarcOutputFileFormat(MFF_MARCXML);
+        }
+        else if (!strcasecmp((char *)itsErrorHandler->Temporary,"marcxchange"))
+        {
+            itsMarcDoc->SetMarcOutputFileFormat(MFF_MARCXCHANGE);
+        }
+        else
+        {
+            itsErrorHandler->WriteError("END non OK : Unknown output file format");
+            return -1;
         }
     }
 

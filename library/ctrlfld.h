@@ -94,7 +94,7 @@ public:
     char          *GetTag             (void)                          { return itsTag; };
     int           GetTagMandatory     (void)                          { return itsTagMandatory; };
     int           GetTagRepeatable    (void)                          { return itsTagRepeatable; };
-    int           GetTagOccurency     (void)                          { return itsTagOccurency; };
+    int           GetTagOccurrency    (void)                          { return itsTagOccurrency; };
     TCtrlSubfield *GetFirstSubfield   (void)                          { return itsFirstSubfield; };
     TCtrlSubfield *GetLastSubfield    (void)                          { return itsLastSubfield; };
     char          *GetFirstIndicators (void)                          { return itsFirstIndicators.str(); };
@@ -104,8 +104,8 @@ public:
     void          SetTag              (char *aTag)                    { strcpy(itsTag,aTag); itsTag[3]=0; };
     void          SetTagMandatory     (int IsIt)                      { itsTagMandatory=IsIt; };
     void          SetTagRepeatable    (int IsIt)                      { itsTagRepeatable=IsIt; };
-    void          SetTagOccurency     (void)                          { itsTagOccurency++; };
-    void          SetTagOccurency     (int Occ)                       { itsTagOccurency=Occ; };
+    void          SetTagOccurrency    (void)                          { itsTagOccurrency++; };
+    void          SetTagOccurrency    (int Occ)                       { itsTagOccurrency=Occ; };
     int           SetFirstIndicators  (char *Indicators);
     int           SetSecondIndicators (char *Indicators);
     void          SetFirstSubfield    (TCtrlSubfield *Sub)            { itsFirstSubfield=Sub; };
@@ -116,7 +116,7 @@ private:
     char          itsTag[4];
     int           itsTagMandatory;
     int           itsTagRepeatable;
-    int           itsTagOccurency;
+    int           itsTagOccurrency;
     typestr       itsFirstIndicators;
     typestr       itsSecondIndicators;
     TCtrlSubfield *itsFirstSubfield;

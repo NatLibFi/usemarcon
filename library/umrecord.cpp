@@ -301,7 +301,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
 
             // Recherche des indicateurs du champ courant
             CD.SetTag(CDLib->GetTag());
-            CD.SetTagOccurenceNumber(CDLib->GetTagOccurenceNumber());
+            CD.SetTagOccurrenceNumber(CDLib->GetTagOccurrenceNumber());
             CD.SetSubfield(FIRST_INDICATOR);
 
             // On recherche I1
@@ -400,7 +400,7 @@ int TUMRecord::ToCD(void)
     // On insere ensuite ce CDLib dans la liste des CDLib.
     CDLib.SetTag("000");
     CDLib.SetContent(itsLabel);
-    CDLib.SetTagOccurenceNumber(1);
+    CDLib.SetTagOccurrenceNumber(1);
     InsereCDLib(&CDLib);  // if != 0 ERREUR
 
     // On parcourt ensuite chaque champ de la notice, et on
@@ -412,9 +412,9 @@ int TUMRecord::ToCD(void)
     while (Field)
     {
         // On remplit le Tag
-        CDLib.SetOccurenceNumber(0);
-        CDLib.SetTagOccurenceNumber(0);
-        CDLib.SetSubOccurenceNumber(0);
+        CDLib.SetOccurrenceNumber(0);
+        CDLib.SetTagOccurrenceNumber(0);
+        CDLib.SetSubOccurrenceNumber(0);
         CDLib.SetTag(Field->GetTag());
 
         // Si le champ possede des indicateurs, on en cree deux CDLib
@@ -555,7 +555,7 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
     // On se positionne sur le dernier CDLib de l'arbre et on recherche le dernier
     // CDLib ayant le meme Tag
 
-    if (aCDLib->GetTagOccurenceNumber()<=0)
+    if (aCDLib->GetTagOccurrenceNumber()<=0)
     {
         // On cree un CD dans lequel on va juste renseigne le Tag
 
@@ -570,52 +570,50 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
 
         TCDLib* Search=itsLastCDLib;
         if (PreviousCD(&Search,&aCD))
-            aCDLib->SetTagOccurenceNumber(Search->GetTagOccurenceNumber()+1);
+            aCDLib->SetTagOccurrenceNumber(Search->GetTagOccurrenceNumber()+1);
         else
-            aCDLib->SetTagOccurenceNumber(1);
+            aCDLib->SetTagOccurrenceNumber(1);
 
     }
-    // On va maintenant essayer de decouper notre CDLib en sous-CDLib
-    // et pour chaque sous-CDLib, et refait appel a cette methode (recursion) pour
-    // effectuer l'insertion.
-    // Si on a reussi a decouper le CD-Lib en sous-CDLib, on ne continue pas (l'insertion
-    // est faite recursivement).
-    // Si le CDLib est unitaire, il faut reellement l'integrer dans l'arbre des CDLib.
+
+    // Try to split the CDLib into sub-CDLib's (subfields).
+    // If subfields are found, take one at a time and call this function recursively to insert it, then 
+    // return.
 
     TCDLib* aSubCDLib;
-    int decoupe=0;
+    bool subfields_found = false;
     int pos=0;
     char sf[3];
-    int ns=0;
     if (aCDLib->GetSubfield()) strcpy(sf,aCDLib->GetSubfield());
     else *sf=0;
     while( aCDLib->NextSubCDLib(&aSubCDLib,&pos,sf) )
     {
-        ++ns;
         if (CDIn)
         {
             TCD CopyIn(CDIn);
             CopyIn.SetSubfield(aSubCDLib->GetSubfield());
             if (Replace)
             {
-                CopyIn.SetSubOccurenceNumber(ns);
-                aSubCDLib->SetSubOccurenceNumber(ns);
+                CopyIn.SetSubOccurrenceNumber(aSubCDLib->GetSubOccurrenceNumber());
+            }
+            else
+            {
+                aSubCDLib->SetSubOccurrenceNumber(0);
             }
             InsereCDLib(aSubCDLib,&CopyIn);
         }
         else
         {
-            if (Replace)
-                aSubCDLib->SetSubOccurenceNumber(ns);
+            if (!Replace)
+                aSubCDLib->SetSubOccurrenceNumber(0);
             InsereCDLib(aSubCDLib);
         }
 
-        decoupe=1;
+        subfields_found = true;
         delete aSubCDLib;
     }
-    if (decoupe) return itsErrorHandler->GetErrorCode();
-
-
+    if (subfields_found) 
+        return itsErrorHandler->GetErrorCode();
 
     // Si le CDLib est unitaire on l'insere dans l'arbre.
     // On sait que NT est rempli (on l'a fait au debut de cette methode s'il ne l'etait pas)
@@ -627,7 +625,7 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
 
     TCDLib* Search=itsFirstCDLib;
     int isDefined=1,found=0;
-    if (*(aCDLib->GetSubfield()) && aCDLib->GetSubOccurenceNumber()==0) isDefined=0;
+    if (*(aCDLib->GetSubfield()) && aCDLib->GetSubOccurrenceNumber()==0) isDefined=0;
     if (isDefined)
     {
         while(Search)
@@ -668,11 +666,11 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
                 itsErrorHandler->SetErrorD(5000,ERROR,"When creating the first new CDLib");
             itsFirstCDLib->SetPrevious(NULL);
             itsFirstCDLib->SetNext(NULL);
-            itsLastCDLib->SetOccurenceNumber(1);
+            itsLastCDLib->SetOccurrenceNumber(1);
             if (*(itsLastCDLib->GetSubfield()))
-                itsLastCDLib->SetSubOccurenceNumber(1);
+                itsLastCDLib->SetSubOccurrenceNumber(1);
             else
-                itsLastCDLib->SetSubOccurenceNumber(0);
+                itsLastCDLib->SetSubOccurrenceNumber(0);
         }
         else
         {
@@ -715,7 +713,7 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
                 // Si on trouve au CDLib correspondant, l'occurence number de notre
                 // nouveau CDLib est celle de celui trouve +1
 
-                itsLastCDLib->SetOccurenceNumber(Search->GetOccurenceNumber()+1);
+                itsLastCDLib->SetOccurrenceNumber(Search->GetOccurrenceNumber()+1);
 
 
                 // Si notre CDLib possede un Subfield, deux cas sont possibles :
@@ -729,13 +727,13 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
 
                 if (*(itsLastCDLib->GetSubfield()))
                 {
-                    if (Search->GetTagOccurenceNumber()==itsLastCDLib->GetTagOccurenceNumber())
-                        itsLastCDLib->SetSubOccurenceNumber(Search->GetSubOccurenceNumber()+1);
+                    if (Search->GetTagOccurrenceNumber()==itsLastCDLib->GetTagOccurrenceNumber())
+                        itsLastCDLib->SetSubOccurrenceNumber(Search->GetSubOccurrenceNumber()+1);
                     else
-                        itsLastCDLib->SetSubOccurenceNumber(1);
+                        itsLastCDLib->SetSubOccurrenceNumber(1);
                 }
                 else
-                    itsLastCDLib->SetSubOccurenceNumber(0);
+                    itsLastCDLib->SetSubOccurrenceNumber(0);
 
             }
             else
@@ -744,11 +742,11 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
                 // de meme que son subfield occurence number, si le Subfield est renseigne. Si
                 // le subfield n'est pas renseigne, son subfield occurence number est indefini (0)
 
-                itsLastCDLib->SetOccurenceNumber(1);
+                itsLastCDLib->SetOccurrenceNumber(1);
                 if (*(itsLastCDLib->GetSubfield()))
-                    itsLastCDLib->SetSubOccurenceNumber(1);
+                    itsLastCDLib->SetSubOccurrenceNumber(1);
                 else
-                    itsLastCDLib->SetSubOccurenceNumber(0);
+                    itsLastCDLib->SetSubOccurrenceNumber(0);
             }
         }
     }
@@ -761,9 +759,9 @@ void TUMRecord::PrintCD()
     while (Courant)
     {
         printf("%-3s(%d)%-2s[%d]\t{%d}\t<%s>\n",
-            Courant->GetTag(), Courant->GetTagOccurenceNumber(),
-            Courant->GetSubfield(), Courant->GetSubOccurenceNumber(),
-            Courant->GetOccurenceNumber(), Courant->GetContent());
+            Courant->GetTag(), Courant->GetTagOccurrenceNumber(),
+            Courant->GetSubfield(), Courant->GetSubOccurrenceNumber(),
+            Courant->GetOccurrenceNumber(), Courant->GetContent());
         Courant=(TCDLib*)Courant->GetNext();
     }
 }

@@ -22,7 +22,7 @@ int main( int argc, char** argv )
     printf("Standalone Batch version %s\n", USEMARCON_VERSION);
     printf("Adapted by Crossnet Systems Limited under contract to The British Library\n");
     printf("Adapted by ATP Library Systems Ltd, Finland, 2002-2004\n");
-    printf("Adapted by The National Library of Finland, 2004-2006\n"); 
+    printf("Adapted by The National Library of Finland, 2004-2007\n"); 
     printf("Copyright 2001 - The British Library, The USEMARCON Consortium\n");
     printf("\n");
 

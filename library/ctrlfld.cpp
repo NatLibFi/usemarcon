@@ -55,7 +55,7 @@ TControlField::TControlField(TError *ErrorHandler)
     *itsTag         = 0;
     itsTagMandatory = false;
     itsTagRepeatable    = false;
-    itsTagOccurency = 0;
+    itsTagOccurrency = 0;
     itsFirstSubfield    = NULL;
     itsLastSubfield = NULL;
     itsNextTag          = NULL;

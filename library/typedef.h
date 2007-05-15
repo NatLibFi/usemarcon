@@ -57,6 +57,13 @@ public:
         str(t.m_str);
     }
 
+    typestr(const char *t)
+    {
+        m_str = NULL;
+        m_size = 0;
+        str(t);
+    }
+
     ~typestr()
     {
         freestr();
@@ -65,6 +72,12 @@ public:
     typestr & operator=(const typestr & t)
     {
         str(t.m_str);
+        return *this;
+    }
+
+    typestr & operator=(const char *t)
+    {
+        str(t);
         return *this;
     }
 
@@ -140,17 +153,23 @@ public:
         return m_str;
     }
 
+    typestr & append(typestr & a_str)
+    {
+        append(a_str.str());
+        return *this;
+    }
+
     // Optimized for repeating calls
     char *append_char(char c)
     {
-        unsigned long existing_len = strlen(m_str);
+        unsigned long existing_len = m_str ? strlen(m_str) : 0;
         unsigned long needed = existing_len + 1 + 1;
         if (m_size < needed)
         {
             needed += 100;
             typestr tmpstr = *this;
             allocstr(needed);
-            strcpy(m_str, tmpstr.str());
+            strcpy(m_str, tmpstr.str() ? tmpstr.str() : "");
         }
         m_str[existing_len] = c;
         m_str[existing_len + 1] = '\0';

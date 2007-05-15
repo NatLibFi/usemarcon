@@ -29,6 +29,7 @@ protected:
   TypeInst* NO;
   TypeInst* NSO;
   TypeInst* NTO;
+  TypeInst* NEW;
   TypeInst* Memoire[100];
 
   int debug_rule;
@@ -36,19 +37,15 @@ protected:
   int  RedoFlag;
   unsigned long ordinal;
 
-  virtual const char* NextSubField(TypeCD*, TypeCD*) = 0;
-  virtual const char* LastSubField(TypeCD*,TypeCD*) = 0;
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
   virtual const char* LireCD(TypeCD*) = 0;
-  virtual const char* NextBalise() = 0;
-  virtual const char* PreviousBalise() = 0;
   virtual TypeCD* AllocCD() = 0;
   virtual void FreeCD( TypeCD* CD ) = 0;
   virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
   virtual TypeInst* Last_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
-  virtual TypeInst* NextBal() = 0;
-  virtual TypeInst* PreviousBal() = 0;
+  virtual TypeInst* NextSub(TypeCD* aFindCD, TypeInst* aOccurrence) = 0;
+  virtual TypeInst* PreviousSub(TypeCD* aFindCD, TypeInst* aOccurrence) = 0;
   virtual TypeInst* Soust( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Multi( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Divis( TypeInst* t1, TypeInst* t2 ) = 0;
@@ -112,17 +109,17 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <code> EQ NE _IN GT LT GE LE
 %token <code> EXISTS PRECEDES FOLLOWS
 %token <code> IF THEN ELSE AND OR NOT
-%token <code> BY _STRICT AT BEGINING END BOTH
+%token <code> BY _STRICT AT BEGINING BEGINNING END BOTH
 
 %token <inst> VARS VARD STRING NUMERIC
-%token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO
+%token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW
 %token <inst> TAG STAG FIX I1 I2
 %token <inst> STR VAL LEN STO MEM EXC CLR LOWER UPPER
 %token <inst> FROM TO BETWEEN _DELETE REPLACE REPLACEOCC
 %token <inst> BFIRST EFIRST BLAST ELAST
 %token <inst> REDO SORT NEXT LAST TABLE ORDINAL
 %token <inst> YEAR MONTH DAY HOUR MINUTE SECOND
-%token <inst> NEXTBAL PREVIOUSBAL REGFIND REGMATCH REGREPLACE
+%token <inst> NEXTSUB PREVIOUSSUB REGFIND REGMATCH REGREPLACE
 
 %left  SEP PLUS MOINS MULTIPLIE DIVISE
 
@@ -298,56 +295,105 @@ Condition :
         IF Boolean THEN Translation     { PrintDebug("If...Then...");
                                           if ($2) $$=$4;
                                           else
-                                           {
+                                          {
                                             FreeTypeInst($4);
                                             $4=NULL;
                                             FreeTypeInst(S);
                                             S=NULL;
                                             return 2;
-                                           }
+                                          }
                                         }
 |       IF Boolean THEN Translation ELSE Translation
                                         { PrintDebug("If...Then...Else...");
                                           if ($2)
                                           {
-                                                $$=$4;
-                                                FreeTypeInst($6);
-                                                $6=NULL;
+                                            $$=$4;
+                                            FreeTypeInst($6);
+                                            $6=NULL;
                                           }
                                           else
                                           {
-                                                $$=$6;
-                                                FreeTypeInst($4);
-                                                $4=NULL;
+                                            $$=$6;
+                                            FreeTypeInst($4);
+                                            $4=NULL;
                                           }
                                         }
 |       IF Boolean THEN Condition     { PrintDebug("If...Then... (condition)");
                                           if ($2) $$=$4;
                                           else
-                                           {
+                                          {
                                             FreeTypeInst($4);
                                             $4=NULL;
                                             FreeTypeInst(S);
                                             S=NULL;
                                             return 2;
-                                           }
+                                          }
                                         }
 |       IF Boolean THEN Translation ELSE Condition
                                         { PrintDebug("If...Then...Else... (condition)");
                                           if ($2)
                                           {
-                                                $$=$4;
-                                                FreeTypeInst($6);
-                                                $6=NULL;
+                                            $$=$4;
+                                            FreeTypeInst($6);
+                                            $6=NULL;
                                           }
                                           else
                                           {
-                                                $$=$6;
-                                                FreeTypeInst($4);
-                                                $4=NULL;
+                                            $$=$6;
+                                            FreeTypeInst($4);
+                                            $4=NULL;
+                                          }
+                                        }
+|       IF Boolean Translation          { PrintDebug("If......");
+                                          if ($2) $$=$3;
+                                          else
+                                          {
+                                            Copie(&$$,S);
+                                            FreeTypeInst($3);
+                                            $3=NULL;
+                                          }
+                                        }
+|       IF Boolean Translation ELSE Translation
+                                        { PrintDebug("If......Else...");
+                                          if ($2)
+                                          {
+                                            $$=$3;
+                                            FreeTypeInst($5);
+                                            $5=NULL;
+                                          }
+                                          else
+                                          {
+                                            $$=$5;
+                                            FreeTypeInst($3);
+                                            $3=NULL;
+                                          }
+                                        }
+|       IF Boolean Condition            { PrintDebug("If...... (condition)");
+                                          if ($2) $$=$3;
+                                          else
+                                          {
+                                            Copie(&$$,S);
+                                            FreeTypeInst($3);
+                                            $3=NULL;
+                                          }
+                                        }
+|       IF Boolean Translation ELSE Condition
+                                        { PrintDebug("If......Else... (condition)");
+                                          if ($2)
+                                          {
+                                            $$=$3;
+                                            FreeTypeInst($5);
+                                            $5=NULL;
+                                          }
+                                          else
+                                          {
+                                            $$=$5;
+                                            FreeTypeInst($3);
+                                            $3=NULL;
                                           }
                                         }
 ;
+
 
 Boolean :
         '(' Boolean ')'                 { PrintDebug("(B...)"); $$=$2; }
@@ -454,11 +500,19 @@ Translation :
                                           FreeTypeInst($3);
                                           $3=NULL;
                                         }
-|       NEXTBAL                 {
-                                                PrintDebug("NextSub");$$=NextBal();
+|       NEXTSUB                         {
+                                                PrintDebug("NextSub");$$=NextSub(NULL, NULL);
                                         }
-|       PREVIOUSBAL             {
-                                                PrintDebug("PreviousSub");$$=PreviousBal();
+|       NEXTSUB '(' CD ',' Translation ')' { 
+                                          PrintDebug("NextSub(...,...)");
+                                          $$=NextSub($3, $5);
+                                        }
+|       PREVIOUSSUB                     {
+                                                PrintDebug("PreviousSub");$$=PreviousSub(NULL, NULL);
+                                        }
+|       PREVIOUSSUB '(' CD ',' Translation ')' { 
+                                          PrintDebug("PreviousSub(...)");
+                                          $$=PreviousSub($3, $5);
                                         }
 |       VAR_N                           { PrintDebug("N");Copie(&$$,N); }
 |       VAR_NT                          { PrintDebug("NT");Copie(&$$,NT); }
@@ -466,6 +520,7 @@ Translation :
 |       VAR_NO                          { PrintDebug("NO");Copie(&$$,NO); }
 |       VAR_NTO                         { PrintDebug("NTO"); Copie(&$$,NTO); }
 |       VAR_NSO                         { PrintDebug("NSO");Copie(&$$,NSO); }
+|       VAR_NEW                         { PrintDebug("NEW");Copie(&$$,NEW); }
 |       VARS                            { PrintDebug("S");Copie(&$$,S); }
 |       VARD                            { PrintDebug("S");Copie(&$$,D); }
 |       CD                      { const char *ptr;
@@ -502,6 +557,8 @@ Translation :
 |       _DELETE '(' Translation ')'     { PrintDebug("Delete(...)");$$=Replace($3,NULL,0,0); $3=NULL; }
 |       _DELETE '(' Translation ',' AT BEGINING ')'
                                         { PrintDebug("Delete(..., AT BEGINING)");$$=Replace($3,NULL,1,0); $3=NULL; }
+|       _DELETE '(' Translation ',' AT BEGINNING ')'
+                                        { PrintDebug("Delete(..., AT BEGINNING)");$$=Replace($3,NULL,1,0); $3=NULL; }
 |       _DELETE '(' Translation ',' AT END ')'
                                         { PrintDebug("Delete(..., AT END)");$$=Replace($3,NULL,2,0); $3=NULL; }
 |       _DELETE '(' Translation ',' AT BOTH ')'
@@ -509,6 +566,8 @@ Translation :
 |       _DELETE '(' Translation ',' _STRICT ')' { PrintDebug("Delete(...)");$$=Replace($3,NULL,0,1); $3=NULL; }
 |       _DELETE '(' Translation ',' AT BEGINING ',' _STRICT ')'
                                         { PrintDebug("Delete(..., AT BEGINING)");$$=Replace($3,NULL,1,1); $3=NULL; }
+|       _DELETE '(' Translation ',' AT BEGINNING ',' _STRICT ')'
+                                        { PrintDebug("Delete(..., AT BEGINNING)");$$=Replace($3,NULL,1,1); $3=NULL; }
 |       _DELETE '(' Translation ',' AT END ',' _STRICT ')'
                                         { PrintDebug("Delete(..., AT END)");$$=Replace($3,NULL,2,1); $3=NULL; }
 |       _DELETE '(' Translation ',' AT BOTH ',' _STRICT ')'
@@ -516,6 +575,8 @@ Translation :
 |       REPLACE '(' Translation BY Translation ')'      { PrintDebug("replace(...)");$$=Replace($3,$5,0,0); $3=$5=NULL; }
 |       REPLACE '(' Translation BY Translation ',' AT BEGINING ')'
                                         { PrintDebug("replace(..., AT BEGINING)");$$=Replace($3,$5,1,0); $3=$5=NULL; }
+|       REPLACE '(' Translation BY Translation ',' AT BEGINNING ')'
+                                        { PrintDebug("replace(..., AT BEGINNING)");$$=Replace($3,$5,1,0); $3=$5=NULL; }
 |       REPLACE '(' Translation BY Translation ',' AT END ')'
                                         { PrintDebug("replace(..., AT END)");$$=Replace($3,$5,2,0); $3=$5=NULL; }
 |       REPLACE '(' Translation BY Translation ',' AT BOTH ')'
@@ -524,6 +585,8 @@ Translation :
                                         { PrintDebug("replace(...)");$$=Replace($3,$5,0,1); $3=$5=NULL; }
 |       REPLACE '(' Translation BY Translation ',' AT BEGINING ',' _STRICT ')'
                                         { PrintDebug("replace(..., AT BEGINING)");$$=Replace($3,$5,1,1); $3=$5=NULL; }
+|       REPLACE '(' Translation BY Translation ',' AT BEGINNING ',' _STRICT ')'
+                                        { PrintDebug("replace(..., AT BEGINNING)");$$=Replace($3,$5,1,1); $3=$5=NULL; }
 |       REPLACE '(' Translation BY Translation ',' AT END ',' _STRICT ')'
                                         { PrintDebug("replace(..., AT END)");$$=Replace($3,$5,2,1); $3=$5=NULL; }
 |       REPLACE '(' Translation BY Translation ',' AT BOTH ',' _STRICT ')'

@@ -29,18 +29,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 TCD::TCD(TError *ErrorHandler)
 {
+    itsErrorHandler     = ErrorHandler;
     _IN                     = 0;
     *itsTag                 = '\0';
     itsSubfield[0]          = '\0';
     itsSubfield[1]          = '\0';
-    itsOccurenceNumber      = 0;
-    itsTagOccurenceNumber   = 0;
-    itsSubOccurenceNumber   = 0;
+    itsOccurrenceNumber      = 0;
+    itsTagOccurrenceNumber   = 0;
+    itsSubOccurrenceNumber   = 0;
     itsPrevious         = NULL;
     itsNext             = NULL;
-    itsBegining         = 0;
+    itsBeginning         = 0;
     itsEnd                  = 0;
-    itsErrorHandler     = ErrorHandler;
     itsTagContainsWildcard = false;
     itsTagIsWildcard = false;
     itsSubfieldContainsWildcard = false;
@@ -53,14 +53,14 @@ TCD::TCD(TError *ErrorHandler)
 ///////////////////////////////////////////////////////////////////////////////
 TCD::TCD(TypeCD* atcd, TError *ErrorHandler)
 {
+    itsErrorHandler = ErrorHandler;
     SetTag(atcd->Field);
     SetSubfield(atcd->SubField);
-    itsOccurenceNumber  = 0;
-    itsTagOccurenceNumber   = atcd->nt;
-    itsSubOccurenceNumber   = atcd->ns;
+    itsOccurrenceNumber  = 0;
+    itsTagOccurrenceNumber   = atcd->nt;
+    itsSubOccurrenceNumber   = atcd->ns;
     itsPrevious = NULL;
     itsNext     = NULL;
-    itsErrorHandler = ErrorHandler;
     SetFixedPos(atcd->Fixed.str());
 }
 
@@ -72,13 +72,14 @@ TCD::TCD(TypeCD* atcd, TError *ErrorHandler)
 ///////////////////////////////////////////////////////////////////////////////
 TCD::TCD(TCD *aCD)
 {
+    itsErrorHandler = aCD->itsErrorHandler;
     _IN=aCD->GetIN();
     SetTag(aCD->GetTag());
     SetSubfield(aCD->GetSubfield());
-    itsOccurenceNumber=aCD->GetOccurenceNumber();
-    itsTagOccurenceNumber=aCD->GetTagOccurenceNumber();
-    itsSubOccurenceNumber=aCD->GetSubOccurenceNumber();
-    itsBegining=aCD->GetBegining();
+    itsOccurrenceNumber=aCD->GetOccurrenceNumber();
+    itsTagOccurrenceNumber=aCD->GetTagOccurrenceNumber();
+    itsSubOccurrenceNumber=aCD->GetSubOccurrenceNumber();
+    itsBeginning=aCD->GetBeginning();
     itsEnd=aCD->GetEnd();
     if (aCD->GetNext())
     {
@@ -88,7 +89,6 @@ TCD::TCD(TCD *aCD)
     else
         itsNext = NULL;
     itsPrevious = NULL;
-    itsErrorHandler = aCD->itsErrorHandler;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ TCD::~TCD()
 // SetFixedPos
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TCD::SetFixedPos(char *String)
+void TCD::SetFixedPos(char *String)
 {
     int     MaxPos,
         CurrentPos,
@@ -114,22 +114,22 @@ int TCD::SetFixedPos(char *String)
 
     if (!String)
     {
-        SetBegining(0);
+        SetBeginning(0);
         SetEnd(0);
-        return 0;
+        return;
     }
 
     // Remove all spaces
     if ((MaxPos=RemoveSpace(String))==0)
     {
-        SetBegining(0);
+        SetBeginning(0);
         SetEnd(0);
-        return 0;
+        return;
     }
 
     // Test if the String is a Fixed position and returns if not
     if (*String!='/')
-        return 0;
+        return;
 
     RealPos++;                  // skip the '/' character
     for (CurrentPos=RealPos; CurrentPos<MaxPos && String[CurrentPos]!='/'; )
@@ -146,7 +146,7 @@ int TCD::SetFixedPos(char *String)
             {
                 if (*(Pointer+1)!=0)
                 {
-                    SetBegining(1);
+                    SetBeginning(1);
                     SetEnd(atoi(++Pointer));
                 }
             }
@@ -155,23 +155,22 @@ int TCD::SetFixedPos(char *String)
                 {
                     SetEnd(-1);
                     *Pointer=0;
-                    SetBegining(atoi((char *)itsErrorHandler->Temporary2));
+                    SetBeginning(atoi((char *)itsErrorHandler->Temporary2));
                 }
                 else
                 {
                     SetEnd(atoi(++Pointer));
                     *Pointer=0;
-                    SetBegining(atoi((char *)itsErrorHandler->Temporary2));
+                    SetBeginning(atoi((char *)itsErrorHandler->Temporary2));
                 }
         }
         else
         {
-            SetBegining(atoi((char *)itsErrorHandler->Temporary2));
-            SetEnd(itsBegining);
+            SetBeginning(atoi((char *)itsErrorHandler->Temporary2));
+            SetEnd(itsBeginning);
         }
-        return 0;
+        return;
     }
-    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -229,27 +228,27 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
                 itsErrorHandler->Temporary2[CurrentPos-RealPos]=0;
                 ToUpperCase((char *)itsErrorHandler->Temporary2);
                 if (!strcmp((char *)itsErrorHandler->Temporary2,"N"))
-                    SetTagOccurenceNumber(CD_N);
+                    SetTagOccurrenceNumber(CD_N);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NT"))
-                    SetTagOccurenceNumber(CD_NT);
+                    SetTagOccurrenceNumber(CD_NT);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NS"))
-                    SetTagOccurenceNumber(CD_NS);
+                    SetTagOccurrenceNumber(CD_NS);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NTO"))
-                    SetTagOccurenceNumber(CD_NTO);
+                    SetTagOccurrenceNumber(CD_NTO);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NO"))
-                    SetTagOccurenceNumber(CD_NO);
+                    SetTagOccurrenceNumber(CD_NO);
                 else 
-                    SetTagOccurenceNumber(atoi((char *)itsErrorHandler->Temporary2));
+                    SetTagOccurrenceNumber(atoi((char *)itsErrorHandler->Temporary2));
             }
             else
                 // the occurence Tag is empty
-                SetTagOccurenceNumber(CD_NT);
+                SetTagOccurrenceNumber(CD_NT);
             CurrentPos++;
             RealPos=CurrentPos;
         }
         else
             // there is no occurence Tag
-            SetTagOccurenceNumber(CD_NT);
+            SetTagOccurrenceNumber(CD_NT);
     }
     else
     {
@@ -259,7 +258,7 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
             IsOccTagPresent=1;
             SetTag(Last->GetTag());
             SetSubfield(Last->GetSubfield());
-            SetTagOccurenceNumber(Last->GetTagOccurenceNumber());
+            SetTagOccurrenceNumber(Last->GetTagOccurrenceNumber());
         }
         else
             return 5200;
@@ -300,21 +299,21 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
                 itsErrorHandler->Temporary2[CurrentPos-RealPos]=0;
                 ToUpperCase((char *)itsErrorHandler->Temporary2);
                 if (!strcmp((char *)itsErrorHandler->Temporary2,"N"))
-                    SetSubOccurenceNumber(CD_N);
+                    SetSubOccurrenceNumber(CD_N);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NT"))
-                    SetSubOccurenceNumber(CD_NT);
+                    SetSubOccurrenceNumber(CD_NT);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NS"))
-                    SetSubOccurenceNumber(CD_NS);
+                    SetSubOccurrenceNumber(CD_NS);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NSO"))
-                    SetSubOccurenceNumber(CD_NSO);
+                    SetSubOccurrenceNumber(CD_NSO);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NO"))
-                    SetSubOccurenceNumber(CD_NO);
+                    SetSubOccurrenceNumber(CD_NO);
                 else
-                    SetTagOccurenceNumber(atoi((char *)itsErrorHandler->Temporary2));
+                    SetTagOccurrenceNumber(atoi((char *)itsErrorHandler->Temporary2));
             }
             else
                 // the occurence Sub is empty
-                SetSubOccurenceNumber(CD_NS);
+                SetSubOccurrenceNumber(CD_NS);
             CurrentPos++;
             RealPos=CurrentPos;
         }
@@ -335,30 +334,30 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
     if (InputOrOutput==INPUT)
     {
         // No occurence N, NT etc. ( < 0) is allowed in Input CDs
-        if (GetTagOccurenceNumber() < 0)
-            SetTagOccurenceNumber(0);
-        if (GetSubOccurenceNumber() < 0)
-            SetSubOccurenceNumber(0);
-        SetOccurenceNumber(0);
+        if (GetTagOccurrenceNumber() < 0)
+            SetTagOccurrenceNumber(0);
+        if (GetSubOccurrenceNumber() < 0)
+            SetSubOccurrenceNumber(0);
+        SetOccurrenceNumber(0);
     }
     else
     {
         if (!IsOccTagPresent && !IsOccSubPresent)
             // Tag Ocurence and Sub Occurence are respectively set to nt and ns if there is no defined occurence
         {
-            SetTagOccurenceNumber(CD_NT);
-            SetSubOccurenceNumber(CD_NS);
+            SetTagOccurrenceNumber(CD_NT);
+            SetSubOccurrenceNumber(CD_NS);
         }
         else
         {
             if (IsOccTagPresent  && !IsOccSubPresent)
-                SetSubOccurenceNumber(1);
+                SetSubOccurrenceNumber(1);
             if (!IsOccTagPresent  && IsOccSubPresent)
-                SetTagOccurenceNumber(1);
+                SetTagOccurrenceNumber(1);
         }
     }
     if (!*itsSubfield)
-        SetSubOccurenceNumber(0);
+        SetSubOccurrenceNumber(0);
     return 0;
 }
 
@@ -399,7 +398,7 @@ int TCD::ToString(char *String, int InputOrOutput)
     // [(n1)]
     if (InputOrOutput==OUTPUT)
     {
-        Occurence=GetTagOccurenceNumber();
+        Occurence=GetTagOccurrenceNumber();
         switch(Occurence)
         {
         case CD_N  : strcpy(szOccTag,"(n)");                break;
@@ -424,7 +423,7 @@ int TCD::ToString(char *String, int InputOrOutput)
         else
         {
             // [(n2)]
-            Occurence=GetSubOccurenceNumber();
+            Occurence=GetSubOccurrenceNumber();
             switch(Occurence)
             {
             case CD_N  : strcpy(szOccSub,"(n)");            break;
@@ -488,12 +487,12 @@ int TCD::ToString(char *String, int InputOrOutput)
         }
     }
 
-    if (itsBegining)
+    if (itsBeginning)
     {
-        if (itsBegining!=itsEnd)
-            sprintf(&String[CurrentPos],"/%d-%d/",itsBegining,itsEnd);
+        if (itsBeginning!=itsEnd)
+            sprintf(&String[CurrentPos],"/%d-%d/",itsBeginning,itsEnd);
         else
-            sprintf(&String[CurrentPos],"/%d/",itsBegining);
+            sprintf(&String[CurrentPos],"/%d/",itsBeginning);
     }
 
     return 0;
@@ -535,3 +534,13 @@ void TCD::update_subfield_wildcard()
     itsSubfieldContainsWildcard = itsSubfield[0] == '?' || itsSubfield[1] == '?';
 }
 
+void TCD::SetSubfield(const char *aSubfield)
+{ 
+    memcpy(itsSubfield, aSubfield, 2); 
+    itsSubfield[2]=0;
+    if (itsSubfield[1] && itsErrorHandler->GetConvertSubfieldCodesToLowercase())
+    {
+        itsSubfield[1] = tolower(itsSubfield[1]);
+    }
+    update_subfield_wildcard(); 
+}

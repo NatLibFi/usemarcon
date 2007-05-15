@@ -73,14 +73,14 @@ YYID (i)
   return i;
 }
 #endif
-#define YYFINAL  102
-#define YYLAST   963
-#define YYNTOKENS  87
+#define YYFINAL  105
+#define YYLAST   1086
+#define YYNTOKENS  89
 #define YYNNTS  12
-#define YYNRULES  127
-#define YYNSTATES  312
+#define YYNRULES  138
+#define YYNSTATES  338
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   338
+#define YYMAXUTOK   340
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -98,6 +98,7 @@ protected:
   TypeInst* NO;
   TypeInst* NSO;
   TypeInst* NTO;
+  TypeInst* NEW;
   TypeInst* Memoire[100];
 
   int debug_rule;
@@ -105,19 +106,15 @@ protected:
   int  RedoFlag;
   unsigned long ordinal;
 
-  virtual const char* NextSubField(TypeCD*, TypeCD*) = 0;
-  virtual const char* LastSubField(TypeCD*,TypeCD*) = 0;
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
   virtual const char* LireCD(TypeCD*) = 0;
-  virtual const char* NextBalise() = 0;
-  virtual const char* PreviousBalise() = 0;
   virtual TypeCD* AllocCD() = 0;
   virtual void FreeCD( TypeCD* CD ) = 0;
   virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
   virtual TypeInst* Last_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
-  virtual TypeInst* NextBal() = 0;
-  virtual TypeInst* PreviousBal() = 0;
+  virtual TypeInst* NextSub(TypeCD* aFindCD, TypeInst* aOccurrence) = 0;
+  virtual TypeInst* PreviousSub(TypeCD* aFindCD, TypeInst* aOccurrence) = 0;
   virtual TypeInst* Soust( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Multi( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Divis( TypeInst* t1, TypeInst* t2 ) = 0;
@@ -193,59 +190,61 @@ public:
      _STRICT = 283,
      AT = 284,
      BEGINING = 285,
-     END = 286,
-     BOTH = 287,
-     VARS = 288,
-     VARD = 289,
-     STRING = 290,
-     NUMERIC = 291,
-     VAR_N = 292,
-     VAR_NT = 293,
-     VAR_NS = 294,
-     VAR_NO = 295,
-     VAR_NTO = 296,
-     VAR_NSO = 297,
-     TAG = 298,
-     STAG = 299,
-     FIX = 300,
-     I1 = 301,
-     I2 = 302,
-     STR = 303,
-     VAL = 304,
-     LEN = 305,
-     STO = 306,
-     MEM = 307,
-     EXC = 308,
-     CLR = 309,
-     LOWER = 310,
-     UPPER = 311,
-     FROM = 312,
-     TO = 313,
-     BETWEEN = 314,
-     _DELETE = 315,
-     REPLACE = 316,
-     REPLACEOCC = 317,
-     BFIRST = 318,
-     EFIRST = 319,
-     BLAST = 320,
-     ELAST = 321,
-     REDO = 322,
-     SORT = 323,
-     NEXT = 324,
-     LAST = 325,
-     TABLE = 326,
-     ORDINAL = 327,
-     YEAR = 328,
-     MONTH = 329,
-     DAY = 330,
-     HOUR = 331,
-     MINUTE = 332,
-     SECOND = 333,
-     NEXTBAL = 334,
-     PREVIOUSBAL = 335,
-     REGFIND = 336,
-     REGMATCH = 337,
-     REGREPLACE = 338
+     BEGINNING = 286,
+     END = 287,
+     BOTH = 288,
+     VARS = 289,
+     VARD = 290,
+     STRING = 291,
+     NUMERIC = 292,
+     VAR_N = 293,
+     VAR_NT = 294,
+     VAR_NS = 295,
+     VAR_NO = 296,
+     VAR_NTO = 297,
+     VAR_NSO = 298,
+     VAR_NEW = 299,
+     TAG = 300,
+     STAG = 301,
+     FIX = 302,
+     I1 = 303,
+     I2 = 304,
+     STR = 305,
+     VAL = 306,
+     LEN = 307,
+     STO = 308,
+     MEM = 309,
+     EXC = 310,
+     CLR = 311,
+     LOWER = 312,
+     UPPER = 313,
+     FROM = 314,
+     TO = 315,
+     BETWEEN = 316,
+     _DELETE = 317,
+     REPLACE = 318,
+     REPLACEOCC = 319,
+     BFIRST = 320,
+     EFIRST = 321,
+     BLAST = 322,
+     ELAST = 323,
+     REDO = 324,
+     SORT = 325,
+     NEXT = 326,
+     LAST = 327,
+     TABLE = 328,
+     ORDINAL = 329,
+     YEAR = 330,
+     MONTH = 331,
+     DAY = 332,
+     HOUR = 333,
+     MINUTE = 334,
+     SECOND = 335,
+     NEXTSUB = 336,
+     PREVIOUSSUB = 337,
+     REGFIND = 338,
+     REGMATCH = 339,
+     REGREPLACE = 340
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

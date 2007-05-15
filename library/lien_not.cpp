@@ -28,6 +28,8 @@
 #include "truledoc.h"
 #include "lien_not.h"
 
+#define C_NEW -20;
+
 int TMarcScannerImpl::LexerInput(char *buf, int max_size)
 {
     if (itsBufferPos >= itsBufferLen)
@@ -122,6 +124,7 @@ int TEvaluateRule::Replace_N_NT_NS( int val, int N, int NT, int NS )
     case CD_N  : return N;
     case CD_NT : return NT;
     case CD_NS : return NS;
+    case CD_NEW : return C_NEW;
     default    : return val;
     }
 }
@@ -157,6 +160,8 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
     NO=AllocTypeInst();
     NTO=AllocTypeInst();
     NSO=AllocTypeInst();
+    NEW=AllocTypeInst();
+    NEW->val = C_NEW;
     CDIn=AllocCD();
     if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn)
         itsErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
@@ -236,17 +241,17 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         {
             D=AllocTypeInst();
         }
-        if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn)
+        if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW)
             itsErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
 
         // Initialisation de S,N,NT,NS : valeurs de l'entree
         N->str.freestr();
         NT->str.freestr();
         NS->str.freestr();
-        N->val=aCDLIn->GetOccurenceNumber();
-        NT->val=aCDLIn->GetTagOccurenceNumber();
+        N->val=aCDLIn->GetOccurrenceNumber();
+        NT->val=aCDLIn->GetTagOccurrenceNumber();
         if (*(Rule->GetInputCD()->GetSubfield()))
-            NS->val=aCDLIn->GetSubOccurenceNumber();
+            NS->val=aCDLIn->GetSubOccurrenceNumber();
         else
             NS->val=0;
         S->val=0;
@@ -258,8 +263,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         // Initialisation des parametres du CDIn
         strcpy(CDIn->Field,aCDLIn->GetTag());
         strcpy(CDIn->SubField,aCDLIn->GetSubfield());
-        CDIn->nt=aCDLIn->GetTagOccurenceNumber();
-        CDIn->ns=aCDLIn->GetSubOccurenceNumber();
+        CDIn->nt=aCDLIn->GetTagOccurrenceNumber();
+        CDIn->ns=aCDLIn->GetSubOccurrenceNumber();
 
 
         // -------------------------------------------------
@@ -272,15 +277,15 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             aCDOut->ReplaceWildcards(CDIn->Field, CDIn->SubField);
 
             // Si n, ns ou nt apparaissent dans CDOut, on les remplace par leur valeur
-            aCDOut->SetOccurenceNumber(
-                Replace_N_NT_NS(aCDOut->GetOccurenceNumber(), N->val, NT->val, NS->val) );
-            aCDOut->SetTagOccurenceNumber(
-                Replace_N_NT_NS(aCDOut->GetTagOccurenceNumber(), N->val, NT->val, NS->val) );
+            aCDOut->SetOccurrenceNumber(
+                Replace_N_NT_NS(aCDOut->GetOccurrenceNumber(), N->val, NT->val, NS->val) );
+            aCDOut->SetTagOccurrenceNumber(
+                Replace_N_NT_NS(aCDOut->GetTagOccurrenceNumber(), N->val, NT->val, NS->val) );
             if (*(aCDOut->GetSubfield())=='I')
-                aCDOut->SetSubOccurenceNumber(1);
+                aCDOut->SetSubOccurrenceNumber(1);
             else
-                aCDOut->SetSubOccurenceNumber(
-                    Replace_N_NT_NS(aCDOut->GetSubOccurenceNumber(), N->val, NT->val, NS->val) );
+                aCDOut->SetSubOccurrenceNumber(
+                    Replace_N_NT_NS(aCDOut->GetSubOccurrenceNumber(), N->val, NT->val, NS->val) );
 
             NO->str.freestr();
             NTO->str.freestr();
@@ -292,7 +297,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             TCDLib* aCDLOut=Out->GetLastCDLib();
 
             // Find previous field from CDLib and initialize value of D from it
-            if (Out->PreviousCD(&aCDLOut, aCDOut))
+            if (aCDOut->GetTagOccurrenceNumber() != CD_NEW && Out->PreviousCD(&aCDLOut, aCDOut))
             {
                 // Previous field exists. We have two possible cases:
                 // If a subfield exists, NO, NSO and NTO are set from this field.
@@ -302,20 +307,20 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 D->val=0;
                 if (*(aCDOut->GetSubfield()))
                 {
-                    NO->val=aCDLOut->GetOccurenceNumber();
-                    NTO->val=aCDLOut->GetTagOccurenceNumber();
-                    NSO->val=aCDLOut->GetSubOccurenceNumber();
+                    NO->val=aCDLOut->GetOccurrenceNumber();
+                    NTO->val=aCDLOut->GetTagOccurrenceNumber();
+                    NSO->val=aCDLOut->GetSubOccurrenceNumber();
                 }
                 else
                 {
                     NSO->val=0;
-                    NO->val=NTO->val=aCDLOut->GetTagOccurenceNumber();
+                    NO->val=NTO->val=aCDLOut->GetTagOccurrenceNumber();
 
                     // Position at the beginning of the CDLib representing a complete field
                     TCDLib* Courant=(TCDLib*)aCDLOut->GetPrevious();
                     TCD ToSearch(itsErrorHandler);
                     ToSearch.SetTag(aCDLOut->GetTag());
-                    ToSearch.SetTagOccurenceNumber(aCDLOut->GetTagOccurenceNumber());
+                    ToSearch.SetTagOccurrenceNumber(aCDLOut->GetTagOccurrenceNumber());
                     while( Courant )
                     {
                         if (*Courant==ToSearch ) Courant=(TCDLib*)Courant->GetPrevious();
@@ -336,9 +341,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
 
                     // Different cases:
                     // TTT(no)SS
-                    if (aCDOut->GetTagOccurenceNumber()==CD_NO)
+                    if (aCDOut->GetTagOccurrenceNumber()==CD_NO)
                     {
-                        if (aCDOut->GetSubOccurenceNumber()<0)
+                        if (aCDOut->GetSubOccurrenceNumber()<0)
                         {
                             Rule->ToString((char *)itsErrorHandler->Temporary);
                             itsErrorHandler->SetErrorD(5101,ERROR,(char*)itsErrorHandler->Temporary);
@@ -350,9 +355,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                     else
                     {
                         // TTTSS(no)
-                        if (aCDOut->GetSubOccurenceNumber()==CD_NO)
+                        if (aCDOut->GetSubOccurrenceNumber()==CD_NO)
                         {
-                            if (aCDOut->GetTagOccurenceNumber()<=0)
+                            if (aCDOut->GetTagOccurrenceNumber()<=0)
                             {
                                 Rule->ToString((char*)itsErrorHandler->Temporary);
                                 itsErrorHandler->SetErrorD(5102,ERROR,(char*)itsErrorHandler->Temporary);
@@ -363,9 +368,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                         else
                         {
                             // TTT(nto)SS
-                            if (aCDOut->GetTagOccurenceNumber()==CD_NTO)
+                            if (aCDOut->GetTagOccurrenceNumber()==CD_NTO)
                             {
-                                if (aCDOut->GetSubOccurenceNumber()<0)
+                                if (aCDOut->GetSubOccurrenceNumber()<0)
                                 {
                                     Rule->ToString((char*)itsErrorHandler->Temporary);
                                     itsErrorHandler->SetErrorD(5103,ERROR,(char*)itsErrorHandler->Temporary);
@@ -377,9 +382,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                             else
                             {
                                 // TTTSS(nso)
-                                if (aCDOut->GetSubOccurenceNumber()==CD_NSO)
+                                if (aCDOut->GetSubOccurrenceNumber()==CD_NSO)
                                 {
-                                    if (aCDOut->GetTagOccurenceNumber()<=0)
+                                    if (aCDOut->GetTagOccurrenceNumber()<=0)
                                     {
                                         Rule->ToString((char*)itsErrorHandler->Temporary);
                                         itsErrorHandler->SetErrorD(5104,ERROR,(char*)itsErrorHandler->Temporary);
@@ -408,17 +413,17 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 D->val=0;
                 D->str.str("");
 
-                NO->val=aCDOut->GetOccurenceNumber();
-                NSO->val=aCDOut->GetSubOccurenceNumber();
-                NTO->val=aCDOut->GetTagOccurenceNumber();
+                NO->val=aCDOut->GetOccurrenceNumber();
+                NSO->val=aCDOut->GetSubOccurrenceNumber();
+                NTO->val=aCDOut->GetTagOccurrenceNumber();
                 concr=0;
 
                 // Find values for no, nso and nto.
                 // Different cases:
                 // TTT(no)SS
-                if (aCDOut->GetTagOccurenceNumber()==CD_NO)
+                if (aCDOut->GetTagOccurrenceNumber()==CD_NO)
                 {
-                    if (aCDOut->GetSubOccurenceNumber()<0)
+                    if (aCDOut->GetSubOccurrenceNumber()<0)
                     {
                         Rule->ToString((char*)itsErrorHandler->Temporary);
                         itsErrorHandler->SetErrorD(5101,ERROR,(char*)itsErrorHandler->Temporary);
@@ -428,9 +433,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 else
                 {
                     // TTTSS(no)
-                    if (aCDOut->GetSubOccurenceNumber()==CD_NO)
+                    if (aCDOut->GetSubOccurrenceNumber()==CD_NO)
                     {
-                        if (aCDOut->GetTagOccurenceNumber()<=0)
+                        if (aCDOut->GetTagOccurrenceNumber()<=0)
                         {
                             Rule->ToString((char*)itsErrorHandler->Temporary);
                             itsErrorHandler->SetErrorD(5102,ERROR,(char*)itsErrorHandler->Temporary);
@@ -440,9 +445,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                     else
                     {
                         // TTT(nto)SS
-                        if (aCDOut->GetTagOccurenceNumber()==CD_NTO)
+                        if (aCDOut->GetTagOccurrenceNumber()==CD_NTO)
                         {
-                            if (aCDOut->GetSubOccurenceNumber()<0)
+                            if (aCDOut->GetSubOccurrenceNumber()<0)
                             {
                                 Rule->ToString((char*)itsErrorHandler->Temporary);
                                 itsErrorHandler->SetErrorD(5103,ERROR,(char*)itsErrorHandler->Temporary);
@@ -452,9 +457,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                         else
                         {
                             // TTTSS(nso)
-                            if (aCDOut->GetSubOccurenceNumber()==CD_NSO)
+                            if (aCDOut->GetSubOccurrenceNumber()==CD_NSO)
                             {
-                                if (aCDOut->GetTagOccurenceNumber()<=0)
+                                if (aCDOut->GetTagOccurrenceNumber()<=0)
                                 {
                                     Rule->ToString((char*)itsErrorHandler->Temporary);
                                     itsErrorHandler->SetErrorD(5104,ERROR,(char*)itsErrorHandler->Temporary);
@@ -466,8 +471,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 }
             }
 
-            aCDOut->SetTagOccurenceNumber(NTO->val);
-            aCDOut->SetSubOccurenceNumber(NSO->val);
+            aCDOut->SetTagOccurrenceNumber(NTO->val);
+            aCDOut->SetSubOccurrenceNumber(NSO->val);
 
             // If NO is not set, find the correct value for it
             if (NO->val<=0)
@@ -475,20 +480,20 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 // Find last matching CD
                 TCDLib* Search=Out->GetLastCDLib();
                 TCD aCD(aCDOut);
-                aCD.SetTagOccurenceNumber(0);
-                aCD.SetSubOccurenceNumber(0);
+                aCD.SetTagOccurrenceNumber(0);
+                aCD.SetSubOccurrenceNumber(0);
 
                 if (Out->PreviousCD(&Search,&aCD))
                 {
                     if (*(Search->GetSubfield())=='$')
-                        NO->val=Search->GetOccurenceNumber()+1;
+                        NO->val=Search->GetOccurrenceNumber()+1;
                     else
                         NO->val=0;
                 }
                 else
                     NO->val=1;
             }
-            aCDOut->SetOccurenceNumber(NO->val);
+            aCDOut->SetOccurrenceNumber(NO->val);
 
             Error=0;
             RedoFlag=0;
@@ -499,7 +504,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             if (rc!=2)
             {
                 TCDLib aCDLOut(aCDOut);
-                aCDLOut.SetBegining(0);
+                aCDLOut.SetBeginning(0);
                 aCDLOut.SetEnd(0);
 
                 aCDLOut.SetContent(ToString(S));
@@ -525,8 +530,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             if (Courant.SubfieldContainsWildcard())
                 Courant.SetSubfield(CDIn->SubField);
             
-            Courant.SetTagOccurenceNumber(NT->val);
-            Courant.SetSubOccurenceNumber(NS->val);
+            Courant.SetTagOccurrenceNumber(NT->val);
+            Courant.SetSubOccurrenceNumber(NS->val);
 
             while (aCDLIn)
             {
@@ -566,7 +571,6 @@ int TEvaluateRule::End_Evaluate_Rule()
 
         return 0;
 }
-
 
 void TEvaluateRule::FinishCD(TypeCD* aCD)
 {
@@ -653,6 +657,7 @@ int TEvaluateRule::Precedes( TypeCD* CD1, TypeCD* CD2 ) // En mode rule edit, de
     TCD     aCD2(CD2, itsErrorHandler);
 
     if (!InputRecord->NextCD(&aCDL,&aCD1)) return 0;
+    aCDL = (TCDLib *) aCDL->GetNext();
     if (!InputRecord->NextCD(&aCDL,&aCD2)) return 0;
     else return 1;
 }
@@ -687,7 +692,7 @@ const char* TEvaluateRule::NextSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
 }
 
 
-const char* TEvaluateRule::LastSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
+const char* TEvaluateRule::PreviousSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
 {
     FinishCD(CD1);
     FinishCD(CD2);
@@ -714,6 +719,46 @@ const char* TEvaluateRule::LastSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
     }
     if (!ptr) ptr="";
     return ptr;
+}
+
+bool TEvaluateRule::CompareOccurrence(TypeInst* aCondition, int aOccurrence)
+{
+    ToString(aCondition);
+
+    char *p = aCondition->str.str();
+
+    typestr occOper;
+    typestr occValue;
+    bool found_num = false;
+    while (*p)
+    {
+        if (*p != ' ')
+        {
+            if (found_num || isalnum(*p))
+            {
+                found_num = true;
+                occValue.append_char(*p);
+            }
+            else
+            {
+                occOper.append_char(*p);
+            }
+        }
+        ++p;
+    }
+    if (!occValue.str())
+        return false;
+    if (!occOper.str())
+        occOper = "=";
+
+    int occValueNum = atoi(occValue.str());
+
+    return ((aOccurrence == occValueNum && strcmp(occOper.str(), "=") == 0) ||
+        (aOccurrence != occValueNum && strcmp(occOper.str(), "!=") == 0) ||
+        (aOccurrence > occValueNum && strcmp(occOper.str(), ">") == 0) ||
+        (aOccurrence >= occValueNum && strcmp(occOper.str(), ">=") == 0) ||
+        (aOccurrence < occValueNum && strcmp(occOper.str(), "<") == 0) ||
+        (aOccurrence <= occValueNum && strcmp(occOper.str(), "<=") == 0));
 }
 
 typestr TEvaluateRule::Table( char* Nom, char* str )
@@ -874,7 +919,7 @@ TypeInst* TEvaluateRule::Last_( TypeCD* cd1, TypeCD* cd2, int strict )
     TypeInst* rc;
     int i1,i2;
 
-    const char *tempo = LastSubField( cd1, cd2 );
+    const char *tempo = PreviousSubField( cd1, cd2 );
     if (!tempo) return NULL;
 
     rc=AllocTypeInst();
@@ -898,34 +943,78 @@ TypeInst* TEvaluateRule::Last_( TypeCD* cd1, TypeCD* cd2, int strict )
 /*
 NEXTSUB
 */
-TypeInst* TEvaluateRule::NextBal()
+TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 {
     TypeInst* rc;
+    const char *ptr = NULL;
 
-    const char *tempo = NextBalise();
-    rc=AllocTypeInst();
-    if (!tempo)
-        rc->str.str("");
+    if (!aFindCD)
+    {
+        ptr = NextBalise();
+    }
     else
-        rc->str.str(tempo);
+    {
+        FinishCD(aFindCD);
 
+        TCDLib *CDL = InputRecord->GetFirstCDLib();
+        TCD     findCD(aFindCD, itsErrorHandler);
+        findCD.SetTag(InputCDL->GetTag());
+        findCD.SetTagOccurrenceNumber(InputCDL->GetTagOccurrenceNumber());
+
+        while (InputRecord->NextCD(&CDL, &findCD))
+        {
+            if (CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
+            {
+                TCD *nextCD = CDL->GetNext();
+                if (nextCD)
+                    ptr = &nextCD->GetSubfield()[1];
+                break;
+            }
+            CDL = (TCDLib *)CDL->GetNext();
+        }
+    }
+
+    rc=AllocTypeInst();
+    rc->str.str(ptr ? ptr : "");
     return rc;
 };
 
 /*
 PREVIOUSSUB
 */
-TypeInst* TEvaluateRule::PreviousBal()
+TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 {
     TypeInst* rc;
+    const char *ptr = NULL;
 
-    const char *tempo = PreviousBalise();
-    rc=AllocTypeInst();
-    if (!tempo)
-        rc->str.str("");
+    if (!aFindCD)
+    {
+        ptr = PreviousBalise();
+    }
     else
-        rc->str.str(tempo);
+    {
+        FinishCD(aFindCD);
 
+        TCDLib *CDL = InputRecord->GetFirstCDLib();
+        TCD     findCD(aFindCD, itsErrorHandler);
+        findCD.SetTag(InputCDL->GetTag());
+        findCD.SetTagOccurrenceNumber(InputCDL->GetTagOccurrenceNumber());
+
+        while (InputRecord->NextCD(&CDL, &findCD))
+        {
+            if (CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
+            {
+                TCD *prevCD = CDL->GetPrevious();
+                if (prevCD)
+                    ptr = &prevCD->GetSubfield()[1];
+                break;
+            }
+            CDL = (TCDLib *)CDL->GetNext();
+        }
+    }
+
+    rc=AllocTypeInst();
+    rc->str.str(ptr ? ptr : "");
     return rc;
 };
 
@@ -1599,42 +1688,15 @@ TypeInst* TEvaluateRule::Replace( TypeInst* t1, TypeInst* t2, int at, int strict
 };
 
 /*
-REPLACEOCC( translation BY translation , OCCURENCE  [, STRICT] )
+REPLACEOCC( translation BY translation , OCCURRENCE  [, STRICT] )
 */
 TypeInst* TEvaluateRule::ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, int strict )
 {
     TypeInst*rc;
     TypeInst*SS;
-    char CondOcc[20];
-    char Signe[20];
-    int  Valeur;
     int occ;
     int i,i1,i2;
     int l1,l2; //,ok;
-
-    ToString(inCondOcc);
-    /* Nettoyage blancs dans inCondOcc */
-    i1=i2=0;
-    while(inCondOcc->str.str()[i1])
-    {
-        if (inCondOcc->str.str()[i1]!=' ')
-            CondOcc[i2++]=inCondOcc->str.str()[i1];
-        ++i1;
-    }
-    CondOcc[i2]=0;
-
-    /* S‰paration signe/valeur */
-    i=0;
-    while(CondOcc[i])
-    {
-        if (!isdigit(CondOcc[i]))
-            Signe[i]=CondOcc[i];
-        else break;
-        ++i;
-    }
-    Signe[i]=0;
-    Valeur=atoi(&CondOcc[i]);
-
 
     rc=AllocTypeInst();
     ToString(S);
@@ -1658,12 +1720,7 @@ TypeInst* TEvaluateRule::ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCon
         else
         {
             occ++;
-            if (((strcmp(Signe,"=")==0) && (occ==Valeur)) ||
-                ((strcmp(Signe,"!=")==0) && (occ!=Valeur)) ||
-                ((strcmp(Signe,">")==0) && (occ>Valeur)) ||
-                ((strcmp(Signe,">=")==0) && (occ>=Valeur)) ||
-                ((strcmp(Signe,"<")==0) && (occ<Valeur)) ||
-                ((strcmp(Signe,"<=")==0) && (occ<=Valeur)))
+            if (CompareOccurrence(inCondOcc, occ))
             {
                 rc->str.allocstr(strlen(SS->str.str())-l1+l2+1);
                 memcpy(rc->str.str(),SS->str.str(),i);

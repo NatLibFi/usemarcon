@@ -211,6 +211,16 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
             {
                 do // for easy exit only
                 {
+                    // If the rule doesn't specify a subfield, it's only accepted for the 
+                    // first subfield of the field as it will handle the whole field
+                    if (!*RuleCD->GetSubfield())
+                    {
+                        TCD *prevCD = CDLIn->GetPrevious();
+                        if (prevCD && prevCD->GetTagOccurrenceNumber() == CDLIn->GetTagOccurrenceNumber() &&
+                            strcmp(prevCD->GetTag(), CDLIn->GetTag()) == 0)
+                            break;
+                    }
+
                     // If the rule contains wildcard, it's only accepted if non-wildcard
                     // rules for the field have not been processed already
                     if (RuleCD->TagContainsWildcard())

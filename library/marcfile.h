@@ -93,6 +93,9 @@ private:
     int               val         (unsigned char*, unsigned short *);
     int               longval     (unsigned char*, unsigned long *);
 
+    bool              xml_read_tag(const char *tag, typestr & a_xml);
+    bool              xml_read_until_end(const char *tag, typestr & a_xml);
+
     TUMApplication    *itsApplication;
     TError            *itsErrorHandler;
 
