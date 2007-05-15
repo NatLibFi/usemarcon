@@ -297,6 +297,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             TCDLib* aCDLOut=Out->GetLastCDLib();
 
             // Find previous field from CDLib and initialize value of D from it
+            // Note: This is fragile code. There are old conversions that rely on the quirks
+            // such as adding a new field by specifying xxx(nto) as the target.
             if (aCDOut->GetTagOccurrenceNumber() != CD_NEW && Out->PreviousCD(&aCDLOut, aCDOut))
             {
                 // Previous field exists. We have two possible cases:

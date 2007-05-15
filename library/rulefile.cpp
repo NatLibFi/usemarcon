@@ -202,7 +202,8 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
     TCDLib* Last = In->GetLastCDLib();
     while (CDLIn)
     {
-        bool can_match_boolean = true;
+        bool can_match_tag_wildcard = true;
+        bool can_match_subfield_wildcard = true;
         TRule* aRule=itsFirstRule;
         while(aRule)
         {
@@ -225,12 +226,21 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
                     // rules for the field have not been processed already
                     if (RuleCD->TagContainsWildcard())
                     {
-                        if (!can_match_boolean)
+                        if (!can_match_tag_wildcard)
                             break;
                     }
                     else
                     {
-                        can_match_boolean = false;
+                        can_match_tag_wildcard = false;
+                    }
+                    if (RuleCD->SubfieldContainsWildcard())
+                    {
+                        if (!can_match_subfield_wildcard)
+                            break;
+                    }
+                    else
+                    {
+                        can_match_subfield_wildcard = false;
                     }
                     if (RuleCD->TagContainsWildcard() || !aRule->GetOutputCD()->TagIsWildcard())
                     {
