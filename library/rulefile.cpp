@@ -103,14 +103,14 @@ int TRuleFile::OpenRuleFile()
         return itsErrorHandler->SetError(5501,ERROR);
     CurrentRule->SetPreviousRule(NULL);
     itsFirstRule = CurrentRule;
-    IsRuleAnalysed =false;
+    IsRuleAnalysed = false;
     while (!NextLine(&RuleLine,&IncludedFileSpec,&Line)) // Read a Line from the Rule File
     {
         Illustration.allocstr(strlen(IncludedFileSpec.name) + strlen(RuleLine.str()) + 100);
         sprintf(Illustration.str(),"in file '%s' at line %d :\n%s",IncludedFileSpec.name,Line-1,RuleLine.str());
-        if ((strchr(RuleLine.str(),'|')) && (IsRuleAnalysed==true))
-            // this is a new rule to proceed
+        if (IsRuleAnalysed && strchr(RuleLine.str(),'|'))
         {
+            // This is a new rule to process
             if (itsLastInputCD) { delete itsLastInputCD;    itsLastInputCD  = NULL; }
             if (CurrentRule->GetInputCD())
                 itsLastInputCD = new TCD(CurrentRule->GetInputCD());
