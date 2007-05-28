@@ -237,17 +237,19 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
                     SetTagOccurrenceNumber(CD_NTO);
                 else if (!strcmp((char *)itsErrorHandler->Temporary2,"NO"))
                     SetTagOccurrenceNumber(CD_NO);
+                else if (!strcmp((char *)itsErrorHandler->Temporary2,"NEW"))
+                    SetTagOccurrenceNumber(CD_NEW);
                 else 
                     SetTagOccurrenceNumber(atoi((char *)itsErrorHandler->Temporary2));
             }
             else
-                // the occurence Tag is empty
+                // the occurrence Tag is empty
                 SetTagOccurrenceNumber(CD_NT);
             CurrentPos++;
             RealPos=CurrentPos;
         }
         else
-            // there is no occurence Tag
+            // there is no occurrence Tag
             SetTagOccurrenceNumber(CD_NT);
     }
     else
