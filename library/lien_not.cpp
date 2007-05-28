@@ -968,7 +968,7 @@ TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
             if (CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
             {
                 TCD *nextCD = CDL->GetNext();
-                if (nextCD)
+                if (nextCD && *nextCD->GetSubfield() == '$')
                     ptr = &nextCD->GetSubfield()[1];
                 break;
             }
@@ -1007,7 +1007,7 @@ TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
             if (CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
             {
                 TCD *prevCD = CDL->GetPrevious();
-                if (prevCD)
+                if (prevCD && *prevCD->GetSubfield() == '$')
                     ptr = &prevCD->GetSubfield()[1];
                 break;
             }
