@@ -13,7 +13,7 @@ OVERVIEW TEXT
     Copyright The British Library, The USEMarcon Consortium, 1995-2000
     Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
     Adapted by ATP Library Systems Ltd, Finland, 2002-2004
-    Adapted by The National Library of Finland, 2004-2006
+    Adapted by The National Library of Finland, 2004-2007
 
 
 AUTHOR
@@ -232,7 +232,7 @@ public:
 class TypeCD
 {
 public:
-    TypeCD()
+    TypeCD() : Output(false)
     {
         SubField[0] = '\0';
         SubField[1] = '\0';
@@ -242,6 +242,7 @@ public:
     int nt;
     char SubField[3];
     int ns;
+    bool Output;
     typestr Fixed;
 };
 

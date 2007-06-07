@@ -74,13 +74,13 @@ YYID (i)
 }
 #endif
 #define YYFINAL  105
-#define YYLAST   1086
-#define YYNTOKENS  89
+#define YYLAST   1075
+#define YYNTOKENS  90
 #define YYNNTS  12
 #define YYNRULES  138
 #define YYNSTATES  338
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   340
+#define YYMAXUTOK   341
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -205,46 +205,47 @@ public:
      VAR_NSO = 298,
      VAR_NEW = 299,
      TAG = 300,
-     STAG = 301,
-     FIX = 302,
-     I1 = 303,
-     I2 = 304,
-     STR = 305,
-     VAL = 306,
-     LEN = 307,
-     STO = 308,
-     MEM = 309,
-     EXC = 310,
-     CLR = 311,
-     LOWER = 312,
-     UPPER = 313,
-     FROM = 314,
-     TO = 315,
-     BETWEEN = 316,
-     _DELETE = 317,
-     REPLACE = 318,
-     REPLACEOCC = 319,
-     BFIRST = 320,
-     EFIRST = 321,
-     BLAST = 322,
-     ELAST = 323,
-     REDO = 324,
-     SORT = 325,
-     NEXT = 326,
-     LAST = 327,
-     TABLE = 328,
-     ORDINAL = 329,
-     YEAR = 330,
-     MONTH = 331,
-     DAY = 332,
-     HOUR = 333,
-     MINUTE = 334,
-     SECOND = 335,
-     NEXTSUB = 336,
-     PREVIOUSSUB = 337,
-     REGFIND = 338,
-     REGMATCH = 339,
-     REGREPLACE = 340
+     DTAG = 301,
+     STAG = 302,
+     FIX = 303,
+     I1 = 304,
+     I2 = 305,
+     STR = 306,
+     VAL = 307,
+     LEN = 308,
+     STO = 309,
+     MEM = 310,
+     EXC = 311,
+     CLR = 312,
+     LOWER = 313,
+     UPPER = 314,
+     FROM = 315,
+     TO = 316,
+     BETWEEN = 317,
+     _DELETE = 318,
+     REPLACE = 319,
+     REPLACEOCC = 320,
+     BFIRST = 321,
+     EFIRST = 322,
+     BLAST = 323,
+     ELAST = 324,
+     REDO = 325,
+     SORT = 326,
+     NEXT = 327,
+     LAST = 328,
+     TABLE = 329,
+     ORDINAL = 330,
+     YEAR = 331,
+     MONTH = 332,
+     DAY = 333,
+     HOUR = 334,
+     MINUTE = 335,
+     SECOND = 336,
+     NEXTSUB = 337,
+     PREVIOUSSUB = 338,
+     REGFIND = 339,
+     REGMATCH = 340,
+     REGREPLACE = 341
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

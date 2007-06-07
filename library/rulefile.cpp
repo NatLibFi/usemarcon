@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2003
- *  Adapted by The National Library of Finland, 2004-2006
+ *  Adapted by The National Library of Finland, 2004-2007
  *
  *  File:  rulefile.cpp
  *
@@ -129,9 +129,10 @@ int TRuleFile::OpenRuleFile()
         {
             itsErrorHandler->SetErrorD(-Result,ERROR,Illustration.str());
             // Delete the erroneous rule
-            if (CurrentRule->GetInputCD())  { delete(CurrentRule->GetInputCD());    CurrentRule->SetInputCD(NULL);  }
-            if (CurrentRule->GetOutputCD()){ delete(CurrentRule->GetOutputCD());    CurrentRule->SetOutputCD(NULL); }
-            if (CurrentRule->GetLib())      { delete(CurrentRule->GetLib());        CurrentRule->SetLib(NULL);  }
+            // No we don't. We should unwind the rule from the list too...
+            //if (CurrentRule->GetInputCD())  { delete(CurrentRule->GetInputCD());    CurrentRule->SetInputCD(NULL);  }
+            //if (CurrentRule->GetOutputCD()){ delete(CurrentRule->GetOutputCD());    CurrentRule->SetOutputCD(NULL); }
+            //if (CurrentRule->GetLib())      { delete(CurrentRule->GetLib());        CurrentRule->SetLib(NULL);  }
             IsRuleAnalysed = false;
         }
         else

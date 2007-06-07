@@ -17,7 +17,7 @@ OVERVIEW TEXT
     USEMARCON Software - Command Line version
     Copyright The British Library, The USEMarcon Consortium, 1995-2000
     Adapted by ATP Library Systems Ltd, Finland, 2002-2003
-    Adapted by The National Library of Finland, 2004-2006
+    Adapted by The National Library of Finland, 2004-2007
 
 AUTHOR
     Crossnet Systems Limited

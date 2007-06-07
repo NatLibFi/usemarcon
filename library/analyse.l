@@ -10,19 +10,7 @@
 #include "mempool.h"
 #include "ytab.h"
 
-/*
-%p 1200
-*/
-
-
 %}
-
-%e 700
-%n 350
-%p 1200
-%k 550
-%a 1300
-%o 1500
 
 blancs          [ \t\n]*
 digits          [0-9]+
@@ -46,7 +34,7 @@ fixedpos        "/"{digits}("-"{digits})?"/"
                   yylval.inst->str.str("");
                   return MarcParser::STRING;
                 }
-{tag}{tag}{tag}/("("|"$"|"/"|{indic1}|{indic2}) {
+"%"?{tag}{tag}{tag}/("("|"$"|"/"|{indic1}|{indic2}) {
                   yylval.inst=((MemoryPool *) allocator)->AllocTypeInst();
                   yylval.inst->str.str(yytext);
                   return MarcParser::TAG;
@@ -54,6 +42,11 @@ fixedpos        "/"{digits}("-"{digits})?"/"
 "@"{tag}{tag}{tag}      {
                   yylval.inst=((MemoryPool *) allocator)->AllocTypeInst();
                   yylval.inst->str.str(yytext+1);
+                  return MarcParser::TAG;
+                }
+"%"{tag}{tag}{tag}      {
+                  yylval.inst=((MemoryPool *) allocator)->AllocTypeInst();
+                  yylval.inst->str.str(yytext);
                   return MarcParser::TAG;
                 }
 {indic1}        { return MarcParser::I1; }

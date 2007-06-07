@@ -3,7 +3,7 @@
 #include "objectlist.h"
 
 // Adapted by ATP Library Systems Ltd, Finland, 2002-2004
-// Adapted by The National Library of Finland, 2004-2006
+// Adapted by The National Library of Finland, 2004-2007
 
 // Define USEMARCON_BATCHRUN for a run which uses files
 // Define nothing (comment out #define USEMARCON_BATCHRUN) for a run which uses the api 

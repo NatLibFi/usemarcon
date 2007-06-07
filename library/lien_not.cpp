@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2003
- *  Adapted by The National Library of Finland, 2004-2006
+ *  Adapted by The National Library of Finland, 2004-2007
  *
  *  File:  lien_not.cpp
  *
@@ -626,11 +626,12 @@ const char* TEvaluateRule::LireCD( TypeCD* CD )
 {
     FinishCD(CD);
 
-    TCDLib* aCDL=InputRecord->GetFirstCDLib();
+    TUMRecord *rec = CD->Output ? OutputRecord : InputRecord;
+    TCDLib* aCDL=rec->GetFirstCDLib();
     TCD     aCD(CD, itsErrorHandler);
     const char* ptr;
 
-    if (InputRecord->NextCD(&aCDL,&aCD))
+    if (rec->NextCD(&aCDL,&aCD))
         ptr=aCDL->GetContent(&aCD);
     else
         ptr="";
@@ -643,10 +644,11 @@ int TEvaluateRule::Exists( TypeCD* CD ) // En mode rule edit, demander le conten
 {
     FinishTCD(CD);
 
-    TCDLib* aCDL=InputRecord->GetFirstCDLib();
+    TUMRecord *rec = CD->Output ? OutputRecord : InputRecord;
+    TCDLib* aCDL=rec->GetFirstCDLib();
     TCD     aCD(CD, itsErrorHandler);
 
-    return InputRecord->NextCD(&aCDL,&aCD);
+    return rec->NextCD(&aCDL,&aCD);
 }
 
 int TEvaluateRule::Precedes( TypeCD* CD1, TypeCD* CD2 ) // En mode rule edit, demander le champ complet contenant les 2 CD
@@ -654,13 +656,14 @@ int TEvaluateRule::Precedes( TypeCD* CD1, TypeCD* CD2 ) // En mode rule edit, de
     FinishCD(CD1);
     FinishCD(CD2);
 
-    TCDLib* aCDL=InputRecord->GetFirstCDLib();
+    TUMRecord *rec = CD1->Output ? OutputRecord : InputRecord;
+    TCDLib* aCDL=rec->GetFirstCDLib();
     TCD     aCD1(CD1, itsErrorHandler);
     TCD     aCD2(CD2, itsErrorHandler);
 
-    if (!InputRecord->NextCD(&aCDL,&aCD1)) return 0;
+    if (!rec->NextCD(&aCDL,&aCD1)) return 0;
     aCDL = (TCDLib *) aCDL->GetNext();
-    if (!InputRecord->NextCD(&aCDL,&aCD2)) return 0;
+    if (!rec->NextCD(&aCDL,&aCD2)) return 0;
     else return 1;
 }
 

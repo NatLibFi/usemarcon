@@ -4,7 +4,7 @@ USEMARCON Change Log
 **************************
 version 2.00
 
-April 19 2007
+June 6 2007
 
 The National Library of Finland
 Ere Maijala
@@ -13,8 +13,20 @@ ere.maijala at helsinki.fi
 
 - Renewed the core scanner and parser. Parser is now built with bison 
   and converted to C++ by a perl script. Scanner is built with flex in
-  C++ mode.  
-
+  C++ mode.
+- Fixed conversion of full fields in field order mode
+- Added NextSub($x, '>=1') and PreviousSub($x, '>=1') to handle subfield
+  occurrences better
+- Added option to convert all subfield codes to lower case
+  (ConvertSubfieldCodesToLowercase=TRUE in [DEFAULT_STATES] section)
+- Added possibility to use nonbreaking conditionals (just leave 'Then' 
+  out from an 'If' clause. 
+- Added possibility to make USEMARCON always create a new field:
+  500 | 500(New) | S
+- Fixed concatenation when converting a full field
+- Fixed using wildcards in subfield codes in field order mode
+- Added possibility to peek at a converted (output) field by prepending 
+  the tag code with % (e.g. If (%008/0-5/ = '123456') Then S)
 
 **************************
 **************************

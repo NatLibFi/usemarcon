@@ -113,7 +113,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 
 %token <inst> VARS VARD STRING NUMERIC
 %token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW
-%token <inst> TAG STAG FIX I1 I2
+%token <inst> TAG DTAG STAG FIX I1 I2
 %token <inst> STR VAL LEN STO MEM EXC CLR LOWER UPPER
 %token <inst> FROM TO BETWEEN _DELETE REPLACE REPLACEOCC
 %token <inst> BFIRST EFIRST BLAST ELAST
@@ -250,20 +250,35 @@ CD :
 TAGOCC :
         TAG                             { PrintDebug("Tag");
                                           $$=AllocCD();
-                                          strcpy($$->Field,$1->str.str());
+                                          if (*$1->str.str() == '%')
+                                          {
+                                            $$->Output = true;
+                                            strcpy($$->Field,$1->str.str() + 1);
+                                          }
+                                          else
+                                          {  
+                                            strcpy($$->Field,$1->str.str());
+                                          }
                                           $$->nt=0;
                                           FreeTypeInst($1);
                                           $1=NULL; }
 |       TAG '(' Translation ')'         { PrintDebug("Tag(...)");
                                           $$=AllocCD();
-                                          strcpy($$->Field,$1->str.str());
+                                          if (*$1->str.str() == '%')
+                                          {
+                                            $$->Output = true;
+                                            strcpy($$->Field,$1->str.str() + 1);
+                                          }
+                                          else
+                                          {  
+                                            strcpy($$->Field,$1->str.str());
+                                          }
                                           FreeTypeInst($1);
                                           $1=NULL;
                                           $$->nt=$3->val;
                                           FreeTypeInst($3);
                                           $3=NULL; }
 ;
-
 STAGOCC :
         STAG                            { PrintDebug("Stag");
                                           $$=AllocCD();
