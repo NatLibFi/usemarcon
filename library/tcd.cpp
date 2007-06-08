@@ -274,11 +274,11 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
         // Try to read SS
         for (CurrentPos=RealPos+1; CurrentPos<MaxPos && String[CurrentPos]!='(' && String[CurrentPos]!='/'; )
             CurrentPos++;
-        if (CurrentPos-RealPos==2)
+        if (CurrentPos - RealPos == 2)
             // this is a SS
         {
-            memcpy(itsErrorHandler->Temporary2,&String[RealPos],CurrentPos-RealPos);
-            itsErrorHandler->Temporary2[CurrentPos-RealPos]=0;
+            memcpy(itsErrorHandler->Temporary2, &String[RealPos], 2);
+            itsErrorHandler->Temporary2[2]='\0';
             SetSubfield((char *)itsErrorHandler->Temporary2);
         }
         else
