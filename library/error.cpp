@@ -38,6 +38,7 @@ TError::TError(TUMApplication* theApplication, const char *LogFileName, const ch
     itsDebugMode           = 0;
     itsLogError            = NULL;
     itsUTF8Mode            = false;
+    itsConvertSubfieldCodesToLowercase = false;
 
     // Logfile opening
     if (*LogFileName)
