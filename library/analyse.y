@@ -34,7 +34,7 @@ protected:
 
   int debug_rule;
   char tempo[1000];
-  int  RedoFlag;
+  bool RedoFlag;
   unsigned long ordinal;
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
@@ -185,7 +185,7 @@ Instruction :
 |       Translation
 |       REDO                    { PrintDebug("Redo");
                                   Copie(&$$,S);
-                                  RedoFlag=1;
+                                  RedoFlag=true;
                                   Copie(&T,S);
 /*                                ++NO->val;
                                   if (NTO->val>=0) ++NTO->val;
