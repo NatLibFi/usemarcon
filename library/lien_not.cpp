@@ -132,7 +132,7 @@ int TEvaluateRule::Replace_N_NT_NS( int val, int N, int NT, int NS )
 
 void TEvaluateRule::ResetRedo()
 {
-    AfterRedo=Fini=RedoFlag=0;
+    AfterRedo=Fini=RedoFlag=false;
     if (RedoStr) free(RedoStr);
     RedoStr=NULL;
     if (MainInput) free(MainInput);
@@ -163,7 +163,7 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
     NEW=AllocTypeInst();
     NEW->val = C_NEW;
     CDIn=AllocCD();
-    if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn)
+    if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !NEW || !CDIn)
         itsErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
 
     // -------------------------------------------------
@@ -498,7 +498,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             aCDOut->SetOccurrenceNumber(NO->val);
 
             Error=0;
-            RedoFlag=0;
+            RedoFlag=false;
             itsScanner.RewindBuffer();
             theCDOut=aCDOut;
             rc=yyparse();
@@ -569,6 +569,7 @@ int TEvaluateRule::End_Evaluate_Rule()
         if (NO) FreeTypeInst(NO); NO=NULL;
         if (NTO) FreeTypeInst(NTO); NTO=NULL;
         if (NSO) FreeTypeInst(NSO); NSO=NULL;
+        if (NEW) FreeTypeInst(NEW); NEW=NULL;
         FreeCD(CDIn); CDIn=NULL;
 
         return 0;
@@ -1030,7 +1031,7 @@ TypeInst* TEvaluateRule::Soust( TypeInst* t1, TypeInst* t2 )
 {
     if (t1->str.str() || t2->str.str())
     {
-        yyerror("Substraction can not be done between strings");
+        yyerror("Subtraction can not be done between strings");
         return NULL;
     }
     else
@@ -1119,14 +1120,14 @@ int TEvaluateRule::MemSto( TypeInst* n )
     int i=n->val;
     if (n->str.str())
     {
-        yyerror("Sto( String ) is not correct");
+        yyerror("Sto(<string>) Index must be numeric");
         return 0;
     }
     else
         if (n->val<0 || n->val>99)
         {
             char tmp[100];
-            sprintf(tmp,"Sto(%d) is not correct",n->val);
+            sprintf(tmp,"Sto(%d) Index out of bounds",n->val);
             yyerror(tmp);
             return 0;
         }
@@ -1145,14 +1146,14 @@ TypeInst* TEvaluateRule::MemMem( TypeInst* n )
     int i=n->val;
     if (n->str.str())
     {
-        yyerror("Mem( String ) is not correct");
+        yyerror("Mem(<string>) Index must be numeric");
         return NULL;
     }
     else
         if (n->val<0 || n->val>99)
         {
             char tmp[100];
-            sprintf(tmp,"Mem(%d) is not correct",n->val);
+            sprintf(tmp,"Mem(%d) Index out of bounds",n->val);
             yyerror(tmp);
             return NULL;
         }
@@ -1205,14 +1206,14 @@ TypeInst* TEvaluateRule::MemExc( TypeInst* n )
     int i=n->val;
     if (n->str.str())
     {
-        yyerror("Exc( String ) is not correct");
+        yyerror("Exc(<string>) Index must be numeric");
         return NULL;
     }
     else
         if (n->val<0 || n->val>99)
         {
             char tmp[100];
-            sprintf(tmp,"Exc(%d) is not correct",n->val);
+            sprintf(tmp,"Exc(%d) Index out of bounds",n->val);
             yyerror(tmp);
             return NULL;
         }
