@@ -5,28 +5,40 @@
 #include "regexp.h"
 #include <ctype.h>
 
-// definition   number  opnd?   meaning 
-#define END     0       // no   End of program. 
-#define BOL     1       // no   Match beginning of line. 
-#define EOL     2       // no   Match end of line. 
-#define ANY     3       // no   Match any character. 
-#define ANYOF   4       // str  Match any of these. 
-#define ANYBUT  5       // str  Match any but one of these. 
-#define BRANCH  6       // node Match this, or the next..\&. 
-#define BACK    7       // no   "next" ptr points backward. 
-#define EXACTLY 8       // str  Match this string. 
-#define NOTHING 9       // no   Match empty string. 
-#define STAR    10      // node Match this 0 or more times. 
-#define PLUS    11      // node Match this 1 or more times. 
-#define OPEN    20      // no   Sub-RE starts here. 
-                        //      OPEN+1 is number 1, etc. 
-#define CLOSE   30      // no   Analogous to OPEN. 
+// definition   number      opnd?   meaning 
+#define END     0           // no   End of program. 
+#define BOL     1           // no   Match beginning of line. 
+#define EOL     2           // no   Match end of line. 
+#define ANY     3           // no   Match any character. 
+#define ANYOF   4           // str  Match any of these. 
+#define ANYBUT  5           // str  Match any but one of these. 
+#define BRANCH  6           // node Match this, or the next..\&. 
+#define BACK    7           // no   "next" ptr points backward. 
+#define EXACTLY 8           // str  Match this string. 
+#define NOTHING 9           // no   Match empty string. 
+#define STAR    10          // node Match this 0 or more times. 
+#define PLUS    11          // node Match this 1 or more times. 
+#define DIGIT   12          // no   Match any digit.
+#define NONDIGIT 13         // no   Match any non-digit.
+#define WHITESPACE 14       // no   Match whitespace.
+#define NONWHITESPACE 15    // no   Match non-whitespace.
+#define ALPHANUMERIC 16     // no   Match alphanumeric characters.
+#define NONALPHANUMERIC 17  // no   Match non-alphanumeric characters.
+#define WORDBOUNDARY 18     // no   Match word boundary (BOL, EOL or WHITESPACE)
+#define NONWORDBOUNDARY 19  // no   Match non-word boundary (not BOL, EOL or WHITESPACE)
+#define OPEN    20          // no   Sub-RE starts here. 
+                            //      OPEN+1 is number 1, etc. 
+#define CLOSE   30          // no   Analogous to OPEN. 
 
 // Utility definitions.
 
 #define FAIL(m)     { regerror(m); return(NULL); }
 #define ISREPN(c)   ((c) == _T('*') || (c) == _T('+') || (c) == _T('?'))
 #define META        "^$.[()|?+*\\"
+
+#define CC_DIGITS "0123456789"
+#define CC_WHITESPACE " \t\n\r\f\v"
+#define CC_ALPHANUMERICS "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 // Flags to be passed up and down.
 
@@ -72,8 +84,8 @@ CRegExp::CRegExp()
 
 CRegExp::~CRegExp()
 {
-    delete program;
-    delete sFoundText;
+    delete [] program;
+    delete [] sFoundText;
 }
 
 
@@ -99,12 +111,13 @@ CRegExp* CRegExp::RegComp(const TCHAR *exp)
         return(NULL);
 
     // Allocate space. 
-    delete program;
+    delete [] program;
     program = new TCHAR[regsize];
-    memset( program, 0, regsize * sizeof(TCHAR) );
 
     if (program == NULL)
         return NULL;
+
+    memset( program, 0, regsize * sizeof(TCHAR) );
 
     // Second pass: emit code. 
     bEmitCode = true;
@@ -383,6 +396,7 @@ TCHAR *CRegExp::regatom(int *flagp)
         int range;
         int rangeend;
         int c;
+        TCHAR *p;
 
         if (*regparse == _T('^')) { // Complement of range. 
             ret = regnode(ANYBUT);
@@ -394,7 +408,29 @@ TCHAR *CRegExp::regatom(int *flagp)
             regparse++;
         }
         while ((c = *regparse++) != _T('\0') && c != _T(']')) {
-            if (c != _T('-'))
+            if (c == '\\') {
+                switch (*regparse) {
+                case _T('d'):
+                    p = CC_DIGITS;
+                    while (*p)
+                        regc(*p++);
+                    break;
+                case _T('s'):
+                    p = CC_WHITESPACE;
+                    while (*p)
+                        regc(*p++);
+                    break;
+                case _T('w'):
+                    p = CC_ALPHANUMERICS;
+                    while (*p)
+                        regc(*p++);
+                    break;
+                default:
+                    regc(*regparse);
+                    break;
+                }
+            }
+            else if (c != _T('-'))
                 regc(c);
             else if ((c = *regparse) == _T(']') || c == _T('\0'))
                 regc(_T('-'));
@@ -446,10 +482,45 @@ TCHAR *CRegExp::regatom(int *flagp)
             //TRACE0("trailing \\\n");
             return NULL;
         }
-        ret = regnode(EXACTLY);
-        regc(*regparse++);
-        regc(_T('\0'));
-        *flagp |= HASWIDTH|SIMPLE;
+        switch (*regparse) {
+        case _T('d'):
+            ret = regnode(DIGIT);
+            *flagp |= HASWIDTH|SIMPLE;
+            break;
+        case _T('D'):
+            ret = regnode(NONDIGIT);
+            *flagp |= HASWIDTH|SIMPLE;
+            break;
+        case _T('s'):
+            ret = regnode(WHITESPACE);
+            *flagp |= HASWIDTH|SIMPLE;
+            break;
+        case _T('S'):
+            ret = regnode(NONWHITESPACE);
+            *flagp |= HASWIDTH|SIMPLE;
+            break;
+        case _T('w'):
+            ret = regnode(ALPHANUMERIC);
+            *flagp |= HASWIDTH|SIMPLE;
+            break;
+        case _T('W'):
+            ret = regnode(NONALPHANUMERIC);
+            *flagp |= HASWIDTH|SIMPLE;
+            break;
+        case _T('b'):
+            ret = regnode(WORDBOUNDARY);
+            break;
+        case _T('B'):
+            ret = regnode(NONWORDBOUNDARY);
+            break;
+        default:
+            ret = regnode(EXACTLY);
+            regc(*regparse);
+            regc(_T('\0'));
+            *flagp |= HASWIDTH|SIMPLE;
+            break;
+        }
+        ++regparse;
         break;
     default: {
         size_t len;
@@ -545,7 +616,7 @@ int CRegExp::RegFind(const TCHAR *str)
     TCHAR *s;
 
     // Delete any previously stored found string
-    delete sFoundText;
+    delete [] sFoundText;
     sFoundText = NULL;
 
     // Be paranoid. 
@@ -706,6 +777,76 @@ int CRegExp::regmatch(TCHAR *prog)
                 return(0);
             reginput++;
             break;
+        case DIGIT: 
+            if (*reginput == _T('\0') ||
+                    _tcschr(CC_DIGITS, *reginput) == NULL)
+                return(0);
+            reginput++;
+            break;
+        case NONDIGIT: 
+            if (*reginput == _T('\0') ||
+                    _tcschr(CC_DIGITS, *reginput) != NULL)
+                return(0);
+            reginput++;
+            break;
+        case WHITESPACE: 
+            if (*reginput == _T('\0') ||
+                    _tcschr(CC_WHITESPACE, *reginput) == NULL)
+                return(0);
+            reginput++;
+            break;
+        case NONWHITESPACE: 
+            if (*reginput == _T('\0') ||
+                    _tcschr(CC_WHITESPACE, *reginput) != NULL)
+                return(0);
+            reginput++;
+            break;
+        case ALPHANUMERIC: 
+            if (*reginput == _T('\0') ||
+                    _tcschr(CC_ALPHANUMERICS, *reginput) == NULL)
+                return(0);
+            reginput++;
+            break;
+        case NONALPHANUMERIC: 
+            if (*reginput == _T('\0') ||
+                    _tcschr(CC_ALPHANUMERICS, *reginput) != NULL)
+                return(0);
+            reginput++;
+            break;
+        case WORDBOUNDARY:
+            if (reginput == regbol)
+            {
+                if (_tcschr(CC_ALPHANUMERICS, *reginput)) // At BOL and the char is \w
+                    break;
+            }
+            else if (*reginput == _T('\0')) 
+            {
+                if (_tcschr(CC_ALPHANUMERICS, *(reginput-1))) // At EOL and prev char is \w
+                    break;
+            }
+            else
+            {
+                if (_tcschr(CC_WHITESPACE, *reginput) && (_tcschr(CC_ALPHANUMERICS, *(reginput+1)) || _tcschr(CC_ALPHANUMERICS, *(reginput-1))))
+                    break;
+            }
+            return(0);
+        case NONWORDBOUNDARY: 
+            if (reginput == regbol)
+            {
+                if (_tcschr(CC_ALPHANUMERICS, *reginput)) // At BOL and the char is \w
+                    return(0);
+            }
+            else if (*reginput == _T('\0')) 
+            {
+                if (_tcschr(CC_ALPHANUMERICS, *(reginput-1))) // At EOL and prev char is \w
+                    return(0);
+            }
+            else
+            {
+                if (_tcschr(CC_WHITESPACE, *reginput) && (_tcschr(CC_ALPHANUMERICS, *(reginput+1)) || _tcschr(CC_ALPHANUMERICS, *(reginput-1))))
+                    return(0);
+            }
+            break;
         case NOTHING:
             break;
         case BACK:
@@ -824,6 +965,24 @@ size_t CRegExp::regrepeat(TCHAR *node)
         break;
     case ANYBUT:
         return(_tcscspn(reginput, OPERAND(node)));
+        break;
+    case DIGIT:
+        return(_tcsspn(reginput, CC_DIGITS));
+        break;
+    case NONDIGIT:
+        return(_tcscspn(reginput, CC_DIGITS));
+        break;
+    case WHITESPACE:
+        return(_tcsspn(reginput, CC_WHITESPACE));
+        break;
+    case NONWHITESPACE:
+        return(_tcscspn(reginput, CC_WHITESPACE));
+        break;
+    case ALPHANUMERIC:
+        return(_tcsspn(reginput, CC_ALPHANUMERICS));
+        break;
+    case NONALPHANUMERIC:
+        return(_tcscspn(reginput, CC_ALPHANUMERICS));
         break;
     default:        // Oh dear.  Called inappropriately. 
         //TRACE0("internal error: bad call of regrepeat\n");
