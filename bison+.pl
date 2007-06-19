@@ -26,13 +26,13 @@ my $debug = 0;
   debugout("Running bison...\n");
 
   unlink("y.tab.c");
-  my @runyacc = ();
-  push(@runyacc, "bison");
-  push(@runyacc, "-y");
-  push(@runyacc, "-l") if (defined($no_lines));
-  push(@runyacc, $input_file);
-  my $yaccstat = system(@runyacc);
-  die "@runyacc failed.\n" if ($yaccstat != 0);
+  my @cmd = ();
+  push(@cmd, "bison");
+  push(@cmd, "-y");
+  push(@cmd, "-l") if (defined($no_lines));
+  push(@cmd, $input_file);
+  my $cmdres = system(@cmd);
+  die "@cmd failed.\n" if ($cmdres != 0);
 
   open(YTABC, "<y.tab.c") || die("Could not open y.tab.c for reading: $!");
   open(HFILE, ">$h_file") || die("Could not open $h_file for writing: $!");
@@ -261,11 +261,12 @@ $class_protected
 
   print HFILE qq|\
 };
-#endif ${class_name}_h;
+#endif //${class_name}_h
 |;
 
   close(CFILE);
   close(HFILE);
+  unlink("y.tab.c");
 }
 
 sub get_param_lines($$)
