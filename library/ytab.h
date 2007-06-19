@@ -103,7 +103,7 @@ protected:
 
   int debug_rule;
   char tempo[1000];
-  int  RedoFlag;
+  bool RedoFlag;
   unsigned long ordinal;
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
@@ -421,4 +421,4 @@ public:
   MarcParser() : S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NSO(NULL), NTO(NULL) {}
 
 };
-#endif MarcParser_h;
+#endif //MarcParser_h

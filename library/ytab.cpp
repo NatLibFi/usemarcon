@@ -1441,7 +1441,7 @@ yyreduce:
 
     { PrintDebug("Redo");
                                   Copie(&(yyval.inst),S);
-                                  RedoFlag=1;
+                                  RedoFlag=true;
                                   Copie(&T,S);
 /*                                ++NO->val;
                                   if (NTO->val>=0) ++NTO->val;
