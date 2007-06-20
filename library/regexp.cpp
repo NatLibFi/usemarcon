@@ -826,7 +826,7 @@ int CRegExp::regmatch(TCHAR *prog)
             }
             else
             {
-                if (_tcschr(CC_WHITESPACE, *reginput) && (_tcschr(CC_ALPHANUMERICS, *(reginput+1)) || _tcschr(CC_ALPHANUMERICS, *(reginput-1))))
+                if (!_tcschr(CC_ALPHANUMERICS, *reginput) && (_tcschr(CC_ALPHANUMERICS, *(reginput+1)) || _tcschr(CC_ALPHANUMERICS, *(reginput-1))))
                     break;
             }
             return(0);
@@ -843,7 +843,7 @@ int CRegExp::regmatch(TCHAR *prog)
             }
             else
             {
-                if (_tcschr(CC_WHITESPACE, *reginput) && (_tcschr(CC_ALPHANUMERICS, *(reginput+1)) || _tcschr(CC_ALPHANUMERICS, *(reginput-1))))
+                if (!_tcschr(CC_ALPHANUMERICS, *reginput) && (_tcschr(CC_ALPHANUMERICS, *(reginput+1)) || _tcschr(CC_ALPHANUMERICS, *(reginput-1))))
                     return(0);
             }
             break;
