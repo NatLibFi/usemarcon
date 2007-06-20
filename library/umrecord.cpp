@@ -82,51 +82,7 @@ TUMRecord::~TUMRecord()
 ///////////////////////////////////////////////////////////////////////////////
 int TUMRecord::SortCD()
 {
-    TCDLib* newFirst=NULL;
-    TCDLib* aCDLib, *Smallest;
-
-    // Tant qu'il y a des CDLibs dans la liste des CDLibs ...
-    while (itsFirstCDLib)
-    {
-        Smallest=itsFirstCDLib;
-        aCDLib=(TCDLib*)Smallest->GetNext();
-
-        // On recherche le plus petit (Smallest) ...
-        while(aCDLib)
-        {
-            if (*aCDLib<*Smallest)
-                Smallest=aCDLib;
-            aCDLib=(TCDLib*)aCDLib->GetNext();
-        }
-
-        // Quand on l'a trouve, on l'enleve de la liste des CDLibs ...
-        if (Smallest->GetPrevious())
-            Smallest->GetPrevious()->SetNext(Smallest->GetNext());
-        else
-            itsFirstCDLib=(TCDLib*)Smallest->GetNext();
-        if (Smallest->GetNext())
-            Smallest->GetNext()->SetPrevious(Smallest->GetPrevious());
-        Smallest->SetNext(NULL);
-
-        // Et on l'ajoute a la nouvelle liste
-        if (newFirst==NULL)
-        {
-            itsLastCDLib=newFirst=Smallest;
-            Smallest->SetPrevious(NULL);
-        }
-        else
-        {
-            itsLastCDLib->SetNext(Smallest);
-            Smallest->SetPrevious(itsLastCDLib);
-            itsLastCDLib=Smallest;
-        }
-    }
-
-    // Il suffit de faire maintenant pointer itsFirstCDLib au debut de la
-    // nouvelle liste triee
-    itsFirstCDLib=newFirst;
-
-    return itsErrorHandler->GetErrorCode();
+    return PartialSort(itsFirstCDLib);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -215,11 +171,11 @@ int TUMRecord::SortCD(TCD* aCD, char* liste)
 ///////////////////////////////////////////////////////////////////////////////
 int TUMRecord::PartialSort(TCDLib *aFirst)
 {
-    TCDLib *firstCDLib = aFirst;
+    TCDLib *currentCDLib = aFirst;
 
-    while (firstCDLib)
+    while (currentCDLib)
     {
-        TCDLib *Smallest = firstCDLib;
+        TCDLib *Smallest = currentCDLib;
         TCDLib *aCDLib = (TCDLib *) Smallest->GetNext();
 
         // Find smallest CDLib
@@ -230,24 +186,36 @@ int TUMRecord::PartialSort(TCDLib *aFirst)
             aCDLib = (TCDLib*)aCDLib->GetNext();
         }
 
-        if (*Smallest < *firstCDLib)
+        if (*Smallest < *currentCDLib)
         {
-            TCDLib *previous = (TCDLib *) firstCDLib->GetPrevious();
+            // Move Smallest before currentCDLib
+            // Change linkings:
+            // 1. (current-1).next = Smallest
+            // 2. current.previous = Smallest
+            // 3. (smallest-1).next = (Smallest+1)
+            // 4. (smallest+1).previous = (Smallest-1)
+            // 5. itsLastCDLib = (Smallest-1) if Smallest was last
+            // 6. Smallest.next = current
+            // 7. Smallest.previous = (current-1)
+            TCDLib *previous = (TCDLib *) currentCDLib->GetPrevious();
             if (previous)
                 previous->SetNext(Smallest);
             else
                 itsFirstCDLib = Smallest;
-            firstCDLib->SetNext(Smallest->GetNext());
-            firstCDLib->SetPrevious(Smallest);
-            Smallest->SetNext(firstCDLib);
-            Smallest->SetPrevious(previous);
+            currentCDLib->SetPrevious(Smallest);
+            if (Smallest->GetPrevious())
+                Smallest->GetPrevious()->SetNext(Smallest->GetNext());
+            if (Smallest->GetNext())
+                Smallest->GetNext()->SetPrevious(Smallest->GetPrevious());
             if (itsLastCDLib == Smallest)
-                itsLastCDLib = firstCDLib;
-
-            firstCDLib = Smallest;
+                itsLastCDLib = (TCDLib *) Smallest->GetPrevious();
+            Smallest->SetNext(currentCDLib);
+            Smallest->SetPrevious(previous);
+             
+            currentCDLib = Smallest;
         }
         else
-            firstCDLib = (TCDLib *) firstCDLib->GetNext();
+            currentCDLib = (TCDLib *) currentCDLib->GetNext();
     }
 
     return itsErrorHandler->GetErrorCode();
@@ -653,7 +621,10 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
     {
         // Pas de CDLib existant, on l'ajoute dans l'arbre
 
-        long tagnum = atol(aCDLib->GetTag());
+        const char *cdtag = aCDLib->GetTag();
+        long tagnum = atol(cdtag);
+        if (tagnum == 0 && (cdtag[0] != '0' || cdtag[1] != '0' || cdtag[2] != '0'))
+            tagnum = -1;
         if (tagnum >= 0 && tagnum <= 999)
           itsExistingFields[tagnum] = true;
 
