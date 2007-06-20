@@ -21,7 +21,9 @@ rd program\debug
 del program\release\*.*
 rd program\release
 del library\usemarcon_library.sln
+del library\usemarcon_library.suo
 del program\usemarcon.sln
+del program\usemarcon.suo
 del Makefile /s
 del *.obj /s
 del *.o /s
