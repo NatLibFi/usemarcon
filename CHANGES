@@ -4,7 +4,7 @@ USEMARCON Change Log
 **************************
 version 2.00
 
-June 6 2007
+June 19 2007
 
 The National Library of Finland
 Ere Maijala
@@ -27,6 +27,10 @@ ere.maijala at helsinki.fi
 - Fixed using wildcards in subfield codes in field order mode
 - Added possibility to peek at a converted (output) field by prepending 
   the tag code with % (e.g. If (%008/0-5/ = '123456') Then S)
+- Added regexp support for \s, \S, \w, \W, \d, \D, \b and \B 
+  (escape \ in actual rules (e.g. \\s) 
+- Fixed sorting of temporary fields to not lose data when using field 
+  order.
 
 **************************
 **************************
