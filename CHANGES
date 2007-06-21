@@ -4,7 +4,7 @@ USEMARCON Change Log
 **************************
 version 2.00
 
-June 19 2007
+June 21 2007
 
 The National Library of Finland
 Ere Maijala
@@ -31,6 +31,7 @@ ere.maijala at helsinki.fi
   (escape \ in actual rules (e.g. \\s) 
 - Fixed sorting of temporary fields to not lose data when using field 
   order.
+- Fixed wildcard handling when converting complete fields
 
 **************************
 **************************
