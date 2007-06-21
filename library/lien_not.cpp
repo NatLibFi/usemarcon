@@ -255,14 +255,16 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         else
             NS->val=0;
         S->val=0;
-        S->str.str(aCDLIn->GetContent(Rule->GetInputCD()));
+        TCD inCD = Rule->GetInputCD();
+        inCD.ReplaceWildcards(aCDLIn->GetTag(), aCDLIn->GetSubfield());
+        S->str.str(aCDLIn->GetContent(&inCD));
         if (!S->str.str())
             itsErrorHandler->SetErrorD(5000,ERROR,"When allocating S content");
         InputCDL=aCDLIn;
 
         // Initialisation des parametres du CDIn
-        strcpy(CDIn->Field,aCDLIn->GetTag());
-        strcpy(CDIn->SubField,aCDLIn->GetSubfield());
+        strcpy(CDIn->Field, aCDLIn->GetTag());
+        strcpy(CDIn->SubField, aCDLIn->GetSubfield());
         CDIn->nt=aCDLIn->GetTagOccurrenceNumber();
         CDIn->ns=aCDLIn->GetSubOccurrenceNumber();
 
