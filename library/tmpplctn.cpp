@@ -434,6 +434,18 @@ int TUMApplication::StartUp(CDetails *Details)
         }
     }
 
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputXMLRecordFormat","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
+    if (*itsErrorHandler->Temporary)
+        itsErrorHandler->SetOutputXMLRecordFormat((char *)itsErrorHandler->Temporary);
+    else
+        itsErrorHandler->SetOutputXMLRecordFormat(NULL);
+
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputXMLRecordType","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
+    if (*itsErrorHandler->Temporary)
+        itsErrorHandler->SetOutputXMLRecordType((char *)itsErrorHandler->Temporary);
+    else
+        itsErrorHandler->SetOutputXMLRecordType(NULL);
+
     itsMarcDoc->SetMarcOutputFileBlockSize(2048);
     get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputMarcSizeBlock","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
     if (*itsErrorHandler->Temporary)

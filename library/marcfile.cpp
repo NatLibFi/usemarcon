@@ -74,6 +74,17 @@ int TMarcFile::Open()
     {
         if (TFile::Open())          // Echec d'ouverture du fichier
             return 1;
+
+        if (itsMode == FILE_WRITE && (GetMarcInfoFormat() == MFF_MARCXML || GetMarcInfoFormat() == MFF_MARCXCHANGE))
+        {
+            // Write XML header
+            typestr xml = "<?xml version=\"1.0\"?>\n\n"
+            "<collection>\n";
+
+            unsigned long len = strlen(xml.str());
+            if (write(iFile, xml.str(), len) != len)
+                return 1;
+        }
     }
 
     NumNotice       = 0L;
@@ -181,34 +192,34 @@ int TMarcFile::read_marc_scw(char debut)
 // read_marc
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcFile::read_marc(unsigned short taille, unsigned char * buffer)
+int TMarcFile::read_marc(unsigned long taille, unsigned char * buffer)
 {
-    unsigned short  pbuf,
-                    lreste;
-    short           lng;
+    unsigned long  pbuf,
+                   lreste;
+    long           lng;
 
-    pbuf=0;
-    lreste=taille;
-    while (lreste>0)
+    pbuf = 0;
+    lreste = taille;
+    while (lreste > 0)
     {
-        Reste=(unsigned short)(TBuf-PBuf);
-        if (Reste>=lreste)
+        Reste = TBuf - PBuf;
+        if (Reste >= lreste)
         {
-            memcpy(&buffer[pbuf],&Buf[PBuf],lreste);
-            buffer[pbuf+lreste]=0;
-            PBuf = (unsigned short)(PBuf + lreste);
-            lreste=0;
+            memcpy(&buffer[pbuf], &Buf[PBuf], lreste);
+            buffer[pbuf + lreste] = 0;
+            PBuf = PBuf + lreste;
+            lreste = 0;
         }
         else
         {
             if (itsEof)
             {
-                EndOfFile=true;
+                EndOfFile = true;
                 return 1;
             }
-            memcpy(&buffer[pbuf],&Buf[PBuf],Reste);
-            pbuf = (unsigned short)(pbuf + Reste);
-            lreste = (unsigned short)(lreste - Reste);
+            memcpy(&buffer[pbuf], &Buf[PBuf], Reste);
+            pbuf = pbuf + Reste;
+            lreste = lreste - Reste;
 
             // Use buffered data if available, otherwise use a file
             if (itsApplication->GetDetails()->GetMarcRecordAvailable())
@@ -227,15 +238,15 @@ int TMarcFile::read_marc(unsigned short taille, unsigned char * buffer)
                 free(pcRecord);
             }
             else
-                lng = (short)::read(iFile,Buf,TB);
+                lng = ::read(iFile,Buf,TB);
 
-            if (lng==-1)
+            if (lng == -1)
                 return itsErrorHandler->SetError(1502,ERROR);
             else
-                if (lng<TB)
-                    itsEof=true;
-                TBuf=lng;
-                PBuf=0;
+                if (lng < TB)
+                    itsEof = true;
+                TBuf = lng;
+                PBuf = 0;
         }
     }
     return 0;
@@ -259,13 +270,15 @@ bool TMarcFile::xml_read_tag(const char *a_tag, typestr & a_xml)
                 if (*temp == '>')
                     break;
             }
-            
+
             // Bypass possible namespace
             const char *p = strchr(tag.str(), ':');
-            if (!p)
+            if (p && p < strchr(tag.str(), ' '))
+                ++p;
+            else
                 p = &(tag.str()[1]);
             size_t tag_len = strlen(a_tag);
-            if (strncmp(p, a_tag, tag_len) == 0 && *(p + tag_len + 1) == '>')
+            if (strncmp(p, a_tag, tag_len) == 0 && strchr(" \t\n\r>", *(p + tag_len)))
             {
                 // We have a match
                 a_xml = tag;
@@ -303,16 +316,19 @@ bool TMarcFile::xml_read_until_end(const char *a_tag, typestr & a_xml)
 
             // Bypass possible namespace
             const char *p = strchr(tag.str(), ':');
-            if (!p)
-                p = &(tag.str()[1]);
+            if (p && p < strchr(tag.str(), ' '))
+                ++p;
+            else
+                p = &(tag.str()[2]);
             size_t tag_len = strlen(a_tag);
-            if (strncmp(p, a_tag, tag_len) == 0 && *(p + tag_len + 1) == '>')
+            if (strncmp(p, a_tag, tag_len) == 0 && strchr(" \t\n\r>", *(p + tag_len)))
             {
                 // We have a match
                 return true;
-            }            
+            }       
+            continue;
         }
-        a_xml.append_char(temp[0]);
+        a_xml.append_char(*temp);
     }
     return false;
 }
@@ -331,21 +347,18 @@ int TMarcFile::Read(TUMRecord *Record)
         typestr xml;
 
         // Find beginning of a record
-        while (true)
-        {
-            if (!xml_read_tag("record", xml))
-                if (EndOfFile)
-                    return 1;
-                else
-                    return itsErrorHandler->SetError(1003,ERROR);
-
-            if (!xml_read_until_end("record", xml))
+        if (!xml_read_tag("record", xml))
+            if (EndOfFile)
+                return 1;
+            else
                 return itsErrorHandler->SetError(1003,ERROR);
-        }
+
+        // Read until end of the record
+        if (!xml_read_until_end("record", xml))
+            return itsErrorHandler->SetError(1003,ERROR);
 
         Record->FromXMLString(xml);
         ++NumNotice;
-
         return 0;
     }
 
@@ -472,6 +485,25 @@ int TMarcFile::Read(TUMRecord *Record)
 ///////////////////////////////////////////////////////////////////////////////
 int TMarcFile::Write(TUMRecord *Record)
 {
+    if (GetMarcInfoFormat() == MFF_MARCXML || GetMarcInfoFormat() == MFF_MARCXCHANGE)
+    {
+        typestr xml;
+        int res = Record->ToXMLString(xml);
+        if (res) 
+            return res;
+
+        if (itsApplication->GetDetails()->GetMarcRecordAvailable())
+        {
+            itsApplication->GetDetails()->SetMarcRecord(xml.str(), strlen(xml.str()));
+            return 0;
+        }
+
+        ++NumNotice;
+        if (write_marc(strlen(xml.str()), (unsigned char *)xml.str()))
+            return itsErrorHandler->SetError(1005,ERROR);
+        return 0;
+    }
+
     unsigned long   pos,
         laecrire,
         lreste;
@@ -564,7 +596,7 @@ int TMarcFile::Write(TUMRecord *Record)
 // write_marc_scw
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcFile::write_marc_scw(short typ,unsigned short longueur)
+int TMarcFile::write_marc_scw(short typ,unsigned long longueur)
 {
     unsigned char   scw[6];
 
@@ -587,10 +619,10 @@ int TMarcFile::write_marc_scw(short typ,unsigned short longueur)
 // write_marc
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcFile::write_marc( unsigned short taille, unsigned char* buffer )
+int TMarcFile::write_marc( unsigned long taille, unsigned char* buffer )
 {
-    unsigned short  pbuf,
-        lreste;
+    unsigned long  pbuf,
+                   lreste;
 
     lreste=taille;
     pbuf=0;
@@ -639,6 +671,16 @@ int TMarcFile::Close()
 
         *Buf=0;
         PBuf=0;
+
+        if (GetMarcInfoFormat() == MFF_MARCXML || GetMarcInfoFormat() == MFF_MARCXCHANGE)
+        {
+            // Write XML footer
+            typestr xml = "</collection>\n";
+
+            unsigned long len = strlen(xml.str());
+            if (write(iFile, xml.str(), len) != len)
+                return itsErrorHandler->SetError(1006,ERROR);
+        }
     }
 
     TFile::Close();

@@ -40,7 +40,7 @@ class typestr
 {
 private:
     static const unsigned int buffersize = 200;
-    char buffer[buffersize];
+    char m_buffer[buffersize];
 
     char *m_str;
     unsigned long m_size;
@@ -81,12 +81,22 @@ public:
         return *this;
     }
 
+    bool operator == (const char *s)
+    {
+        return strcmp(m_str, s) == 0;
+    }
+
+    bool operator == (typestr & t)
+    {
+        return strcmp(m_str, t.str()) == 0;
+    }
+
     void allocstr(unsigned long size)
     {
         freestr();
         if (size <= buffersize)
         {
-            m_str = buffer;
+            m_str = m_buffer;
             m_size = buffersize;
         }
         else
@@ -98,10 +108,11 @@ public:
 
     void freestr()
     {
-        if (m_str != buffer)
+        if (m_str != m_buffer)
         {
             free(m_str);
         }
+        *m_buffer = '\0';
         m_str = NULL;
         m_size = 0;
     }
@@ -174,6 +185,40 @@ public:
         m_str[existing_len] = c;
         m_str[existing_len + 1] = '\0';
         return m_str;
+    }
+
+    void replace(const char *src, const char *dst)
+    {
+        if (!m_str)
+            return;
+
+        unsigned long existing_len = strlen(m_str);
+        unsigned long srclen = strlen(src);
+        unsigned long dstlen = strlen(dst);
+        long needed = dstlen - srclen;
+
+        char *p = m_str;
+        while (p = strstr(p, src))
+        {
+            if (needed > 0 && m_size < existing_len + needed)
+            {
+                unsigned long p_pos = strlen(p);
+                needed += 100;
+                typestr tmpstr = *this;
+                allocstr(needed);
+                strcpy(m_str, tmpstr.str());
+                p = strstr(m_str, src);
+                while (strlen(p) > p_pos)
+                    p = strstr(p, src);
+            }
+            *p = '\0';
+            typestr tmpstr = m_str;
+            tmpstr.append(dst);
+            tmpstr.append(p + srclen);
+            strcpy(m_str, tmpstr.str());
+            existing_len += needed;
+            p += dstlen;
+        }
     }
 
     // Lexer formatted string init

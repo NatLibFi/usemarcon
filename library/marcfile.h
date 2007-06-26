@@ -80,16 +80,16 @@ private:
     unsigned char     *Buf;
     unsigned char     FinBande[6];
     int               TB;
-    unsigned short    TBuf;
-    unsigned short    PBuf;
-    unsigned short    Reste;
+    unsigned long     TBuf;
+    unsigned long     PBuf;
+    unsigned long     Reste;
     bool              EndOfFile;
     bool              itsEof;
-    int               read_marc   (unsigned short, unsigned char*);
+    int               read_marc   (unsigned long, unsigned char*);
     int               read_marc_scw(char);
     int               debut_bloc  (void);
-    int               write_marc  (unsigned short, unsigned char*);
-    int               write_marc_scw(short,unsigned short);
+    int               write_marc  (unsigned long, unsigned char*);
+    int               write_marc_scw(short,unsigned long);
     int               val         (unsigned char*, unsigned short *);
     int               longval     (unsigned char*, unsigned long *);
 

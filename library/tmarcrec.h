@@ -48,7 +48,7 @@ public:
 
     virtual int           NextField           (TMarcField** Field, char *Tag);
     virtual int           FromString          (char *MarcString);
-    virtual int           FromXMLString       (typestr &a_xml);
+    virtual int           FromXMLString       (typestr & a_xml);
     virtual int           ToString            (char* marc,long max_size);
     virtual int           ToXMLString         (typestr &a_xml);
     virtual void          DelTree             (void);
@@ -64,10 +64,15 @@ public:
     virtual long          GetIndSeparatorsID  (int IO) const;
 
 private:
-    int                   Val                 (char *buffer,unsigned long *valeur);
-    int                   LongVal             (char *buffer,unsigned long *valeur);
-    bool                  IsFieldWithIndicators(int IO, char *tag, char *field, unsigned long fieldlen);
-    bool                  IsItAFieldWithIndicators(char *tag, int IO);
+    int                   Val                 (char *buffer, unsigned long *valeur);
+    int                   LongVal             (char *buffer, unsigned long *valeur);
+    bool                  IsFieldWithIndicators(int IO, const char *tag, const char *field, unsigned long fieldlen);
+    bool                  IsItAFieldWithIndicators(const char *tag, int IO);
+    bool                  get_tag(typestr & a_xml, typestr & a_tag, typestr & a_attribs, typestr & a_content, typestr & a_remainder);
+    typestr               get_attrib(const char *a_name, typestr & a_attribs);
+    void                  normalize_tag(typestr & a_tag);
+    typestr               escape_xml(const typestr & a_str);
+    typestr               unescape_xml(const typestr & a_str);
 
 protected:
     char                  itsLabel[25];

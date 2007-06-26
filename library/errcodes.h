@@ -4,7 +4,7 @@ typedef struct
     const char *description;
 } ERRORDESC;
 
-const int ErrorDescCount = 85;
+const int ErrorDescCount = 86;
 
 ERRORDESC ErrorDesc[ErrorDescCount] = {
     {510, "Comment is too long and will be truncated"},
@@ -18,6 +18,7 @@ ERRORDESC ErrorDesc[ErrorDescCount] = {
     {1006, "Unable to flush the MARC output file"},
     {1007, "Invalid MARC data location address"},
     {1009, "Unable to set the content of the field"},
+    {1050, "Invalid XML data"},
     {1101, "Invalid MARC tag"},
     {1501, "MARC buffer allocation failure"},
     {1502, "Error encountered when attempting to read the MARC file"},

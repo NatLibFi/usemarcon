@@ -32,6 +32,7 @@ AUTHOR
 
 #include <stdio.h>
 #include "defines.h"
+#include "typedef.h"
 
 #define ERROR             0
 #define WARNING           1
@@ -62,37 +63,42 @@ private:
 public:
     TError(TUMApplication* theApplication, const char *LogFileName=DEFAULT_LOG_FILE_NAME,
         const char *ErrorCodeFileName=DEFAULT_ERR_FILE_NAME);
-    virtual ~TError(void);
+    ~TError(void);
 
-    virtual void  Reset                 (void) { itsErrorCode=0; };
-    virtual void  CloseErrorLogFile     (void) { fclose(itsLogError); };
-    virtual int   OpenErrorLogFile      (const char *Name);
+    void  Reset                 (void) { itsErrorCode=0; };
+    void  CloseErrorLogFile     (void) { fclose(itsLogError); };
+    int   OpenErrorLogFile      (const char *Name);
 
-    virtual int   SetErrorCode          (int ErrorCode, short Severity, const char
-        *FileName,int LineNumber, const char *UserData=EMPTY_STRING);
+    int   SetErrorCode          (int ErrorCode, short Severity, const char *FileName,
+        int LineNumber, const char *UserData=EMPTY_STRING);
 
-    virtual void  SetMode               (int Mode);
-    virtual void  WriteError            (char *Message);
-    virtual void  SetTooManyErrors      (int max) { itsTooManyErrors = max; };
-    virtual void  SetVerboseMode        (int Mode) { itsVerboseMode=Mode; };
-    virtual void  SetDebugMode          (int Mode) { itsDebugMode=Mode; };
+    void  SetMode               (int Mode);
+    void  WriteError            (char *Message);
+    void  SetTooManyErrors      (int max) { itsTooManyErrors = max; };
+    void  SetVerboseMode        (int Mode) { itsVerboseMode=Mode; };
+    void  SetDebugMode          (int Mode) { itsDebugMode=Mode; };
 
-    virtual int   GetErrorCode          (void);
-    virtual int   GetMode               (void);
-    virtual int   GetTooManyErrors      (void) { return itsTooManyErrors; };
-    virtual int   GetHowManyErrors      (void) { return itsHowManyErrors; };
+    int   GetErrorCode          (void);
+    int   GetMode               (void);
+    int   GetTooManyErrors      (void) { return itsTooManyErrors; };
+    int   GetHowManyErrors      (void) { return itsHowManyErrors; };
 
-    virtual char  *GetLastErrorMessage  (void) { return itsLastErrorMessage; };
+    char  *GetLastErrorMessage  (void) { return itsLastErrorMessage; };
 
     // Just an easy way to distribute this information to others
-    bool          GetUTF8Mode           (void) { return itsUTF8Mode; }
-    void          SetUTF8Mode           (bool UTF8Mode) { itsUTF8Mode = UTF8Mode; }
-    bool          GetConvertSubfieldCodesToLowercase(void) { return itsConvertSubfieldCodesToLowercase; }
-    void          SetConvertSubfieldCodesToLowercase(bool aValue) { itsConvertSubfieldCodesToLowercase = aValue; }
+    bool  GetUTF8Mode           (void) { return itsUTF8Mode; }
+    void  SetUTF8Mode           (bool UTF8Mode) { itsUTF8Mode = UTF8Mode; }
+    bool  GetConvertSubfieldCodesToLowercase(void) { return itsConvertSubfieldCodesToLowercase; }
+    void  SetConvertSubfieldCodesToLowercase(bool a_value) { itsConvertSubfieldCodesToLowercase = a_value; }
+    typestr GetOutputXMLRecordFormat() { return itsOutputXMLRecordFormat; }
+    void  SetOutputXMLRecordFormat(const char *a_value) { itsOutputXMLRecordFormat = a_value; }
+    typestr GetOutputXMLRecordType() { return itsOutputXMLRecordType; }
+    void  SetOutputXMLRecordType(const char *a_value) { itsOutputXMLRecordType = a_value; }
 
     TUMApplication *GetApplication      (void) { return itsApplication; }
 
     // Temporary buffers for all to use
+    // TODO: Get rid of these, they're dangerous
     unsigned char Temporary[TBUF];
     unsigned char Temporary2[TBUF];
 
@@ -104,6 +110,8 @@ private:
     char            itsLastErrorMessage[255];
     bool            itsUTF8Mode;
     bool            itsConvertSubfieldCodesToLowercase;
+    typestr         itsOutputXMLRecordFormat;
+    typestr         itsOutputXMLRecordType;
 
 protected:
     unsigned int    itsTooManyErrors;
