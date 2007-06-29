@@ -36,6 +36,8 @@ ere.maijala at helsinki.fi
 - Cleaned up a lot of code and got rid of the huge temporary buffers in
   ErrorHandler and other static buffers. Record or field size is no 
   more limited.
+- Initial support for MARCXML and MarcXchange records (see documentation
+  for more information).
 
 **************************
 **************************
