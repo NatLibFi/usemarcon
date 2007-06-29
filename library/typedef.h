@@ -46,8 +46,8 @@ public:
     void freestr();
     bool is_empty();
     char* str(const char *str, unsigned long maxlen = 0);
-    inline char *str();
-    inline const char *cstr() const;
+    inline char *str() { return m_str; }
+    inline const char *cstr() const { return m_str; }
     char *append(const char *a_str, unsigned long a_len = 0);
     // Optimized for repeating calls
     char *append_char(char c);
