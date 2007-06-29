@@ -94,16 +94,6 @@ char* typestr::str(const char *str, unsigned long maxlen /*= 0*/)
     return m_str;
 }
 
-inline char *typestr::str()
-{
-    return m_str;
-}
-
-inline const char *typestr::cstr() const
-{
-    return m_str;
-}
-
 char *typestr::append(const char *a_str, unsigned long a_len /*= 0*/)
 {
     if (!m_str) 
