@@ -28,16 +28,17 @@ AUTHOR
 #include <stdio.h>
 #include <string.h>
 #include "tfile.h"
+#include "typedef.h"
 
 #define APRES  0
 #define DESSUS 1
 
-#define AT_BEGINING	0x01
-#define INSIDE		0x02
-#define AT_END		0x04
-#define EVERYWHERE	AT_BEGINING|INSIDE|AT_END
+#define AT_BEGINNING	0x01
+#define INSIDE	    	0x02
+#define AT_END		    0x04
+#define EVERYWHERE	AT_BEGINNING | INSIDE | AT_END
 
-int RemoveSpace		(char *String,int where=EVERYWHERE) ;
+int RemoveSpace		(char *String,int where = EVERYWHERE);
 int InsertChar		(char *entree,int *lg_entree,int position,char *caracteres,int code);
 int	ToUpperCase		(char *String);
 int CodeHexaToChar	(char *String);
@@ -52,8 +53,7 @@ void trim_string_quotes(char *str);
 void get_ini_string(const char *section_name,
                     const char *key_name,
                     const char *default_value,
-                    char *return_buffer,
-                    int return_buffer_size,
+                    typestr & return_buffer,
                     const char *ini_name);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,8 +69,7 @@ void get_ini_string(const char *section_name,
 void get_ini_filename(const char *section_name,
                       const char *key_name,
                       const char *default_value,
-                      char *return_buffer,
-                      int return_buffer_size,
+                      typestr & return_buffer,
                       const char *ini_name);
 
 // write a string to the specified ini file (the file must exist already)
@@ -100,5 +99,7 @@ unsigned int utf8_charindex(const char *str, unsigned long idx);
 unsigned int utf8_charlen(const char c);
 unsigned int utf8_glypheme_length(const char *p);
 
+// File handling
+bool readline(typestr &line, FILE *fh);
 
 #endif // _TOOLS_H

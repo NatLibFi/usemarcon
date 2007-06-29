@@ -56,7 +56,6 @@ public:
     virtual int     Convert              (TRuleDoc *aRuleDoc);
     virtual int     Transcode            (TTransDoc *aTransDoc);
     virtual int     LoadTagNoInd         (int IO,char *Path);
-    virtual int     SaveTagNoInd         (int IO,char *Path);
     virtual int     UnloadTagNoInd       (int IO);
 
     virtual void    DelTreeTagNoInd      (TTagNoInd *Start);
@@ -107,8 +106,6 @@ public:
     virtual FILE_SPEC     *GetMarcOutputSpec           (void) { return itsMarcOutputSpec; };
 
     virtual TTagNoInd     *GetFirstTagNoInd       (int IO);
-    virtual long          GetInputRecordNumber    (void);
-    virtual long          GetOutputRecordNumber   (void);
 
     virtual int           Read                    (void);
     virtual int           Write                   (void);

@@ -46,22 +46,22 @@ public:
 
     TMarcRecord & operator=(const TMarcRecord &rec);
 
-    virtual int           NextField           (TMarcField** Field, char *Tag);
-    virtual int           FromString          (char *MarcString);
-    virtual int           FromXMLString       (typestr & a_xml);
-    virtual int           ToString            (char* marc,long max_size);
-    virtual int           ToXMLString         (typestr &a_xml);
-    virtual void          DelTree             (void);
-    virtual const char    *GetLabel           (void) const        { return itsLabel; };
-    virtual int           SetLabel            (const char *aLabel);
-    TMarcField            *GetFirstField      (void) const        { return itsFirstField; };
-    virtual void          SetFirstField       (TMarcField *Field) { itsFirstField=Field; };
-    TTagNoInd             *GetFirstInputTNI   (void) const        { return itsFirstInputTNI; };
-    TTagNoInd             *GetFirstOutputTNI  (void) const        { return itsFirstOutputTNI; };
-    virtual void          SetFirstInputTNI    (TTagNoInd *aTNI)   { itsFirstInputTNI=aTNI; };
-    virtual void          SetFirstOutputTNI   (TTagNoInd *aTNI)   { itsFirstOutputTNI=aTNI; };
-    virtual void          SetIndSeparatorsID  (int IO,long ID);
-    virtual long          GetIndSeparatorsID  (int IO) const;
+    int           NextField           (TMarcField** Field, char *Tag);
+    int           FromString          (char *MarcString);
+    int           FromXMLString       (typestr & a_xml);
+    int           ToString            (typestr & a_marcstr);
+    int           ToXMLString         (typestr & a_xml);
+    void          DelTree             (void);
+    const char    *GetLeader          (void) const        { return itsLeader; };
+    int           SetLeader           (const char *aLeader);
+    TMarcField    *GetFirstField      (void) const        { return itsFirstField; };
+    void          SetFirstField       (TMarcField *Field) { itsFirstField=Field; };
+    TTagNoInd     *GetFirstInputTNI   (void) const        { return itsFirstInputTNI; };
+    TTagNoInd     *GetFirstOutputTNI  (void) const        { return itsFirstOutputTNI; };
+    void          SetFirstInputTNI    (TTagNoInd *aTNI)   { itsFirstInputTNI=aTNI; };
+    void          SetFirstOutputTNI   (TTagNoInd *aTNI)   { itsFirstOutputTNI=aTNI; };
+    void          SetIndSeparatorsID  (int IO,long ID);
+    long          GetIndSeparatorsID  (int IO) const;
 
 private:
     int                   Val                 (char *buffer, unsigned long *valeur);
@@ -75,7 +75,7 @@ private:
     typestr               unescape_xml(const typestr & a_str);
 
 protected:
-    char                  itsLabel[25];
+    char                  itsLeader[25];
     TMarcField            *itsFirstField;
     TTagNoInd             *itsFirstInputTNI;
     TTagNoInd             *itsFirstOutputTNI;

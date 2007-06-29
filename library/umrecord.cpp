@@ -252,14 +252,14 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
     if (!NextCD(&Search,&CD))
         itsErrorHandler->SetError(9202,ERROR);
     else
-        SetLabel(Search->GetContent());
+        SetLeader(Search->GetContent().str());
 
     // Traitement de tous les autres champs
     CDLib=itsFirstCDLib;
     while (CDLib)
     {
         // Si le CDLib courant identifie le label on continue, il a deja ete traite
-        if (strcmp(CDLib->GetTag(),"000")!=0)
+        if (*CDLib->GetTag() != '0' || strcmp(CDLib->GetTag(), "000") != 0)
         {
             // Le CDLib courant identifie le debut d'un champ, on cree donc un nouveau champ
             TMarcField* NewField=new TMarcField;
@@ -275,7 +275,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             // On recherche I1
             Search=CDLib;
             if (NextCD(&Search,&CD))
-                NewField->SetI1(*(Search->GetContent()));
+                NewField->SetI1(*Search->GetContent().str());
             else
                 NewField->SetI1(0);
 
@@ -283,7 +283,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             Search=CDLib;
             CD.SetSubfield(SECOND_INDICATOR);
             if (NextCD(&Search,&CD))
-                NewField->SetI2(*(Search->GetContent()));
+                NewField->SetI2(*Search->GetContent().str());
             else
                 NewField->SetI2(0);
 
@@ -309,8 +309,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             // GetContent va donc reconstruire le contenu complet du champ
 
             CD.SetSubfield(NO_SUBFIELD);
-            const char *content = CDLib->GetContent(&CD);
-            NewField->SetLib(content);
+            NewField->SetLib(CDLib->GetContent(&CD).str());
 
 
             // Si un lib existe bien, on insere ce nouveau champ dans
@@ -367,7 +366,7 @@ int TUMRecord::ToCD(void)
     // Ce CDLib sera identifie par un numero de champ '000'
     // On insere ensuite ce CDLib dans la liste des CDLib.
     CDLib.SetTag("000");
-    CDLib.SetContent(itsLabel);
+    CDLib.SetContent(itsLeader);
     CDLib.SetTagOccurrenceNumber(1);
     InsereCDLib(&CDLib);  // if != 0 ERREUR
 
@@ -397,16 +396,12 @@ int TUMRecord::ToCD(void)
             // On affecte le contenu du CDLib avec l'indicateur, et on insere ce
             // nouveau CDLib dans la liste des CDLibs
             CDLib.SetContent(tmp);
-            if (!CDLib.GetContent())
-                itsErrorHandler->SetErrorD( 5000, ERROR, "When setting content of a CDLib with I1" );
             InsereCDLib(&CDLib);
 
             // On fait ensuite de meme pour le second indicateur
             CDLib.SetSubfield(SECOND_INDICATOR);
             *tmp=Field->GetI2();
             CDLib.SetContent(tmp);
-            if (!CDLib.GetContent())
-                itsErrorHandler->SetErrorD( 5000, ERROR, "When setting content of a CDLib with I2" );
             InsereCDLib(&CDLib);
         }
 
@@ -415,8 +410,6 @@ int TUMRecord::ToCD(void)
         // CDLib unitaires
         CDLib.SetSubfield(NO_SUBFIELD);
         CDLib.SetContent(Field->GetLib());
-        if (!CDLib.GetContent() && Field->GetLib())
-            itsErrorHandler->SetErrorD( 5000, ERROR, "When setting content of a CDLib with content of a field" );
         InsereCDLib(&CDLib);
 
         // On passe ensuite au champ suivant
@@ -610,12 +603,8 @@ int TUMRecord::InsereCDLib(TCDLib* aCDLib, TCD* CDIn, int Replace)
     }
     if (found)
     {
-
         // Un CDLib correspondant existe deja dans la notice, on le met a jour
-
-        Search->SetContent(aCDLib->GetContent(),CDIn);
-        if (!Search->GetContent())
-            itsErrorHandler->SetErrorD(5000,ERROR,"When setting content of a new CDLib");
+        Search->SetContent(aCDLib->GetContent().str(), CDIn);
     }
     else
     {

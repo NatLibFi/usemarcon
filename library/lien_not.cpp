@@ -93,14 +93,25 @@ int TEvaluateRule::yylex()
 
 void TEvaluateRule::yyerror( char *m )
 {
+    typestr errorstr; 
     if (*m=='s' || *m=='l')
-        sprintf((char*)itsErrorHandler->Temporary,"%s near `%s' in rule \"",m,itsScanner.YYText());
+    {
+        errorstr = m;
+        errorstr += " near ";
+        errorstr += itsScanner.YYText();
+    }
     else
-        sprintf((char*)itsErrorHandler->Temporary,"ERROR `%s' in rule ",m);
+    {
+        errorstr = "ERROR '";
+        errorstr += m;
+    }
+    errorstr += " in rule \"";
     ++Error;
-    CurrentRule->ToString((char*)&itsErrorHandler->Temporary[strlen((char*)itsErrorHandler->Temporary)]);
-    strcat((char*)itsErrorHandler->Temporary,"\"");
-    itsErrorHandler->SetErrorD(5100,ERROR,(char*)itsErrorHandler->Temporary);
+    typestr rulestr;
+    CurrentRule->ToString(rulestr);
+    errorstr += rulestr;
+    errorstr += '"';
+    itsErrorHandler->SetErrorD(5100, ERROR, errorstr.str());
 }
 
 // Cette fonction permet de savoir si une regle commence par un +
@@ -257,9 +268,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         S->val=0;
         TCD inCD = Rule->GetInputCD();
         inCD.ReplaceWildcards(aCDLIn->GetTag(), aCDLIn->GetSubfield());
-        S->str.str(aCDLIn->GetContent(&inCD));
-        if (!S->str.str())
-            itsErrorHandler->SetErrorD(5000,ERROR,"When allocating S content");
+        S->str = aCDLIn->GetContent(&inCD);
         InputCDL=aCDLIn;
 
         // Initialisation des parametres du CDIn
@@ -349,8 +358,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                     {
                         if (aCDOut->GetSubOccurrenceNumber()<0)
                         {
-                            Rule->ToString((char *)itsErrorHandler->Temporary);
-                            itsErrorHandler->SetErrorD(5101,ERROR,(char*)itsErrorHandler->Temporary);
+                            typestr tmp;
+                            Rule->ToString(tmp);
+                            itsErrorHandler->SetErrorD(5101, ERROR, tmp.str());
                         }
                         NTO->val=++NO->val;
 
@@ -363,8 +373,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                         {
                             if (aCDOut->GetTagOccurrenceNumber()<=0)
                             {
-                                Rule->ToString((char*)itsErrorHandler->Temporary);
-                                itsErrorHandler->SetErrorD(5102,ERROR,(char*)itsErrorHandler->Temporary);
+                                typestr tmp;
+                                Rule->ToString(tmp);
+                                itsErrorHandler->SetErrorD(5102, ERROR, tmp.str());
                             }
                             NSO->val=++NO->val;
                             D->str.str("");
@@ -376,8 +387,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                             {
                                 if (aCDOut->GetSubOccurrenceNumber()<0)
                                 {
-                                    Rule->ToString((char*)itsErrorHandler->Temporary);
-                                    itsErrorHandler->SetErrorD(5103,ERROR,(char*)itsErrorHandler->Temporary);
+                                    typestr tmp;
+                                    Rule->ToString(tmp);
+                                    itsErrorHandler->SetErrorD(5103, ERROR, tmp.str());
                                 }
                                 ++NTO->val; ++NO->val;
 
@@ -390,8 +402,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                                 {
                                     if (aCDOut->GetTagOccurrenceNumber()<=0)
                                     {
-                                        Rule->ToString((char*)itsErrorHandler->Temporary);
-                                        itsErrorHandler->SetErrorD(5104,ERROR,(char*)itsErrorHandler->Temporary);
+                                        typestr tmp;
+                                        Rule->ToString(tmp);
+                                        itsErrorHandler->SetErrorD(5104, ERROR, tmp.str());
                                     }
                                     ++NSO->val; ++NO->val;
                                     D->str.str("");
@@ -399,7 +412,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                                 else
                                 {
                                     concr=1;
-                                    D->str.str(aCDLOut->GetContent(aCDOut));
+                                    D->str = aCDLOut->GetContent(aCDOut);
                                 }
                             }
                         }
@@ -408,7 +421,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 else
                 {
                     concr=1;
-                    D->str.str(aCDLOut->GetContent(aCDOut));
+                    D->str = aCDLOut->GetContent(aCDOut);
                 }
             }
             else
@@ -429,8 +442,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 {
                     if (aCDOut->GetSubOccurrenceNumber()<0)
                     {
-                        Rule->ToString((char*)itsErrorHandler->Temporary);
-                        itsErrorHandler->SetErrorD(5101,ERROR,(char*)itsErrorHandler->Temporary);
+                        typestr tmp;
+                        Rule->ToString(tmp);
+                        itsErrorHandler->SetErrorD(5101, ERROR, tmp.str());
                     }
                     NTO->val=NO->val=1;
                 }
@@ -441,8 +455,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                     {
                         if (aCDOut->GetTagOccurrenceNumber()<=0)
                         {
-                            Rule->ToString((char*)itsErrorHandler->Temporary);
-                            itsErrorHandler->SetErrorD(5102,ERROR,(char*)itsErrorHandler->Temporary);
+                            typestr tmp;
+                            Rule->ToString(tmp);
+                            itsErrorHandler->SetErrorD(5102, ERROR, tmp.str());
                         }
                         NSO->val=NO->val=1;
                     }
@@ -453,8 +468,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                         {
                             if (aCDOut->GetSubOccurrenceNumber()<0)
                             {
-                                Rule->ToString((char*)itsErrorHandler->Temporary);
-                                itsErrorHandler->SetErrorD(5103,ERROR,(char*)itsErrorHandler->Temporary);
+                                typestr tmp;
+                                Rule->ToString(tmp);
+                                itsErrorHandler->SetErrorD(5103, ERROR, tmp.str());
                             }
                             NTO->val=1;
                         }
@@ -465,8 +481,9 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                             {
                                 if (aCDOut->GetTagOccurrenceNumber()<=0)
                                 {
-                                    Rule->ToString((char*)itsErrorHandler->Temporary);
-                                    itsErrorHandler->SetErrorD(5104,ERROR,(char*)itsErrorHandler->Temporary);
+                                    typestr tmp;
+                                    Rule->ToString(tmp);
+                                    itsErrorHandler->SetErrorD(5104, ERROR, tmp.str());
                                 }
                                 NSO->val=1;
                             }
@@ -625,21 +642,19 @@ void TEvaluateRule::PrCD( TypeCD* CD )
 }
 
 // Return the contents of the CD
-const char* TEvaluateRule::LireCD( TypeCD* CD )
+typestr TEvaluateRule::ReadCD(TypeCD *CD)
 {
     FinishCD(CD);
 
     TUMRecord *rec = CD->Output ? OutputRecord : InputRecord;
-    TCDLib* aCDL=rec->GetFirstCDLib();
+    TCDLib *aCDL=rec->GetFirstCDLib();
     TCD     aCD(CD, itsErrorHandler);
-    const char* ptr;
+    typestr ptr;
 
     if (rec->NextCD(&aCDL,&aCD))
-        ptr=aCDL->GetContent(&aCD);
+        ptr = aCDL->GetContent(&aCD);
     else
-        ptr="";
-    if (!ptr)
-        itsErrorHandler->SetErrorD(5000,ERROR,"While reading an input CD of a rule");
+        ptr.freestr();
     return ptr;
 }
 
@@ -648,7 +663,7 @@ int TEvaluateRule::Exists( TypeCD* CD ) // En mode rule edit, demander le conten
     FinishTCD(CD);
 
     TUMRecord *rec = CD->Output ? OutputRecord : InputRecord;
-    TCDLib* aCDL=rec->GetFirstCDLib();
+    TCDLib *aCDL=rec->GetFirstCDLib();
     TCD     aCD(CD, itsErrorHandler);
 
     return rec->NextCD(&aCDL,&aCD);
@@ -670,63 +685,61 @@ int TEvaluateRule::Precedes( TypeCD* CD1, TypeCD* CD2 ) // En mode rule edit, de
     else return 1;
 }
 
-const char* TEvaluateRule::NextSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
+typestr TEvaluateRule::NextSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
 {
     FinishCD(CD1);
     FinishCD(CD2);
 
     TCDLib* aCDL=InputCDL;
     TCD     aCD1(CD1, itsErrorHandler);
-    const char *ptr=NULL;
+    typestr temps = "";
 
     if (aCDL) aCDL=(TCDLib*)aCDL->GetNext();
     if (CD2==NULL)
     {
         if (InputRecord->NextCD(&aCDL,&aCD1))
-            ptr=aCDL->GetContent();
+            temps = aCDL->GetContent();
     }
     else
     {
         TCD   aCD2(CD2, itsErrorHandler);
         while(aCDL)
         {
-            if (*aCDL==aCD1) { ptr=aCDL->GetContent(); break; }
-            if (*aCDL==aCD2) { ptr=""; break; }
+            if (*aCDL==aCD1) { temps = aCDL->GetContent(); break; }
+            if (*aCDL==aCD2) { temps = ""; break; }
             aCDL=(TCDLib*)aCDL->GetNext();
         }
     }
-    if (!ptr) ptr="";
-    return ptr;
+    return temps;
 }
 
 
-const char* TEvaluateRule::PreviousSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
+typestr TEvaluateRule::PreviousSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
 {
     FinishCD(CD1);
     FinishCD(CD2);
 
     TCDLib* aCDL=InputCDL;
     TCD     aCD1(CD1, itsErrorHandler);
-    const char *ptr=NULL;
+    typestr temps = "";
 
     if (aCDL) aCDL=(TCDLib*)aCDL->GetPrevious();
     if (CD2==NULL)
     {
         if (InputRecord->PreviousCD(&aCDL,&aCD1))
-            ptr=aCDL->GetContent();
+            temps = aCDL->GetContent();
     }
     else
     {
         TCD   aCD2(CD2, itsErrorHandler);
         while(aCDL)
         {
-            if (*aCDL==aCD1) { ptr=aCDL->GetContent(); break; }
-            if (*aCDL==aCD2) { ptr=""; break; }
+            if (*aCDL==aCD1) { temps = aCDL->GetContent(); break; }
+            if (*aCDL==aCD2) { temps = ""; break; }
             aCDL=(TCDLib*)aCDL->GetPrevious();
         }
     }
-    if (!ptr) ptr="";
-    return ptr;
+    return temps;
 }
 
 bool TEvaluateRule::CompareOccurrence(TypeInst* aCondition, int aOccurrence)
@@ -898,21 +911,18 @@ TypeInst* TEvaluateRule::Next_( TypeCD* cd1, TypeCD* cd2, int strict )
     TypeInst* rc;
     int i1,i2;
 
-    const char *tempo = NextSubField( cd1, cd2 );
-    if (!tempo) return NULL;
+    typestr temps = NextSubField( cd1, cd2 );
+    if (!temps.str()) return NULL;
 
     rc=AllocTypeInst();
     if (!strict)
     {
-        i1=0;i2=strlen(tempo);
-        while( (unsigned char)(tempo[i1])==' ' ) ++i1;
-        while( (unsigned char)(tempo[i2])==' ' ) --i2;
+        i1=0;i2=strlen(temps.str());
+        while( (unsigned char)(temps.str()[i1])==' ' ) ++i1;
+        while( (unsigned char)(temps.str()[i2])==' ' ) --i2;
         ++i2;
     }
-    // TODO: make this cleaner
-    rc->str.allocstr(i2-i1+1);
-    memcpy(rc->str.str(),&tempo[i1],i2-i1);
-    rc->str.str()[i2-i1]=0;
+    rc->str.str(&temps.str()[i1],i2-i1);
 
     FreeCD(cd1);
     FreeCD(cd2);
@@ -927,21 +937,19 @@ TypeInst* TEvaluateRule::Last_( TypeCD* cd1, TypeCD* cd2, int strict )
     TypeInst* rc;
     int i1,i2;
 
-    const char *tempo = PreviousSubField( cd1, cd2 );
-    if (!tempo) return NULL;
+    typestr temps = PreviousSubField( cd1, cd2 );
+    if (!temps.str()) return NULL;
 
     rc=AllocTypeInst();
     if (!strict)
     {
-        i1=0;i2=strlen(tempo);
-        while( (unsigned char)(tempo[i1])==' ' ) ++i1;
-        while( (unsigned char)(tempo[i2])==' ' ) --i2;
+        i1=0;i2=strlen(temps.str());
+        while( (unsigned char)(temps.str()[i1])==' ' ) ++i1;
+        while( (unsigned char)(temps.str()[i2])==' ' ) --i2;
         ++i2;
     }
     // TODO: make this cleaner
-    rc->str.allocstr(i2-i1+1);
-    memcpy(rc->str.str(),&tempo[i1],i2-i1);
-    rc->str.str()[i2-i1]=0;
+    rc->str.str(&tempo[i1], i2-i1);
 
     FreeCD(cd1);
     FreeCD(cd2);

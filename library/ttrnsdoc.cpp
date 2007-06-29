@@ -170,15 +170,16 @@ int TTransDoc::ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut)
     TMarcField* In;
     TMarcField* Out;
 
-    // Recuperation de la cle de la notice dans itsErrorHandler->Temporary2
-    strcpy((char *) itsErrorHandler->Temporary2,MarcIn->GetFirstField()->GetLib());
-
     // On commence par effectuer la recopie (sans transco) du label
-    MarcOut->SetLabel(MarcIn->GetLabel());
-    if (!MarcOut->GetLabel())
+    MarcOut->SetLeader(MarcIn->GetLeader());
+    if (!MarcOut->GetLeader())
     {
-        sprintf((char *) itsErrorHandler->Temporary,"Notice '%s' : label '%s'",(char *)itsErrorHandler->Temporary2,MarcIn->GetLabel());
-        itsErrorHandler->SetErrorD( 3000, ERROR, (char *) itsErrorHandler->Temporary );
+        typestr tmp = "Notice '";
+        tmp += MarcIn->GetFirstField()->GetLib();
+        tmp += "' : leader '";
+        tmp += MarcIn->GetLeader();
+        tmp += '\'';
+        itsErrorHandler->SetErrorD(3000, ERROR, tmp.str());
     }
 
     // On transcode ensuite chaque champ
@@ -207,8 +208,12 @@ int TTransDoc::ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut)
         Out->SetLib(Transcode(In->GetLib(), &result, In->GetLib(), In->GetTag()));
         if (!Out->GetLib())
         {
-            sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s'",In->GetLib(),In->GetTag());
-            itsErrorHandler->SetErrorD(5006, ERROR, result.str());
+            typestr tmp = "Notice '";
+            tmp += In->GetLib();
+            tmp += "' : field '";
+            tmp += In->GetTag();
+            tmp += '\'';
+            itsErrorHandler->SetErrorD(5006, ERROR, tmp.str());
         }
 
         // On passe au champ suivant

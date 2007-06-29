@@ -109,11 +109,10 @@ int TUMApplication::StartUp(CDetails *Details)
     if (itsErrorHandler)
         delete itsErrorHandler;
 
-    char IniItem[BUFF_SIZE];
-
     // Create an instance of TError
-    get_ini_filename("DEFAULT_FILES","ErrorLogFile","",IniItem,BUFF_SIZE,itsIniFile);
-    itsErrorHandler  = new TError(this, IniItem);
+    typestr inistr;
+    get_ini_filename("DEFAULT_FILES","ErrorLogFile","",inistr,itsIniFile);
+    itsErrorHandler  = new TError(this, inistr.str());
 
     // Set itsErrorHandler mode according to run mode
     if (itsDetails->GetInteractive())
@@ -134,21 +133,24 @@ int TUMApplication::StartUp(CDetails *Details)
     debug_umrecord=0;
     itsDebugRule=0;
 
-    get_ini_string("DEFAULT_STATES","IsVerboseExecutionModeChecked","",IniItem,BUFF_SIZE,itsIniFile);
-    if (!strcasecmp(IniItem,"true") || itsDetails->GetForceVerbose()) {
+    get_ini_string("DEFAULT_STATES","IsVerboseExecutionModeChecked","",inistr,itsIniFile);
+    if (!strcasecmp(inistr.str(),"true") || itsDetails->GetForceVerbose()) {
         itsErrorHandler->SetVerboseMode(1);
     } else {
         itsErrorHandler->SetVerboseMode(0);
     }
 
     // Set the maximum number of errors to be encoutered before stop
-    get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncoutered","",IniItem,BUFF_SIZE,itsIniFile);
-    if (*IniItem) {
-        itsErrorHandler->SetTooManyErrors(atoi(IniItem));
+    get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncoutered","",inistr,itsIniFile);
+    if (!*inistr.str())
+        get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncountered","",inistr,itsIniFile);
+    if (*inistr.str()) 
+    {
+        itsErrorHandler->SetTooManyErrors(atoi(inistr.str()));
     }
 
-    get_ini_string("DEBUG","IsDebugExecutionModeChecked","",IniItem,BUFF_SIZE,itsIniFile);
-    if (!strcasecmp(IniItem,"true")) {
+    get_ini_string("DEBUG","IsDebugExecutionModeChecked","",inistr,itsIniFile);
+    if (!strcasecmp(inistr.str(),"true")) {
         itsDebugRule = 1;
     } else {
         itsDebugRule = 0;
@@ -164,12 +166,12 @@ int TUMApplication::StartUp(CDetails *Details)
         return -1;
     }
 
-    get_ini_filename("DEFAULT_FILES","RuleFile","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (!*itsErrorHandler->Temporary)
+    get_ini_filename("DEFAULT_FILES", "RuleFile", "", inistr, itsIniFile);
+    if (!*inistr.str())
     {
         itsErrorHandler->WriteError("No RuleFile specified\n");
     }
-    else if (itsRuleDoc->OpenRuleFile((char *)itsErrorHandler->Temporary) == false)
+    else if (itsRuleDoc->OpenRuleFile(inistr.str()) == false)
     {
         itsErrorHandler->WriteError("Unable to open rule file\n");
     }
@@ -183,15 +185,15 @@ int TUMApplication::StartUp(CDetails *Details)
         itsErrorHandler->WriteError("END non OK : No transcoding structure created\n");
         return -1;
     }
-    get_ini_filename("DEFAULT_FILES","TranscodingCharacterTable","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary && itsTransDoc->OpenTransFile((char *)itsErrorHandler->Temporary) == false)
+    get_ini_filename("DEFAULT_FILES", "TranscodingCharacterTable", "", inistr, itsIniFile);
+    if (*inistr.str() && itsTransDoc->OpenTransFile(inistr.str()) == false)
     {
         itsErrorHandler->WriteError("Unable to open transcoding file\n");
         return -1;
     }
 
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","InputFileCharacterSet","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (itsTransDoc->SetInputFileCharacterSet((char *)itsErrorHandler->Temporary) == false)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputFileCharacterSet", "", inistr, itsIniFile);
+    if (itsTransDoc->SetInputFileCharacterSet(inistr.str()) == false)
     {
         itsErrorHandler->WriteError("Specified input file character set not supported\n");
         return -1;
@@ -208,22 +210,22 @@ int TUMApplication::StartUp(CDetails *Details)
         return -1;
     }
 
-    get_ini_filename("DEFAULT_FILES","InputFormatCheckingTable","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (!*itsErrorHandler->Temporary)
+    get_ini_filename("DEFAULT_FILES", "InputFormatCheckingTable", "", inistr, itsIniFile);
+    if (!*inistr.str())
     {
         itsErrorHandler->WriteError("No InputFormatCheckingTable specified\n");
     }
-    else if (itsCheckDoc->OpenCheckFile(INPUT,(char *)itsErrorHandler->Temporary) == false)
+    else if (itsCheckDoc->OpenCheckFile(INPUT, inistr.str()) == false)
     {
         itsErrorHandler->WriteError("Unable to open input format checking file\n");
     }
 
-    get_ini_filename("DEFAULT_FILES","OutputFormatCheckingTable","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (!*itsErrorHandler->Temporary)
+    get_ini_filename("DEFAULT_FILES", "OutputFormatCheckingTable", "", inistr, itsIniFile);
+    if (!*inistr.str())
     {
         itsErrorHandler->WriteError("No OutputFormatCheckingTable specified\n");
     }
-    else if (itsCheckDoc->OpenCheckFile(OUTPUT,(char *)itsErrorHandler->Temporary) == false)
+    else if (itsCheckDoc->OpenCheckFile(OUTPUT,inistr.str()) == false)
     {
         itsErrorHandler->WriteError("Unable to open output format checking file\n");
     }
@@ -238,18 +240,18 @@ int TUMApplication::StartUp(CDetails *Details)
         return -1;
     }
 
-    get_ini_filename("DEFAULT_FILES","InputMarcEditConfigurationFile","",(char *)itsErrorHandler->Temporary2,BUFF_SIZE,itsIniFile);
-    if (!*itsErrorHandler->Temporary2)
+    get_ini_filename("DEFAULT_FILES", "InputMarcEditConfigurationFile", "", inistr, itsIniFile);
+    if (!*inistr.str())
     {
         itsErrorHandler->WriteError("No Input MARC edit configuration file specified\n");
     }
 
     FILE_SPEC FileSpec;
-    memset(&FileSpec,0,sizeof(FILE_SPEC));
-    strcpy(FileSpec.name,(char *)itsErrorHandler->Temporary2);
+    memset(&FileSpec, 0, sizeof(FILE_SPEC));
+    strcpy(FileSpec.name, inistr.str());
     itsMarcDoc->SetConfInputFileSpec(&FileSpec);
 
-    memset(&FileSpec,0,sizeof(FILE_SPEC));
+    memset(&FileSpec, 0, sizeof(FILE_SPEC));
     if (!itsDetails->GetMarcRecordAvailable())
     {
         if (itsDetails->GetInputMarcFileName())
@@ -258,38 +260,36 @@ int TUMApplication::StartUp(CDetails *Details)
         }
         else
         {
-            get_ini_filename("DEFAULT_FILES","MarcInputFile","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-            if (!*itsErrorHandler->Temporary )
+            get_ini_filename("DEFAULT_FILES", "MarcInputFile", "", inistr, itsIniFile);
+            if (!*inistr.str())
             {
                 itsErrorHandler->WriteError("END non OK : Input MARC file not specified\n");
                 return -1;
             }
-            strcpy(FileSpec.name,(char *)itsErrorHandler->Temporary);
+            strcpy(FileSpec.name, inistr.str());
         }
     }
     itsMarcDoc->SetMarcInputFileSpec(&FileSpec);
 
     itsMarcDoc->SetMarcInputFileFormat(MFF_NONSEGMENTED); // nonsegmented by default
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsInputBlockSegmentedChecked","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsInputBlockSegmentedChecked", "", inistr, itsIniFile);
+    if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
-        {
-            itsMarcDoc->SetMarcInputFileFormat(MFF_SEGMENTED);
-        }
+        itsMarcDoc->SetMarcInputFileFormat(MFF_SEGMENTED);
     }
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","InputFileFormat","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputFileFormat", "", inistr, itsIniFile);
+    if (*inistr.str())
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"iso2709"))
+        if (!strcasecmp(inistr.str(),"iso2709"))
         {
             // default, see above
         }
-        else if (!strcasecmp((char *)itsErrorHandler->Temporary,"marcxml"))
+        else if (!strcasecmp(inistr.str(),"marcxml"))
         {
             itsMarcDoc->SetMarcInputFileFormat(MFF_MARCXML);
         }
-        else if (!strcasecmp((char *)itsErrorHandler->Temporary,"marcxchange"))
+        else if (!strcasecmp(inistr.str(),"marcxchange"))
         {
             itsMarcDoc->SetMarcInputFileFormat(MFF_MARCXCHANGE);
         }
@@ -301,77 +301,55 @@ int TUMApplication::StartUp(CDetails *Details)
     }
 
     itsMarcDoc->SetMarcInputFileBlockSize(2048);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","InputMarcSizeBlock","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcSizeBlock", "", inistr, itsIniFile);
+    if (*inistr.str() && strcmp(inistr.str(), "2048"))
     {
-        if (strcmp((char *)itsErrorHandler->Temporary,"2048"))
-        {
-            itsMarcDoc->SetMarcInputFileBlockSize((short)atoi((char *)itsErrorHandler->Temporary));
-        }
+        itsMarcDoc->SetMarcInputFileBlockSize((short)atoi(inistr.str()));
     }
 
     itsMarcDoc->SetMarcInputFileMinDataFree(5);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","InputMarcMinDataFree","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcMinDataFree", "", inistr, itsIniFile);
+    if (*inistr.str() && strcmp(inistr.str(), "5"))
     {
-        if (strcmp((char *)itsErrorHandler->Temporary,"5"))
-        {
-            itsMarcDoc->SetMarcInputFileMinDataFree((short)atoi((char *)itsErrorHandler->Temporary));
-        }
+        itsMarcDoc->SetMarcInputFileMinDataFree((short)atoi(inistr.str()));
     }
 
     itsMarcDoc->SetMarcInputFilePaddingChar(0x5E);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","InputMarcPaddingChar","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcPaddingChar", "", inistr, itsIniFile);
+    if (*inistr.str() && strcasecmp(inistr.str(), "5E"))
     {
-        if (strcasecmp((char *)itsErrorHandler->Temporary,"5E"))
-        {
-            itsMarcDoc->SetMarcInputFilePaddingChar((char)ToHexa((char *)itsErrorHandler->Temporary));
-        }
+        itsMarcDoc->SetMarcInputFilePaddingChar((char)ToHexa(inistr.str()));
     }
 
     itsMarcDoc->SetMarcInputFileLastBlock(false);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsInputLastBlockPaddedChecked","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsInputLastBlockPaddedChecked", "", inistr, itsIniFile);
+    if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
-        {
-            itsMarcDoc->SetMarcInputFileLastBlock(true);
-        }
+        itsMarcDoc->SetMarcInputFileLastBlock(true);
     }
 
     itsUTF8Mode = false;
-    get_ini_string("DEFAULT_STATES","UTF8Mode","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_STATES", "UTF8Mode", "", inistr, itsIniFile);
+    if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
-        {
-            itsUTF8Mode = true;
-        }
+        itsUTF8Mode = true;
     }
     itsErrorHandler->SetUTF8Mode(itsUTF8Mode);
 
     itsConvertInFieldOrder = false;
-    get_ini_string("DEFAULT_STATES","ConvertInFieldOrder","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_STATES", "ConvertInFieldOrder", "", inistr, itsIniFile);
+    if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
-        {
-            itsConvertInFieldOrder = true;
-        }
+        itsConvertInFieldOrder = true;
     }
 
     bool convertSubfieldCodes = false;
-    get_ini_string("DEFAULT_STATES","ConvertSubfieldCodesToLowercase","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_STATES", "ConvertSubfieldCodesToLowercase", "", inistr, itsIniFile);
+    if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
-        {
-            convertSubfieldCodes = true;
-        }
+        convertSubfieldCodes = true;
     }
     itsErrorHandler->SetConvertSubfieldCodesToLowercase(convertSubfieldCodes);
-
 
     memset(&FileSpec,0,sizeof(FILE_SPEC));
     if (!itsDetails->GetMarcRecordAvailable())
@@ -382,48 +360,46 @@ int TUMApplication::StartUp(CDetails *Details)
         }
         else
         {
-            get_ini_filename("DEFAULT_FILES","MarcOutputFile","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-            if (!*itsErrorHandler->Temporary)
+            get_ini_filename("DEFAULT_FILES", "MarcOutputFile", "", inistr, itsIniFile);
+            if (!*inistr.str())
             {
                 itsErrorHandler->WriteError("END non OK : Output MARC file not specified\n");
                 return -1;
             }
-            strcpy(FileSpec.name,(char *)itsErrorHandler->Temporary);
+            strcpy(FileSpec.name, inistr.str());
         }
     }
     itsMarcDoc->SetMarcOutputFileSpec(&FileSpec);
 
-    get_ini_filename("DEFAULT_FILES","OutputMarcEditConfigurationFile","",(char *)itsErrorHandler->Temporary2,BUFF_SIZE,itsIniFile);
-    if (!*itsErrorHandler->Temporary2)
+    get_ini_filename("DEFAULT_FILES", "OutputMarcEditConfigurationFile", "", inistr, itsIniFile);
+    if (!*inistr.str())
     {
         itsErrorHandler->WriteError("No Output MARC edit configuration file specified\n");
     }
 
-    memset(&FileSpec,0,sizeof(FILE_SPEC));
-    strcpy(FileSpec.name,(char *)itsErrorHandler->Temporary2);
+    memset(&FileSpec, 0, sizeof(FILE_SPEC));
+    strcpy(FileSpec.name, inistr.str());
     itsMarcDoc->SetConfOutputFileSpec(&FileSpec);
 
     itsMarcDoc->SetMarcOutputFileFormat(MFF_NONSEGMENTED); // nonsegmented by default
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsOutputBlockSegmentedChecked","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsOutputBlockSegmentedChecked", "", inistr, itsIniFile);
+    if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
-        {
-            itsMarcDoc->SetMarcOutputFileFormat(MFF_SEGMENTED);
-        }
+        itsMarcDoc->SetMarcOutputFileFormat(MFF_SEGMENTED);
     }
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputFileFormat","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputFileFormat", "", inistr, itsIniFile);
+    if (*inistr.str())
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"iso2709"))
+        if (!strcasecmp(inistr.str(), "iso2709"))
         {
             // default, see above
         }
-        else if (!strcasecmp((char *)itsErrorHandler->Temporary,"marcxml"))
+        else if (!strcasecmp(inistr.str(), "marcxml"))
         {
             itsMarcDoc->SetMarcOutputFileFormat(MFF_MARCXML);
         }
-        else if (!strcasecmp((char *)itsErrorHandler->Temporary,"marcxchange"))
+        else if (!strcasecmp(inistr.str(), "marcxchange"))
         {
             itsMarcDoc->SetMarcOutputFileFormat(MFF_MARCXCHANGE);
         }
@@ -434,69 +410,54 @@ int TUMApplication::StartUp(CDetails *Details)
         }
     }
 
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputXMLRecordFormat","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
-        itsErrorHandler->SetOutputXMLRecordFormat((char *)itsErrorHandler->Temporary);
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputXMLRecordFormat", "", inistr, itsIniFile);
+    if (*inistr.str())
+        itsErrorHandler->SetOutputXMLRecordFormat(inistr.str());
     else
         itsErrorHandler->SetOutputXMLRecordFormat(NULL);
 
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputXMLRecordType","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
-        itsErrorHandler->SetOutputXMLRecordType((char *)itsErrorHandler->Temporary);
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputXMLRecordType", "", inistr, itsIniFile);
+    if (*inistr.str())
+        itsErrorHandler->SetOutputXMLRecordType(inistr.str());
     else
         itsErrorHandler->SetOutputXMLRecordType(NULL);
 
     itsMarcDoc->SetMarcOutputFileBlockSize(2048);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputMarcSizeBlock","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcSizeBlock", "", inistr, itsIniFile);
+    if (*inistr.str() && strcmp(inistr.str(),"2048"))
     {
-        if (strcmp((char *)itsErrorHandler->Temporary,"2048"))
-        {
-            itsMarcDoc->SetMarcOutputFileBlockSize((short)atoi((char *)itsErrorHandler->Temporary));
-        }
+        itsMarcDoc->SetMarcOutputFileBlockSize((short)atoi(inistr.str()));
     }
 
     itsMarcDoc->SetMarcOutputFileMinDataFree(5);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputMarcMinDataFree","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcMinDataFree", "", inistr, itsIniFile);
+    if (*inistr.str() && strcmp(inistr.str(), "5"))
     {
-        if (strcmp((char *)itsErrorHandler->Temporary,"5"))
-        {
-            itsMarcDoc->SetMarcOutputFileMinDataFree((short)atoi((char *)itsErrorHandler->Temporary));
-        }
+        itsMarcDoc->SetMarcOutputFileMinDataFree((short)atoi(inistr.str()));
     }
 
     itsMarcDoc->SetMarcOutputFilePaddingChar(0x5E);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","OutputMarcPaddingChar","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcPaddingChar", "", inistr, itsIniFile);
+    if (*inistr.str() && strcasecmp(inistr.str(), "5E"))
     {
-        if (strcasecmp((char *)itsErrorHandler->Temporary,"5E"))
-        {
-            itsMarcDoc->SetMarcOutputFilePaddingChar((char)ToHexa((char *)itsErrorHandler->Temporary));
-        }
+        itsMarcDoc->SetMarcOutputFilePaddingChar((char)ToHexa(inistr.str()));
     }
 
     itsMarcDoc->SetMarcOutputFileLastBlock(false);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES","IsOutputLastBlockPaddedChecked","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsOutputLastBlockPaddedChecked", "", inistr, itsIniFile);
+    if (*inistr.str() && !strcasecmp(inistr.str(),"true"))
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
-        {
-            itsMarcDoc->SetMarcOutputFileLastBlock(true);
-        }
+        itsMarcDoc->SetMarcOutputFileLastBlock(true);
     }
 
-    get_ini_string("DEFAULT_VALUES","OrdinalNumber","1",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    itsOrdinal=atol((char *)itsErrorHandler->Temporary);
+    get_ini_string("DEFAULT_VALUES", "OrdinalNumber", "1", inistr, itsIniFile);
+    itsOrdinal = atol(inistr.str());
 
     itsUpdateOrdinal = false;
-    get_ini_string("DEFAULT_VALUES","UpdateOrdinalNumber","",(char *)itsErrorHandler->Temporary,BUFF_SIZE,itsIniFile);
-    if (*itsErrorHandler->Temporary)
+    get_ini_string("DEFAULT_VALUES", "UpdateOrdinalNumber", "", inistr, itsIniFile);
+    if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
-        if (!strcasecmp((char *)itsErrorHandler->Temporary,"true"))
-        {
-            itsUpdateOrdinal = true;
-        }
+        itsUpdateOrdinal = true;
     }
 
     return 0;
@@ -573,8 +534,9 @@ int TUMApplication::Convert(void)
 
             if (itsUpdateOrdinal)
             {
-                sprintf((char *)itsErrorHandler->Temporary,"%ld",itsOrdinal);
-                put_ini_string("DEFAULT_VALUES","OrdinalNumber",(char *)itsErrorHandler->Temporary,itsIniFile);
+                char tmp[30];
+                sprintf(tmp, "%ld", itsOrdinal);
+                put_ini_string("DEFAULT_VALUES", "OrdinalNumber", tmp, itsIniFile);
             }
 
             return -1;
@@ -587,8 +549,9 @@ int TUMApplication::Convert(void)
 
     if (itsUpdateOrdinal)
     {
-        sprintf((char *)itsErrorHandler->Temporary,"%ld",itsOrdinal);
-        put_ini_string("DEFAULT_VALUES","OrdinalNumber",(char *)itsErrorHandler->Temporary,itsIniFile);
+        char tmp[30];
+        sprintf(tmp, "%ld", itsOrdinal);
+        put_ini_string("DEFAULT_VALUES", "OrdinalNumber", tmp, itsIniFile);
     }
 
     if (itsDetails->GetInteractive())

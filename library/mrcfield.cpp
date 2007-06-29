@@ -41,15 +41,15 @@ TMarcField::TMarcField(void)
 ///////////////////////////////////////////////////////////////////////////////
 TMarcField::TMarcField(TMarcField *aField)
 {
-    strcpy(itsTag,aField->GetTag());
-    itsIndicators[0]=aField->GetI1();
-    itsIndicators[1]=aField->GetI2();
-    itsIndicators[2]=0;
+    strcpy(itsTag, aField->GetTag());
+    itsIndicators[0] = aField->GetI1();
+    itsIndicators[1] = aField->GetI2();
+    itsIndicators[2] = '\0';
     SetLib(aField->GetLib());
     if (aField->GetNextField())
-        itsNextField=new TMarcField(aField->GetNextField());
+        itsNextField = new TMarcField(aField->GetNextField());
     else
-        itsNextField=NULL;
+        itsNextField = NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ TMarcField::~TMarcField(void)
 // NextSubField
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcField::NextSubField(int *_Position,unsigned char* _SubField,unsigned char* _Result)
+int TMarcField::NextSubField(int *_Position, char* _SubField)
 {
     short       iIndice=0;
 
@@ -88,8 +88,7 @@ int TMarcField::NextSubField(int *_Position,unsigned char* _SubField,unsigned ch
             else
                 return 0;
             while ((itsLib.str()[*_Position]!=31) && (itsLib.str()[*_Position]!=0))
-                _Result[iIndice++]=itsLib.str()[(*_Position)++];
-            _Result[iIndice]=0;
+                (*_Position)++;
             return 1;
         }
     }
@@ -109,8 +108,7 @@ int TMarcField::NextSubField(int *_Position,unsigned char* _SubField,unsigned ch
             else
                 return 0;
             while ((itsLib.str()[*_Position]!=31) && (itsLib.str()[*_Position]!=0))
-                _Result[iIndice++]=itsLib.str()[(*_Position)++];
-            _Result[iIndice]=0;
+                (*_Position)++;
             return 1;
         }
     }
@@ -155,7 +153,7 @@ int TMarcField::SetIndicators(const char *theIndicators)
     unsigned long len = strlen(theIndicators);
     if (len!=2 && len != 0)
         return 1;
-    strcpy(itsIndicators,theIndicators);
+    strcpy(itsIndicators, theIndicators);
     return 0;
 }
 

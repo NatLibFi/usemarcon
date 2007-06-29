@@ -27,7 +27,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 TMarcRecord::TMarcRecord(TUMApplication *Application)
 {
-    *itsLabel           = 0;
+    *itsLeader          = '\0';
     itsFirstField       = NULL;
     itsFirstInputTNI    = NULL;
     itsFirstOutputTNI   = NULL;
@@ -44,7 +44,7 @@ TMarcRecord::TMarcRecord(TUMApplication *Application)
 ///////////////////////////////////////////////////////////////////////////////
 TMarcRecord::TMarcRecord(const TMarcRecord &aRecord)
 {
-    strcpy(itsLabel, aRecord.GetLabel());
+    strcpy(itsLeader, aRecord.GetLeader());
 
     TMarcField* In = aRecord.GetFirstField();
     TMarcField* Out = NULL;
@@ -100,7 +100,7 @@ TMarcRecord & TMarcRecord::operator=(const TMarcRecord &aRecord)
         return *this;
     }
 
-    strcpy(itsLabel, aRecord.GetLabel());
+    strcpy(itsLeader, aRecord.GetLeader());
 
     TMarcField* In = aRecord.GetFirstField();
     TMarcField* Out = NULL;
@@ -173,15 +173,15 @@ int TMarcRecord::FromString(char* MarcString)
                         temp[6];
     TMarcField          *champ;
 
-    // On detruit dabord l'arbre s'il existe
+    // Delete existing tree
     DelTree();
 
-    // On renseigne le guide
-    memcpy(itsLabel,MarcString,24);
-    itsLabel[24]=0;
+    // Leader
+    memcpy(itsLeader, MarcString, 24);
+    itsLeader[24]=0;
 
     // On isole l'adresse de d‰but des donn‰es
-    memcpy(cdebutdata,&itsLabel[12],5);
+    memcpy(cdebutdata,&itsLeader[12],5);
     cdebutdata[5]=0;
     if (Val(cdebutdata,&debutdata))
         return itsErrorHandler->SetErrorD(1007,FATAL,cdebutdata);
@@ -316,7 +316,7 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
                     size_t len = strlen(content.str());
                     for (size_t i = 1; i <= 24 - len; i++)
                         content.append_char(' ');
-                    memcpy(itsLabel, content.str(), 24);
+                    memcpy(itsLeader, content.str(), 24);
                 }
                 else if (tag == "controlfield" || tag == "datafield")
                 {
@@ -346,9 +346,9 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
                             content = remainder;
                             if (tag == "subfield")
                             {
-                                field_data.append_char('\x1F');
-                                field_data.append(get_attrib("code", attribs));
-                                field_data.append(unescape_xml(subfield));
+                                field_data += START_OF_FIELD;
+                                field_data += get_attrib("code", attribs);
+                                field_data += unescape_xml(subfield);
                             }
                         }
                         field->SetLib(field_data.str());
@@ -370,87 +370,62 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
 // ToString
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcRecord::ToString(char* marc,long max_size)
+int TMarcRecord::ToString(typestr & a_marcstr)
 {
-    unsigned short  pos_dir;
-                    
-    unsigned long   debut_data,
-                    pos_data,
-                    lgtot,
-                    lng;
-    char            temp[20];
-    TMarcField*     champ;
+    typestr directory;
+    typestr data;
 
-    // On compte les champs pour savoir ou commenceront les datas
-    champ=itsFirstField;
-    pos_data=25;
-    while( champ!= NULL )
+    unsigned long pos_data = 0;
+
+    TMarcField *field = itsFirstField;
+    while (field != NULL)
     {
-        pos_data+=12;
-        champ=champ->GetNextField();
-    }
-    debut_data=pos_data;
+        char *tag = field->GetTag();
+        char *marcdata = field->GetLib();
 
-    // On recopie le guide au debut de la notice. Le guide sera complete par les longueurs plus tard
-    memcpy(marc,itsLabel,24);
-    pos_dir=24;
-    champ = itsFirstField;
-    while (champ != NULL)
-    {
-        char *tag = champ->GetTag();
-        char *marcdata = champ->GetLib();
-        lng = strlen(marcdata);
-        bool have_ind = IsFieldWithIndicators(OUTPUT,tag,marcdata,lng);
+        char temps[20];
+        unsigned long lng = strlen(marcdata);
+        bool have_ind = IsFieldWithIndicators(OUTPUT, tag, marcdata, lng);
         if (!have_ind)
-            // pas d'indicateurs
-            sprintf(temp,"%03s%04d%05d",tag,lng+1,pos_data-debut_data);
+            sprintf(temps, "%03s%04d%05d", tag, lng+1, pos_data);
         else
-            sprintf(temp,"%03s%04d%05d", tag,lng+3,pos_data-debut_data);
+            sprintf(temps, "%03s%04d%05d", tag, lng+3, pos_data);
 
-        // On construit la directorie, en verifiant que la taille du BUFFER alloue est suffisante
-        if ((unsigned long)pos_dir+12>=(unsigned long)max_size)
-            return itsErrorHandler->SetError(1009,ERROR);
-        memcpy(&marc[pos_dir],temp,12);
-        pos_dir += 12;
+        directory += temps;
 
-        // On construit la zone de donnees, en verifiant que le BUFFER alloue est suffisant
-        if (!have_ind)
-            // pas d'indicateur
+        if (have_ind)
         {
-            if (pos_data+lng+1>=(unsigned long)max_size)
-                return itsErrorHandler->SetError(1009,ERROR);
-        }
-        else
-        {
-            if (pos_data+lng+3>=(unsigned long)max_size)
-                return itsErrorHandler->SetError(1009,ERROR);
             // There must be two indicators
-            char *indicators = champ->GetIndicators();
+            char *indicators = field->GetIndicators();
             if (*indicators && *(indicators + 1))
-              memcpy(&marc[pos_data],indicators,2);
+              data += indicators;
             else
-              memcpy(&marc[pos_data],"  ",2);
+              data += "  ";
             pos_data += 2;
         }
+        data += marcdata;
+        data += END_OF_FIELD;
+        pos_data += lng + 1;
 
-        memcpy(&marc[pos_data],marcdata,lng);
-        pos_data += lng;
-        marc[pos_data++]=30;
-        champ=champ->GetNextField();
+        field = field->GetNextField();
     }
 
-    // On renseigne le guide sur la position de depart des donnees
-    sprintf(temp,"%05d",pos_dir+1);
-    memcpy(&marc[12],temp,5);
+    a_marcstr = "";
+    a_marcstr.append(itsLeader, 24);
+    while (strlen(a_marcstr.str()) < 24)
+        a_marcstr += ' ';
 
-    // On renseigne le guide sur la longueur de la notice
-    lgtot = pos_data+1;
-    sprintf(temp,"%05lu",lgtot);
-    memcpy(marc,temp,5);
+    a_marcstr += directory + END_OF_FIELD;
+    a_marcstr += data + END_OF_RECORD;
 
-    marc[pos_dir]=30;
-    marc[lgtot-1]=29;
-    marc[lgtot]=0;
+    // Set total length of the record to the leader
+    char temps[20];
+    sprintf(temps, "%05lu", strlen(a_marcstr.str()));
+    memcpy(a_marcstr.str(), temps, 5);
+
+    // Set base address of data to the leader
+    sprintf(temps, "%05d", 24 + strlen(directory.str()));
+    memcpy(&a_marcstr.str()[12], temps, 5);
 
     DelTree();
 
@@ -480,7 +455,7 @@ int TMarcRecord::ToXMLString(typestr &a_xml)
     a_xml.append(">\n");
 
     a_xml.append("  <leader>");
-    a_xml.append(escape_xml(itsLabel));
+    a_xml.append(escape_xml(itsLeader));
     a_xml.append("</leader>\n");
 
     TMarcField *field = itsFirstField;
@@ -509,12 +484,12 @@ int TMarcRecord::ToXMLString(typestr &a_xml)
             a_xml.append_char(indicators[1] ? indicators[1] : ' ');
             a_xml.append("\">\n");
 
-            char *p = strchr(marcdata, '\x1F');
+            char *p = strchr(marcdata, START_OF_FIELD);
             while (p)
             {
                 char code = p[1];
                 typestr subfield = p + 2;
-                char *end = strchr(subfield.str(), '\x1F');
+                char *end = strchr(subfield.str(), START_OF_FIELD);
                 if (end)
                     *end = '\0';
 
@@ -524,7 +499,7 @@ int TMarcRecord::ToXMLString(typestr &a_xml)
                 a_xml.append(escape_xml(subfield));
                 a_xml.append("</subfield>\n");
 
-                p = strchr(p + 1, '\x1F');
+                p = strchr(p + 1, START_OF_FIELD);
             }
 
             a_xml.append("  </datafield>\n");
@@ -744,14 +719,14 @@ void TMarcRecord::DelTree()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// SetLabel
+// SetLeader
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcRecord::SetLabel(const char *aLabel)
+int TMarcRecord::SetLeader(const char *aLeader)
 {
-    memcpy(itsLabel,aLabel,24);
-    itsLabel[24]=0;
-    if (strlen(aLabel)!=24)
+    memcpy(itsLeader, aLeader, 24);
+    itsLeader[24]=0;
+    if (strlen(aLeader) != 24)
         return 1;
     return 0;
 };
@@ -762,7 +737,7 @@ int TMarcRecord::SetLabel(const char *aLabel)
 // Val
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcRecord::Val(char *buffer,unsigned long *valeur)
+int TMarcRecord::Val(char *buffer, unsigned long *valeur)
 {
     unsigned short      i;
 

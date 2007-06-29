@@ -51,7 +51,7 @@ int RemoveSpace(char *String,int where)
         MaxPos=LastPos+1;
     }
 
-    if (where&AT_BEGINING)
+    if (where&AT_BEGINNING)
         // Remove all spaces at begining
     {
         for (CurrentPos; CurrentPos<MaxPos && (isspace(String[CurrentPos]) || String[CurrentPos]=='\t'); CurrentPos++ )
@@ -199,13 +199,13 @@ void trim_string_quotes(char *str)
 void get_ini_string(const char *section_name,
                     const char *key_name,
                     const char *default_value,
-                    char *return_buffer,
-                    int return_buffer_size,
+                    typestr &return_buffer,
                     const char *ini_name)
 {
     FILE *ini_file;
     bool found = false;
 
+    return_buffer = "";
     if ((ini_file = fopen(ini_name, "r")))
     {
         char line[2048];
@@ -240,8 +240,7 @@ void get_ini_string(const char *section_name,
                     if (strcasecmp(line_key, key_name) == 0)
                     {
                         // found a match
-                        strncpy(return_buffer, eq_pos + 1, return_buffer_size - 1);
-                        return_buffer[return_buffer_size - 1] = '\0';
+                        return_buffer = eq_pos + 1;
                         found = true;
                         break;
                     }
@@ -252,29 +251,25 @@ void get_ini_string(const char *section_name,
     }
 
     if (!found)
-        strncpy(return_buffer, default_value, return_buffer_size - 1);
+        return_buffer = default_value;
 
-    return_buffer[return_buffer_size - 1] = '\0';
-    trim_string(return_buffer);
-    trim_string_quotes(return_buffer);
+    trim_string(return_buffer.str());
+    trim_string_quotes(return_buffer.str());
 }
 
 void get_ini_filename(const char *section_name,
                       const char *key_name,
                       const char *default_value,
-                      char *return_buffer,
-                      int return_buffer_size,
+                      typestr & return_buffer,
                       const char *ini_name)
 {
-    get_ini_string(section_name, key_name, default_value, return_buffer, return_buffer_size,
-        ini_name);
-    if (*return_buffer && !strchr(return_buffer, SLASH))
+    get_ini_string(section_name, key_name, default_value, return_buffer, ini_name);
+    if (*return_buffer.str() && !strchr(return_buffer.str(), SLASH))
     {
         char full_path[MAXPATH];
         copy_path_from_filename(full_path, ini_name);
-        append_filename(full_path, return_buffer);
-        strncpy(return_buffer, full_path, return_buffer_size - 1);
-        return_buffer[return_buffer_size-1] = '\0';
+        append_filename(full_path, return_buffer.str());
+        return_buffer = full_path;
     }
 }
 
@@ -646,3 +641,18 @@ unsigned int utf8_glypheme_length(const char *p)
     return len;
 }
 
+bool readline(typestr &a_line, FILE *a_fh)
+{
+    a_line = "";
+    char buf[1024];
+    if (fgets(buf, 1024, a_fh) == NULL)
+        return false;
+    a_line.str(buf);
+    while (*buf && buf[strlen(buf)-1] != '\n')
+    {
+        if (fgets(buf, 1024, a_fh) == NULL)
+            break;
+        a_line.append(buf);
+    }
+    return true;
+}

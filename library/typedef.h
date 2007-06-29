@@ -35,6 +35,7 @@ AUTHOR
 #endif
 
 #include <malloc.h>
+#include "defines.h"
 
 class typestr
 {
@@ -54,7 +55,8 @@ public:
     {
         m_str = NULL;
         m_size = 0;
-        str(t.m_str);
+        allocstr(t.m_size);
+        memcpy(m_str, t.m_str, t.m_size);
     }
 
     typestr(const char *t)
@@ -71,7 +73,8 @@ public:
 
     typestr & operator=(const typestr & t)
     {
-        str(t.m_str);
+        allocstr(t.m_size);
+        memcpy(m_str, t.m_str, t.m_size);
         return *this;
     }
 
@@ -104,6 +107,7 @@ public:
             m_str = (char *) malloc(size);
             m_size = size;
         }
+        *m_str = '\0';
     }
 
     void freestr()
@@ -124,23 +128,34 @@ public:
         return true;
     }
 
-    char* str(const char *str)
+    char* str(const char *str, unsigned long maxlen = 0)
     {
         if (!str)
         {
             freestr();
             return NULL;
         }
-        unsigned long needed = strlen(str) + 1;
+        unsigned long needed = 1 + (maxlen > 0 ? maxlen : strlen(str));
         if (m_size < needed)
         {
             allocstr(needed);
         }
-        strcpy(m_str, str);
+        if (maxlen > 0)
+        {
+            strncpy(m_str, str, maxlen);
+            m_str[maxlen] = '\0';
+        }
+        else
+            strcpy(m_str, str);
         return m_str;
     }
 
     inline char *str()
+    {
+        return m_str;
+    }
+
+    inline const char *cstr() const
     {
         return m_str;
     }
@@ -156,18 +171,10 @@ public:
         if (m_size < needed)
         {
             needed += 100;
-            typestr tmpstr = *this;
-            allocstr(needed);
-            strcpy(m_str, tmpstr.str());
+            promise(needed);
         }
         strncat(m_str, a_str, append_len);
         return m_str;
-    }
-
-    typestr & append(typestr & a_str)
-    {
-        append(a_str.str());
-        return *this;
     }
 
     // Optimized for repeating calls
@@ -178,9 +185,7 @@ public:
         if (m_size < needed)
         {
             needed += 100;
-            typestr tmpstr = *this;
-            allocstr(needed);
-            strcpy(m_str, tmpstr.str() ? tmpstr.str() : "");
+            promise(needed);
         }
         m_str[existing_len] = c;
         m_str[existing_len + 1] = '\0';
@@ -204,9 +209,7 @@ public:
             {
                 unsigned long p_pos = strlen(p);
                 needed += 100;
-                typestr tmpstr = *this;
-                allocstr(needed);
-                strcpy(m_str, tmpstr.str());
+                promise(needed);
                 p = strstr(m_str, src);
                 while (strlen(p) > p_pos)
                     p = strstr(p, src);
@@ -221,6 +224,58 @@ public:
         }
     }
 
+    typestr & append(const typestr & a_str)
+    {
+        append(a_str.m_str);
+        return *this;
+    }
+
+    void promise(unsigned long size)
+    {
+        if (m_size >= size)
+            return;
+        
+        typestr tmpstr = *this;
+        allocstr(size);
+        memcpy(m_str, tmpstr.str(), tmpstr.m_size);
+    }
+
+    typestr & operator + (const typestr & t)
+    {
+        append(t.m_str);
+        return *this;
+    }
+
+    typestr & operator + (const char *t)
+    {
+        append(t);
+        return *this;
+    }
+
+    typestr & operator + (const char t)
+    {
+        append_char(t);
+        return *this;
+    }
+
+    typestr & operator += (const typestr & t)
+    {
+        append(t.m_str);
+        return *this;
+    }
+
+    typestr & operator += (const char *t)
+    {
+        append(t);
+        return *this;
+    }
+
+    typestr & operator += (const char t)
+    {
+        append_char(t);
+        return *this;
+    }
+
     // Lexer formatted string init
     void initstr(const char *s)
     {
@@ -233,9 +288,9 @@ public:
             {
             case '$' :
                 if (s[i+1]=='$')
-                    m_str[j++]=s[++i];
+                    m_str[j++] = s[++i];
                 else
-                    m_str[j++]=0x1F;
+                    m_str[j++] = START_OF_FIELD;
                 ++i;
                 break;
             case '\\' : // hex value

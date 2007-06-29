@@ -39,8 +39,9 @@ public:
     TCDLib          (TCD* aCD);
     ~TCDLib         (void);
 
-    const char *GetContent    (TCD* aCD=NULL);
+    typestr   GetContent      (TCD* aCD=NULL);
     int       SetContent      (const char *aContent, TCD* aCD=NULL);
+    int       SetContent      (const typestr & aContent, TCD* aCD=NULL);
     void      ResetContent    (void);
     int       IsEqual         (TCD* aCD, int aTagOccurrenceNumberOverride = -1);
     int       IsLess          (TCD* aCD);

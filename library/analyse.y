@@ -39,7 +39,7 @@ protected:
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
-  virtual const char* LireCD(TypeCD*) = 0;
+  virtual typestr ReadCD(TypeCD *) = 0;
   virtual TypeCD* AllocCD() = 0;
   virtual void FreeCD( TypeCD* CD ) = 0;
   virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
@@ -538,12 +538,11 @@ Translation :
 |       VAR_NEW                         { PrintDebug("NEW");Copie(&$$,NEW); }
 |       VARS                            { PrintDebug("S");Copie(&$$,S); }
 |       VARD                            { PrintDebug("S");Copie(&$$,D); }
-|       CD                      { const char *ptr;
-                                  PrintDebug("CD");
+|       CD                      { PrintDebug("CD");
                                   $$=AllocTypeInst();
-                                  ptr=LireCD($1);
-                                  if (!ptr) return 2;
-                                  $$->str.str(ptr);
+                                  typestr ptr = ReadCD($1);
+                                  if (!ptr.str()) return 2;
+                                  $$->str = ptr;
                                   $$->val=0;
                                   FreeCD($1);}
 |       Translation PLUS Translation    { PrintDebug("...+...");$$=Ajout($1,$3); $1=$3=NULL; }

@@ -163,16 +163,8 @@ int TFile::NextLine(typestr *aLine, FILE_SPEC* Spec, int *LineNumber)
         memcpy(Spec,itsFileInfo,sizeof(FILE_SPEC));
 
     typestr line;
-    char buf[256];
-    if (fgets(buf, 256, File)==NULL)
+    if (!readline(line, File))
         return 1;
-    line.str(buf);
-    while (*buf && buf[strlen(buf)-1] != '\n')
-    {
-        if (fgets(buf, 256, File)==NULL)
-            break;
-        line.append(buf);
-    }
 
     ++itsLineNumber;
     if (LineNumber) *LineNumber=itsLineNumber;

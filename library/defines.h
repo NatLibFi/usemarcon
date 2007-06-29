@@ -36,8 +36,10 @@ AUTHOR
 
 #define EMPTY_ITEM		"\"\""
 
-#define TBLMAX 4096
-#define BUFF_SIZE 1000
+#define START_OF_FIELD '\x1f'
+#define END_OF_FIELD '\x1e'
+#define END_OF_RECORD '\x1d'
+
 #define TBUF 100000
 
 // SLASH is actually the directory separator

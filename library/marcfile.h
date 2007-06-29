@@ -54,16 +54,15 @@ public:
 
     int       Read                    (TUMRecord *Record);
     int       Write                   (TUMRecord *Record);
-    long      GetRecordNumber         (void)                  { return NumNotice; };
 
     void      SetMarcInfoFormat       (MARC_FILE_FORMAT theFormat) { itsMarcInfo.Format=theFormat; };
     void      SetMarcInfoBlockSize    (short theBlockSize)    { itsMarcInfo.BlockSize=theBlockSize; };
     void      SetMarcInfoMinDataFree  (short theMinDataFree)  { itsMarcInfo.MinDataFree=theMinDataFree; };
     void      SetMarcInfoPaddingChar  (char thePaddingChar)   { itsMarcInfo.PaddingChar=thePaddingChar; };
     void      SetMarcInfoLastBlock    (bool theLastBlock)     { itsMarcInfo.LastBlock=theLastBlock; };
-    MARC_FILE_FORMAT GetMarcInfoFormat       (void)                  { return itsMarcInfo.Format; };
-    short     GetMarcInfoBlockSize    (void)                  { return itsMarcInfo.BlockSize; };
-    short     GetMarcInfoMinDataFree  (void)                  { return itsMarcInfo.MinDataFree; };
+    MARC_FILE_FORMAT GetMarcInfoFormat (void)                 { return itsMarcInfo.Format; };
+    unsigned short GetMarcInfoBlockSize (void)                { return itsMarcInfo.BlockSize; };
+    unsigned short GetMarcInfoMinDataFree (void)              { return itsMarcInfo.MinDataFree; };
     char      GetMarcInfoPaddingChar  (void)                  { return itsMarcInfo.PaddingChar; };
     bool      GetMarcInfoLastBlock    (void)                  { return itsMarcInfo.LastBlock; };
 
@@ -71,27 +70,22 @@ public:
     virtual long GetPos(void);
 
 private:
-    unsigned char     *Buffer;
-    unsigned long     NumNotice;
+    typestr           m_filebuffer;
     unsigned long     PosCour;
     unsigned long     NumBloc;
-    unsigned long     LngNotice;
-    unsigned long     FinBloc;
-    unsigned char     *Buf;
     unsigned char     FinBande[6];
     int               TB;
-    unsigned long     TBuf;
-    unsigned long     PBuf;
-    unsigned long     Reste;
+    unsigned long     BufSize;
+    unsigned long     BufPos;
     bool              EndOfFile;
     bool              itsEof;
-    int               read_marc   (unsigned long, unsigned char*);
-    int               read_marc_scw(char);
-    int               debut_bloc  (void);
-    int               write_marc  (unsigned long, unsigned char*);
+    int               read_marc   (unsigned long, char*);
+    int               read_marc_scw(bool a_first);
+    bool              first_block (void);
+    int               write_marc  (unsigned long, char*);
     int               write_marc_scw(short,unsigned long);
-    int               val         (unsigned char*, unsigned short *);
-    int               longval     (unsigned char*, unsigned long *);
+    int               val         (const char *, unsigned short *);
+    int               longval     (const char *, unsigned long *);
 
     bool              xml_read_tag(const char *tag, typestr & a_xml);
     bool              xml_read_until_end(const char *tag, typestr & a_xml);
@@ -106,8 +100,8 @@ protected:
     struct MARCINFO
     {
       MARC_FILE_FORMAT  Format;
-      short BlockSize;
-      short MinDataFree;
+      unsigned short BlockSize;
+      unsigned short MinDataFree;
       char  PaddingChar;
       bool  LastBlock;
     } itsMarcInfo;

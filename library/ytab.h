@@ -108,7 +108,7 @@ protected:
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
-  virtual const char* LireCD(TypeCD*) = 0;
+  virtual typestr ReadCD(TypeCD *) = 0;
   virtual TypeCD* AllocCD() = 0;
   virtual void FreeCD( TypeCD* CD ) = 0;
   virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;

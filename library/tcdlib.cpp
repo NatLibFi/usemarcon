@@ -55,7 +55,7 @@ TCDLib::TCDLib(TCDLib *aCDLib, TCD*aCD):TCD(aCDLib->itsErrorHandler)
     else
         itsNext = NULL;
     itsPrevious = NULL;
-    SetContent(aCDLib->GetContent(),aCD);
+    SetContent(aCDLib->GetContent(), aCD);
     itsErrorHandler=aCDLib->itsErrorHandler;
 }
 
@@ -112,31 +112,30 @@ TCDLib::~TCDLib(void)
 //   correspondant ... et en ne prenant en final que l'intervalle voulu.
 //
 ///////////////////////////////////////////////////////////////////////////////
-const char *TCDLib::GetContent(TCD* theCD)
+typestr TCDLib::GetContent(TCD* theCD)
 {
     // Si aCD est NULL on retourne simplement le contenu complet du CDLib
 
     if (theCD==NULL)
-        return itsContent.str();
+        return itsContent;
 
     // Si le sous-champ n'est pas precise, il faut concatener tous les sous-champs
     // suivant, correspondant au champ identifie par aCD.
     // S'ilest precise, il suffit de prendre son contenu
 
+    typestr content;
     if (*(theCD->GetSubfield())==0)
     {
         TCDLib* Courant=this;
-        *itsErrorHandler->Temporary=0;
         while( Courant && Courant->IsEqual(theCD, GetTagOccurrenceNumber()) )
         {
 
             // Si le CDLib trouve n'identifie pas un sous-champ, on concatene, sans
             // mettre de balise de sous-champ
 
-            if (*(Courant->GetSubfield())==0)
+            if (*(Courant->GetSubfield()) == 0)
             {
-                if (Courant->GetContent())
-                    strcat((char*)itsErrorHandler->Temporary,Courant->GetContent());
+                content += Courant->GetContent();
             }
             else
             {
@@ -146,50 +145,51 @@ const char *TCDLib::GetContent(TCD* theCD)
 
                 if (*(Courant->GetSubfield())!='I')
                 {
-                    sprintf((char*)itsErrorHandler->Temporary2,"\x1F%c%s",*(Courant->GetSubfield()+1),Courant->GetContent());
-                    strcat((char*)itsErrorHandler->Temporary,(char*)itsErrorHandler->Temporary2);
+                    content.append_char(START_OF_FIELD);
+                    content.append_char(*(Courant->GetSubfield()+1)); 
+                    content.append(Courant->GetContent());
                 }
             }
             Courant=(TCDLib*)Courant->GetNext();
         }
     }
-    else strcpy((char *)itsErrorHandler->Temporary,itsContent.str());
-
-    // itsErrorHandler->Temporary contient maintenant le contenu du CDLib.
-    // On regarde maintenant l'intervalle de position a fournir
+    else content = itsContent;
 
     int    aBeginning=theCD->GetBeginning();
     int    aEnd=theCD->GetEnd();
 
     // Si les positions de sont pas definies, on retourne tout le contenu
 
-    if (aBeginning==0 && aEnd==0) return (char*)itsErrorHandler->Temporary;
+    if (aBeginning==0 && aEnd==0) 
+        return content;
 
     --aBeginning;
 
     if (itsErrorHandler->GetUTF8Mode())
     {
         if (aBeginning >= 0) 
-            aBeginning = utf8_charindex((const char *) itsErrorHandler->Temporary, aBeginning);
+            aBeginning = utf8_charindex(content.str(), aBeginning);
         if (aEnd >= 0)
-            aEnd = utf8_charindex((const char *) itsErrorHandler->Temporary, aEnd);
+            aEnd = utf8_charindex(content.str(), aEnd);
     }
-    int MaxPos = strlen((char *)itsErrorHandler->Temporary);
+    int MaxPos = strlen(content.str());
 
     // Si les positions sont definies, on extrait les donnees correspondantes
 
-    if (aBeginning>MaxPos || aEnd>MaxPos || (aEnd>0 && aBeginning>aEnd))
+    if (aBeginning > MaxPos || aEnd > MaxPos || (aEnd > 0 && aBeginning > aEnd))
         return "";
 
+    typestr result;
     if (aEnd==-1)
-        strcpy((char *)itsErrorHandler->Temporary2,(char *)&itsErrorHandler->Temporary[aBeginning]);
+        result = &content.str()[aBeginning];
     else
     {
         --aEnd;
-        memcpy((char *)itsErrorHandler->Temporary2,(char *)&itsErrorHandler->Temporary[aBeginning],aEnd-aBeginning+1);
-        itsErrorHandler->Temporary2[aEnd-aBeginning+1]=0;
+        result.allocstr(aEnd-aBeginning+2);
+        memcpy(result.str(), &content.str()[aBeginning], aEnd-aBeginning+1);
+        result.str()[aEnd-aBeginning+1]=0;
     }
-    return (char *)itsErrorHandler->Temporary2;
+    return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -215,6 +215,11 @@ void TCDLib::ResetContent(void)
 // Le CDLib doit etre unitaire
 //
 ///////////////////////////////////////////////////////////////////////////////
+int TCDLib::SetContent(const typestr & aContent, TCD* aCD)
+{
+    return SetContent(aContent.cstr(), aCD);
+}
+
 int TCDLib::SetContent(const char *pContent, TCD* aCD)
 {
     // Si aCD est NULL on remplit simplement le CDLib (test de validite a effectuer
@@ -237,7 +242,7 @@ int TCDLib::SetContent(const char *pContent, TCD* aCD)
     // Si les positions de debut et fin sont indefinies, on remplit simplement
     // le CDLib en re-appelant cette meme methode sans aCD (NULL par defaut)
 
-    if (aBeginning!=0 || aEnd!=0)
+    if (aBeginning != 0 || aEnd != 0)
 
         // Sinon deux cas sont possibles :
         // - ou bien l'intervalle specifie "touche" ou chevauche le contenu actuel
@@ -249,28 +254,26 @@ int TCDLib::SetContent(const char *pContent, TCD* aCD)
         // aBeginning et aEnd commencent a 1 quand ils sont definis
         --aBeginning;
 
-        if (itsContent.str())
-            strcpy((char*)itsErrorHandler->Temporary,itsContent.str());
-        else
-            *itsErrorHandler->Temporary = '\0';
+        typestr tmpstr = itsContent.str() ? itsContent.str() : "";
 
         if (itsErrorHandler->GetUTF8Mode() && pContent)
         {
             int oldBegining = aBeginning;
-            aBeginning = utf8_charindex((char*)itsErrorHandler->Temporary, aBeginning);
+            aBeginning = utf8_charindex(tmpstr.str(), aBeginning);
             aEnd = utf8_charindex(pContent, aEnd) + aBeginning - oldBegining;
         }
-        int MaxPos = strlen((char*)itsErrorHandler->Temporary);
+        int MaxPos = strlen(tmpstr.str());
+        unsigned long pContentLen = strlen(pContent);
 
-        for (int i = MaxPos; i < aBeginning; itsErrorHandler->Temporary[i++] = ' ');
+        tmpstr.promise(aBeginning + pContentLen + 1);
+        for (int i = MaxPos; i < aBeginning; tmpstr.str()[i++] = ' ');
 
         if (pContent && *pContent)
         {
-            unsigned long pContentLen = strlen(pContent);
-            if (aEnd==-1)
+            if (aEnd == -1)
             {
-                memcpy( (char*)&itsErrorHandler->Temporary[aBeginning], pContent, pContentLen);
-                aEnd=aBeginning+pContentLen-1;
+                memcpy(&tmpstr.str()[aBeginning], pContent, pContentLen);
+                aEnd = aBeginning + pContentLen - 1;
             }
             else
             {
@@ -280,11 +283,12 @@ int TCDLib::SetContent(const char *pContent, TCD* aCD)
                 int copysize = aEnd - aBeginning + 1;
                 if (contentsize < copysize)
                     copysize = contentsize;
-                memcpy( (char*)&itsErrorHandler->Temporary[aBeginning], pContent, copysize);
+                memcpy(&tmpstr.str()[aBeginning], pContent, copysize);
             }
         }
-        if (MaxPos<=aEnd) itsErrorHandler->Temporary[aEnd+1]=0;
-        SetContent((char*)itsErrorHandler->Temporary);
+        if (MaxPos<=aEnd) 
+            tmpstr.str()[aEnd+1] = '\0';
+        SetContent(tmpstr.str());
     }
     else
     {
@@ -374,64 +378,67 @@ int TCDLib::IsLess( TCD* aCD )
 int TCDLib::NextSubCDLib(TCDLib** pCDLib, int* _pos, char* defst)
 {
     TCDLib* aCDLib;
-    int     first;
+    bool    first;
     int     pos=*_pos, startpos;
-    char    tmp[3];
+    char    sub[3];
 
     if (!itsContent.str())
     {
         return 0;
     }
 
-    tmp[0]='$';
-    tmp[2]=0;
-    first=(pos==0);
+    sub[0]='$';
+    sub[2]=0;
+    first = (pos == 0);
 
     // On parcourt tous les caracteres du contenu du CDLib, a partir de la position
     // passee en parametre
 
     while(itsContent.str()[pos])
     {
-        if (itsContent.str()[pos]==0x1F && itsContent.str()[pos+1]!=0)
+        if (itsContent.str()[pos] == START_OF_FIELD && itsContent.str()[pos+1] != '\0')
         {
+            typestr tmpstr;
             if (first && pos && *defst)
             {
                 // Si on est a la premiere balise et qu'on n'est pas au debut du champ
                 // et qu'un ss-champ par defaut est specifie, on le rempli avec le debut du champ
-                tmp[1]=defst[1];
+                sub[1] = defst[1];
                 startpos = 0;
-                memcpy((char*)itsErrorHandler->Temporary,itsContent.str(),pos);
-                itsErrorHandler->Temporary[pos]=0;
+                tmpstr.promise(pos + 1);
+                tmpstr.str()[pos] = '\0';
+                memcpy(tmpstr.str(), itsContent.str(), pos);
+                tmpstr.str()[pos] = '\0';
             }
             else
             {
                 // Si on trouve une balise, on recopie le contenu du sous-champ dans
                 // itsErrorHandler->Temporary, jusqu'a la balise suivante
 
-                tmp[1]=itsContent.str()[pos+1];
-                pos+=2;
-                startpos=pos;
-                while(itsContent.str()[pos] && itsContent.str()[pos]!=0x1F) ++pos;
-                memcpy((char*)itsErrorHandler->Temporary,&itsContent.str()[startpos],pos-startpos);
-                itsErrorHandler->Temporary[pos-startpos]=0;
+                sub[1] = itsContent.str()[pos+1];
+                pos += 2;
+                startpos = pos;
+                while(itsContent.str()[pos] && itsContent.str()[pos] != START_OF_FIELD) 
+                    ++pos;
+                tmpstr.promise(pos - startpos + 1);
+                memcpy(tmpstr.str(), &itsContent.str()[startpos], pos - startpos);
+                tmpstr.str()[pos - startpos] = '\0';
             }
 
 
             // On cree un nouveau CDLib correspondant au sous-champ trouve
-            first=0;
+            first = false;
             aCDLib=new TCDLib(itsErrorHandler);
             aCDLib->SetTag(itsTag);
             aCDLib->SetTagOccurrenceNumber(itsTagOccurrenceNumber);
-            aCDLib->SetSubfield(tmp);
-            aCDLib->SetContent((char*)itsErrorHandler->Temporary);
-            if (!aCDLib->GetContent())
-                itsErrorHandler->SetErrorD(5000,ERROR,"While setting content of a new sub-cdlib");
+            aCDLib->SetSubfield(sub);
+            aCDLib->SetContent(tmpstr.str());
 
             // Find out the subfield occurrence number (ns)
             int ns = 0;
             for (int p2 = startpos; p2 > 0; p2--)
             {
-                if (itsContent.str()[p2] == tmp[1] && itsContent.str()[p2 - 1] == 0x1F)
+                if (itsContent.str()[p2] == sub[1] && itsContent.str()[p2 - 1] == START_OF_FIELD)
                     ++ns;
             }
             aCDLib->SetSubOccurrenceNumber(ns);

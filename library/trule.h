@@ -43,7 +43,7 @@ public:
     virtual ~TRule  ();
 
     int   FromString      (char *aString);
-    int   ToString        (char *aString);
+    bool  ToString      (typestr & a_string);
     void  ResetLib        (void)              { itsLib.freestr(); };
 
     inline TCD   *GetInputCD     (void)              { return itsInputCD; };

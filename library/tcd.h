@@ -53,7 +53,7 @@ public:
     virtual ~TCD    ();
 
     int   FromString      (char *aString, TCD *Last, int InputOrOutput);
-    int   ToString        (char *String, int InputOrOutput);
+    bool  ToString        (typestr & a_string, int InputOrOutput);
 
     TCD   *GetPrevious            (void)      { return itsPrevious; };
     TCD   *GetNext                (void)      { return itsNext; };

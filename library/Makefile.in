@@ -88,11 +88,11 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 lib_LTLIBRARIES = libusemarcon.la
-libusemarcon_la_SOURCES = chckfile.h error.h objectlist.h tcd.h tmarcrec.h trule.h codedata.h lex.yy.h rulefile.h tcdlib.h tmpplctn.h ttrnsdoc.h ctrlfld.h lien_not.h semi.h tchckdoc.h tools.h typedef.h defines.h marcfile.h sort.h tfile.h trnsfile.h umrecord.h errcodes.h mrcfield.h tagnoind.h tmarcdoc.h truledoc.h ytab.h regexp.h marc8.h chckfile.cpp lien_not.cpp tagnoind.cpp tmarcdoc.cpp trule.cpp codedata.cpp marcfile.cpp tcd.cpp tmarcrec.cpp truledoc.cpp ctrlfld.cpp mrcfield.cpp tcdlib.cpp tmpplctn.cpp ttrnsdoc.cpp error.cpp rulefile.cpp tchckdoc.cpp tools.cpp umrecord.cpp lex.yy.cpp semi.cpp tfile.cpp trnsfile.cpp ytab.cpp regexp.cpp
+libusemarcon_la_SOURCES = chckfile.h error.h objectlist.h tcd.h tmarcrec.h trule.h codedata.h rulefile.h tcdlib.h tmpplctn.h ttrnsdoc.h ctrlfld.h lien_not.h semi.h tchckdoc.h tools.h typedef.h defines.h marcfile.h sort.h tfile.h trnsfile.h umrecord.h errcodes.h mrcfield.h tagnoind.h tmarcdoc.h truledoc.h ytab.h regexp.h FlexLexer.h chckfile.cpp lien_not.cpp tagnoind.cpp tmarcdoc.cpp trule.cpp codedata.cpp marcfile.cpp tcd.cpp tmarcrec.cpp truledoc.cpp ctrlfld.cpp mrcfield.cpp tcdlib.cpp tmpplctn.cpp ttrnsdoc.cpp error.cpp rulefile.cpp tchckdoc.cpp tools.cpp umrecord.cpp lex.yy.cpp semi.cpp tfile.cpp trnsfile.cpp ytab.cpp regexp.cpp
 
 INCLUDE = -I@top_srcdir@/
 
-include_HEADERS = chckfile.h error.h objectlist.h tcd.h tmarcrec.h trule.h codedata.h lex.yy.h rulefile.h tcdlib.h tmpplctn.h ttrnsdoc.h ctrlfld.h lien_not.h semi.h tchckdoc.h tools.h typedef.h defines.h marcfile.h sort.h tfile.h trnsfile.h umrecord.h errcodes.h mrcfield.h tagnoind.h tmarcdoc.h truledoc.h ytab.h regexp.h marc8.h
+include_HEADERS = chckfile.h error.h objectlist.h tcd.h tmarcrec.h trule.h codedata.h rulefile.h tcdlib.h tmpplctn.h ttrnsdoc.h ctrlfld.h lien_not.h semi.h tchckdoc.h tools.h typedef.h defines.h marcfile.h sort.h tfile.h trnsfile.h umrecord.h errcodes.h mrcfield.h tagnoind.h tmarcdoc.h truledoc.h ytab.h regexp.h FlexLexer.h 
 subdir = library
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =
@@ -104,7 +104,8 @@ am_libusemarcon_la_OBJECTS = chckfile.lo lien_not.lo tagnoind.lo \
 	tmarcdoc.lo trule.lo codedata.lo marcfile.lo tcd.lo tmarcrec.lo \
 	truledoc.lo ctrlfld.lo mrcfield.lo tcdlib.lo tmpplctn.lo \
 	ttrnsdoc.lo error.lo rulefile.lo tchckdoc.lo tools.lo \
-	umrecord.lo lex.yy.lo semi.lo tfile.lo trnsfile.lo ytab.lo regexp.lo
+	umrecord.lo lex.yy.lo semi.lo tfile.lo trnsfile.lo ytab.lo \
+	regexp.lo
 libusemarcon_la_OBJECTS = $(am_libusemarcon_la_OBJECTS)
 
 DEFS = @DEFS@
@@ -118,16 +119,16 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/codedata.Plo ./$(DEPDIR)/ctrlfld.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/error.Plo ./$(DEPDIR)/lex.yy.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/lien_not.Plo ./$(DEPDIR)/marcfile.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/mrcfield.Plo ./$(DEPDIR)/rulefile.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/semi.Plo ./$(DEPDIR)/tagnoind.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/tcd.Plo ./$(DEPDIR)/tcdlib.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/tchckdoc.Plo ./$(DEPDIR)/tfile.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/tmarcdoc.Plo ./$(DEPDIR)/tmarcrec.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/tmpplctn.Plo ./$(DEPDIR)/tools.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/trnsfile.Plo ./$(DEPDIR)/trule.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/truledoc.Plo ./$(DEPDIR)/ttrnsdoc.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/umrecord.Plo ./$(DEPDIR)/ytab.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/regexp.Plo 
+@AMDEP_TRUE@	./$(DEPDIR)/mrcfield.Plo ./$(DEPDIR)/regexp.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/rulefile.Plo ./$(DEPDIR)/semi.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/tagnoind.Plo ./$(DEPDIR)/tcd.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/tcdlib.Plo ./$(DEPDIR)/tchckdoc.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/tfile.Plo ./$(DEPDIR)/tmarcdoc.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/tmarcrec.Plo ./$(DEPDIR)/tmpplctn.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/tools.Plo ./$(DEPDIR)/trnsfile.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/trule.Plo ./$(DEPDIR)/truledoc.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ttrnsdoc.Plo ./$(DEPDIR)/umrecord.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ytab.Plo
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -205,6 +206,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lien_not.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/marcfile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mrcfield.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/regexp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rulefile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/semi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tagnoind.Plo@am__quote@
@@ -222,7 +224,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ttrnsdoc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/umrecord.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ytab.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/regexp.Plo@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

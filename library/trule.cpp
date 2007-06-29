@@ -168,7 +168,7 @@ int TRule::FromString(char *aString)
         if (NbPipes==0)
             // This line is a new part of the previous Rule
         {
-            if (RemoveSpace(aString,AT_BEGINING|AT_END))
+            if (RemoveSpace(aString,AT_BEGINNING|AT_END))
                 if (SetLib(aString))
                     return -5502;
             return 0;
@@ -176,7 +176,7 @@ int TRule::FromString(char *aString)
         else
         {
             if ((ItemPointer=(char *)strtok(NULL,"~")))
-                if (RemoveSpace(ItemPointer,AT_BEGINING|AT_END))
+                if (RemoveSpace(ItemPointer,AT_BEGINNING|AT_END))
                     if (SetLib(ItemPointer))
                         return -5502;
         }
@@ -193,56 +193,33 @@ int TRule::FromString(char *aString)
 // ToString
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define START_RULE_AT   30
-int TRule::ToString(char *aString)
+bool TRule::ToString(typestr & a_string)
 {
-    int CurrentPos=0;
-    int iIndice;
-    int iLng;
-    char    szStart[3+START_RULE_AT+1];
-
-    memset(szStart,' ',3+START_RULE_AT);
-    szStart[3+START_RULE_AT]=0;
-
-    *aString = '\0';
+    a_string = "";
 
     if ((!itsInputCD) || (!itsOutputCD))
-        return 1;
+        return false;
 
-    if (itsInputCD->ToString(&aString[CurrentPos],INPUT))
+    typestr tmp;
+    if (!itsInputCD->ToString(tmp, INPUT))
         // Absence du Tag d'entrȨe
-        return 1;
-    CurrentPos = strlen(aString);
-
-    strcat(aString, " | ");
-    CurrentPos += 3;
-
-    if (itsOutputCD->ToString(&aString[CurrentPos],OUTPUT))
+        return false;
+    a_string += tmp;
+    a_string += " | ";
+    
+    if (itsOutputCD->ToString(tmp, OUTPUT))
         // Absence du Tag de sortie
-        return 1;
-    CurrentPos = strlen(aString);
+        return false;
+    while(strlen(a_string.str()) < 30)
+        a_string.append_char(' ');
 
-    if (CurrentPos<START_RULE_AT)
-    {
-        for (iIndice=CurrentPos; iIndice<START_RULE_AT; iIndice++)
-            aString[iIndice]=' ';
-        CurrentPos=iIndice;
-        aString[CurrentPos]=0;
-    }
-
-    strcat(aString, " | ");
-    CurrentPos += 3;
+    a_string += " | ";
 
     if (itsLib.str())
     {
-        strcat(aString,itsLib.str());
-        iLng=strlen(aString);
-        for (iIndice=0; iIndice<iLng; iIndice++)
-            if (aString[iIndice]=='\n')
-                iIndice+=InsertChar(aString,&iLng,iIndice+1,szStart,APRES);
-            CurrentPos = strlen(aString);
+        a_string += itsLib;
+        a_string.replace("\n", "                             ");
     }
-
-    return 0;
+    return true;
 }
 

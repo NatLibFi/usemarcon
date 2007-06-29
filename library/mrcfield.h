@@ -38,22 +38,22 @@ public:
     TMarcField      (TMarcField*);
     ~TMarcField     (void);
     
-    int     NextSubField    (int *_Position,unsigned char* _SubField,unsigned char* _Result);
+    int     NextSubField    (int *_Position, char* _SubField);
   
-    char        *GetTag       (void)              { return itsTag; };
-    char      *GetIndicators    (void)            { return itsIndicators; };
-    char      GetI1       (void)            { return itsIndicators[0]; };
-    char      GetI2       (void)            { return itsIndicators[1]; };
-    char      *GetLib       (void)            { return itsLib.str(); };
-    TMarcField  *GetNextField   (void)            { return itsNextField; };
+    char       *GetTag       (void)            { return itsTag; };
+    char       *GetIndicators(void)            { return itsIndicators; };
+    char       GetI1         (void)            { return itsIndicators[0]; };
+    char       GetI2         (void)            { return itsIndicators[1]; };
+    char       *GetLib       (void)            { return itsLib.str(); };
+    TMarcField *GetNextField (void)            { return itsNextField; };
 
     int     SetTag        (const char *aTagString);
     int     SetTag        (int aTagNumber);
-    int     SetIndicators   (const char *theIndicators);
-    int     SetI1       (char anIndicator)      { itsIndicators[0]=anIndicator; return 0; };
-    int     SetI2       (char anIndicator)      { itsIndicators[1]=anIndicator; return 0; };  
+    int     SetIndicators (const char *theIndicators);
+    int     SetI1         (char anIndicator)      { itsIndicators[0]=anIndicator; return 0; };
+    int     SetI2         (char anIndicator)      { itsIndicators[1]=anIndicator; return 0; };  
     int     SetLib        (const char *aLib);
-    int     SetLib        (const char *aLib,unsigned int aSize);
+    int     SetLib        (const char *aLib, unsigned int aSize);
     TMarcField  *SetNextField   (TMarcField *theNextField)  { itsNextField=theNextField; return itsNextField; };
        
 protected:

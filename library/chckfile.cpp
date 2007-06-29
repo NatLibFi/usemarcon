@@ -82,18 +82,19 @@ int TCheckFile::Open(int IO)
         if (RemoveSpace(aLine.str()))
         {
             aLineCopy = aLine;
-            sprintf((char *)itsErrorHandler->Temporary2,"in file '%s' at line %d : \n%s",aSpec.name,Line-1,aLineCopy.str());
+            char errorline[MAXPATH + 100];
+            sprintf(errorline, "in file '%s' at line %d : \n%s", aSpec.name, Line - 1, aLineCopy.str());
             // Extraction du Tag de la regle de controle
             if ((Pointer=strtok(aLine.str(),"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001,WARNING,(char *)itsErrorHandler->Temporary2);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, errorline);
                 continue;
             }
             if ((RemoveSpace(Pointer)!=4) || ((Pointer[3]!='_') && (Pointer[3]!='+') && (Pointer[3]!='?') && (Pointer[3]!='*')))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2002 : 7002,WARNING,(char *)itsErrorHandler->Temporary2);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2002 : 7002, WARNING, errorline);
                 continue;
             }
 
@@ -109,7 +110,7 @@ int TCheckFile::Open(int IO)
                     if (!itsLastCheckField)
                     {
                         // Echec de la crȨation d'un TControlField ==> Arret et fermeture du fichier
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501,ERROR,(char *)itsErrorHandler->Temporary2);
+                        itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, errorline);
                         break;
                     }
                 }
@@ -122,7 +123,7 @@ int TCheckFile::Open(int IO)
                         if (!itsLastCheckField->GetNextTag())
                         {
                             // Echec de la crȨation d'un TControlField ==> Arret et fermeture du fichier
-                            itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501,ERROR,(char *)itsErrorHandler->Temporary2);
+                            itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, errorline);
                             break;
                         }
                         OldControl = itsLastCheckField;
@@ -131,7 +132,7 @@ int TCheckFile::Open(int IO)
                     else
                         // regle ignorȨe car dȨj�� existante ==> passage a la regle suivante
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2003 : 7003,WARNING,(char *)itsErrorHandler->Temporary2);
+                        itsErrorHandler->SetErrorD(IO==INPUT ? 2003 : 7003, WARNING, errorline);
                         continue;
                     }
             }
@@ -165,14 +166,14 @@ int TCheckFile::Open(int IO)
             if ((Pointer=strtok(NULL,"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001,WARNING,(char *)itsErrorHandler->Temporary2);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, errorline);
                 AnalysedControl=0;
                 continue;
             }
             if ((!RemoveSpace(Pointer)) || (memcmp(Pointer,"I1=",3)))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2004 : 7004,WARNING,(char *)itsErrorHandler->Temporary2);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2004 : 7004, WARNING, errorline);
                 AnalysedControl=0;
                 continue;
             }
@@ -187,14 +188,14 @@ int TCheckFile::Open(int IO)
             if ((Pointer=strtok(NULL,"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001,WARNING,(char *)itsErrorHandler->Temporary2);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, errorline);
                 AnalysedControl=0;
                 continue;
             }
             if ((!RemoveSpace(Pointer)) || (memcmp(Pointer,"I2=",3)))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2005 : 7005,WARNING,(char *)itsErrorHandler->Temporary2);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2005 : 7005, WARNING, errorline);
                 AnalysedControl=0;
                 continue;
             }
@@ -212,7 +213,7 @@ int TCheckFile::Open(int IO)
                     (Pointer[2]!='_') && (Pointer[2]!='+') && (Pointer[2]!='?') && (Pointer[2]!='*')))
                     // Le Sub de la Regle de controle est invalide ==> passage a la regle suivante
                 {
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2006 : 7006,WARNING,(char *)itsErrorHandler->Temporary2);
+                    itsErrorHandler->SetErrorD(IO==INPUT ? 2006 : 7006, WARNING, errorline);
                     AnalysedControl=0;
                     continue;
                 }
@@ -223,7 +224,7 @@ int TCheckFile::Open(int IO)
                     if (!itsLastCheckField->GetFirstSubfield())
                         // Echec de la creation d'un nouveau TCtrlSubfield
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502,ERROR,(char *)itsErrorHandler->Temporary2);
+                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, errorline);
                         AnalysedControl=0;
                         continue;
                     }
@@ -236,7 +237,7 @@ int TCheckFile::Open(int IO)
                     if (!itsLastCheckField->GetLastSubfield()->GetNextSub())
                         // Echec de la creation d'un nouveau TCtrlSubfield
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502,ERROR,(char *)itsErrorHandler->Temporary2);
+                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, errorline);
                         AnalysedControl=0;
                         continue;
                     }
@@ -293,16 +294,11 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
     TMarcField      *CurrentField = NULL;
     TControlField   *CurrentControl = NULL;
     TCtrlSubfield   *CurrentCtrlSub = NULL;
-    int         Position = 0;
-    unsigned char   Balise;
-    int         OneSubAtLeast=0;
+    int    Position = 0;
+    char   Balise;
+    int    OneSubAtLeast=0;
 
     CurrentField = aRecord->GetFirstField();
-
-    // RȨcupȨration de la clȨ de la notice dans itsErrorHandler->Temporary2
-    if (CurrentField)
-        strcpy((char *)itsErrorHandler->Temporary2,CurrentField->GetLib());
-
     while (CurrentField)
     {
         // Control du champ courant
@@ -313,8 +309,8 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             if ((!CurrentControl->GetTagRepeatable()) && (CurrentControl->GetTagOccurrency()))
                 // le champ courant est occurent alors qu'il est thȨoriquement non rȨpȨtable
             {
-                sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s'",(char *)itsErrorHandler->Temporary2,CurrentField->GetTag());
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2101 : 7101,WARNING,(char *)itsErrorHandler->Temporary);
+                typestr tmp = typestr("Notice '") + CurrentField->GetLib() + "' : field '" + CurrentField->GetTag() + "'";
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2101 : 7101, WARNING, tmp.str());
             }
             else
                 // Comptabilisation du champ controlȨ
@@ -324,34 +320,53 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             if (TestIndicator(CurrentField->GetI1(),CurrentControl->GetFirstIndicators()))
                 // Le premier indicateur ne fait pas partie de la liste des indicateurs possibles
             {
+                typestr tmp = "Notice '";
+                tmp += CurrentField->GetLib();
+                tmp += "' : field '";
+                tmp += CurrentField->GetTag();
+                tmp += "' (ind '";
                 if (CurrentField->GetI1())
-                    sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s' (ind '%c')",(char *)itsErrorHandler->Temporary2,CurrentField->GetTag(),CurrentField->GetI1());
+                    tmp += CurrentField->GetI1();
                 else
-                    sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s' (ind '%s')",(char *)itsErrorHandler->Temporary2,CurrentField->GetTag(),"EMPTY ITEM");
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2102 : 7102,WARNING,(char *)itsErrorHandler->Temporary);
+                    tmp += "EMPTY ITEM";
+                tmp += "')";
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2102 : 7102, WARNING, tmp.str());
             }
 
             // Test des seconds indicateurs
             if (TestIndicator(CurrentField->GetI2(),CurrentControl->GetSecondIndicators()))
                 // Le deuxiȿme indicateur ne fait pas partie de la liste des indicateurs possibles
             {
+                typestr tmp = "Notice '";
+                tmp += CurrentField->GetLib();
+                tmp += "' : field '";
+                tmp += CurrentField->GetTag();
+                tmp += "' (ind '";
                 if (CurrentField->GetI2())
-                    sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s' (ind '%c')",(char *)itsErrorHandler->Temporary2,CurrentField->GetTag(),CurrentField->GetI2());
+                    tmp += CurrentField->GetI2();
                 else
-                    sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s' (ind '%s')",(char *)itsErrorHandler->Temporary2,CurrentField->GetTag(),"EMPTY ITEM");
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2103 : 7103,WARNING,(char *)itsErrorHandler->Temporary);
+                    tmp += "EMPTY ITEM";
+                tmp += "')";
+
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2103 : 7103, WARNING, tmp.str());
             }
 
             // Test de chacun des sous-champs
             Position=0;
             Balise='*';
-            while (CurrentField->NextSubField(&Position,&Balise,itsErrorHandler->Temporary))
+            while (CurrentField->NextSubField(&Position, &Balise))
             {
                 if (TestSubfield(Balise,CurrentControl->GetFirstSubfield()))
                     // La balise courante ne fait pas partie de la liste des sous-champs possibles
                 {
-                    sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s' (subfield '$%c')",(char *)itsErrorHandler->Temporary2,CurrentField->GetTag(),Balise);
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2104 : 7104,WARNING,(char *)itsErrorHandler->Temporary);
+                    typestr tmp = "Notice '";
+                    tmp += CurrentField->GetLib();
+                    tmp += "' : field '";
+                    tmp += CurrentField->GetTag(); 
+                    tmp += "' (subfield '$";
+                    tmp += Balise;
+                    tmp += "')";
+                    itsErrorHandler->SetErrorD(IO==INPUT ? 2104 : 7104, WARNING, tmp.str());
                 }
                 else
                     OneSubAtLeast=1;
@@ -360,8 +375,12 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             // Test de la prȨsence d'au moins une balise par champ ( sauf les champs fixes )
             if ((!OneSubAtLeast) && (CurrentControl->GetFirstSubfield()))
             {
-                sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s'",(char *)itsErrorHandler->Temporary2,CurrentControl->GetTag());
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2108 : 7108,WARNING,(char *)itsErrorHandler->Temporary);
+                typestr tmp = "Notice '";
+                tmp += CurrentField->GetLib();
+                tmp += "' : field '";
+                tmp += CurrentControl->GetTag();
+                tmp += "'";
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2108 : 7108, WARNING, tmp.str());
             }
             CurrentCtrlSub=CurrentControl->GetFirstSubfield();
             while(CurrentCtrlSub)
@@ -369,8 +388,14 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                 if ((CurrentCtrlSub->GetSubMandatory()) && (!CurrentCtrlSub->GetSubOccurency()))
                     // le sous-champ courant n'a pas ȨtȨ rencontrȨ malgrȿs sont caractȿre obligatoire
                 {
-                    sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s' (subfield '$%c')",(char *)itsErrorHandler->Temporary2,CurrentControl->GetTag(),CurrentCtrlSub->GetSub());
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2107 : 7107,WARNING,(char *)itsErrorHandler->Temporary);
+                    typestr tmp = "Notice '";
+                    tmp += CurrentField->GetLib();
+                    tmp += "' : field '";
+                    tmp += CurrentControl->GetTag();
+                    tmp += "' (subfield '$";
+                    tmp += CurrentCtrlSub->GetSub();
+                    tmp += "')";
+                    itsErrorHandler->SetErrorD(IO==INPUT ? 2107 : 7107, WARNING, tmp.str());
                 }
                 CurrentCtrlSub->SetSubOccurency(0);
                 CurrentCtrlSub=CurrentCtrlSub->GetNextSub();
@@ -380,8 +405,12 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
         else
             // Rencontre d'un champ non prȨvu
         {
-            sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s'",CurrentField->GetLib(),CurrentField->GetTag());
-            itsErrorHandler->SetErrorD(IO==INPUT ? 2105 : 7105,WARNING,(char *)itsErrorHandler->Temporary);
+            typestr tmp = "Notice '";
+            tmp += CurrentField->GetLib();
+            tmp += "' : field '";
+            tmp += CurrentField->GetTag();
+            tmp += "'";
+            itsErrorHandler->SetErrorD(IO==INPUT ? 2105 : 7105, WARNING, tmp.str());
         }
         CurrentField = CurrentField->GetNextField();
     }
@@ -393,8 +422,10 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
         if ((CurrentControl->GetTagMandatory()) && (!CurrentControl->GetTagOccurrency()))
             // le champ courant n'a pas ȨtȨ rencontrȨ malgrȿs sont caractȿre obligatoire
         {
-            sprintf((char *)itsErrorHandler->Temporary,"Notice '%s' : field '%s'",(char *)itsErrorHandler->Temporary2,CurrentControl->GetTag());
-            itsErrorHandler->SetErrorD(IO==INPUT ? 2106 : 7106,WARNING,(char *)itsErrorHandler->Temporary);
+            typestr tmp = "Notice: field '";
+            tmp += CurrentControl->GetTag();
+            tmp += "'";
+            itsErrorHandler->SetErrorD(IO==INPUT ? 2106 : 7106,WARNING,tmp.str());
         }
         CurrentControl->SetTagOccurrency(0);
         CurrentControl=CurrentControl->GetNextTag();

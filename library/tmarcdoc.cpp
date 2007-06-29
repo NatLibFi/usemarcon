@@ -511,9 +511,10 @@ int TMarcDoc::LoadTagNoInd(int IO, char *Path)
   }
   Previous = Current;
 
-  while (fgets((char *)itsErrorHandler->Temporary,BUFF_SIZE,Fic))
+  typestr line;
+  while (readline(line, Fic))
   {
-    Current->SetTag((char *)itsErrorHandler->Temporary);
+    Current->SetTag(line.str());
     Current->SetNext(new TTagNoInd);
     if (!Current->GetNext())
     {
@@ -535,35 +536,6 @@ int TMarcDoc::LoadTagNoInd(int IO, char *Path)
   case OUTPUT  : itsOutputRecord->SetFirstOutputTNI(itsFirstOutputTagNoInd);   break;
   default      : return 1;
   } 
-  return 0;
-} 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// SaveTagNoInd
-//
-///////////////////////////////////////////////////////////////////////////////
-int TMarcDoc::SaveTagNoInd(int IO, char *Path)
-{ 
-  FILE           *Fic;
-  TTagNoInd      *Current;
-    
-  if ((Fic=fopen(Path,"w"))==NULL)
-    return 1;
-  
-  switch (IO)
-  {
-  case INPUT   : Current = itsFirstInputTagNoInd;      break;
-  case OUTPUT  : Current = itsFirstOutputTagNoInd;     break;
-  default      : Current = NULL;                       break;
-  } 
-  while (Current)
-  {
-    fprintf(Fic,"%s\n",Current->GetTag());
-    Current = Current->GetNext(); 
-  }
-  
-  fclose(Fic);
   return 0;
 } 
 
@@ -596,16 +568,6 @@ long TMarcDoc::GetIndSeparatorsID(int IO)
   default      : return 0;
   }
 } 
-
-long TMarcDoc::GetInputRecordNumber(void)
-{ 
-  return itsInputFile->GetRecordNumber(); 
-}  
-
-long TMarcDoc::GetOutputRecordNumber(void)
-{ 
-  return itsOutputFile->GetRecordNumber(); 
-}
 
 int TMarcDoc::Read(void)
 { 

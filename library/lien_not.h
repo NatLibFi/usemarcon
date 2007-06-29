@@ -129,24 +129,24 @@ private:
 
     int Eval;
     int Error;
-    char* RedoStr;
-    char* MainInput;
+    char *RedoStr;
+    char *MainInput;
     int AfterRedo;
     int Fini;
 
-    virtual int   Precedes(TypeCD*,TypeCD*);
-    virtual int   Exists(TypeCD*);
-    virtual const char* LireCD(TypeCD*);
-    virtual typestr Table(char* Nom,char* str);
+    virtual int Precedes(TypeCD *, TypeCD *);
+    virtual int Exists(TypeCD *);
+    virtual typestr ReadCD(TypeCD *);
+    virtual typestr Table(char *Nom, char *str);
 
     const char* NextBalise();
     const char* PreviousBalise();
-    const char* NextSubField(TypeCD*, TypeCD*);
-    const char* PreviousSubField(TypeCD*, TypeCD*);
-    bool CompareOccurrence(TypeInst* aCondition, int aOccurrence);
+    typestr NextSubField(TypeCD *, TypeCD *);
+    typestr PreviousSubField(TypeCD *, TypeCD *);
+    bool CompareOccurrence(TypeInst *aCondition, int aOccurrence);
 
 
-    int   IsConcat(char* lib);
+    int   IsConcat(char *lib);
     int   Replace_N_NT_NS(int val,int N,int NT,int NS);
     void  ResetRedo();
 

@@ -97,11 +97,6 @@ public:
 
     TUMApplication *GetApplication      (void) { return itsApplication; }
 
-    // Temporary buffers for all to use
-    // TODO: Get rid of these, they're dangerous
-    unsigned char Temporary[TBUF];
-    unsigned char Temporary2[TBUF];
-
 private:
     TUMApplication  *itsApplication;
     FILE            *itsLogError;

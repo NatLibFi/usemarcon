@@ -75,7 +75,6 @@ int TRuleFile::CloseRuleFile()
 // Open
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define RULE_SIZE   BUFF_SIZE *4
 int TRuleFile::OpenRuleFile()
 {
     typestr     RuleLine;
