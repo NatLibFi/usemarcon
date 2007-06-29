@@ -598,9 +598,6 @@
 				RelativePath=".\FlexLexer.h">
 			</File>
 			<File
-				RelativePath="lex.yy.h">
-			</File>
-			<File
 				RelativePath="lien_not.h">
 			</File>
 			<File
