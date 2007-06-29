@@ -40,8 +40,6 @@ AUTHOR
 #define END_OF_FIELD '\x1e'
 #define END_OF_RECORD '\x1d'
 
-#define TBUF 100000
-
 // SLASH is actually the directory separator
 #if defined(_WIN32) && !defined(__CYGWIN__)
   #define SLASH '\\'

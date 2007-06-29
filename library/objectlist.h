@@ -126,18 +126,9 @@ public:
         DeleteData();
 
         m_iLength = iLength;
-        if (m_iLength <= TBUF)
-        {
-            m_pcRecord = reinterpret_cast<char *>(malloc(m_iLength + 1));
-            memset(m_pcRecord, 0, m_iLength + 1);
-            memcpy(m_pcRecord, pcRecord, m_iLength);
-        }
-        else
-        {
-            m_pcRecord = reinterpret_cast<char *>(malloc(strlen(ILLEGAL_LENGTH_RECORD) + 1));
-            strcpy(m_pcRecord, ILLEGAL_LENGTH_RECORD);
-            m_iLength = 0;
-        }
+        m_pcRecord = reinterpret_cast<char *>(malloc(m_iLength + 1));
+        memset(m_pcRecord, 0, m_iLength + 1);
+        memcpy(m_pcRecord, pcRecord, m_iLength);
     }
 
     void GetMarcRecord(char *&pcRecord, int &iLength)
