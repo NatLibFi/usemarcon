@@ -4,13 +4,11 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2003
+ *  Adapted by The National Library of Finland, 2004-2007
  *
  *  File:  tchckdoc.cpp
  *
  *  implements a class to manage the checking of MARC records
- *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
  *
  */
 

@@ -4,10 +4,7 @@
  *  File:  lien_not.h
  *
  *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
- *
-
+ 
 CLASS
     TMarcScannerImpl
 

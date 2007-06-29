@@ -4,13 +4,11 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2004
+ *  Adapted by The National Library of Finland, 2004-2007
  *
  *  File:  tcdlib.cpp
  *
  *  implements a set of functions to manage control data fields
- *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
  *
  */
 

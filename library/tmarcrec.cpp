@@ -10,9 +10,6 @@
  *
  *  implements a class to manage MARC records
  *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
- *
  */
 
 #include <ctype.h>

@@ -4,10 +4,7 @@
  *  File:  defines.h
  *
  *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
- *
-
+ 
 OVERVIEW TEXT
     USEMARCON Software - Command Line version
     Copyright The British Library, The USEMarcon Consortium, 1995-2000
@@ -54,6 +51,14 @@ AUTHOR
 #endif
 
 #define MAXPATH 1024
+
+#if !defined(TRUE)
+  #define TRUE  1
+#endif
+
+#if !defined(FALSE)
+  #define FALSE 0
+#endif
 
 typedef enum MARC_FILE_FORMAT
 {

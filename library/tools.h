@@ -4,10 +4,7 @@
  *  File:  tools.h
  *
  *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
- *
-
+ 
 OVERVIEW TEXT
     USEMARCON Software - Command Line version
     Copyright The British Library, The USEMarcon Consortium, 1995-2000

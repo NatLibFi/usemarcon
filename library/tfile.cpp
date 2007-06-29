@@ -10,9 +10,6 @@
  *
  *  implements a base class to manage file input./output
  *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
- *
  */
 
 #include <memory.h>

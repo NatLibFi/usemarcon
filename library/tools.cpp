@@ -10,9 +10,6 @@
  *
  *  implements a set of utility functions
  *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
- *
  */
 
 #include <stdlib.h>

@@ -11,9 +11,6 @@
  *  a bunch of functions to manage strings and interface to the
  *  lexical analysis
  *
- *  NOTE:  IN NO WAY WHATSOEVER SHOULD THIS FILE BE USED IN THE EARLIER
- *         VERSIONS OF USEMARCON SOFTWARE.
- *
  */
 
 #include <stdio.h>
