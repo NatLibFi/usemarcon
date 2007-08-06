@@ -1,6 +1,6 @@
 @echo off
 cd library
-devenv usemarcon_library.vcproj /clean "Release MinDependency" 
+devenv usemarcon_library.vcproj /clean "Release" 
 if errorlevel 1 goto error
 cd ..
 cd program
