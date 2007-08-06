@@ -4,7 +4,7 @@ USEMARCON Change Log
 **************************
 version 2.00
 
-June 29 2007
+August 2 2007
 
 The National Library of Finland
 Ere Maijala
@@ -38,6 +38,13 @@ ere.maijala at helsinki.fi
   more limited.
 - Initial support for MARCXML and MarcXchange records (see documentation
   for more information).
+- Improved rule syntax error reporting to include the full rule and line
+  number.
+- Added possibility to use wildcards (?) with Exists().
+- Empty indicators no longer cause warnings but are written out as is.
+- Added new function InTable('string', 'filename') that can be used to 
+  check if a value exists in a table file.
+  e.g. If (InTable(S, 'table.tbl') Then S; Table('table.tbl')
 
 **************************
 **************************
