@@ -121,7 +121,7 @@ typestr TCDLib::GetContent(TCD* theCD)
     // suivant, correspondant au champ identifie par aCD.
     // S'ilest precise, il suffit de prendre son contenu
 
-    typestr content;
+    typestr content = "";
     if (*(theCD->GetSubfield())==0)
     {
         TCDLib* Courant=this;
