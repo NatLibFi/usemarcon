@@ -61,9 +61,9 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Release MinDependency|Win32"
-			OutputDirectory=".\ReleaseMinDependency"
-			IntermediateDirectory=".\ReleaseMinDependency"
+			Name="Release|Win32"
+			OutputDirectory=".\Release"
+			IntermediateDirectory=".\Release"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -79,10 +79,10 @@
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\ReleaseMinDependency/usemarcon_library.pch"
-				AssemblerListingLocation=".\ReleaseMinDependency/"
-				ObjectFile=".\ReleaseMinDependency/"
-				ProgramDataBaseFileName=".\ReleaseMinDependency/"
+				PrecompiledHeaderFile=".\Release/usemarcon_library.pch"
+				AssemblerListingLocation=".\Release/"
+				ObjectFile=".\Release/"
+				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				WarnAsError="TRUE"
 				SuppressStartupBanner="TRUE"/>
@@ -90,7 +90,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\ReleaseMinDependency\usemarcon_library.lib"
+				OutputFile=".\Release\usemarcon_library.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -130,7 +130,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -148,7 +148,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -166,7 +166,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -184,7 +184,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -202,7 +202,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -220,7 +220,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -238,7 +238,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -256,7 +256,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -277,7 +277,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -295,7 +295,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -313,7 +313,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -331,7 +331,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -349,7 +349,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -367,7 +367,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -385,7 +385,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -403,7 +403,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -421,7 +421,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -439,7 +439,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -457,7 +457,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -475,7 +475,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -493,7 +493,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -511,7 +511,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -529,7 +529,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -550,7 +550,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
@@ -568,7 +568,7 @@
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release MinDependency|Win32">
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
