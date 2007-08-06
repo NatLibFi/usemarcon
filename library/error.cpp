@@ -127,7 +127,7 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,int
     else
         sprintf(Message,"%s(%d)-%s\n%s",categorie,ErrorCode,
         bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error",ShortUserData);
-    Message[199] = '\0';
+    Message[999] = '\0';
     switch(Severity)
     {
     case ERROR:
