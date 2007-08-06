@@ -59,26 +59,25 @@ private:
     char *itsBuffer;
     bool itsFirstTime;
     MemoryPool *m_allocator;
+    int mLine;
 
 protected:
     virtual int LexerInput(char *buf,int max_size);
 public:
-    TMarcScannerImpl() : itsBufferLen(0), itsBufferPos(0), itsBuffer(NULL), itsFirstTime(true)
+    TMarcScannerImpl() : itsBufferLen(0), itsBufferPos(0), itsBuffer(NULL), itsFirstTime(true), mLine(0)
     {
     }
-
-    void SetRule(TRule *Rule);
-    void RewindBuffer();
-    void SetAllocator(MemoryPool *mp)
-    {
-        m_allocator = mp;
-    }
-
     ~TMarcScannerImpl()
     {
         if (itsBuffer)
             free(itsBuffer);
     }
+
+    void SetRule(TRule *Rule);
+    void RewindBuffer();
+    void SetAllocator(MemoryPool *mp) { m_allocator = mp; }
+    const char *getCurrentLineContents() { return itsBuffer ? itsBuffer : ""; }
+    int getCurrentLineNo() { return mLine; }
 };
 
 class TEvaluateRule : public MarcParser
@@ -343,7 +342,7 @@ private:
     virtual TypeInst* Table_( TypeInst* Nom );
 
     /*
-    RegFind( translation )
+    RegFind( translation, translation )
     */
     virtual TypeInst* RegFind( TypeInst* t1, TypeInst* t2 );
 
@@ -353,9 +352,14 @@ private:
     virtual TypeInst* RegMatch( TypeInst* t1 );
 
     /*
-    RegReplace( translation, translation )
+    RegReplace( translation, translation, translation )
     */
     virtual TypeInst* RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 );
+
+    /*
+    InTable( translation, translation )
+    */
+    virtual int InTable( TypeInst* t1, TypeInst* t2 );
 
 };
 #endif

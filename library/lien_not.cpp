@@ -47,11 +47,13 @@ void TMarcScannerImpl::SetRule(TRule *Rule)
 {
     itsBufferPos = 0;
 
+    mLine = Rule->GetLineNo();
+
     char *lib = Rule->GetLib();
     if (lib)
-        itsBufferLen = strlen(lib) + 2;
+        itsBufferLen = strlen(lib) + 3;
     else
-        itsBufferLen = 3;
+        itsBufferLen = 4;
 
     if (itsBuffer)
         free(itsBuffer);
@@ -106,8 +108,16 @@ void TEvaluateRule::yyerror( char *m )
     ++Error;
     typestr rulestr;
     CurrentRule->ToString(rulestr);
-    errorstr += rulestr;
-    errorstr += '"';
+    errorstr += itsScanner.getCurrentLineContents();
+    if (errorstr.str()[strlen(errorstr.str())-2] == '\n')
+        errorstr.str()[strlen(errorstr.str())-2] = '\0';
+    if (itsScanner.getCurrentLineNo() > 0)
+    {
+        errorstr += "\" at line ";
+        char lineno[30];
+        sprintf(lineno, "%d", itsScanner.getCurrentLineNo());
+        errorstr += lineno;
+    }
     itsErrorHandler->SetErrorD(5100, ERROR, errorstr.str());
 }
 
@@ -795,7 +805,7 @@ typestr TEvaluateRule::Table( char* Nom, char* str )
     }
 
     typestr s;
-    aCodedData->Transcode(str,&s,(InputRecord)?InputRecord->GetFirstField()->GetLib():NULL,"???");
+    aCodedData->Transcode(str, s, (InputRecord) ? InputRecord->GetFirstField()->GetLib() : NULL, "???");
     return s;
 }
 
@@ -2117,7 +2127,7 @@ TypeInst* TEvaluateRule::RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 )
         if (buf)
         {
             typestr tmp = dest;
-            tmp.allocstr(strlen(dest.str()) + strlen(buf));
+            tmp.promise(strlen(dest.str()) + strlen(buf));
             tmp.str()[pos] = '\0';
             strcat(tmp.str(), buf);
             strcat(tmp.str(), dest.str() + pos + itsRegExp.GetFindLen());
@@ -2131,5 +2141,30 @@ TypeInst* TEvaluateRule::RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 )
     rc->val = 0;
     FreeTypeInst(t1);
     FreeTypeInst(t2);
+    return rc;
+}
+
+/*
+InTable( translation, translation )
+*/
+int TEvaluateRule::InTable(TypeInst* t1, TypeInst* table)
+{
+    ToString(t1);
+
+    int rc = 0;
+
+    TRuleFile *aRuleFile = RuleDoc->GetFile();
+    TCodedData *aCodedData = aRuleFile->GetCodedData(table->str.str());
+    if (!aCodedData)
+    {
+        yyerror("Could not open table");
+        return rc;
+    }
+
+    if (aCodedData->Exists(t1->str.str()))
+        rc = 1;
+
+    FreeTypeInst(t1);
+    FreeTypeInst(table);
     return rc;
 }
