@@ -40,7 +40,8 @@ public:
 
   int           Open        (void);
   int           Convert     (TMarcRecord* In, TMarcRecord* Out);
-  const char*   Transcode   ( char* In, typestr *Out, char *Notice=NULL, char *Field=NULL );
+  bool          Transcode   (char* In, typestr &Out, char *Notice = NULL, char *Field = NULL);
+  bool          Exists(char* In);
 
 protected:
   int           GetValues   (const char *src, typestr *dest);

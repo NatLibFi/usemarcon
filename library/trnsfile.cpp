@@ -155,7 +155,8 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
 
         // On transcode le libelle
         typestr result;
-        Out->SetLib(Transcode(In->GetLib(), &result, In->GetLib(), In->GetTag()));
+        Transcode(In->GetLib(), result, In->GetLib(), In->GetTag());
+        Out->SetLib(result.str());
         if (!Out->GetLib())
         {
             typestr tmp = "Notice '";
@@ -182,16 +183,17 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
 // a la table chargee - inspire de ttrans.cc
 //
 ///////////////////////////////////////////////////////////////////////////////
-const char* TTransFile::Transcode( char* In, typestr *Out, char *Notice, char *Field )
+bool TTransFile::Transcode(char* In, typestr &Out, char *Notice, char *Field)
 {
     char *c = In;
     char *r = NULL;
 
-    Out->str("");
+    Out.str("");
 
     if (!In)
-        return (Out->str());
+        return true;
 
+    bool res = true;
     while(*c != '\0')
     {
         int iaux;
@@ -200,13 +202,13 @@ const char* TTransFile::Transcode( char* In, typestr *Out, char *Notice, char *F
         {
             if (itsDefaultCopy)
             {
-                Out->append_char(*c);
+                Out.append_char(*c);
                 ++c;
                 continue;
             }
             else if (itsDefaultValueValid)
             {
-                Out->append(itsDefaultValue.str());
+                Out.append(itsDefaultValue.str());
                 ++c;
                 continue;
             }
@@ -224,17 +226,18 @@ const char* TTransFile::Transcode( char* In, typestr *Out, char *Notice, char *F
             else
                 sprintf(tmp, "( Unknown character '%c' (\\%x) ) : table '%s'",(unsigned char)*c,(unsigned char)*c,itsFileInfo->name);
             itsErrorHandler->SetErrorD( 3001, ERROR, tmp );
-            Out->append_char(*c);
+            Out.append_char(*c);
             c++;
+            res = false;
         }
         else
         {
             /* on a trouve une correspondance */
-            Out->append(r);
+            Out.append(r);
             c+=iaux;
         }
     }
-    return(Out->str());
+    return res;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -290,3 +293,36 @@ int TTransFile::GetValues(const char *src, typestr *dest)
     return 0;
 }
 
+bool TTransFile::Exists(char* In)
+{
+    char *c = In;
+
+    if (!In)
+        return true;
+
+    while(*c != '\0')
+    {
+        int iaux;
+        char *r  = (char *)cherche((unsigned char*)c,&iaux);
+        if((iaux == 0) || (r == NULL))
+        {
+            if (itsDefaultCopy)
+            {
+                ++c;
+                continue;
+            }
+            else if (itsDefaultValueValid)
+            {
+                ++c;
+                continue;
+            }
+            return false;
+        }
+        else
+        {
+            /* on a trouve une correspondance */
+            c+=iaux;
+        }
+    }
+    return true;
+}
