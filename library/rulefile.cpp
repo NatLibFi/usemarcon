@@ -103,7 +103,7 @@ int TRuleFile::OpenRuleFile()
     while (!NextLine(&RuleLine,&IncludedFileSpec,&Line)) // Read a Line from the Rule File
     {
         Illustration.allocstr(strlen(IncludedFileSpec.name) + strlen(RuleLine.str()) + 100);
-        sprintf(Illustration.str(),"in file '%s' at line %d :\n%s",IncludedFileSpec.name,Line-1,RuleLine.str());
+        sprintf(Illustration.str(),"in file '%s' at line %d :\n%s",IncludedFileSpec.name,Line,RuleLine.str());
         if (IsRuleAnalysed && strchr(RuleLine.str(),'|'))
         {
             // This is a new rule to process
@@ -120,7 +120,7 @@ int TRuleFile::OpenRuleFile()
             CurrentRule = CurrentRule->GetNextRule();
         }
 
-        if ((Result=CurrentRule->FromString(RuleLine.str()))<0) // Load Input and Output CDs in CDs
+        if ((Result=CurrentRule->FromString(RuleLine.str(), Line))<0) // Load Input and Output CDs in CDs
             // Error on rule
         {
             itsErrorHandler->SetErrorD(-Result,ERROR,Illustration.str());
