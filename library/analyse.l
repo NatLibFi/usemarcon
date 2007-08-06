@@ -17,7 +17,7 @@ digits          [0-9]+
 digit           [0-9]
 maj             [A-Z]
 
-tag             ({digit}|{maj})
+tag             ({digit}|{maj}|\?)
 indic1          ("I1"|"i1")
 indic2          ("I2"|"i2")
 subfield        "$"[0-9a-zA-Z]
@@ -142,6 +142,7 @@ D                       return MarcParser::VARD;
 [R|r]eg[F|f]ind         return MarcParser::REGFIND;
 [R|r]eg[M|m]atch        return MarcParser::REGMATCH;
 [R|r]eg[R|r]eplace      return MarcParser::REGREPLACE;
+[I|i]n[T|t]able         return MarcParser::INTABLE;
 {blancs}                        ;
 .                       lex_error = true;
 %%

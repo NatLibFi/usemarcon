@@ -73,14 +73,14 @@ YYID (i)
   return i;
 }
 #endif
-#define YYFINAL  105
-#define YYLAST   1075
-#define YYNTOKENS  90
+#define YYFINAL  106
+#define YYLAST   1128
+#define YYNTOKENS  91
 #define YYNNTS  12
-#define YYNRULES  138
-#define YYNSTATES  338
+#define YYNRULES  139
+#define YYNSTATES  344
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   341
+#define YYMAXUTOK   342
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -108,6 +108,7 @@ protected:
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
+  virtual int InTable(TypeInst*, TypeInst*) = 0;
   virtual typestr ReadCD(TypeCD *) = 0;
   virtual TypeCD* AllocCD() = 0;
   virtual void FreeCD( TypeCD* CD ) = 0;
@@ -180,72 +181,73 @@ public:
      EXISTS = 273,
      PRECEDES = 274,
      FOLLOWS = 275,
-     IF = 276,
-     THEN = 277,
-     ELSE = 278,
-     AND = 279,
-     OR = 280,
-     NOT = 281,
-     BY = 282,
-     _STRICT = 283,
-     AT = 284,
-     BEGINING = 285,
-     BEGINNING = 286,
-     END = 287,
-     BOTH = 288,
-     VARS = 289,
-     VARD = 290,
-     STRING = 291,
-     NUMERIC = 292,
-     VAR_N = 293,
-     VAR_NT = 294,
-     VAR_NS = 295,
-     VAR_NO = 296,
-     VAR_NTO = 297,
-     VAR_NSO = 298,
-     VAR_NEW = 299,
-     TAG = 300,
-     DTAG = 301,
-     STAG = 302,
-     FIX = 303,
-     I1 = 304,
-     I2 = 305,
-     STR = 306,
-     VAL = 307,
-     LEN = 308,
-     STO = 309,
-     MEM = 310,
-     EXC = 311,
-     CLR = 312,
-     LOWER = 313,
-     UPPER = 314,
-     FROM = 315,
-     TO = 316,
-     BETWEEN = 317,
-     _DELETE = 318,
-     REPLACE = 319,
-     REPLACEOCC = 320,
-     BFIRST = 321,
-     EFIRST = 322,
-     BLAST = 323,
-     ELAST = 324,
-     REDO = 325,
-     SORT = 326,
-     NEXT = 327,
-     LAST = 328,
-     TABLE = 329,
-     ORDINAL = 330,
-     YEAR = 331,
-     MONTH = 332,
-     DAY = 333,
-     HOUR = 334,
-     MINUTE = 335,
-     SECOND = 336,
-     NEXTSUB = 337,
-     PREVIOUSSUB = 338,
-     REGFIND = 339,
-     REGMATCH = 340,
-     REGREPLACE = 341
+     INTABLE = 276,
+     IF = 277,
+     THEN = 278,
+     ELSE = 279,
+     AND = 280,
+     OR = 281,
+     NOT = 282,
+     BY = 283,
+     _STRICT = 284,
+     AT = 285,
+     BEGINING = 286,
+     BEGINNING = 287,
+     END = 288,
+     BOTH = 289,
+     VARS = 290,
+     VARD = 291,
+     STRING = 292,
+     NUMERIC = 293,
+     VAR_N = 294,
+     VAR_NT = 295,
+     VAR_NS = 296,
+     VAR_NO = 297,
+     VAR_NTO = 298,
+     VAR_NSO = 299,
+     VAR_NEW = 300,
+     TAG = 301,
+     DTAG = 302,
+     STAG = 303,
+     FIX = 304,
+     I1 = 305,
+     I2 = 306,
+     STR = 307,
+     VAL = 308,
+     LEN = 309,
+     STO = 310,
+     MEM = 311,
+     EXC = 312,
+     CLR = 313,
+     LOWER = 314,
+     UPPER = 315,
+     FROM = 316,
+     TO = 317,
+     BETWEEN = 318,
+     _DELETE = 319,
+     REPLACE = 320,
+     REPLACEOCC = 321,
+     BFIRST = 322,
+     EFIRST = 323,
+     BLAST = 324,
+     ELAST = 325,
+     REDO = 326,
+     SORT = 327,
+     NEXT = 328,
+     LAST = 329,
+     TABLE = 330,
+     ORDINAL = 331,
+     YEAR = 332,
+     MONTH = 333,
+     DAY = 334,
+     HOUR = 335,
+     MINUTE = 336,
+     SECOND = 337,
+     NEXTSUB = 338,
+     PREVIOUSSUB = 339,
+     REGFIND = 340,
+     REGMATCH = 341,
+     REGREPLACE = 342
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

@@ -39,6 +39,7 @@ protected:
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
+  virtual int InTable(TypeInst*, TypeInst*) = 0;
   virtual typestr ReadCD(TypeCD *) = 0;
   virtual TypeCD* AllocCD() = 0;
   virtual void FreeCD( TypeCD* CD ) = 0;
@@ -107,7 +108,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <code> SEP FIN WNUMBER WSTRING
 %token <code> PLUS MOINS MULTIPLIE DIVISE
 %token <code> EQ NE _IN GT LT GE LE
-%token <code> EXISTS PRECEDES FOLLOWS
+%token <code> EXISTS PRECEDES FOLLOWS INTABLE
 %token <code> IF THEN ELSE AND OR NOT
 %token <code> BY _STRICT AT BEGINING BEGINNING END BOTH
 
@@ -435,7 +436,13 @@ Boolean :
                                           $$=Precedes($3,$1);
                                           if ($$==2) return 2;
                                           FreeCD($3); $3=NULL;
-                                          FreeCD($1); $1=NULL; }
+                                          FreeCD($1); $1=NULL; 
+                                        }
+|       INTABLE '(' Translation ',' Translation ')' { PrintDebug("InTable(..., ...)");
+                                          $$=InTable($3, $5);
+                                          $3 = NULL;
+                                          $5 = NULL;
+                                        }
 ;
 
 Translation :
