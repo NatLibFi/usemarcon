@@ -14,8 +14,8 @@ del *.trc /s
 del *.plg /s
 del library\debug\*.*
 rd library\debug
-del library\releasemindependency\*.*
-rd library\releasemindependency
+del library\release\*.*
+rd library\release
 del program\debug\*.*
 rd program\debug
 del program\release\*.*
