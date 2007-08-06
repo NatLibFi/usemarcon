@@ -30,6 +30,7 @@ TRule::TRule(TCD *LastInputCD, TCD *LastOutputCD, TError *ErrorHandler)
     itsLastInputCD      = LastInputCD;
     itsLastOutputCD = LastOutputCD;
     itsErrorHandler = ErrorHandler;
+    mLine = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,6 +48,7 @@ TRule::TRule(TRule *aRule)
     itsLastInputCD      = aRule->itsLastInputCD;
     itsLastOutputCD = aRule->itsLastOutputCD;
     itsErrorHandler = aRule->itsErrorHandler;
+    mLine = aRule->mLine;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -99,7 +101,7 @@ int TRule::SetLib(const char *aLib)
 // FromString
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TRule::FromString(char *aString)
+int TRule::FromString(char *aString, int aLine)
 {
     char    *ItemPointer;
     int     NbPipes,
@@ -111,6 +113,8 @@ int TRule::FromString(char *aString)
     if (!*aString)
         // empty lines are ignored
         return 0;
+
+    mLine = aLine;
 
     MaxPos=strlen(aString);
 

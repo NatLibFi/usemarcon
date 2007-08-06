@@ -39,7 +39,7 @@ public:
     TRule           (TRule *aRule);
     virtual ~TRule  ();
 
-    int   FromString      (char *aString);
+    int   FromString      (char *aString, int aLine);
     bool  ToString      (typestr & a_string);
     void  ResetLib        (void)              { itsLib.freestr(); };
 
@@ -55,6 +55,8 @@ public:
     int   SetNextRule     (TRule *NextRule)   { itsNextRule=NextRule; return 0; };
     int   SetPreviousRule (TRule *PreviousRule)   { itsPreviousRule=PreviousRule; return 0; };
 
+    int   GetLineNo() { return mLine; }
+
 protected:
     TCD           *itsInputCD;
     TCD           *itsOutputCD;
@@ -63,6 +65,7 @@ protected:
     typestr       itsLib;
     TRule         *itsNextRule;
     TRule         *itsPreviousRule;
+    int           mLine;
 
     TError        *itsErrorHandler;
 };
