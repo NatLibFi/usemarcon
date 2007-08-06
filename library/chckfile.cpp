@@ -317,35 +317,38 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             if (TestIndicator(CurrentField->GetI1(),CurrentControl->GetFirstIndicators()))
                 // Le premier indicateur ne fait pas partie de la liste des indicateurs possibles
             {
-                typestr tmp = "Notice '";
-                tmp += CurrentField->GetLib();
-                tmp += "' : field '";
-                tmp += CurrentField->GetTag();
-                tmp += "' (ind '";
                 if (CurrentField->GetI1())
+                {
+                    // Warning only if the indicator value is invalid
+                    // (passing empty values as proper ones)
+                    typestr tmp = "Notice '";
+                    tmp += CurrentField->GetLib();
+                    tmp += "' : field '";
+                    tmp += CurrentField->GetTag();
+                    tmp += "' (ind '";
                     tmp += CurrentField->GetI1();
-                else
-                    tmp += "EMPTY ITEM";
-                tmp += "')";
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2102 : 7102, WARNING, tmp.str());
+                    tmp += "')";
+                    itsErrorHandler->SetErrorD(IO==INPUT ? 2102 : 7102, WARNING, tmp.str());
+                }
             }
 
             // Test des seconds indicateurs
             if (TestIndicator(CurrentField->GetI2(),CurrentControl->GetSecondIndicators()))
                 // Le deuxiȿme indicateur ne fait pas partie de la liste des indicateurs possibles
             {
-                typestr tmp = "Notice '";
-                tmp += CurrentField->GetLib();
-                tmp += "' : field '";
-                tmp += CurrentField->GetTag();
-                tmp += "' (ind '";
                 if (CurrentField->GetI2())
+                {
+                    // Warning only if the indicator value is invalid
+                    // (passing empty values as proper ones)
+                    typestr tmp = "Notice '";
+                    tmp += CurrentField->GetLib();
+                    tmp += "' : field '";
+                    tmp += CurrentField->GetTag();
+                    tmp += "' (ind '";
                     tmp += CurrentField->GetI2();
-                else
-                    tmp += "EMPTY ITEM";
-                tmp += "')";
-
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2103 : 7103, WARNING, tmp.str());
+                    tmp += "')";
+                    itsErrorHandler->SetErrorD(IO==INPUT ? 2103 : 7103, WARNING, tmp.str());
+                }
             }
 
             // Test de chacun des sous-champs
