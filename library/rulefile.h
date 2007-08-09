@@ -31,12 +31,13 @@ AUTHOR
 #include "trule.h"
 #include "codedata.h"
 #include "tmpplctn.h"
+#include "lien_not.h"
 #include "umrecord.h"
 
 class TRuleFile : public TFile
 {
 public:
-    TRuleFile       (typestr FileSpec, TUMApplication *Application);
+    TRuleFile       (typestr & FileSpec, TUMApplication *Application);
     ~TRuleFile      ();
 
     virtual int           OpenRuleFile    ();

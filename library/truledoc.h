@@ -46,7 +46,7 @@ public:
 private:
     TRuleFile         *itsFile;
     typestr           itsRuleSpec;
-    typestr           itsFilePointer; //TODO: what?
+    typestr           itsFilePointer;
 
     TError            *itsErrorHandler;
 

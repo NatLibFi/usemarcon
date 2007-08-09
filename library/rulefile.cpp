@@ -21,7 +21,7 @@
 // TRuleFile
 //
 ///////////////////////////////////////////////////////////////////////////////
-TRuleFile::TRuleFile(typestr FileSpec, TUMApplication *Application)
+TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
 : TFile(FileSpec, Application->GetErrorHandler())
 {
     itsFirstRule        = NULL;

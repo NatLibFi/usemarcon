@@ -54,7 +54,7 @@ public:
 private:
     TTransFile            *itsFile;
     typestr               itsTransSpec;
-    typestr               itsFilePointer; //TODO: what?
+    typestr               itsFilePointer;
     CHARSET               itsCharset;
 
     TError                *itsErrorHandler;
