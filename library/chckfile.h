@@ -35,7 +35,7 @@ AUTHOR
 class TCheckFile : public TFile
 {
 public:
-    TCheckFile          (FILE_SPEC *FileSpec, TError *ErrorHandler);
+    TCheckFile          (typestr & FileSpec, TError *ErrorHandler);
     ~TCheckFile         (void);
     
     virtual int           Open                (int IO);
@@ -54,6 +54,8 @@ protected:
 private:
     TControlField         *itsFirstCheckField;
     TControlField         *itsLastCheckField;
+
+    typestr get_error(typestr & a_filename, int a_lineNumber, typestr & a_line);
 };
 #endif
 

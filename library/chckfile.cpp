@@ -26,7 +26,7 @@
 // TCheckFile
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCheckFile::TCheckFile( FILE_SPEC *FileSpec, TError *ErrorHandler)
+TCheckFile::TCheckFile(typestr & FileSpec, TError *ErrorHandler)
  : TFile(FileSpec, ErrorHandler)
 {
     itsFirstCheckField  = itsLastCheckField = NULL;
@@ -63,7 +63,7 @@ int TCheckFile::Open(int IO)
     typestr         aLine;
     typestr         aLineCopy;
     char            *Pointer = NULL;
-    FILE_SPEC       aSpec;
+    typestr         aSpec;
     int             AnalysedControl=1;
     int             Line;
     TControlField   *OldControl=itsLastCheckField;
@@ -73,25 +73,23 @@ int TCheckFile::Open(int IO)
         return itsErrorHandler->GetErrorCode();
 
     // Lecture de chaque ligne du fichier
-    while( NextLine( &aLine, &aSpec, &Line )==0)
+    while (NextLine(&aLine, &aSpec, &Line) == 0)
     {
         // Si la ligne n'est pas vide, la traiter
         if (RemoveSpace(aLine.str()))
         {
             aLineCopy = aLine;
-            char errorline[MAXPATH + 100];
-            sprintf(errorline, "in file '%s' at line %d : \n%s", aSpec.name, Line - 1, aLineCopy.str());
             // Extraction du Tag de la regle de controle
             if ((Pointer=strtok(aLine.str(),"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, errorline);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 continue;
             }
             if ((RemoveSpace(Pointer)!=4) || ((Pointer[3]!='_') && (Pointer[3]!='+') && (Pointer[3]!='?') && (Pointer[3]!='*')))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2002 : 7002, WARNING, errorline);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2002 : 7002, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 continue;
             }
 
@@ -107,7 +105,7 @@ int TCheckFile::Open(int IO)
                     if (!itsLastCheckField)
                     {
                         // Echec de la cr权ation d'un TControlField ==> Arret et fermeture du fichier
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, errorline);
+                        itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, get_error(aSpec, Line, aLineCopy).str());
                         break;
                     }
                 }
@@ -120,7 +118,7 @@ int TCheckFile::Open(int IO)
                         if (!itsLastCheckField->GetNextTag())
                         {
                             // Echec de la cr权ation d'un TControlField ==> Arret et fermeture du fichier
-                            itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, errorline);
+                            itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, get_error(aSpec, Line, aLineCopy).str());
                             break;
                         }
                         OldControl = itsLastCheckField;
@@ -129,7 +127,7 @@ int TCheckFile::Open(int IO)
                     else
                         // regle ignor权e car d权j柔 existante ==> passage a la regle suivante
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2003 : 7003, WARNING, errorline);
+                        itsErrorHandler->SetErrorD(IO==INPUT ? 2003 : 7003, WARNING, get_error(aSpec, Line, aLineCopy).str());
                         continue;
                     }
             }
@@ -163,14 +161,14 @@ int TCheckFile::Open(int IO)
             if ((Pointer=strtok(NULL,"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, errorline);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
             if ((!RemoveSpace(Pointer)) || (memcmp(Pointer,"I1=",3)))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2004 : 7004, WARNING, errorline);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2004 : 7004, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
@@ -185,14 +183,14 @@ int TCheckFile::Open(int IO)
             if ((Pointer=strtok(NULL,"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, errorline);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
             if ((!RemoveSpace(Pointer)) || (memcmp(Pointer,"I2=",3)))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2005 : 7005, WARNING, errorline);
+                itsErrorHandler->SetErrorD(IO==INPUT ? 2005 : 7005, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
@@ -210,7 +208,7 @@ int TCheckFile::Open(int IO)
                     (Pointer[2]!='_') && (Pointer[2]!='+') && (Pointer[2]!='?') && (Pointer[2]!='*')))
                     // Le Sub de la Regle de controle est invalide ==> passage a la regle suivante
                 {
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2006 : 7006, WARNING, errorline);
+                    itsErrorHandler->SetErrorD(IO==INPUT ? 2006 : 7006, WARNING, get_error(aSpec, Line, aLineCopy).str());
                     AnalysedControl=0;
                     continue;
                 }
@@ -221,7 +219,7 @@ int TCheckFile::Open(int IO)
                     if (!itsLastCheckField->GetFirstSubfield())
                         // Echec de la creation d'un nouveau TCtrlSubfield
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, errorline);
+                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, get_error(aSpec, Line, aLineCopy).str());
                         AnalysedControl=0;
                         continue;
                     }
@@ -234,7 +232,7 @@ int TCheckFile::Open(int IO)
                     if (!itsLastCheckField->GetLastSubfield()->GetNextSub())
                         // Echec de la creation d'un nouveau TCtrlSubfield
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, errorline);
+                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, get_error(aSpec, Line, aLineCopy).str());
                         AnalysedControl=0;
                         continue;
                     }
@@ -556,4 +554,14 @@ void TCheckFile::DelTreeCheckTag(void)
         Courant=Suivant;
     }
     itsFirstCheckField = itsLastCheckField = NULL;
+}
+
+typestr TCheckFile::get_error(typestr & a_filename, int a_lineNumber, typestr & a_line)
+{
+    typestr errorstr;
+    errorstr.allocstr(strlen(a_filename.str()) + 100 + strlen(a_line.str()));
+    sprintf(errorstr.str(), "in file '%s' at line %d : \n%s", a_filename.str(), a_lineNumber, 
+        a_line.str());
+
+    return errorstr;
 }

@@ -35,7 +35,7 @@ class TMarcRecord;
 class TTransFile : public TFile, public semi
 {
 public:
-  TTransFile  (FILE_SPEC *FileSpec, TError *ErrorHandler);
+  TTransFile  (typestr & FileSpec, TError *ErrorHandler);
   ~TTransFile (void);
 
   int           Open        (void);

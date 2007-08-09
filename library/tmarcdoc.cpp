@@ -16,7 +16,6 @@
 #include "defines.h"
 #include "tmpplctn.h"
 #include "tmarcdoc.h"
-#include "objectlist.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,7 +28,7 @@ TMarcDoc::TMarcDoc(TUMApplication *Application)
 {
   itsInputFile           = NULL;
   itsOutputFile          = NULL;
-  itsMarcInputSpec       = NULL;
+  itsMarcInputSpec       = NULL; 
   itsMarcOutputSpec      = NULL;
   itsInputRecord         = NULL;
   itsTransRecord         = NULL;
@@ -54,8 +53,6 @@ TMarcDoc::TMarcDoc(TUMApplication *Application)
   itsMarcOutputFile.PaddingChar= 0x5E;
   itsMarcOutputFile.LastBlock  = false;
 
-  itsXVTFilePointer    = NULL; 
-  
   itsApplication = Application;
   itsErrorHandler = Application->GetErrorHandler();
 }
@@ -70,18 +67,10 @@ TMarcDoc::TMarcDoc(TUMApplication *Application)
 TMarcDoc::~TMarcDoc( void )
 { 
   if (itsInputFile)              { delete itsInputFile;                  itsInputFile                    = NULL; }
-  if (itsMarcInputSpec)          { delete itsMarcInputSpec;              itsMarcInputSpec                = NULL; } 
-  if (itsMarcOutputSpec)         { delete itsMarcOutputSpec;             itsMarcOutputSpec               = NULL; } 
   if (itsOutputFile)             { delete itsOutputFile;                 itsOutputFile                   = NULL; }
   if (itsInputRecord)            { delete itsInputRecord;                itsInputRecord                  = NULL; }  
   if (itsTransRecord)            { delete itsTransRecord;                itsTransRecord                  = NULL; }  
   if (itsOutputRecord)           { delete itsOutputRecord;               itsOutputRecord                 = NULL; }   
-  if (itsMarcInputFile.Spec)     { delete itsMarcInputFile.Spec;         itsMarcInputFile.Spec           = NULL; }  
-  if (itsMarcInputFile.Conf)     { delete itsMarcInputFile.Conf;         itsMarcInputFile.Conf           = NULL; }
-  if (itsMarcOutputFile.Spec)    { delete itsMarcOutputFile.Spec;        itsMarcOutputFile.Spec          = NULL; }  
-  if (itsMarcOutputFile.Conf)    { delete itsMarcOutputFile.Conf;        itsMarcOutputFile.Conf          = NULL; }
-  if (itsConfInputSpec)          { delete itsConfInputSpec;              itsConfInputSpec                = NULL; } 
-  if (itsConfOutputSpec)         { delete itsConfOutputSpec;             itsConfOutputSpec               = NULL; } 
   DelTreeTagNoInd(itsFirstInputTagNoInd);
   DelTreeTagNoInd(itsFirstOutputTagNoInd); 
 }
@@ -133,38 +122,28 @@ bool TMarcDoc::Open(int IO)
       return false;
     }
     
-    if (itsMarcInputFile.Conf)
+    if (!itsMarcInputFile.Conf.is_empty())
     { 
       if (GetFirstTagNoInd(INPUT))
         UnloadTagNoInd(INPUT);
-      if (!LoadTagNoInd(INPUT,itsMarcInputFile.Conf->name))
+      if (!LoadTagNoInd(INPUT, itsMarcInputFile.Conf.str()))
       {
-        if (!itsConfInputSpec)
-          itsConfInputSpec = new FILE_SPEC;
-        memcpy(itsConfInputSpec,itsMarcInputFile.Conf,sizeof(FILE_SPEC));
+          itsConfInputSpec = itsMarcInputFile.Conf;
       }
-      if (itsMarcInputFile.Conf)             
-      { 
-        delete itsMarcInputFile.Conf;              
-        itsMarcInputFile.Conf = NULL; 
-      }  
+      itsMarcInputFile.Conf.freestr();
     }
     else
     {
       if (GetFirstTagNoInd(INPUT))
         UnloadTagNoInd(INPUT);
-      if (itsConfInputSpec)     
-      { 
-        delete itsConfInputSpec;      
-        itsConfInputSpec = NULL; 
-      }
+      itsConfInputSpec.freestr();
     }  
     break;
     
   case OUTPUT: 
     if (!itsOutputFile)         // there is no Marc Output File
     { 
-      if ((itsOutputFile = new TMarcFile(/*(CDocument *)this,*/itsMarcOutputFile.Spec,
+      if ((itsOutputFile = new TMarcFile(itsMarcOutputFile.Spec,
         itsApplication,FILE_WRITE,FILE_BINARY,
         GetMarcOutputFileFormat(), GetMarcOutputFileBlockSize(), 
         GetMarcOutputFileMinDataFree(), GetMarcOutputFilePaddingChar(), 
@@ -188,35 +167,24 @@ bool TMarcDoc::Open(int IO)
       itsErrorHandler->SetError(9032,ERROR);
       return false;
     }
-    if (!itsMarcOutputSpec)
-      itsMarcOutputSpec = new FILE_SPEC;
-    memcpy(itsMarcOutputSpec,itsMarcOutputFile.Spec,sizeof(FILE_SPEC)); 
+    itsMarcOutputSpec = itsMarcOutputFile.Spec; 
     
-    if (itsMarcOutputFile.Conf)
+    if (!itsMarcOutputFile.Conf.is_empty())
     { 
       if (GetFirstTagNoInd(OUTPUT))
         UnloadTagNoInd(OUTPUT);
-      if (!LoadTagNoInd(OUTPUT,itsMarcOutputFile.Conf->name))
+      if (!LoadTagNoInd(OUTPUT, itsMarcOutputFile.Conf.str()))
       {
-        if (!itsConfOutputSpec)
-          itsConfOutputSpec = new FILE_SPEC;
-        memcpy(itsConfOutputSpec,itsMarcOutputFile.Conf,sizeof(FILE_SPEC));
+        itsConfOutputSpec = itsMarcOutputFile.Conf;
       }
-      if (itsMarcOutputFile.Conf)             
-      { 
-        delete itsMarcOutputFile.Conf;              
-        itsMarcOutputFile.Conf = NULL; 
-      }  
+
+      itsMarcOutputFile.Conf.freestr();
     }
     else 
     {
       if (GetFirstTagNoInd(OUTPUT))
         UnloadTagNoInd(OUTPUT);
-      if (itsConfOutputSpec)    
-      { 
-        delete itsConfOutputSpec;     
-        itsConfOutputSpec = NULL; 
-      }
+      itsConfOutputSpec.freestr();
     }        
     break;
     
@@ -227,9 +195,6 @@ bool TMarcDoc::Open(int IO)
   return true;
 }  
 
-
-
-// MPB - 16-03-99 : pour StartBatch()
 bool TMarcDoc::Close(int IO)  
 { 
   switch(IO)
@@ -242,7 +207,7 @@ bool TMarcDoc::Close(int IO)
         return false;                                         // Current Marc Input Closing failure
       delete itsInputFile; 
       itsInputFile = NULL;
-      if (itsMarcInputSpec)  { delete itsMarcInputSpec;      itsMarcInputSpec=NULL;  }
+      itsMarcInputSpec.freestr();
     } 
     break;
   case OUTPUT: 
@@ -252,7 +217,7 @@ bool TMarcDoc::Close(int IO)
         return false;
       delete itsOutputFile;                           // Current Marc Output Closing failure
       itsOutputFile = NULL;
-      if (itsMarcOutputSpec)  { delete itsMarcOutputSpec;     itsMarcOutputSpec=NULL; }
+      itsMarcOutputSpec.freestr();
     }  
     break;
   default:
@@ -261,8 +226,6 @@ bool TMarcDoc::Close(int IO)
   }  
   return true;                                               
 }  
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -336,7 +299,7 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
   // Si un fichier existe, alors on convertit itsInputRecord en itsTransRecord conformement
   // a la table de transco chargee
   
-  if (itsApplication->GetDetails()->GetDisableCharacterConversion() || !aTransDoc->NeedTranscoding())
+  if (itsApplication->GetDisableCharacterConversion() || !aTransDoc->NeedTranscoding())
   {
     itsTransRecord = new TUMRecord(*itsInputRecord);
     if (!itsTransRecord)
@@ -378,11 +341,9 @@ void TMarcDoc::DelTreeTagNoInd(TTagNoInd *Start)
 // SetMarcInputFileSpec
 //
 ///////////////////////////////////////////////////////////////////////////////
-void TMarcDoc::SetMarcInputFileSpec(FILE_SPEC *theSpec)
+void TMarcDoc::SetMarcInputFileSpec(typestr & theSpec)
 { 
-  if (itsMarcInputFile.Spec==NULL) 
-    itsMarcInputFile.Spec=new FILE_SPEC;
-  memcpy(itsMarcInputFile.Spec,theSpec,sizeof(FILE_SPEC)); 
+  itsMarcInputFile.Spec = theSpec;
 } 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -390,11 +351,9 @@ void TMarcDoc::SetMarcInputFileSpec(FILE_SPEC *theSpec)
 // SetConfFileSpec
 //
 ///////////////////////////////////////////////////////////////////////////////
-void TMarcDoc::SetConfInputFileSpec(FILE_SPEC *theSpec)
+void TMarcDoc::SetConfInputFileSpec(typestr & theSpec)
 {
-  if (!itsMarcInputFile.Conf) 
-    itsMarcInputFile.Conf=new FILE_SPEC;
-  memcpy(itsMarcInputFile.Conf,theSpec,sizeof(FILE_SPEC)); 
+  itsMarcInputFile.Conf = theSpec; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -402,11 +361,9 @@ void TMarcDoc::SetConfInputFileSpec(FILE_SPEC *theSpec)
 // SetMarcOutputFileSpec
 //
 ///////////////////////////////////////////////////////////////////////////////
-void TMarcDoc::SetMarcOutputFileSpec(FILE_SPEC *theSpec)
+void TMarcDoc::SetMarcOutputFileSpec(typestr & theSpec)
 { 
-  if (itsMarcOutputFile.Spec==NULL) 
-    itsMarcOutputFile.Spec=new FILE_SPEC;
-  memcpy(itsMarcOutputFile.Spec,theSpec,sizeof(FILE_SPEC)); 
+  itsMarcOutputFile.Spec = theSpec;
 } 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -414,11 +371,9 @@ void TMarcDoc::SetMarcOutputFileSpec(FILE_SPEC *theSpec)
 // SetConfOutputFileSpec
 //
 ///////////////////////////////////////////////////////////////////////////////
-void TMarcDoc::SetConfOutputFileSpec(FILE_SPEC *theSpec)
+void TMarcDoc::SetConfOutputFileSpec(typestr & theSpec)
 {
-  if (!itsMarcOutputFile.Conf) 
-    itsMarcOutputFile.Conf=new FILE_SPEC;
-  memcpy(itsMarcOutputFile.Conf,theSpec,sizeof(FILE_SPEC)); 
+  itsMarcOutputFile.Conf = theSpec;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

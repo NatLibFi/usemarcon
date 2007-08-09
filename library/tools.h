@@ -76,13 +76,13 @@ bool put_ini_string(const char *section_name,
                     const char *ini_name);
 
 // copy the path of filename
-void copy_path_from_filename(char *path, const char *filename);
+void copy_path_from_filename(typestr & path, const char *filename);
 
 // append a filename to the path
-void append_filename(char *path, const char *filename);
+void append_filename(typestr & path, const char *filename);
 
 // get a file attribute
-bool file_exists(FILE_SPEC *fspec);
+bool file_exists(typestr & fspec);
 
 // show a warning to the user
 void show_warning(const char *message);

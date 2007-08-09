@@ -263,7 +263,7 @@ void get_ini_filename(const char *section_name,
     get_ini_string(section_name, key_name, default_value, return_buffer, ini_name);
     if (*return_buffer.str() && !strchr(return_buffer.str(), SLASH))
     {
-        char full_path[MAXPATH];
+        typestr full_path;
         copy_path_from_filename(full_path, ini_name);
         append_filename(full_path, return_buffer.str());
         return_buffer = full_path;
@@ -437,32 +437,29 @@ bool put_ini_string(const char *section_name,
     return true;
 }
 
-void copy_path_from_filename(char *path, const char *filename)
+void copy_path_from_filename(typestr & path, const char *filename)
 {
+    path = "";
     const char *slashp = strrchr(filename, SLASH);
     if (slashp)
     {
         int i = 1 + slashp - filename;
-        strncpy(path, filename, i);
-        path[i] = '\0';
+        path.append(filename, i);
     }
-    else
-        *path = '\0';
 }
 
-void append_filename(char *path, const char *filename)
+void append_filename(typestr & path, const char *filename)
 {
-    strncat(path, filename, MAXPATH - strlen(path));
-    path[MAXPATH - 1] = '\0';
+    path += filename;
 }
 
-bool file_exists(FILE_SPEC *fspec)
+bool file_exists(typestr & fspec)
 {
-    FILE    *fp;
+    FILE *fp;
 
-    fp = fopen(fspec->name, "r");
+    fp = fopen(fspec.str(), "r");
     if (fp == NULL)
-      return false;
+        return false;
     fclose(fp);
     return true;
 }

@@ -558,6 +558,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\usemarconlib.cpp">
+			</File>
+			<File
 				RelativePath="ytab.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -616,9 +619,6 @@
 				RelativePath="mrcfield.h">
 			</File>
 			<File
-				RelativePath="objectlist.h">
-			</File>
-			<File
 				RelativePath=".\regexp.h">
 			</File>
 			<File
@@ -674,6 +674,9 @@
 			</File>
 			<File
 				RelativePath="umrecord.h">
+			</File>
+			<File
+				RelativePath=".\usemarconlib.h">
 			</File>
 			<File
 				RelativePath="ytab.h">

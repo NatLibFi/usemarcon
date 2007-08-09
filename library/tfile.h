@@ -38,11 +38,6 @@ AUTHOR
 #include "error.h"
 #include "typedef.h"
 
-typedef struct FILE_SPEC
-{
-    char name[MAXPATH];
-} FILE_SPEC;
-
 #define FILE_READ   'r'
 #define FILE_WRITE  'w'
 #define FILE_APPEND 'a'
@@ -52,15 +47,15 @@ typedef struct FILE_SPEC
 class TFile
 {
 public:
-    TFile(FILE_SPEC *FileInfo, TError *ErrorHandler, char Mode=FILE_READ, char Kind=FILE_ASCII);
+    TFile(typestr & FileInfo, TError *ErrorHandler, char Mode=FILE_READ, char Kind=FILE_ASCII);
     virtual ~TFile();
     virtual int          Open(void);
     virtual int          Close(void);
 
     bool         Exists(void);
-    int          NextLine(typestr *aLine, FILE_SPEC* Spec=NULL, int *LineNumber=NULL);
-    FILE_SPEC    *GetName(void);
-    void         SetName(FILE_SPEC *aName);
+    int          NextLine(typestr *aLine, typestr *Spec=NULL, int *LineNumber=NULL);
+    typestr      GetName(void);
+    void         SetName(typestr &aName);
     char         GetMode(void);
     void         SetMode(char aMode);
     char         GetKind(void);
@@ -70,7 +65,7 @@ public:
 
 protected:
     int          itsLineNumber;
-    FILE_SPEC    *itsFileInfo;
+    typestr      itsFileInfo;
     char         itsMode;
     char         itsKind;
     FILE         *File;

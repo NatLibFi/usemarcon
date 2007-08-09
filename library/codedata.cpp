@@ -22,12 +22,10 @@
 // TCodedData
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCodedData::TCodedData( FILE_SPEC *FileSpec, TError *ErrorHandler)
-:TTransFile( FileSpec, ErrorHandler)
+TCodedData::TCodedData(typestr & FileSpec, TError *ErrorHandler)
+: TTransFile(FileSpec, ErrorHandler)
 {
-    itsCodedDataName=new FILE_SPEC;
-    if (itsCodedDataName)
-        memcpy(itsCodedDataName,FileSpec,sizeof(FILE_SPEC));
+    itsCodedDataName = FileSpec;
     itsNextCodedData = NULL;
 }
 
@@ -38,7 +36,6 @@ TCodedData::TCodedData( FILE_SPEC *FileSpec, TError *ErrorHandler)
 ///////////////////////////////////////////////////////////////////////////////
 TCodedData::~TCodedData()
 {
-    if (itsCodedDataName) { delete itsCodedDataName; itsCodedDataName=NULL; }
 }
 
 

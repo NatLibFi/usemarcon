@@ -36,7 +36,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TFile::TFile( FILE_SPEC *FileInfo, TError *ErrorHandler, char Mode, char Kind)
+TFile::TFile(typestr & FileInfo, TError *ErrorHandler, char Mode, char Kind)
 {
     itsFileInfo = FileInfo;
     itsMode     = Mode;
@@ -76,20 +76,20 @@ int TFile::Open()
     if (itsKind==FILE_ASCII)
     {
         sprintf(mode,"%c",itsMode);
-        if ((File=fopen(itsFileInfo->name, mode))==NULL)
+        if ((File=fopen(itsFileInfo.str(), mode))==NULL)
         {
-            return itsErrorHandler->SetErrorD(9501,WARNING,itsFileInfo->name);
+            return itsErrorHandler->SetErrorD(9501, WARNING, itsFileInfo.str());
         }
     }
     else
     {
         if (itsMode==FILE_READ)
-            iFile=::open(itsFileInfo->name,O_RDONLY|O_BINARY,0640);
+            iFile=::open(itsFileInfo.str(),O_RDONLY|O_BINARY,0640);
         else
-            iFile=::open(itsFileInfo->name,O_CREAT|O_WRONLY|O_TRUNC|O_BINARY,0640);
+            iFile=::open(itsFileInfo.str(),O_CREAT|O_WRONLY|O_TRUNC|O_BINARY,0640);
 
         if (iFile == -1)
-            return itsErrorHandler->SetErrorD(9502,WARNING,itsFileInfo->name);
+            return itsErrorHandler->SetErrorD(9502, WARNING, itsFileInfo.str());
     }
 
     Included=NULL;
@@ -137,17 +137,17 @@ bool TFile::Exists()
 // NextLine
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TFile::NextLine(typestr *aLine, FILE_SPEC* Spec, int *LineNumber)
+int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
 {
     // NextLine() can't operate on binary files
-    if (itsKind==FILE_BINARY)
-        return itsErrorHandler->SetErrorD(9504,ERROR,itsFileInfo->name);
+    if (itsKind == FILE_BINARY)
+        return itsErrorHandler->SetErrorD(9504, ERROR, itsFileInfo.str());
 
-    if (Included!=NULL)
+    if (Included)
         // current line is an #include line
     {
         int rc;
-        if ((rc = Included->NextLine(aLine,Spec,LineNumber)) <= 0)
+        if ((rc = Included->NextLine(aLine, Spec, LineNumber)) <= 0)
             return rc;
         else
         {
@@ -157,7 +157,7 @@ int TFile::NextLine(typestr *aLine, FILE_SPEC* Spec, int *LineNumber)
     }
 
     if (Spec)
-        memcpy(Spec,itsFileInfo,sizeof(FILE_SPEC));
+        *Spec = itsFileInfo;
 
     typestr line;
     if (!readline(line, File))
@@ -176,9 +176,10 @@ int TFile::NextLine(typestr *aLine, FILE_SPEC* Spec, int *LineNumber)
         if (line.str()[i]!='"')
         {
             // '#include' directive not followed by a file name
-            char Temporary[MAXPATH + 50];
-            sprintf(Temporary,"%s : %d",Spec->name,itsLineNumber);
-            itsErrorHandler->SetErrorD(9505,WARNING,Temporary);
+            typestr tmp; 
+            tmp.allocstr(strlen(Spec->str()) + 50);
+            sprintf(tmp.str(), "%s : %d", Spec, itsLineNumber);
+            itsErrorHandler->SetErrorD(9505, WARNING, tmp.str());
         }
         else
         {
@@ -191,18 +192,17 @@ int TFile::NextLine(typestr *aLine, FILE_SPEC* Spec, int *LineNumber)
 
             line.str()[j] = '\0';
 
-            FILE_SPEC IncludedFile;
-            memcpy(&IncludedFile, itsFileInfo, sizeof(FILE_SPEC));
+            typestr IncludedFile = itsFileInfo;
             if (strchr(&line.str()[i], SLASH))
-                *IncludedFile.name = '\0';
+                *IncludedFile.str() = '\0';
             else
-                copy_path_from_filename(IncludedFile.name, itsFileInfo->name);
-            append_filename(IncludedFile.name, &line.str()[i]);
-            Included=new TFile(&IncludedFile,itsErrorHandler,FILE_READ,FILE_ASCII);
+                copy_path_from_filename(IncludedFile, itsFileInfo.str());
+            append_filename(IncludedFile, &line.str()[i]);
+            Included=new TFile(IncludedFile, itsErrorHandler, FILE_READ,FILE_ASCII);
             int rc=Included->Open();
             if (rc<0)
                 return rc;
-            rc=Included->NextLine(aLine,Spec,LineNumber);
+            rc=Included->NextLine(aLine, Spec, LineNumber);
             if (rc<=0)
                 return rc;
             else
@@ -231,7 +231,7 @@ int TFile::NextLine(typestr *aLine, FILE_SPEC* Spec, int *LineNumber)
 // GetName
 //
 ///////////////////////////////////////////////////////////////////////////////
-FILE_SPEC *TFile::GetName(void)
+typestr TFile::GetName(void)
 {
     return itsFileInfo;
 }
@@ -241,7 +241,7 @@ FILE_SPEC *TFile::GetName(void)
 // SetName
 //
 ///////////////////////////////////////////////////////////////////////////////
-void TFile::SetName(FILE_SPEC *aName)
+void TFile::SetName(typestr & aName)
 {
     itsFileInfo = aName;
 }
@@ -333,16 +333,15 @@ long TFile::GetPos(void)
 ///////////////////////////////////////////////////////////////////////////////
 int TFile::SkipBeginning()
 {
-    FILE_SPEC       aSpec;
-
     itsErrorHandler->Reset();
 
     typestr line;
+    typestr aSpec;
     // Au debut de chaque fichier, il faut sauter deux lignes de commentaires
-    if (NextLine(&line,&aSpec))
-        itsErrorHandler->SetErrorD(9506,ERROR,aSpec.name);
-    if(NextLine(&line,&aSpec))
-        itsErrorHandler->SetErrorD(9506,ERROR,aSpec.name);
+    if (NextLine(&line, &aSpec))
+        itsErrorHandler->SetErrorD(9506, ERROR, aSpec.str());
+    if(NextLine(&line, &aSpec))
+        itsErrorHandler->SetErrorD(9506, ERROR, aSpec.str());
     return itsErrorHandler->GetErrorCode();
 }
 

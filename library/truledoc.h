@@ -41,12 +41,12 @@ public:
     virtual bool          OpenRuleFile        (char *DefaultFile);
 
     virtual TRuleFile     *GetFile            (void)  { return itsFile; };
-    virtual FILE_SPEC     *GetRuleSpec        (void)  { return itsRuleSpec; };
+    virtual typestr       GetRuleSpec         (void)  { return itsRuleSpec; };
 
 private:
     TRuleFile         *itsFile;
-    FILE_SPEC         *itsRuleSpec;
-    FILE_SPEC         *itsXVTFilePointer;
+    typestr           itsRuleSpec;
+    typestr           itsFilePointer; //TODO: what?
 
     TError            *itsErrorHandler;
 

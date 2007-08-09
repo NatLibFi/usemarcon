@@ -1,21 +1,22 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "objectlist.h"
+#include "usemarconlib.h"
+#include "defines.h"
 
 // Adapted by ATP Library Systems Ltd, Finland, 2002-2004
 // Adapted by The National Library of Finland, 2004-2007
 
-// Define USEMARCON_BATCHRUN for a run which uses files
-// Define nothing (comment out #define USEMARCON_BATCHRUN) for a run which uses the api 
-#define USEMARCON_BATCHRUN
+// Below is an example of how to use the API
+//#define USEMARCON_TEST
 
 int main( int argc, char** argv )
 {
-    CDetails myrun;
+    Usemarcon usemarcon;
 
-#ifdef USEMARCON_BATCHRUN // batch run
+#ifndef USEMARCON_TEST
 
-    myrun.SetInteractive(true);
+    usemarcon.SetInteractive(true);
 
     /* sign-on message */
     printf("USEMARCON - MARC record converter\n");
@@ -34,9 +35,9 @@ int main( int argc, char** argv )
         {
             options++;
             if (strcmp(argv[argno], "-v") == 0)
-                myrun.SetForceVerbose(true);
+                usemarcon.SetForceVerbose(true);
             else if (strcmp(argv[argno], "-dc") == 0)
-                myrun.SetDisableCharacterConversion(true);
+                usemarcon.SetDisableCharacterConversion(true);
             else
             {
                 printf("Error: Unknown option %s\n", argv[argno]);
@@ -47,9 +48,9 @@ int main( int argc, char** argv )
         {
             switch (argno-options)
             {
-            case 1: myrun.SetIniFileName(argv[argno]); ini_file_specified = true; break;
-            case 2: myrun.SetInputMarcFileName(argv[argno]); break;
-            case 3: myrun.SetOutputMarcFileName(argv[argno]); break;
+            case 1: usemarcon.SetIniFileName(argv[argno]); ini_file_specified = true; break;
+            case 2: usemarcon.SetInputMarcFileName(argv[argno]); break;
+            case 3: usemarcon.SetOutputMarcFileName(argv[argno]); break;
             }
         }
     }
@@ -65,12 +66,12 @@ int main( int argc, char** argv )
         return -1;
     }
 
-    return myrun.Start();   // do the conversion
+    return usemarcon.Convert();   // do the conversion
 
-#else // api based run
+#else // api based run example
 
-    myrun.SetInteractive(false);
-    myrun.SetIniFileName("c:\\usemarcon\\mafi2ma\\mafi2ma.ini"); // could use argv[1]
+    usemarcon.SetInteractive(false);
+    usemarcon.SetIniFileName("c:\\usemarcon\\mafi2ma\\mafi2ma.ini"); // could use argv[1]
 
     // Load and convert 2 marc records - the first conversion will be slower than others because .ini file details are loaded
     for (int iLoop = 0; iLoop < 1; iLoop++)
@@ -78,28 +79,28 @@ int main( int argc, char** argv )
         // Load a marc record to convert
         FILE *fp;
         int iInLength = 0;
-        char acInRecord[TBUF + 1];
-        fp = fopen("input.bib", "r");
+        char acInRecord[100001];
+        fp = fopen("c:\\usemarcon\\input.bib", "r");
         if (fp)
         {
-            iInLength = fread( acInRecord, sizeof( char ), TBUF, fp );
+            iInLength = fread( acInRecord, sizeof( char ), 100000, fp );
             fclose( fp );
         }
         printf("++++ input marc record ++++\n");
         printf(acInRecord);
-        myrun.SetMarcRecord(acInRecord, iInLength);
+        usemarcon.SetMarcRecord(acInRecord, iInLength);
         int res;
-        res = myrun.Start();          // do the conversion
+        res = usemarcon.Convert();          // do the conversion
         if (res)
         {
-            printf("Conversion failed. Last error: %s\n", myrun.GetLastErrorMessage());
+            printf("Conversion failed. Last error: %s\n", usemarcon.GetLastErrorMessage());
             return res;
         }
 
         // Get marc record produced by the conversion
         char *pcOutRecord;
         int iOutLength = 0;
-        myrun.GetMarcRecord(pcOutRecord, iOutLength);
+        usemarcon.GetMarcRecord(pcOutRecord, iOutLength);
 
         printf("++++ output marc record ++++\n");
         printf(pcOutRecord);

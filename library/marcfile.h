@@ -39,7 +39,7 @@ class TMarcDoc;
 class TMarcFile : public TFile
 {
 public:
-    TMarcFile               (FILE_SPEC *FileSpec, TUMApplication *Application,
+    TMarcFile               (typestr & FileSpec, TUMApplication *Application,
                              char Mode/*=FILE_READ*/,char Kind/*=FILE_ASCII*/,
                              MARC_FILE_FORMAT Format, short BlockSize, short MinFree,
                              char PaddingChar, bool LastBlock);

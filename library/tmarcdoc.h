@@ -59,50 +59,50 @@ public:
 
     virtual void    DelTreeTagNoInd      (TTagNoInd *Start);
 
-    virtual void    SetMarcInputFileSpec        (FILE_SPEC *theSpec );
-    virtual void    SetMarcInputFileFormat      (MARC_FILE_FORMAT theFormat) { itsMarcInputFile.Format=theFormat; };
-    virtual void    SetMarcInputFileBlockSize   (short theBlockSize) { itsMarcInputFile.BlockSize=theBlockSize; };
-    virtual void    SetMarcInputFileMinDataFree (short theMinDataFree) { itsMarcInputFile.MinDataFree=theMinDataFree; };
-    virtual void    SetMarcInputFilePaddingChar (char thePaddingChar) { itsMarcInputFile.PaddingChar=thePaddingChar; };
-    virtual void    SetMarcInputFileLastBlock   (bool theLastBlock) { itsMarcInputFile.LastBlock=theLastBlock; };
-    virtual void    SetConfInputFileSpec        (FILE_SPEC *theSpec);
+    virtual void    SetMarcInputFileSpec        (typestr & theSpec);
+    virtual void    SetMarcInputFileFormat      (MARC_FILE_FORMAT theFormat) { itsMarcInputFile.Format=theFormat; }
+    virtual void    SetMarcInputFileBlockSize   (short theBlockSize) { itsMarcInputFile.BlockSize=theBlockSize; }
+    virtual void    SetMarcInputFileMinDataFree (short theMinDataFree) { itsMarcInputFile.MinDataFree=theMinDataFree; }
+    virtual void    SetMarcInputFilePaddingChar (char thePaddingChar) { itsMarcInputFile.PaddingChar=thePaddingChar; }
+    virtual void    SetMarcInputFileLastBlock   (bool theLastBlock) { itsMarcInputFile.LastBlock=theLastBlock; }
+    virtual void    SetConfInputFileSpec        (typestr & theSpec);
 
-    virtual void    SetMarcOutputFileSpec       (FILE_SPEC *theSpec );
-    virtual void    SetMarcOutputFileFormat     (MARC_FILE_FORMAT theFormat) { itsMarcOutputFile.Format=theFormat; };
-    virtual void    SetMarcOutputFileBlockSize  (short theBlockSize) { itsMarcOutputFile.BlockSize=theBlockSize; };
-    virtual void    SetMarcOutputFileMinDataFree(short theMinDataFree) { itsMarcOutputFile.MinDataFree=theMinDataFree; };
-    virtual void    SetMarcOutputFilePaddingChar(char thePaddingChar) { itsMarcOutputFile.PaddingChar=thePaddingChar; };
-    virtual void    SetMarcOutputFileLastBlock  (bool theLastBlock) { itsMarcOutputFile.LastBlock=theLastBlock; };
-    virtual void    SetConfOutputFileSpec       (FILE_SPEC *theSpec);
+    virtual void    SetMarcOutputFileSpec       (typestr & theSpec);
+    virtual void    SetMarcOutputFileFormat     (MARC_FILE_FORMAT theFormat) { itsMarcOutputFile.Format=theFormat; }
+    virtual void    SetMarcOutputFileBlockSize  (short theBlockSize) { itsMarcOutputFile.BlockSize=theBlockSize; }
+    virtual void    SetMarcOutputFileMinDataFree(short theMinDataFree) { itsMarcOutputFile.MinDataFree=theMinDataFree; }
+    virtual void    SetMarcOutputFilePaddingChar(char thePaddingChar) { itsMarcOutputFile.PaddingChar=thePaddingChar; }
+    virtual void    SetMarcOutputFileLastBlock  (bool theLastBlock) { itsMarcOutputFile.LastBlock=theLastBlock; }
+    virtual void    SetConfOutputFileSpec       (typestr & theSpec);
 
-    virtual void    SetFirstTagNoInd     (int IO,TTagNoInd *aTagNoInd);
-    virtual void    SetIndSeparatorsID              (int IO,long ID);
+    virtual void    SetFirstTagNoInd            (int IO,TTagNoInd *aTagNoInd);
+    virtual void    SetIndSeparatorsID          (int IO,long ID);
 
-    virtual TMarcFile     *GetInputFile     (void) { return itsInputFile; };
-    virtual TMarcFile     *GetOutputFile    (void) { return itsOutputFile; };
-    virtual TUMRecord     *GetInputRecord   (void) { return itsInputRecord; };
-    virtual TUMRecord     *GetOutputRecord  (void) { return itsOutputRecord; };
-    virtual TUMRecord     *GetTransRecord   (void) { return itsTransRecord; };
+    virtual TMarcFile     *GetInputFile     (void) { return itsInputFile; }
+    virtual TMarcFile     *GetOutputFile    (void) { return itsOutputFile; }
+    virtual TUMRecord     *GetInputRecord   (void) { return itsInputRecord; }
+    virtual TUMRecord     *GetOutputRecord  (void) { return itsOutputRecord; }
+    virtual TUMRecord     *GetTransRecord   (void) { return itsTransRecord; }
 
     virtual long          GetIndSeparatorsID  (int IO);
 
-    virtual FILE_SPEC     *GetMarcInputFileSpec        (void) { return itsMarcInputFile.Spec; };
-    virtual MARC_FILE_FORMAT GetMarcInputFileFormat       (void) { return itsMarcInputFile.Format; };
-    virtual short         GetMarcInputFileBlockSize    (void) { return itsMarcInputFile.BlockSize; };
-    virtual short         GetMarcInputFileMinDataFree  (void) { return itsMarcInputFile.MinDataFree; };
-    virtual char          GetMarcInputFilePaddingChar  (void) { return itsMarcInputFile.PaddingChar; };
-    virtual bool          GetMarcInputFileLastBlock    (void) { return itsMarcInputFile.LastBlock; };
-    virtual FILE_SPEC     *GetConfInputSpec            (void) { return itsConfInputSpec; }
-    virtual FILE_SPEC     *GetMarcInputSpec            (void) { return itsMarcInputSpec; };
+    virtual typestr       GetMarcInputFileSpec         (void) { return itsMarcInputFile.Spec; }
+    virtual MARC_FILE_FORMAT GetMarcInputFileFormat    (void) { return itsMarcInputFile.Format; }
+    virtual short         GetMarcInputFileBlockSize    (void) { return itsMarcInputFile.BlockSize; }
+    virtual short         GetMarcInputFileMinDataFree  (void) { return itsMarcInputFile.MinDataFree; }
+    virtual char          GetMarcInputFilePaddingChar  (void) { return itsMarcInputFile.PaddingChar; }
+    virtual bool          GetMarcInputFileLastBlock    (void) { return itsMarcInputFile.LastBlock; }
+    virtual typestr       GetConfInputSpec             (void) { return itsConfInputSpec; }
+    virtual typestr       GetMarcInputSpec             (void) { return itsMarcInputSpec; }
 
-    virtual FILE_SPEC     *GetMarcOutputFileSpec       (void) { return itsMarcOutputFile.Spec; };
-    virtual MARC_FILE_FORMAT GetMarcOutputFileFormat      (void) { return itsMarcOutputFile.Format; };
-    virtual short         GetMarcOutputFileBlockSize   (void) { return itsMarcOutputFile.BlockSize; };
-    virtual short         GetMarcOutputFileMinDataFree (void) { return itsMarcOutputFile.MinDataFree; };
-    virtual char          GetMarcOutputFilePaddingChar (void) { return itsMarcOutputFile.PaddingChar; };
-    virtual bool          GetMarcOutputFileLastBlock   (void) { return itsMarcOutputFile.LastBlock; };
-    virtual FILE_SPEC     *GetConfOutputSpec           (void) { return itsConfOutputSpec; }
-    virtual FILE_SPEC     *GetMarcOutputSpec           (void) { return itsMarcOutputSpec; };
+    virtual typestr       GetMarcOutputFileSpec        (void) { return itsMarcOutputFile.Spec; }
+    virtual MARC_FILE_FORMAT GetMarcOutputFileFormat   (void) { return itsMarcOutputFile.Format; }
+    virtual short         GetMarcOutputFileBlockSize   (void) { return itsMarcOutputFile.BlockSize; }
+    virtual short         GetMarcOutputFileMinDataFree (void) { return itsMarcOutputFile.MinDataFree; }
+    virtual char          GetMarcOutputFilePaddingChar (void) { return itsMarcOutputFile.PaddingChar; }
+    virtual bool          GetMarcOutputFileLastBlock   (void) { return itsMarcOutputFile.LastBlock; }
+    virtual typestr       GetConfOutputSpec            (void) { return itsConfOutputSpec; }
+    virtual typestr       GetMarcOutputSpec            (void) { return itsMarcOutputSpec; }
 
     virtual TTagNoInd     *GetFirstTagNoInd       (int IO);
 
@@ -112,8 +112,8 @@ public:
 private:
     typedef struct
     {
-        FILE_SPEC                   *Spec;
-        FILE_SPEC                   *Conf;
+        typestr                     Spec;
+        typestr                     Conf;
         MARC_FILE_FORMAT            Format;
         short                       BlockSize;
         short                       MinDataFree;
@@ -126,11 +126,11 @@ private:
     TUMRecord                     *itsOutputRecord;
     TMarcFile                     *itsInputFile;
     TMarcFile                     *itsOutputFile;
-    FILE_SPEC                     *itsMarcInputSpec;
-    FILE_SPEC                     *itsMarcOutputSpec;
-    FILE_SPEC                     *itsConfInputSpec;
-    FILE_SPEC                     *itsConfOutputSpec;
-    FILE_SPEC                     *itsXVTFilePointer;
+    typestr                       itsMarcInputSpec;
+    typestr                       itsMarcOutputSpec;
+    typestr                       itsConfInputSpec;
+    typestr                       itsConfOutputSpec;
+    typestr                       itsFilePointer;
     TTagNoInd                     *itsFirstInputTagNoInd;
     TTagNoInd                     *itsFirstOutputTagNoInd;
     MARCFILE itsMarcInputFile;

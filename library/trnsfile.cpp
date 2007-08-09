@@ -22,12 +22,10 @@
 // TTransFile
 //
 ///////////////////////////////////////////////////////////////////////////////
-TTransFile::TTransFile( FILE_SPEC *FileSpec, TError *ErrorHandler)
-: TFile( FileSpec, ErrorHandler), semi()
+TTransFile::TTransFile(typestr & FileSpec, TError *ErrorHandler)
+: TFile(FileSpec, ErrorHandler), semi()
 {
-    itsFileInfo=new FILE_SPEC;
-    if (itsFileInfo)
-        memcpy(itsFileInfo,FileSpec,sizeof(FILE_SPEC));
+    itsFileInfo = FileSpec;
     itsDefaultValueValid = false;
     itsDefaultCopy = false;
 }
@@ -39,7 +37,6 @@ TTransFile::TTransFile( FILE_SPEC *FileSpec, TError *ErrorHandler)
 ///////////////////////////////////////////////////////////////////////////////
 TTransFile::~TTransFile()
 {
-    if (itsFileInfo) delete itsFileInfo;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,7 +52,7 @@ int TTransFile::Open()
     typestr         InListe;
     typestr         OutListe;
     int             Line;
-    FILE_SPEC       aSpec;
+    typestr         aSpec;
 
     // Ouverture du fichier
     if (TFile::Open())
@@ -215,17 +212,34 @@ bool TTransFile::Transcode(char* In, typestr &Out, char *Notice, char *Field)
 
             // aucune chaine de sustitution n'a ete trouvee, on conserve la valeur
             // en signalant l'erreur
-            char tmp[2000];
-            //DanX, Talis: copy of Notice reduced to 200 characters to prevent overrun of tmp with large data fields.
-            char tempNotice[200];
-            memcpy(tempNotice, Notice, 200);
-            tempNotice[199] = '\0';
-
+            typestr tmp;
+            char c_hex[30];
+            sprintf(c_hex, "%x", *c);
             if (Notice && Field)
-                sprintf(tmp, "Notice '%s' : field '%s' ( Unknown character '%c' (\\%x) ) : table '%s'",tempNotice,Field,(unsigned char)*c,(unsigned char)*c,itsFileInfo->name);
+            {
+                tmp = "Notice '";
+                tmp += Notice;
+                tmp += "' : field '";
+                tmp += Field;
+                tmp += "' ( Unknown character '";
+                tmp += *c;
+                tmp += "' (\\";
+                tmp += c_hex;
+                tmp += ") ) : table '";
+                tmp += itsFileInfo;
+                tmp += '\'';
+            }
             else
-                sprintf(tmp, "( Unknown character '%c' (\\%x) ) : table '%s'",(unsigned char)*c,(unsigned char)*c,itsFileInfo->name);
-            itsErrorHandler->SetErrorD( 3001, ERROR, tmp );
+            {
+                tmp = "( Unknown character '";
+                tmp += *c;
+                tmp += "' (\\";
+                tmp += c_hex;
+                tmp += ") ) : table '";
+                tmp += itsFileInfo;
+                tmp += '\'';
+            }
+            itsErrorHandler->SetErrorD(3001, ERROR, tmp.str());
             Out.append_char(*c);
             c++;
             res = false;

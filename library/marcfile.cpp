@@ -15,7 +15,6 @@
 #include <ctype.h>
 #include "marcfile.h"
 #include "error.h"
-#include "objectlist.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -23,9 +22,9 @@
 // TMarcFile
 //
 ///////////////////////////////////////////////////////////////////////////////
-TMarcFile::TMarcFile( FILE_SPEC *FileSpec, TUMApplication *Application, char Mode, char Kind,
+TMarcFile::TMarcFile(typestr & FileSpec, TUMApplication *Application, char Mode, char Kind,
     MARC_FILE_FORMAT Format, short BlockSize, short MinFree, char PaddingChar, bool LastBlock)
-:TFile(FileSpec, Application->GetErrorHandler(), Mode, Kind)
+: TFile(FileSpec, Application->GetErrorHandler(), Mode, Kind)
 {
     itsDocument= new TMarcDoc(Application);
     itsApplication = Application;
@@ -57,7 +56,7 @@ TMarcFile::~TMarcFile()
 ///////////////////////////////////////////////////////////////////////////////
 int TMarcFile::Open()
 {
-    if (!itsApplication->GetDetails()->GetMarcRecordAvailable())
+    if (!itsApplication->GetMarcRecordAvailable())
     {
         if (TFile::Open())          // Echec d'ouverture du fichier
             return 1;
@@ -206,11 +205,11 @@ int TMarcFile::read_marc(unsigned long a_length, char * a_buffer)
             long lng;
 
             // Use buffered data if available, otherwise use a file
-            if (itsApplication->GetDetails()->GetMarcRecordAvailable())
+            if (itsApplication->GetMarcRecordAvailable())
             {
                 char *pcRecord;
                 int iLength = 0;
-                itsApplication->GetDetails()->GetMarcRecord(pcRecord, iLength);
+                itsApplication->GetMarcRecord(pcRecord, iLength);
 
                 iLength -= itsCharsRead;
 
@@ -477,9 +476,9 @@ int TMarcFile::Write(TUMRecord *Record)
         if (res) 
             return res;
 
-        if (itsApplication->GetDetails()->GetMarcRecordAvailable())
+        if (itsApplication->GetMarcRecordAvailable())
         {
-            itsApplication->GetDetails()->SetMarcRecord(xml.str(), strlen(xml.str()));
+            itsApplication->SetMarcRecord(xml.str(), strlen(xml.str()));
             return 0;
         }
 
@@ -495,9 +494,9 @@ int TMarcFile::Write(TUMRecord *Record)
     unsigned long RecordLen;
     RecordLen=strlen(Buffer.str());
 
-    if (itsApplication->GetDetails()->GetMarcRecordAvailable())
+    if (itsApplication->GetMarcRecordAvailable())
     {
-        itsApplication->GetDetails()->SetMarcRecord(Buffer.str(), RecordLen);
+        itsApplication->SetMarcRecord(Buffer.str(), RecordLen);
         return 0;
     }
 
@@ -669,9 +668,9 @@ int TMarcFile::Close()
 
 long TMarcFile::GetSize(void)
 {
-    if (itsApplication->GetDetails()->GetMarcRecordAvailable())
+    if (itsApplication->GetMarcRecordAvailable())
     {
-        return itsApplication->GetDetails()->GetMarcRecordLength();
+        return itsApplication->GetMarcRecordLength();
     }
     else
     {
@@ -681,7 +680,7 @@ long TMarcFile::GetSize(void)
 
 long TMarcFile::GetPos(void)
 {
-    if (itsApplication->GetDetails()->GetMarcRecordAvailable())
+    if (itsApplication->GetMarcRecordAvailable())
     {
         return itsCharsRead;
     }

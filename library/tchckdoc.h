@@ -43,15 +43,15 @@ public:
     virtual bool          OpenCheckFile       (int IO,char *DefaultFile);
     virtual TCheckFile    *GetInputFile       (void)          { return itsInputFile; };
     virtual TCheckFile    *GetOutputFile      (void)          { return itsOutputFile; };
-    virtual FILE_SPEC     *GetCheckInputSpec  (void)          { return itsCheckInputSpec; };
-    virtual FILE_SPEC     *GetCheckOutputSpec (void)          { return itsCheckOutputSpec; };
+    virtual typestr       GetCheckInputSpec  (void)          { return itsCheckInputSpec; };
+    virtual typestr       GetCheckOutputSpec (void)          { return itsCheckOutputSpec; };
 
 private:
     TCheckFile            *itsInputFile;
     TCheckFile            *itsOutputFile;
-    FILE_SPEC             *itsCheckInputSpec;
-    FILE_SPEC             *itsCheckOutputSpec;
-    FILE_SPEC             *itsXVTFilePointer;
+    typestr               itsCheckInputSpec;
+    typestr               itsCheckOutputSpec;
+    typestr               itsFilePointer;
     TError                *itsErrorHandler;
 };
 

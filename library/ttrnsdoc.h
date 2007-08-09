@@ -45,16 +45,16 @@ public:
 
     virtual bool          Open            (void);
     virtual bool          OpenTransFile   (char *DefaultFile);
-    virtual TTransFile    *GetFile        (void)  { return itsFile; };
-    virtual FILE_SPEC     *GetTransSpec   (void)  { return itsTransSpec; };
+    virtual TTransFile    *GetFile        (void)  { return itsFile; }
+    virtual typestr GetTransSpec   (void)  { return itsTransSpec; }
     bool                  SetInputFileCharacterSet(const char *charset);
     int                   Convert (TMarcRecord* In, TMarcRecord* Out);
     bool                  NeedTranscoding (void)  { return itsFile || itsCharset != CHARSET_DEFAULT ? true : false; };
 
 private:
     TTransFile            *itsFile;
-    FILE_SPEC             *itsTransSpec;
-    FILE_SPEC             *itsXVTFilePointer;
+    typestr               itsTransSpec;
+    typestr               itsFilePointer; //TODO: what?
     CHARSET               itsCharset;
 
     TError                *itsErrorHandler;

@@ -31,7 +31,6 @@ TCheckDoc::TCheckDoc(TError *ErrorHandler)
     itsOutputFile       = NULL;
     itsCheckInputSpec   = NULL;
     itsCheckOutputSpec  = NULL;
-    itsXVTFilePointer   = NULL;
     itsErrorHandler = ErrorHandler;
 }
 
@@ -46,12 +45,6 @@ TCheckDoc::~TCheckDoc( void )
 {
     if (itsInputFile)       { delete itsInputFile;      itsInputFile        = NULL; }
     if (itsOutputFile)      { delete itsOutputFile;     itsOutputFile       = NULL; }
-    if (itsCheckInputSpec)  { delete itsCheckInputSpec; itsCheckInputSpec   = NULL; }
-    if (itsCheckOutputSpec){ delete itsCheckOutputSpec;itsCheckOutputSpec   = NULL; }
-
-    // John Hough - added delete
-    if (itsXVTFilePointer)
-        delete itsXVTFilePointer;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,7 +64,7 @@ bool TCheckDoc::Open(int IO)
     case INPUT:
         if (!itsInputFile)      // there is no Input Check File
         {
-            if ((itsInputFile = new TCheckFile(itsXVTFilePointer, itsErrorHandler))==NULL)
+            if ((itsInputFile = new TCheckFile(itsFilePointer, itsErrorHandler))==NULL)
             {
                 itsErrorHandler->SetError(9011,ERROR);
                 return false;
@@ -83,14 +76,12 @@ bool TCheckDoc::Open(int IO)
             itsInputFile = NULL;
             return false;
         }
-        if (!itsCheckInputSpec)
-            itsCheckInputSpec = new FILE_SPEC;
-        memcpy(itsCheckInputSpec,itsXVTFilePointer,sizeof(FILE_SPEC));
+        itsCheckInputSpec = itsFilePointer;
         break;
     case OUTPUT:
         if (!itsOutputFile)     // there is no Output Check File
         {
-            if ((itsOutputFile = new TCheckFile(itsXVTFilePointer, itsErrorHandler))==NULL)
+            if ((itsOutputFile = new TCheckFile(itsFilePointer, itsErrorHandler))==NULL)
             {
                 itsErrorHandler->SetError(9012,ERROR);
                 return false;
@@ -102,9 +93,7 @@ bool TCheckDoc::Open(int IO)
             itsOutputFile = NULL;
             return false;
         }
-        if (!itsCheckOutputSpec)
-            itsCheckOutputSpec = new FILE_SPEC;
-        memcpy(itsCheckOutputSpec,itsXVTFilePointer,sizeof(FILE_SPEC));
+        itsCheckOutputSpec = itsFilePointer;
         break;
     default:
         return false;
@@ -122,13 +111,10 @@ bool TCheckDoc::Open(int IO)
 ///////////////////////////////////////////////////////////////////////////////
 bool TCheckDoc::OpenCheckFile(int IO,char *DefaultFile)
 {
-    if (!itsXVTFilePointer)
-        itsXVTFilePointer = new FILE_SPEC;
-    memset(itsXVTFilePointer,0,sizeof(FILE_SPEC));
-
+    itsFilePointer = "";
     if (DefaultFile)
     {
-        strcpy(itsXVTFilePointer->name,DefaultFile);
+        itsFilePointer = DefaultFile;
     }
 
     return Open(IO);

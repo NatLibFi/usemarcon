@@ -15,7 +15,7 @@
 #include <ctype.h>
 #include "tmarcrec.h"
 #include "error.h"
-#include "objectlist.h"
+#include "tmpplctn.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -31,7 +31,6 @@ TMarcRecord::TMarcRecord(TUMApplication *Application)
     itsInputIndSeparatorsID = 0;
     itsOutputIndSeparatorsID = 0;
     itsErrorHandler     = Application->GetErrorHandler();
-    itsDetails          = Application->GetDetails();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -29,7 +29,6 @@ TTransDoc::TTransDoc(TError *ErrorHandler)
 {
     itsFile         = NULL;
     itsTransSpec    = NULL;
-    itsXVTFilePointer   = NULL;
     itsErrorHandler = ErrorHandler;
     itsCharset = CHARSET_DEFAULT;
 }
@@ -48,10 +47,6 @@ TTransDoc::~TTransDoc( void )
         delete itsFile;       
         itsFile = NULL; 
     }
-
-    // John Hough - added delete
-    if (itsTransSpec)
-        delete itsTransSpec;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,7 +61,7 @@ bool TTransDoc::Open(void)
 {
     // Add code here to set internal data members of the class based
     // on information read from some data source
-    if ((itsFile=new TTransFile(itsXVTFilePointer, itsErrorHandler))==NULL)
+    if ((itsFile=new TTransFile(itsFilePointer, itsErrorHandler))==NULL)
     {
         itsErrorHandler->SetError(9013,ERROR);
         return false;
@@ -87,18 +82,14 @@ bool TTransDoc::Open(void)
 ///////////////////////////////////////////////////////////////////////////////
 bool TTransDoc::OpenTransFile(char *DefaultFile)
 {
-    if (!itsXVTFilePointer)
-        itsXVTFilePointer = new FILE_SPEC;
-    memset(itsXVTFilePointer,0,sizeof(FILE_SPEC));
-    
     if (DefaultFile)
     {
-        strcpy(itsXVTFilePointer->name,DefaultFile);
+        itsFilePointer = DefaultFile;
     }
     
     if (Open()) // Open the selected Rule file
     {
-        itsTransSpec = itsXVTFilePointer;
+        itsTransSpec = itsFilePointer;
         return true;
     }
     return false;

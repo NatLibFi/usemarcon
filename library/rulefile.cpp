@@ -21,8 +21,8 @@
 // TRuleFile
 //
 ///////////////////////////////////////////////////////////////////////////////
-TRuleFile::TRuleFile(FILE_SPEC *FileSpec,TUMApplication *Application)
-:TFile(FileSpec, Application->GetErrorHandler())
+TRuleFile::TRuleFile(typestr FileSpec, TUMApplication *Application)
+: TFile(FileSpec, Application->GetErrorHandler())
 {
     itsFirstRule        = NULL;
     itsLastInputCD      = NULL;
@@ -75,16 +75,15 @@ int TRuleFile::CloseRuleFile()
 int TRuleFile::OpenRuleFile()
 {
     typestr     RuleLine;
-    typestr     Illustration;
     TRule       *CurrentRule;
-    FILE_SPEC   IncludedFileSpec;
+    typestr     IncludedFileSpec;
     int     Result;
     int     Line;
     bool    IsRuleAnalysed;
 
     // Verify that the Rule File exists
     if (Exists()==false)
-        return itsErrorHandler->SetErrorD(5001,WARNING,itsFileInfo->name);
+        return itsErrorHandler->SetErrorD(5001, WARNING, itsFileInfo.str());
 
     // Open the Rule file in Reading mode
     itsMode = FILE_READ;
@@ -102,9 +101,7 @@ int TRuleFile::OpenRuleFile()
     IsRuleAnalysed = false;
     while (!NextLine(&RuleLine,&IncludedFileSpec,&Line)) // Read a Line from the Rule File
     {
-        Illustration.allocstr(strlen(IncludedFileSpec.name) + strlen(RuleLine.str()) + 100);
-        sprintf(Illustration.str(),"in file '%s' at line %d :\n%s",IncludedFileSpec.name,Line,RuleLine.str());
-        if (IsRuleAnalysed && strchr(RuleLine.str(),'|'))
+        if (IsRuleAnalysed && strchr(RuleLine.str(), '|'))
         {
             // This is a new rule to process
             if (itsLastInputCD) { delete itsLastInputCD;    itsLastInputCD  = NULL; }
@@ -115,7 +112,12 @@ int TRuleFile::OpenRuleFile()
                 itsLastOutputCD = new TCD(CurrentRule->GetOutputCD());
             CurrentRule->SetNextRule(new TRule(itsLastInputCD,itsLastOutputCD,itsErrorHandler)); // Memory loading passed
             if (!CurrentRule->GetNextRule())
+            {
+                typestr Illustration;
+                Illustration.allocstr(strlen(IncludedFileSpec.str()) + strlen(RuleLine.str()) + 100);
+                sprintf(Illustration.str(), "in file '%s' at line %d :\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
                 return  itsErrorHandler->SetErrorD(5501,ERROR,Illustration.str());
+            }
             CurrentRule->GetNextRule()->SetPreviousRule(CurrentRule);
             CurrentRule = CurrentRule->GetNextRule();
         }
@@ -123,6 +125,9 @@ int TRuleFile::OpenRuleFile()
         if ((Result=CurrentRule->FromString(RuleLine.str(), Line))<0) // Load Input and Output CDs in CDs
             // Error on rule
         {
+            typestr Illustration;
+            Illustration.allocstr(strlen(IncludedFileSpec.str()) + strlen(RuleLine.str()) + 100);
+            sprintf(Illustration.str(), "in file '%s' at line %d :\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
             itsErrorHandler->SetErrorD(-Result,ERROR,Illustration.str());
             // Delete the erroneous rule
             // No we don't. We should unwind the rule from the list too...
@@ -314,35 +319,34 @@ void TRuleFile::DelTreeCodedData(void)
 ///////////////////////////////////////////////////////////////////////////////
 TCodedData  *TRuleFile::GetCodedData(char *theName)
 {
-    FILE_SPEC       CodedDataSpec;
-    FILE_SPEC       *testspec;
+    typestr         CodedDataSpec;
+    typestr         testspec;
     TCodedData      *aCodedData,
                     *anOldCodedData;
 
     itsErrorHandler->Reset();
     testspec = ((TRuleDoc *) itsApplication->itsRuleDoc)->GetRuleSpec();
-    memcpy(&CodedDataSpec,testspec,sizeof(FILE_SPEC));
 
     if (strchr(theName, SLASH))
-        *CodedDataSpec.name = '\0';
+        CodedDataSpec.freestr();
     else
-        copy_path_from_filename(CodedDataSpec.name, testspec->name);
-    append_filename(CodedDataSpec.name, theName);
+        copy_path_from_filename(CodedDataSpec, testspec.str());
+    append_filename(CodedDataSpec, theName);
 
     if (!strchr(theName,'.'))
-        append_filename(CodedDataSpec.name, ".tbl");
+        append_filename(CodedDataSpec, ".tbl");
 
     anOldCodedData=itsFirstCodedData;
     while(anOldCodedData)
     {
-        if (!memcmp(anOldCodedData->GetCodedDataName(),&CodedDataSpec,sizeof(FILE_SPEC)))
+        if (anOldCodedData->GetCodedDataName() == CodedDataSpec)
             // the coded data table was found
             return anOldCodedData;
         anOldCodedData = anOldCodedData->GetNextCodedData();
     }
     // this coded data table doesn't exist
 
-    aCodedData=new TCodedData(&CodedDataSpec, itsErrorHandler);
+    aCodedData = new TCodedData(CodedDataSpec, itsErrorHandler);
     anOldCodedData = itsLastCodedData;
 
     if (aCodedData)

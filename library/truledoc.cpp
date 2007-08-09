@@ -28,7 +28,6 @@ TRuleDoc::TRuleDoc(TUMApplication *Application)
 {
     itsFile         = NULL;
     itsRuleSpec     = NULL;
-    itsXVTFilePointer  = NULL;
     itsApplication  = Application;
     itsErrorHandler = Application->GetErrorHandler();
 }
@@ -43,10 +42,6 @@ TRuleDoc::TRuleDoc(TUMApplication *Application)
 TRuleDoc::~TRuleDoc( void )
 {
     if (itsFile)            { delete itsFile;           itsFile             = NULL; }
-
-    // John Hough - added delete
-    if (itsXVTFilePointer)
-        delete itsXVTFilePointer;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,7 +56,7 @@ bool TRuleDoc::Open(void)
 {
     // Add code here to set internal data members of the class based
     // on information read from some data source
-    if ((itsFile=new TRuleFile(itsXVTFilePointer, itsApplication))==NULL)
+    if ((itsFile=new TRuleFile(itsFilePointer, itsApplication))==NULL)
     {
         itsErrorHandler->SetError(9001,ERROR);
         return false;
@@ -85,18 +80,15 @@ bool TRuleDoc::Open(void)
 ///////////////////////////////////////////////////////////////////////////////
 bool TRuleDoc::OpenRuleFile(char *DefaultFile)
 {
-    if (!itsXVTFilePointer)
-        itsXVTFilePointer = new FILE_SPEC;
-    memset(itsXVTFilePointer,0,sizeof(FILE_SPEC));
-
+    itsFilePointer = "";
     if (DefaultFile)
     {
-        strcpy(itsXVTFilePointer->name,DefaultFile);
+        itsFilePointer = DefaultFile;
     }
 
     if (Open()) // Open the selected Rule file
     {
-        itsRuleSpec = itsXVTFilePointer;
+        itsRuleSpec = itsFilePointer;
         return true;
     }
     return false;

@@ -31,16 +31,16 @@ AUTHOR
 class TCodedData : public TTransFile
 {
 public:
-    TCodedData          (FILE_SPEC *FileSpec, TError *ErrorHandler);
+    TCodedData          (typestr & FileSpec, TError *ErrorHandler);
     ~TCodedData         (void);
     
-    virtual FILE_SPEC     *GetCodedDataName   (void) { return itsCodedDataName; };
+    virtual typestr       GetCodedDataName   (void) { return itsCodedDataName; };
     virtual TCodedData    *GetNextCodedData   (void) { return itsNextCodedData; };
     
     virtual void          SetNextCodedData    (TCodedData *theData) { itsNextCodedData=theData; };
     
 protected:
-    FILE_SPEC             *itsCodedDataName;
+    typestr               itsCodedDataName;
     TCodedData            *itsNextCodedData;
 };
 #endif
