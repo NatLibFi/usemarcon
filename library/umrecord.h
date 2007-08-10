@@ -28,7 +28,6 @@ AUTHOR
 
 #include "tmarcrec.h"
 #include "tcdlib.h"
-#include "rulefile.h"
 
 // forward declaration
 class TRuleFile;

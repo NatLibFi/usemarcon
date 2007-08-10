@@ -14,6 +14,7 @@
 
 #include "umrecord.h"
 #include "error.h"
+#include "rulefile.h"
 
 #define SIZE_SS_CHAMP       5000
 #define SIZE_CHAMP          10*SIZE_SS_CHAMP

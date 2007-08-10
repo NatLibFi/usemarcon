@@ -22,8 +22,9 @@
 #include "umrecord.h"
 #include "trule.h"
 #include "codedata.h"
-#include "truledoc.h"
 #include "lien_not.h"
+#include "truledoc.h"
+#include "tools.h"
 
 #define C_NEW -20;
 
@@ -791,11 +792,8 @@ bool TEvaluateRule::CompareOccurrence(TypeInst* aCondition, int aOccurrence)
 
 typestr TEvaluateRule::Table( char* Nom, char* str )
 {
-    TRuleFile       *aRuleFile;
-    TCodedData  *aCodedData;
-
-    aRuleFile=RuleDoc->GetFile();
-    aCodedData=aRuleFile->GetCodedData(Nom);
+    TRuleFile *aRuleFile=RuleDoc->GetFile();
+    TCodedData *aCodedData=aRuleFile->GetCodedData(Nom);
     if (!aCodedData)
     {
         // ERROR

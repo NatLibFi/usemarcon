@@ -32,6 +32,7 @@ AUTHOR
 #include "tagnoind.h"
 #include "defines.h"
 #include "ttrnsdoc.h"
+#include "tmpplctn.h"
 
 #define STATUS_OK               1
 #define LAST_PADDED             1

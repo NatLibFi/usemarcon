@@ -27,7 +27,6 @@ AUTHOR
 #ifndef TTransDoc_H
 #define TTransDoc_H
 
-#include "tmpplctn.h"
 #include "trnsfile.h"
 #include "error.h"
 

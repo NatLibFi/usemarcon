@@ -33,15 +33,10 @@ AUTHOR
 #define _TEVALUATERULE_FILE_H_
 
 #include <ctype.h>
-#include "tfile.h"
-#include "ctrlfld.h"
-#include "umrecord.h"
-#include "tmpplctn.h"
-#include "ytab.h"
 #include "typedef.h"
 #include "FlexLexer.h"
 #include "mempool.h"
-#include "tools.h"
+//#include "tools.h"
 #include "regexp.h"
 
 // forward declarations

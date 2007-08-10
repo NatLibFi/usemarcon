@@ -17,8 +17,6 @@
 #include "tmpplctn.h"
 #include "usemarconlib.h"
 
-
-
 Usemarcon::Usemarcon() : m_record(NULL), m_length(0), m_iniFileName(NULL),
     m_inputMarcFileName(NULL), m_outputMarcFileName(NULL),
     m_initialized(false), m_interactive(false), m_force_verbose(false), 
@@ -26,7 +24,7 @@ Usemarcon::Usemarcon() : m_record(NULL), m_length(0), m_iniFileName(NULL),
 {
     m_lastErrorMessage[0] = '\0';
 
-    m_application = new TUMApplication();
+//    m_application = new TUMApplication();
 }
 
 Usemarcon::~Usemarcon()
@@ -42,7 +40,7 @@ Usemarcon::~Usemarcon()
     if (m_outputMarcFileName)
         free(m_outputMarcFileName);
 
-    delete m_application;
+//    delete m_application;
 }
 
 void Usemarcon::SetInteractive(bool a_value)
@@ -104,10 +102,9 @@ int Usemarcon::Convert()
 {
     int res = 0;
 
-    TUMApplication *application = reinterpret_cast<TUMApplication*>(m_application);
     if (!m_initialized)
     {
-        res = application->StartUp(m_iniFileName, m_interactive,
+        res = m_application.StartUp(m_iniFileName, m_interactive,
             m_record, m_length, m_force_verbose, m_inputMarcFileName,
             m_outputMarcFileName, m_disable_character_conversion);
         if (!res)
@@ -115,17 +112,17 @@ int Usemarcon::Convert()
     }
     if (!res)
     {
-        res = application->Convert();
+        res = m_application.Convert();
         if (m_length)
         {
             free(m_record);
-            application->GetMarcRecord(m_record, m_length);
+            m_application.GetMarcRecord(m_record, m_length);
         }
-        application->End();
+        m_application.End();
     }
 
-    if (application->GetErrorHandler())
-        SetLastErrorMessage(application->GetErrorHandler()->GetLastErrorMessage());
+    if (m_application.GetErrorHandler())
+        SetLastErrorMessage(m_application.GetErrorHandler()->GetLastErrorMessage());
 
     if (m_interactive)
     {

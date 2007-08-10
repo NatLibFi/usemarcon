@@ -13,7 +13,6 @@
  */
 
 #include <memory.h>
-#include "trnsfile.h"
 #include "error.h"
 #include "codedata.h"
 
