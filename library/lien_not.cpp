@@ -25,6 +25,7 @@
 #include "lien_not.h"
 #include "truledoc.h"
 #include "tools.h"
+#include "rulefile.h"
 
 #define C_NEW -20;
 

@@ -27,8 +27,6 @@ AUTHOR
 #ifndef _TCD_H_
 #define _TCD_H_
 
-#include <stdio.h>
-#include <string.h>
 #include "typedef.h"
 #include "defines.h"
 #include "error.h"

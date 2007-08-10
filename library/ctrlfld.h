@@ -27,8 +27,6 @@ AUTHOR
 #ifndef _TCONTROLFIELD_H_
 #define _TCONTROLFIELD_H_
 
-#include <stdio.h>
-#include <string.h>
 #include "error.h"
 #include "typedef.h"
 

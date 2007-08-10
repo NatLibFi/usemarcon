@@ -26,7 +26,6 @@ AUTHOR
 
 #ifndef TRuleDoc_H
 #define TRuleDoc_H
-#include "rulefile.h"
 
 // forward declaration
 class TRuleFile;

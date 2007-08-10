@@ -28,7 +28,7 @@ AUTHOR
 
 #include "defines.h"
 #include "tfile.h"
-#include "trule.h"
+//#include "trule.h"
 #include "codedata.h"
 #include "tmpplctn.h"
 #include "lien_not.h"

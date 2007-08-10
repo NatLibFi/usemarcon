@@ -12,8 +12,8 @@
  *
  */
 
-#include <ctype.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "mrcfield.h"
 #include "error.h"

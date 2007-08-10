@@ -32,11 +32,9 @@ AUTHOR
 #ifndef _TEVALUATERULE_FILE_H_
 #define _TEVALUATERULE_FILE_H_
 
-#include <ctype.h>
 #include "typedef.h"
 #include "FlexLexer.h"
 #include "mempool.h"
-//#include "tools.h"
 #include "regexp.h"
 
 // forward declarations
@@ -45,6 +43,8 @@ class TRuleDoc;
 class TUMRecord;
 class TRule;
 class TEvaluateRule;
+class TCD;
+class TCDLib;
 
 class TMarcScannerImpl : public yyFlexLexer
 {

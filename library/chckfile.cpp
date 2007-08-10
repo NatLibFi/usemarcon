@@ -14,8 +14,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-
-
+#include <ctype.h>
 #include "error.h"
 #include "tools.h"
 #include "chckfile.h"

@@ -27,7 +27,6 @@ AUTHOR
 #ifndef _TagNoInd_H_
 #define _TagNoInd_H_ 
                  
-#include <stdio.h>
 #include <string.h>                 
 
 class TTagNoInd

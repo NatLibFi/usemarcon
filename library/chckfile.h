@@ -30,7 +30,6 @@ AUTHOR
 #include "tfile.h"
 #include "ctrlfld.h"
 #include "umrecord.h"
-#include "tmpplctn.h"
 
 class TCheckFile : public TFile
 {

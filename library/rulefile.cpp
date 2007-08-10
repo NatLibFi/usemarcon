@@ -12,6 +12,7 @@
  *
  */
 
+#include "trule.h"
 #include "rulefile.h"
 #include "error.h"
 #include "tools.h"
