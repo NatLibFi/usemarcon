@@ -26,12 +26,10 @@ AUTHOR
 #ifndef usemarconlib_h
 #define usemarconlib_h
 
-class TUMApplication;
-
 class Usemarcon 
 {
 private:
-    TUMApplication m_application;
+    void *m_application;
     bool m_interactive;
     char *m_record;
     int m_length;
