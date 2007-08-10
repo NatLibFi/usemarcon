@@ -3,4 +3,4 @@ libusemarcon_la_SOURCES = chckfile.h error.h tcd.h tmarcrec.h trule.h codedata.h
 
 INCLUDE = -I@top_srcdir@/
 
-include_HEADERS = usemarconlib.h 
+include_HEADERS = chckfile.h error.h tcd.h tmarcrec.h trule.h codedata.h rulefile.h tcdlib.h tmpplctn.h ttrnsdoc.h ctrlfld.h lien_not.h semi.h tchckdoc.h tools.h typedef.h defines.h marcfile.h sort.h tfile.h trnsfile.h umrecord.h errcodes.h mrcfield.h tagnoind.h tmarcdoc.h truledoc.h ytab.h regexp.h FlexLexer.h usemarconlib.h 
