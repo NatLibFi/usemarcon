@@ -44,6 +44,7 @@ private:
         c->ns = 0;
         c->nt = 0;
         *c->SubField = '\0';
+        c->Output = false;
     }
 
     int typeinstsaves;
