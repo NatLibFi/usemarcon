@@ -1,4 +1,32 @@
-USEMARCON Change Log
+**************************
+**************************
+version 2.10
+
+August 14 2007
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Cleaned up the interface ("API") to USEMARCON.
+- Cleaned up file name string handling.
+- Cleaned up header file dependencies.
+
+**************************
+**************************
+version 2.01
+
+August 14 2007
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed initialization of CD's to reset output flag. Fixes spurious 
+  errors when trying to access input record.
+- Improved rule debug mode output and made all output go to console.
 
 **************************
 **************************
