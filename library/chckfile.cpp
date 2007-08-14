@@ -422,7 +422,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             typestr tmp = "Notice: field '";
             tmp += CurrentControl->GetTag();
             tmp += "'";
-            itsErrorHandler->SetErrorD(IO==INPUT ? 2106 : 7106,WARNING,tmp.str());
+            itsErrorHandler->SetErrorD(IO==INPUT ? 2106 : 7106, WARNING, tmp.str());
         }
         CurrentControl->SetTagOccurrency(0);
         CurrentControl=CurrentControl->GetNextTag();

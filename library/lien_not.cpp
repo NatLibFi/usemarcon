@@ -248,6 +248,12 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         }
         if (!rule_set)
         {
+            if (debug_rule)
+            {
+                typestr tmp;
+                Rule->ToString(tmp);
+                printf("\nDebug: Processing rule: '%s'\n", tmp.str());
+            }
             itsScanner.SetRule(Rule);
             rule_set = true;
         }
@@ -279,6 +285,11 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
         inCD.ReplaceWildcards(aCDLIn->GetTag(), aCDLIn->GetSubfield());
         S->str = aCDLIn->GetContent(&inCD);
         InputCDL=aCDLIn;
+
+        if (debug_rule)
+        {
+            printf("Debug: Input field: %s o:%d t-o:%d: '%s'\n", aCDLIn->GetTag(), aCDLIn->GetOccurrenceNumber(), aCDLIn->GetTagOccurrenceNumber(), S->str.str());
+        }
 
         // Initialisation des parametres du CDIn
         strcpy(CDIn->Field, aCDLIn->GetTag());
@@ -501,6 +512,11 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 }
             }
 
+            if (debug_rule && !D->str.is_empty())
+            {
+                printf("Debug: Existing output field: '%s'\n", D->str.str());
+            }
+
             aCDOut->SetTagOccurrenceNumber(NTO->val);
             aCDOut->SetSubOccurrenceNumber(NSO->val);
 
@@ -540,6 +556,15 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 aCDLOut.SetContent(ToString(S));
 
                 Out->InsereCDLib(&aCDLOut,aCDOut,concr);
+
+                if (debug_rule)
+                {
+                    if (In == Out)
+                        printf("Debug: Setting input field: ");
+                    else
+                        printf("Debug: Setting output field: ");
+                    printf("%s o:%d t-o:%d: '%s'\n", aCDOut->GetTag(), aCDOut->GetOccurrenceNumber(), aCDOut->GetTagOccurrenceNumber(), S->str.str());
+                }
             }
             if (T)
             {
@@ -891,11 +916,8 @@ void TEvaluateRule::FreeCD( TypeCD* CD )
 
 void TEvaluateRule::PrintDebug(const char *s)
 {
-    FILE *fdebug;
-    if (!debug_rule) return;
-    fdebug=fopen("Usemarco.dbg","a");
-    fprintf(fdebug,"%s\n",s);
-    fclose(fdebug);
+    if (debug_rule)
+        printf("Debug:   %s\n", s);
 };
 
 
@@ -1296,7 +1318,8 @@ int TEvaluateRule::BoolEQ( TypeInst* t1, TypeInst* t2 )
     else rc=!strcmp(ToString(t1),ToString(t2));
     if (rc) rc=TRUE;
     else    rc=FALSE;
-    if (debug_rule) printf("%s = %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
+    if (debug_rule) 
+        printf("Debug:    %s = %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
@@ -1313,7 +1336,8 @@ int TEvaluateRule::BoolIn( TypeInst* t1, TypeInst* t2 )
 
     if (strstr(ToString(t2),ToString(t1))) rc=TRUE;
     else                       rc=FALSE;
-    if (debug_rule) printf("%s IN %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
+    if (debug_rule) 
+        printf("Debug:    %s IN %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
@@ -1332,7 +1356,8 @@ int TEvaluateRule::BoolGT( TypeInst* t1, TypeInst* t2 )
     else rc=strcmp(ToString(t1),ToString(t2));
     if (rc>0) rc=TRUE;
     else    rc=FALSE;
-    if (debug_rule) printf("%s > %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
+    if (debug_rule) 
+        printf("Debug:    %s > %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
@@ -1351,7 +1376,8 @@ int TEvaluateRule::BoolGE( TypeInst* t1, TypeInst* t2 )
     else rc=strcmp(ToString(t1),ToString(t2));
     if (rc>=0) rc=TRUE;
     else    rc=FALSE;
-    if (debug_rule) printf("%s >= %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
+    if (debug_rule) 
+        printf("Debug:    %s >= %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;

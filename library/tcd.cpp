@@ -392,77 +392,69 @@ bool TCD::ToString(typestr & a_string, int InputOrOutput)
     a_string += GetTag();
 
     // [(n1)]
-    if (InputOrOutput == OUTPUT)
+    Occurrence = GetTagOccurrenceNumber();
+    switch(Occurrence)
     {
-        Occurrence = GetTagOccurrenceNumber();
-        switch(Occurrence)
-        {
-        case CD_N  : strcpy(szOccTag,"(n)");                break;
-        case CD_NS : strcpy(szOccTag,"(ns)");               break;
-        case CD_NTO: strcpy(szOccTag,"(nto)");              break;
-        case CD_NO : strcpy(szOccTag,"(no)");               break;
-        case CD_NT : bIsOccTagNT=true;
-        case 1     :
-        case 0     : strcpy(szOccTag,"");                   break;
-        default    : sprintf(szOccTag,"(%d)",Occurrence);   break;
-        }
+    case CD_N  : strcpy(szOccTag,"(n)");                break;
+    case CD_NS : strcpy(szOccTag,"(ns)");               break;
+    case CD_NTO: strcpy(szOccTag,"(nto)");              break;
+    case CD_NO : strcpy(szOccTag,"(no)");               break;
+    case CD_NEW: strcpy(szOccTag,"(new)");              break;
+    case CD_NT : bIsOccTagNT=true;
+    case 1     :
+    case 0     : strcpy(szOccTag,"");                   break;
+    default    : sprintf(szOccTag,"(%d)",Occurrence);   break;
     }
 
     char *subfield = GetSubfield();
     if (*subfield)
     {
-        if (InputOrOutput==INPUT)
+        // [(n2)]
+        Occurrence=GetSubOccurrenceNumber();
+        switch(Occurrence)
+        {
+        case CD_N  : strcpy(szOccSub,"(n)");            break;
+        case CD_NT : strcpy(szOccSub,"(nt)");           break;
+        case CD_NSO: strcpy(szOccSub,"(nso)");          break;
+        case CD_NO : strcpy(szOccSub,"(no)");           break;
+        case CD_NEW: strcpy(szOccSub,"(new)");          break;
+        case CD_NS : bIsOccSubNS=true;
+        case 1     :
+        case 0     : strcpy(szOccSub,"");               break;
+        default    : sprintf(szOccSub,"(%d)",Occurrence); break;
+        }
+
+        if (bIsOccTagNT && bIsOccSubNS)
+            // OccTag et OccSub sont les valeurs par d‰faut
+            // ==> pas d'affichage de ces occurences
         {
             a_string += subfield;
         }
+        else if (bIsOccTagNT && !bIsOccSubNS)
+        {
+            // OccTag est la valeur par d‰faut mais pas OccSub
+            // ==> Affichage de OccTag avec '(nt)' et de OccSub ( sauf si OccSub est € 1 )
+            a_string += "(nt)";
+            a_string += subfield;
+            if (*szOccSub != '1')
+                a_string += szOccSub;
+        }
+        else if (!bIsOccTagNT && bIsOccSubNS)
+        {
+            // OccSub est la valeur par d‰faut mais pas OccTag
+            // ==> Affichage de OccTag ( sauf si OccTag est € 1 ) et de OccSub avec '(ns)'
+            if (*szOccTag != '1')
+                a_string += szOccTag;
+            a_string += subfield;
+            a_string += "(ns)";
+        }
         else
         {
-            // [(n2)]
-            Occurrence=GetSubOccurrenceNumber();
-            switch(Occurrence)
-            {
-            case CD_N  : strcpy(szOccSub,"(n)");            break;
-            case CD_NT : strcpy(szOccSub,"(nt)");           break;
-            case CD_NSO: strcpy(szOccSub,"(nso)");          break;
-            case CD_NO : strcpy(szOccSub,"(no)");           break;
-            case CD_NS : bIsOccSubNS=true;
-            case 1     :
-            case 0     : strcpy(szOccSub,"");               break;
-            default    : sprintf(szOccSub,"(%d)",Occurrence); break;
-            }
-
-            if (bIsOccTagNT && bIsOccSubNS)
-                // OccTag et OccSub sont les valeurs par d‰faut
-                // ==> pas d'affichage de ces occurences
-            {
-                a_string += subfield;
-            }
-            else if (bIsOccTagNT && !bIsOccSubNS)
-            {
-                // OccTag est la valeur par d‰faut mais pas OccSub
-                // ==> Affichage de OccTag avec '(nt)' et de OccSub ( sauf si OccSub est € 1 )
-                a_string += "(nt)";
-                a_string += subfield;
-                if (*szOccSub != '1')
-                    a_string += szOccSub;
-            }
-            else if (!bIsOccTagNT && bIsOccSubNS)
-            {
-                // OccSub est la valeur par d‰faut mais pas OccTag
-                // ==> Affichage de OccTag ( sauf si OccTag est € 1 ) et de OccSub avec '(ns)'
-                if (*szOccTag != '1')
-                    a_string += szOccTag;
-                a_string += subfield;
-                a_string += "(ns)";
-            }
-            else
-            {
-                // OccTag et OccSub ne sont pas les valeurs par d‰faut
-                // ==> Affichage de OccTag et de OccSub
-                a_string += szOccTag;
-                a_string += subfield;
-                a_string += szOccSub;
-            }
+            // OccTag et OccSub ne sont pas les valeurs par d‰faut
+            // ==> Affichage de OccTag et de OccSub
+            a_string += szOccTag;
+            a_string += subfield;
+            a_string += szOccSub;
         }
     }
 
@@ -482,7 +474,7 @@ bool TCD::ToString(typestr & a_string, int InputOrOutput)
         a_string += '/';
     }
 
-    return 0;
+    return true;
 }
 
 void TCD::ReplaceWildcards(const char *field, const char *subfield)
