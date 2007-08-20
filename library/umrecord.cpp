@@ -16,9 +16,6 @@
 #include "error.h"
 #include "rulefile.h"
 
-#define SIZE_SS_CHAMP       5000
-#define SIZE_CHAMP          10*SIZE_SS_CHAMP
-
 #define NO_SUBFIELD         ""
 #define LABEL               "**"
 #define ALREADY_DONE        "--"
@@ -720,7 +717,7 @@ void TUMRecord::PrintCD()
         printf("%-3s(%d)%-2s[%d]\t{%d}\t<%s>\n",
             Courant->GetTag(), Courant->GetTagOccurrenceNumber(),
             Courant->GetSubfield(), Courant->GetSubOccurrenceNumber(),
-            Courant->GetOccurrenceNumber(), Courant->GetContent());
+            Courant->GetOccurrenceNumber(), Courant->GetContent().str());
         Courant=(TCDLib*)Courant->GetNext();
     }
 }
