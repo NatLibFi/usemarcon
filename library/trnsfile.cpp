@@ -320,16 +320,6 @@ bool TTransFile::Exists(char* In)
         char *r  = (char *)cherche((unsigned char*)c,&iaux);
         if((iaux == 0) || (r == NULL))
         {
-            if (itsDefaultCopy)
-            {
-                ++c;
-                continue;
-            }
-            else if (itsDefaultValueValid)
-            {
-                ++c;
-                continue;
-            }
             return false;
         }
         else
