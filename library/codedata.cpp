@@ -36,11 +36,3 @@ TCodedData::TCodedData(typestr & FileSpec, TError *ErrorHandler)
 TCodedData::~TCodedData()
 {
 }
-
-
-
-
-
-
-
-
