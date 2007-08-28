@@ -44,9 +44,9 @@ public:
     virtual int       PartialSort     (TCDLib *aFirst);
     virtual int       FromCD          (TRuleFile *RuleFile);
     virtual int       ToCD            (void);
-    virtual int       NextCD          (TCDLib **CDLib, TCD *CD);
-    virtual int       PreviousCD      (TCDLib **CDLib, TCD *CD);
-    virtual int       InsereCDLib     (TCDLib *aCDLib, TCD *CD=NULL, int Replace=0);
+    virtual bool      NextCD          (TCDLib **CDLib, TCD *CD);
+    virtual bool      PreviousCD      (TCDLib **CDLib, TCD *CD);
+    virtual TCDLib    *InsertCDLib    (TCDLib *aCDLib, TCD *CD=NULL, bool aReplace = false);
     virtual TCDLib    *GetFirstCDLib (void) const           { return itsFirstCDLib; };
     virtual TCDLib    *GetLastCDLib  (void) const           { return itsLastCDLib; };
     virtual void      PrintCD(void);
@@ -55,6 +55,9 @@ public:
 protected:
     TCDLib            *itsFirstCDLib;
     TCDLib            *itsLastCDLib;
+
+    void GetOccurrenceNumbersForNew(const char *a_tag, int a_tag_occurrence, const char *a_subfield, 
+                                    int &a_occurrence, int &a_sub_occurrence);
 
 private:
     char              *itsSearchedField;
