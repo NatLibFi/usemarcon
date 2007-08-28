@@ -188,10 +188,6 @@ Instruction :
                                   Copie(&$$,S);
                                   RedoFlag=true;
                                   Copie(&T,S);
-/*                                ++NO->val;
-                                  if (NTO->val>=0) ++NTO->val;
-                                  else
-                                  if (NSO->val>=0) ++NSO->val;*/
                                 }
 ;
 
