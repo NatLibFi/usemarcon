@@ -97,7 +97,7 @@ char* typestr::str(const char *str, unsigned long maxlen /*= 0*/)
 char *typestr::append(const char *a_str, unsigned long a_len /*= 0*/)
 {
     if (!m_str) 
-        return str(a_str);
+        return str(a_str, a_len);
     unsigned long existing_len = strlen(m_str);
     unsigned long append_len = a_len == 0 ? strlen(a_str) : a_len;
 
