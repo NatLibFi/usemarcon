@@ -50,7 +50,7 @@ public:
 
     int       Read                    (TUMRecord *Record);
     int       Write                   (TUMRecord *Record);
-
+    
     void      SetMarcInfoFormat       (MARC_FILE_FORMAT theFormat) { itsMarcInfo.Format=theFormat; };
     void      SetMarcInfoBlockSize    (short theBlockSize)    { itsMarcInfo.BlockSize=theBlockSize; };
     void      SetMarcInfoMinDataFree  (short theMinDataFree)  { itsMarcInfo.MinDataFree=theMinDataFree; };
