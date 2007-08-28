@@ -533,3 +533,7 @@ int TMarcDoc::Write(void)
   return itsOutputFile->Write(itsOutputRecord); 
 }
 
+int TMarcDoc::ProcessDuplicateFields()
+{
+  return itsOutputRecord->ProcessDuplicateFields(m_duplicateSubfields, m_duplicateFields);
+}

@@ -59,6 +59,7 @@ public:
     void          SetFirstOutputTNI   (TTagNoInd *aTNI)   { itsFirstOutputTNI=aTNI; };
     void          SetIndSeparatorsID  (int IO,long ID);
     long          GetIndSeparatorsID  (int IO) const;
+    int           ProcessDuplicateFields(DUPLICATE_PROCESSING_MODE a_subfields, DUPLICATE_PROCESSING_MODE a_fields);
 
 private:
     int                   Val                 (char *buffer, unsigned long *valeur);

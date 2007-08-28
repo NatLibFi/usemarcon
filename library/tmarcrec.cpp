@@ -16,6 +16,7 @@
 #include "tmarcrec.h"
 #include "error.h"
 #include "tmpplctn.h"
+#include "tools.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -851,3 +852,169 @@ void TMarcRecord::SetIndSeparatorsID(int IO, long ID)
     }
 }
 
+int TMarcRecord::ProcessDuplicateFields(DUPLICATE_PROCESSING_MODE a_subfields, DUPLICATE_PROCESSING_MODE a_fields)
+{
+    if (a_subfields == DP_LEAVE && a_fields == DP_LEAVE)
+        return 0;
+
+    if (a_subfields != DP_LEAVE)
+    {
+        TMarcField *field = itsFirstField;
+        while (field)
+        {
+            typestr marcdata = field->GetLib();
+
+            char *p = strchr(marcdata.str(), START_OF_FIELD);
+            while (p)
+            {
+                // Extract a subfield
+                char *end = strchr(p + 1, START_OF_FIELD);
+                if (!end)
+                    break; // Last subfield, there can be no more matches
+                
+                typestr subfield;
+                subfield.str(p, end - p);
+
+                // Iterate the rest of subfields
+                char *comp_p = end;
+                while (comp_p)
+                {
+                    char *comp_end = strchr(comp_p + 1, START_OF_FIELD);
+
+                    if (comp_p[1] == subfield.str()[1])
+                    {
+                        typestr comp_subfield;
+                        comp_subfield.str(comp_p, comp_end ? comp_end - comp_p : 0);
+
+                        // compare the subfields according to the rules
+                        int duplicate_subfield = 0;
+                        if (a_subfields == DP_DELETE)
+                        {
+                            if (strcmp(subfield.str(), comp_subfield.str()) == 0) 
+                                duplicate_subfield = 2;
+                        }
+                        else if (a_subfields == DP_DELETE_IGNORE_CASE || a_subfields == DP_DELETE_SMART)
+                        {
+                            if (utf8_stricmp(subfield.str() + 2, comp_subfield.str() + 2) == 0)
+                            {
+                                if (a_subfields == DP_DELETE_SMART)
+                                {
+                                    int caps1 = caps_count(subfield.str());
+                                    int caps2 = caps_count(comp_subfield.str());
+                                    if (caps1 <= caps2) 
+                                        duplicate_subfield = 2;
+                                    else
+                                        duplicate_subfield = 1;
+                                }
+                                else
+                                {
+                                    duplicate_subfield = 2;
+                                }
+                            }
+                        }
+                        if (duplicate_subfield == 1)
+                        {
+                            strcpy(p, end);
+                            field->SetLib(marcdata.str());
+                            end = p - 1;
+                            break;
+                        }
+                        else if (duplicate_subfield == 2)
+                        {
+                            if (comp_end)
+                                strcpy(comp_p, comp_end);
+                            else
+                                *comp_p = '\0';
+                            field->SetLib(marcdata.str());
+                            comp_end = comp_p - 1;
+                        }
+                    }
+
+                    if (!comp_end)
+                        break;
+                    comp_p = strchr(comp_end + 1, START_OF_FIELD);
+                }
+                
+                p = strchr(end + 1, START_OF_FIELD);
+            }
+
+            field = field->GetNextField();
+        }
+    }
+
+    if (a_fields == DP_LEAVE)
+        return 0;
+
+    TMarcField *field = itsFirstField;
+    TMarcField *prev_field = NULL;
+    while (field)
+    {
+        TMarcField *comp_prev_field = field;
+        TMarcField *comp_field = field->GetNextField();
+        while (comp_field && strcmp(comp_field->GetTag(), field->GetTag()) == 0)
+        {
+            if (strcmp(comp_field->GetIndicators(), field->GetIndicators()) == 0)
+            {
+                int duplicate_field = 0;
+                if (a_fields == DP_DELETE)
+                {
+                    if (strcmp(field->GetLib(), comp_field->GetLib()) == 0) 
+                        duplicate_field = 2;
+                }
+                else if (a_fields == DP_DELETE_IGNORE_CASE || a_fields == DP_DELETE_SMART)
+                {
+                    if (utf8_stricmp(field->GetLib(), comp_field->GetLib()) == 0)
+                    {
+                        if (a_fields == DP_DELETE_SMART)
+                        {
+                            int caps1 = caps_count(field->GetLib());
+                            int caps2 = caps_count(comp_field->GetLib());
+                            if (caps1 <= caps2) 
+                                duplicate_field = 2;
+                            else
+                                duplicate_field = 1;
+                        }
+                        else
+                        {
+                            duplicate_field = 2;
+                        }
+                    }
+                }
+                if (duplicate_field == 1)
+                {
+                    if (prev_field)
+                        prev_field->SetNextField(field->GetNextField());
+                    else
+                    {
+                        itsFirstField = field->GetNextField();
+                        prev_field = itsFirstField;
+                    }
+                    delete field;
+                    field = NULL;
+                    break;
+                }
+                else if (duplicate_field == 2)
+                {
+                    comp_prev_field->SetNextField(comp_field->GetNextField());
+                    delete comp_field;
+                    comp_field = comp_prev_field;
+                }
+            }
+
+            comp_prev_field = comp_field;
+            comp_field = comp_field->GetNextField();
+        }
+
+        if (field)
+        {
+            prev_field = field;
+            field = field->GetNextField();
+        }
+        else
+        {
+            field = prev_field->GetNextField();
+        }
+    }
+
+    return 0;
+}

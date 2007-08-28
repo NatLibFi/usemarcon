@@ -55,6 +55,7 @@ public:
 
     virtual int     Convert              (TRuleDoc *aRuleDoc);
     virtual int     Transcode            (TTransDoc *aTransDoc);
+    virtual int     ProcessDuplicateFields();
     virtual int     LoadTagNoInd         (int IO,char *Path);
     virtual int     UnloadTagNoInd       (int IO);
 
@@ -110,6 +111,9 @@ public:
     virtual int           Read                    (void);
     virtual int           Write                   (void);
 
+    void SetDuplicateSubfields(DUPLICATE_PROCESSING_MODE a_val) { m_duplicateSubfields = a_val; }
+    void SetDuplicateFields(DUPLICATE_PROCESSING_MODE a_val) { m_duplicateFields = a_val; }
+
 private:
     typedef struct
     {
@@ -136,6 +140,8 @@ private:
     TTagNoInd                     *itsFirstOutputTagNoInd;
     MARCFILE itsMarcInputFile;
     MARCFILE itsMarcOutputFile;
+    DUPLICATE_PROCESSING_MODE     m_duplicateSubfields;
+    DUPLICATE_PROCESSING_MODE     m_duplicateFields;
 
     TUMApplication                *itsApplication;
     TError                        *itsErrorHandler;

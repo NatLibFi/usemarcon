@@ -165,10 +165,10 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         itsErrorHandler->SetVerboseMode(0);
     }
 
-    // Set the maximum number of errors to be encoutered before stop
-    get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncoutered","",inistr,itsIniFile.str());
+    // Set the maximum number of errors to be encountered before stop
+    get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncountered","",inistr,itsIniFile.str());
     if (!*inistr.str())
-        get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncountered","",inistr,itsIniFile.str());
+        get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncoutered","",inistr,itsIniFile.str());
     if (*inistr.str()) 
     {
         itsErrorHandler->SetTooManyErrors(atoi(inistr.str()));
@@ -478,6 +478,60 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         itsUpdateOrdinal = true;
     }
 
+    itsMarcDoc->SetDuplicateSubfields(DP_LEAVE);
+    get_ini_string("DEFAULT_VALUES", "DuplicateSubfields", "", inistr, itsIniFile.str());
+    if (!inistr.is_empty())
+    {
+        if (!strcasecmp(inistr.str(), "leave"))
+        {
+            // default, see above
+        }
+        else if (!strcasecmp(inistr.str(), "delete"))
+        {
+            itsMarcDoc->SetDuplicateSubfields(DP_DELETE);
+        }
+        else if (!strcasecmp(inistr.str(), "delete_ignore_case"))
+        {
+            itsMarcDoc->SetDuplicateSubfields(DP_DELETE_IGNORE_CASE);
+        }
+        else if (!strcasecmp(inistr.str(), "delete_smart"))
+        {
+            itsMarcDoc->SetDuplicateSubfields(DP_DELETE_SMART);
+        }
+        else
+        {
+            itsErrorHandler->WriteError("END non OK : Unknown duplicate subfield processing mode");
+            return -1;
+        }
+    }
+
+    itsMarcDoc->SetDuplicateFields(DP_LEAVE);
+    get_ini_string("DEFAULT_VALUES", "DuplicateFields", "", inistr, itsIniFile.str());
+    if (!inistr.is_empty())
+    {
+        if (!strcasecmp(inistr.str(), "leave"))
+        {
+            // default, see above
+        }
+        else if (!strcasecmp(inistr.str(), "delete"))
+        {
+            itsMarcDoc->SetDuplicateFields(DP_DELETE);
+        }
+        else if (!strcasecmp(inistr.str(), "delete_ignore_case"))
+        {
+            itsMarcDoc->SetDuplicateFields(DP_DELETE_IGNORE_CASE);
+        }
+        else if (!strcasecmp(inistr.str(), "delete_smart"))
+        {
+            itsMarcDoc->SetDuplicateFields(DP_DELETE_SMART);
+        }
+        else
+        {
+            itsErrorHandler->WriteError("END non OK : Unknown duplicate field processing mode");
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -517,8 +571,9 @@ int TUMApplication::Convert(void)
             break;
 
         ConvOk=true;
-        if (itsMarcDoc->Transcode(itsTransDoc)) ConvOk=false;
-        if (itsMarcDoc->Convert(itsRuleDoc)) ConvOk=false;
+        if (itsMarcDoc->Transcode(itsTransDoc)) ConvOk = false;
+        if (itsMarcDoc->Convert(itsRuleDoc)) ConvOk = false;
+        if (itsMarcDoc->ProcessDuplicateFields()) ConvOk = false;
         itsOrdinal++;
 
         // Mise a jour des compteurs
