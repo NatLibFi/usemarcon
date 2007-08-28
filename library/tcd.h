@@ -63,7 +63,7 @@ public:
 
     void  SetPrevious             (TCD *aCD)                  { itsPrevious=aCD; };
     void  SetNext                 (TCD *aCD)                  { itsNext=aCD; };
-    void  SetTag                  (char *aTagString)          { memcpy(itsTag, aTagString, 3); itsTag[3]=0; update_tag_wildcard(); };
+    void  SetTag                  (const char *aTagString)    { memcpy(itsTag, aTagString, 3); itsTag[3]=0; update_tag_wildcard(); };
     void  SetSubfield             (const char *aSubfield);
     void  SetOccurrenceNumber     (int anOccurrenceNumber)    { itsOccurrenceNumber=anOccurrenceNumber; };
     void  SetTagOccurrenceNumber  (int aTagOccurrenceNumber)  { itsTagOccurrenceNumber=aTagOccurrenceNumber; };
