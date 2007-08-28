@@ -208,9 +208,10 @@ bool TRule::ToString(typestr & a_string)
     a_string += tmp;
     a_string += " | ";
     
-    if (itsOutputCD->ToString(tmp, OUTPUT))
+    if (!itsOutputCD->ToString(tmp, OUTPUT))
         // Absence du Tag de sortie
         return false;
+    a_string += tmp;
     while(strlen(a_string.str()) < 30)
         a_string.append_char(' ');
 
