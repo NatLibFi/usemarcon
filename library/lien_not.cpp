@@ -213,15 +213,14 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
 // a une regle.
 //
 
-int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TCDLib* ProcessCDL /* = NULL */ )
+int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* RealOut, TRule* Rule, TCDLib* ProcessCDL /* = NULL */ )
 {
-    int rc,concr;
-
     // -------------------------------------------------
     // Renseignement des variables globales
-    InputRecord=In;
-    OutputRecord=Out;
-    CurrentRule=Rule;
+    InputRecord = In;
+    OutputRecord = Out;
+    RealOutputRecord = RealOut;
+    CurrentRule = Rule;
 
     bool rule_set = false;
 
@@ -288,7 +287,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
 
         if (debug_rule)
         {
-            printf("Debug: Input field: %s o:%d t-o:%d: '%s'\n", aCDLIn->GetTag(), aCDLIn->GetOccurrenceNumber(), aCDLIn->GetTagOccurrenceNumber(), S->str.str());
+            printf("Debug: Input field: %s%s o:%d t-o:%d s-o:%d: '%s'\n", aCDLIn->GetTag(), aCDLIn->GetSubfield() ? aCDLIn->GetSubfield() : "", 
+                aCDLIn->GetOccurrenceNumber(), aCDLIn->GetTagOccurrenceNumber(), aCDLIn->GetSubOccurrenceNumber(), S->str.str());
         }
 
         // Initialisation des parametres du CDIn
@@ -300,6 +300,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
 
         // -------------------------------------------------
         // Boucle d'evaluation de la regle
+        int rc;
         do
         {
             // On cree une copie du CDOut (on va peut-etre le modifier)
@@ -326,6 +327,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             D=AllocTypeInst();
 
             TCDLib* aCDLOut=Out->GetLastCDLib();
+
+            bool concatenation = false;
 
             // Find previous field from CDLib and initialize value of D from it
             // Note: This is fragile code. There are old conversions that rely on the quirks
@@ -367,11 +370,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
 
                 // If the rule does not contain + at the beginning, we need to check
                 // if NO, NTO or NSO should be incremented
-
                 if (!IsConcat(Rule->GetLib()))
                 {
-                    concr=0;
-
                     // Different cases:
                     // TTT(no)SS
                     if (aCDOut->GetTagOccurrenceNumber()==CD_NO)
@@ -386,61 +386,49 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
 
                         D->str.str("");
                     }
+                    else if (aCDOut->GetSubOccurrenceNumber()==CD_NO)  // TTTSS(no)
+                    {
+                        if (aCDOut->GetTagOccurrenceNumber()<=0)
+                        {
+                            typestr tmp;
+                            Rule->ToString(tmp);
+                            itsErrorHandler->SetErrorD(5102, ERROR, tmp.str());
+                        }
+                        NSO->val=++NO->val;
+                        D->str.str("");
+                    }
+                    else if (aCDOut->GetTagOccurrenceNumber()==CD_NTO) // TTT(nto)SS
+                    {
+                        if (aCDOut->GetSubOccurrenceNumber()<0)
+                        {
+                            typestr tmp;
+                            Rule->ToString(tmp);
+                            itsErrorHandler->SetErrorD(5103, ERROR, tmp.str());
+                        }
+                        ++NTO->val; ++NO->val;
+
+                        D->str.str("");
+                    }
+                    else if (aCDOut->GetSubOccurrenceNumber()==CD_NSO) // TTTSS(nso)
+                    {
+                        if (aCDOut->GetTagOccurrenceNumber()<=0)
+                        {
+                            typestr tmp;
+                            Rule->ToString(tmp);
+                            itsErrorHandler->SetErrorD(5104, ERROR, tmp.str());
+                        }
+                        ++NSO->val; ++NO->val;
+                        D->str.str("");
+                    }
                     else
                     {
-                        // TTTSS(no)
-                        if (aCDOut->GetSubOccurrenceNumber()==CD_NO)
-                        {
-                            if (aCDOut->GetTagOccurrenceNumber()<=0)
-                            {
-                                typestr tmp;
-                                Rule->ToString(tmp);
-                                itsErrorHandler->SetErrorD(5102, ERROR, tmp.str());
-                            }
-                            NSO->val=++NO->val;
-                            D->str.str("");
-                        }
-                        else
-                        {
-                            // TTT(nto)SS
-                            if (aCDOut->GetTagOccurrenceNumber()==CD_NTO)
-                            {
-                                if (aCDOut->GetSubOccurrenceNumber()<0)
-                                {
-                                    typestr tmp;
-                                    Rule->ToString(tmp);
-                                    itsErrorHandler->SetErrorD(5103, ERROR, tmp.str());
-                                }
-                                ++NTO->val; ++NO->val;
-
-                                D->str.str("");
-                            }
-                            else
-                            {
-                                // TTTSS(nso)
-                                if (aCDOut->GetSubOccurrenceNumber()==CD_NSO)
-                                {
-                                    if (aCDOut->GetTagOccurrenceNumber()<=0)
-                                    {
-                                        typestr tmp;
-                                        Rule->ToString(tmp);
-                                        itsErrorHandler->SetErrorD(5104, ERROR, tmp.str());
-                                    }
-                                    ++NSO->val; ++NO->val;
-                                    D->str.str("");
-                                }
-                                else
-                                {
-                                    concr=1;
-                                    D->str = aCDLOut->GetContent(aCDOut);
-                                }
-                            }
-                        }
+                        concatenation = true;
+                        D->str = aCDLOut->GetContent(aCDOut);
                     }
                 }
                 else
                 {
-                    concr=1;
+                    concatenation = true;
                     D->str = aCDLOut->GetContent(aCDOut);
                 }
             }
@@ -453,7 +441,6 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                 NO->val=aCDOut->GetOccurrenceNumber();
                 NSO->val=aCDOut->GetSubOccurrenceNumber();
                 NTO->val=aCDOut->GetTagOccurrenceNumber();
-                concr=0;
 
                 // Find values for no, nso and nto.
                 // Different cases:
@@ -545,7 +532,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
             RedoFlag=false;
             itsScanner.RewindBuffer();
             theCDOut=aCDOut;
-            rc=yyparse();
+            rc = yyparse();
 
             if (rc!=2)
             {
@@ -555,7 +542,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
 
                 aCDLOut.SetContent(ToString(S));
 
-                Out->InsereCDLib(&aCDLOut,aCDOut,concr);
+                Out->InsertCDLib(&aCDLOut, aCDOut, concatenation);
 
                 if (debug_rule)
                 {
@@ -563,7 +550,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TRule* Rule, TC
                         printf("Debug: Setting input field: ");
                     else
                         printf("Debug: Setting output field: ");
-                    printf("%s o:%d t-o:%d: '%s'\n", aCDOut->GetTag(), aCDOut->GetOccurrenceNumber(), aCDOut->GetTagOccurrenceNumber(), S->str.str());
+                    printf("%s%s o:%d t-o:%d s-o:%d: '%s'\n", aCDOut->GetTag(), aCDOut->GetSubfield() ? aCDOut->GetSubfield() : "", aCDOut->GetOccurrenceNumber(), aCDOut->GetTagOccurrenceNumber(), aCDOut->GetSubOccurrenceNumber(), S->str.str());
                 }
             }
             if (T)
@@ -680,7 +667,7 @@ typestr TEvaluateRule::ReadCD(TypeCD *CD)
 {
     FinishCD(CD);
 
-    TUMRecord *rec = CD->Output ? OutputRecord : InputRecord;
+    TUMRecord *rec = CD->Output ? RealOutputRecord : InputRecord;
     TCDLib *aCDL=rec->GetFirstCDLib();
     TCD     aCD(CD, itsErrorHandler);
     typestr ptr;
@@ -696,7 +683,7 @@ int TEvaluateRule::Exists( TypeCD* CD ) // En mode rule edit, demander le conten
 {
     FinishTCD(CD);
 
-    TUMRecord *rec = CD->Output ? OutputRecord : InputRecord;
+    TUMRecord *rec = CD->Output ? RealOutputRecord : InputRecord;
     TCDLib *aCDL=rec->GetFirstCDLib();
     TCD     aCD(CD, itsErrorHandler);
 
@@ -708,7 +695,7 @@ int TEvaluateRule::Precedes( TypeCD* CD1, TypeCD* CD2 ) // En mode rule edit, de
     FinishCD(CD1);
     FinishCD(CD2);
 
-    TUMRecord *rec = CD1->Output ? OutputRecord : InputRecord;
+    TUMRecord *rec = CD1->Output ? RealOutputRecord : InputRecord;
     TCDLib* aCDL=rec->GetFirstCDLib();
     TCD     aCD1(CD1, itsErrorHandler);
     TCD     aCD2(CD2, itsErrorHandler);
@@ -1504,7 +1491,6 @@ TypeInst* TEvaluateRule::From( TypeInst* t, int strict )
     TypeInst*rc;
     unsigned int i;
 
-    /* Suite a la remarque no 80 */
     Value(t);
     i=(unsigned int)(t->val-1);
     rc=AllocTypeInst();
@@ -1540,7 +1526,6 @@ TypeInst* TEvaluateRule::To( TypeInst* t, int strict )
     TypeInst*rc;
     unsigned int i;
 
-    /* Suite a la remarque no 80 */
     Value(t);
     i=(unsigned int)(t->val-1);
     rc=AllocTypeInst();
@@ -2083,20 +2068,29 @@ TypeInst* TEvaluateRule::RegFind( TypeInst* t1, TypeInst* t2 )
     rc->val = -1;
     ToString(S);
     ToString(t1);
+
+    typestr search_string;
+    typestr regexp;
     if (t2)
     {
         ToString(t2);
-        // TODO: support for options like i
-        bool global = strchr(t2->str.str(), 'g') != NULL;
+        search_string = t1->str;
+        regexp = t2->str;
         FreeTypeInst(t2);
     }
-    if (!itsRegExp.RegComp(t1->str.str()))
+    else
+    {
+        search_string = S->str;
+        regexp = t1->str;
+    }
+    FreeTypeInst(t1);
+
+    if (!itsRegExp.RegComp(regexp.str()))
     {
         yyerror("Could not compile regular expression");
         return rc;
     }
-    rc->val = itsRegExp.RegFind(S->str.str());
-    FreeTypeInst(t1);
+    rc->val = itsRegExp.RegFind(search_string.str());
     return rc;
 };
 
