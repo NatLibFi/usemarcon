@@ -16,6 +16,7 @@
 #include <ctype.h>
 #include "tools.h"
 #include "defines.h"
+#include "utf8proc.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -635,6 +636,24 @@ unsigned int utf8_glypheme_length(const char *p)
     return len;
 }
 
+int utf8_stricmp(const char *str1, const char *str2)
+{
+    int result = 0;
+
+    char *str1_utf8 = NULL;
+    if (utf8proc_map((unsigned char *) str1, 0, (unsigned char **) &str1_utf8, UTF8PROC_NULLTERM | UTF8PROC_CASEFOLD) > 0)
+    {
+        char *str2_utf8 = NULL;
+        if (utf8proc_map((unsigned char *) str2, 0, (unsigned char **) &str2_utf8, UTF8PROC_NULLTERM | UTF8PROC_CASEFOLD) > 0)
+        {
+            result = strcmp(str1_utf8, str2_utf8);
+            free(str2_utf8);
+        }
+        free(str1_utf8);
+    }
+    return result;
+}
+
 bool readline(typestr &a_line, FILE *a_fh)
 {
     a_line = "";
@@ -649,4 +668,18 @@ bool readline(typestr &a_line, FILE *a_fh)
         a_line.append(buf);
     }
     return true;
+}
+
+int caps_count(const char *str)
+{
+    int result = 0;
+    
+    const char *p = str;
+    while (*p)
+    {
+        if (*p >= 'A' && *p <= 'Z')
+            ++result;
+        ++p;
+    }
+    return result;
 }

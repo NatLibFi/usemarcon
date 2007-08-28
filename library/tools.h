@@ -96,7 +96,13 @@ unsigned int utf8_charindex(const char *str, unsigned long idx);
 unsigned int utf8_charlen(const char c);
 unsigned int utf8_glypheme_length(const char *p);
 
+// UTF-8 wrappers for utf8proc
+int utf8_stricmp(const char *str1, const char *str2);
+
 // File handling
 bool readline(typestr &line, FILE *fh);
+
+// String classification
+int caps_count(const char *str);
 
 #endif // _TOOLS_H
