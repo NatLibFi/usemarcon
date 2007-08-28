@@ -561,6 +561,9 @@
 				RelativePath=".\usemarconlib.cpp">
 			</File>
 			<File
+				RelativePath=".\utf8proc.cpp">
+			</File>
+			<File
 				RelativePath="ytab.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -677,6 +680,9 @@
 			</File>
 			<File
 				RelativePath=".\usemarconlib.h">
+			</File>
+			<File
+				RelativePath=".\utf8proc.h">
 			</File>
 			<File
 				RelativePath="ytab.h">
