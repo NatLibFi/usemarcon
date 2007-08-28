@@ -177,12 +177,12 @@ int TRuleFile::ConvertInRuleOrder( TUMRecord* In, TUMRecord* Out )
         {
             if (OutputCD->GetIN())
             {
-                itsEvaluateRule.Evaluate_Rule( In, In, aRule );
+                itsEvaluateRule.Evaluate_Rule(In, In, Out, aRule);
                 In->SortCD();
             }
             else
             {
-                itsEvaluateRule.Evaluate_Rule( In, Out, aRule );
+                itsEvaluateRule.Evaluate_Rule(In, Out, Out, aRule);
             }
         }
         aRule=aRule->GetNextRule();
@@ -249,14 +249,14 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
                     {
                         if (aRule->GetOutputCD()->GetIN())
                         {
-                            itsEvaluateRule.Evaluate_Rule( In, In, aRule, CDLIn );
+                            itsEvaluateRule.Evaluate_Rule(In, In, Out, aRule, CDLIn);
                             // Only added fields can be sorted here, otherwise our
                             // processing order would be broken
                             In->PartialSort((TCDLib *) Last->GetNext());
                         }
                         else
                         {
-                            itsEvaluateRule.Evaluate_Rule( In, Out, aRule, CDLIn );
+                            itsEvaluateRule.Evaluate_Rule(In, Out, Out, aRule, CDLIn);
                         }
                     }
                 } 
