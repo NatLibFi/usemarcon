@@ -30,6 +30,9 @@ TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
     itsLastOutputCD     = NULL;
     itsFirstCodedData   = NULL;
     itsLastCodedData    = NULL;
+    itsFirstStringTable = NULL;
+    itsLastStringTable  = NULL;
+    itsMacros           = NULL;
     itsDocument         = NULL;
     itsApplication      = Application;
     itsErrorHandler     = Application->GetErrorHandler();
@@ -42,13 +45,13 @@ TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
 ///////////////////////////////////////////////////////////////////////////////
 TRuleFile::~TRuleFile()
 {
-    // John Hough - added test an delete
     if (itsDocument)
         delete itsDocument;
 
-    // Unload the Rule Tree from memory
     DelTreeRule();
     DelTreeCodedData();
+    DelTreeStringTable();
+    DelTreeMacros();
     if (itsLastInputCD) { delete itsLastInputCD;    itsLastInputCD  = NULL; }
     if (itsLastOutputCD)    { delete itsLastOutputCD;   itsLastOutputCD = NULL; }
 }
@@ -63,6 +66,7 @@ int TRuleFile::CloseRuleFile()
     // Unload the Rule tree from memory
     DelTreeRule();
     DelTreeCodedData();
+    DelTreeStringTable();
     if (itsLastInputCD) { delete itsLastInputCD;    itsLastInputCD  = NULL; }
     if (itsLastOutputCD)    { delete itsLastOutputCD;   itsLastOutputCD = NULL; }
     return 0;
@@ -86,6 +90,8 @@ int TRuleFile::OpenRuleFile()
     if (Exists()==false)
         return itsErrorHandler->SetErrorD(5001, WARNING, itsFileInfo.str());
 
+    DelTreeMacros();
+
     // Open the Rule file in Reading mode
     itsMode = FILE_READ;
     if (Open())
@@ -100,8 +106,45 @@ int TRuleFile::OpenRuleFile()
     CurrentRule->SetPreviousRule(NULL);
     itsFirstRule = CurrentRule;
     IsRuleAnalysed = false;
+    StringTable *current_macro = NULL;
     while (!NextLine(&RuleLine,&IncludedFileSpec,&Line)) // Read a Line from the Rule File
     {
+        char *p = strstr(RuleLine.str(), "#define macro ");
+        if (p)
+        {
+            p += 14;
+            typestr src;
+            typestr dst;
+            if (!StringTable::parse_line(p, src, dst))
+            {
+                typestr error;
+                error.allocstr(strlen(IncludedFileSpec.str()) + strlen(RuleLine.str()) + 100);
+                sprintf(error.str(), "in file '%s' at line %d :\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
+                return  itsErrorHandler->SetErrorD(5100, ERROR, error.str());
+            }
+            if (!current_macro)
+            {
+                itsMacros = new StringTable(itsErrorHandler);
+                current_macro = itsMacros;
+            }
+            else
+            {
+                current_macro->SetNext(new StringTable(itsErrorHandler));
+                current_macro = current_macro->GetNext();
+            }
+            current_macro->m_src = src;
+            current_macro->m_dst = dst;
+            continue;
+        }
+
+        // Apply macros
+        StringTable *macro = itsMacros;
+        while (macro)
+        {
+            RuleLine.replace(macro->m_src.str(), macro->m_dst.str());
+            macro = macro->GetNext();
+        }
+
         if (IsRuleAnalysed && strchr(RuleLine.str(), '|'))
         {
             // This is a new rule to process
@@ -371,4 +414,83 @@ TCodedData  *TRuleFile::GetCodedData(char *theName)
     if (aCodedData)
         delete aCodedData;
     return NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// DelTreeStringTable
+//
+///////////////////////////////////////////////////////////////////////////////
+void TRuleFile::DelTreeStringTable(void)
+{
+    StringTable *table = itsFirstStringTable;
+
+    while (table)
+    {
+        StringTable *next = table->GetNext();
+        delete table;
+        table = next;
+    }
+    itsFirstStringTable = itsLastStringTable = NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// GetStringTable
+//
+///////////////////////////////////////////////////////////////////////////////
+StringTable *TRuleFile::GetStringTable(const char *a_tablename)
+{
+    itsErrorHandler->Reset();
+
+    typestr filename;
+    if (!strchr(a_tablename, SLASH))
+        copy_path_from_filename(filename, ((TRuleDoc *) itsApplication->itsRuleDoc)->GetRuleSpec().str());
+    append_filename(filename, a_tablename);
+
+    if (!strchr(filename.str(), '.'))
+        append_filename(filename, ".tbl");
+
+    // Check if the table has been loaded already
+    StringTable *table = itsFirstStringTable;
+    while (table)
+    {
+        if (table->GetName() == filename)
+            return table;
+        table = table->GetNext();
+    }
+    
+    // Load the table
+    table = new StringTable(itsErrorHandler);
+    if (!table)
+        return NULL;
+
+    if (!table->Load(filename.str()))
+    {
+        delete table;
+        return NULL;
+    }
+
+    if (!itsLastStringTable)
+    {
+        itsFirstStringTable = itsLastStringTable = table;
+    }
+    else
+    {
+        itsLastStringTable->SetNext(table);
+        itsLastStringTable = table;
+    }
+    return table;
+}
+
+void TRuleFile::DelTreeMacros()
+{
+    StringTable *macro = itsMacros;
+    while(macro)
+    {
+        StringTable *next = macro->GetNext();
+        delete macro;
+        macro = next;
+    }
+    itsMacros = NULL;
 }

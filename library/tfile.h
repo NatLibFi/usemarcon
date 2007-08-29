@@ -47,7 +47,7 @@ AUTHOR
 class TFile
 {
 public:
-    TFile(typestr & FileInfo, TError *ErrorHandler, char Mode=FILE_READ, char Kind=FILE_ASCII);
+    TFile(const typestr & FileInfo, TError *ErrorHandler, char Mode=FILE_READ, char Kind=FILE_ASCII);
     virtual ~TFile();
     virtual int          Open(void);
     virtual int          Close(void);

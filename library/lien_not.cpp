@@ -1441,10 +1441,13 @@ UPPER( Instruction )
 */
 TypeInst* TEvaluateRule::Upper( TypeInst* t )
 {
-    int i;
     ToString(t);
-    for (i=0;t->str.str()[i];++i)
-        t->str.str()[i]=(char)toupper((int)t->str.str()[i]);
+    char *p = t->str.str();
+    while (*p)
+    {
+        *p = toupper(*p);
+        ++p;
+    }
     return t;
 };
 
@@ -1453,10 +1456,13 @@ LOWER( Instruction )
 */
 TypeInst* TEvaluateRule::Lower( TypeInst* t )
 {
-    int i;
     ToString(t);
-    for (i=0;t->str.str()[i];++i)
-        t->str.str()[i]=(char)tolower((int)t->str.str()[i]);
+    char *p = t->str.str();
+    while (*p)
+    {
+        *p = tolower(*p);
+        ++p;
+    }
     return t;
 };
 
@@ -1539,6 +1545,7 @@ TypeInst* TEvaluateRule::To( TypeInst* t, int strict )
     {
         rc->str.str(S->str.str());
         char *p = rc->str.str();
+        ++i;
         if (itsUTF8Mode)
         {
             i = utf8_charindex(p, i);
@@ -1548,7 +1555,6 @@ TypeInst* TEvaluateRule::To( TypeInst* t, int strict )
         {
             p += i;
         }
-        ++p;
         *p = '\0';
         if (!strict)
         {
@@ -2087,7 +2093,10 @@ TypeInst* TEvaluateRule::RegFind( TypeInst* t1, TypeInst* t2 )
 
     if (!itsRegExp.RegComp(regexp.str()))
     {
-        yyerror("Could not compile regular expression");
+        typestr error = "Could not compile regular expression '";
+        error += regexp.str();
+        error += "'";
+        yyerror(error.str());
         return rc;
     }
     rc->val = itsRegExp.RegFind(search_string.str());
@@ -2114,52 +2123,107 @@ TypeInst* TEvaluateRule::RegMatch( TypeInst* t1 )
     return rc;
 }
 
-/*
-RegReplace( translation, translation, translation )
-*/
-TypeInst* TEvaluateRule::RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 )
+bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global)
 {
-    ToString(S);
-    ToString(t1);
-    ToString(t2);
-    bool global = false;
-    if (t3)
+    if (!itsRegExp.RegComp(a_regexp))
     {
-        ToString(t3);
-        // TODO: support for options like i
-        global = strchr(t3->str.str(), 'g') != NULL;
-        FreeTypeInst(t3);
+        return false;
     }
-    if (!itsRegExp.RegComp(t1->str.str()))
-    {
-        yyerror("Could not compile regular expression");
-        FreeTypeInst(t1);
-        FreeTypeInst(t2);
-        return NULL;
-    }
-    TypeInst *rc = AllocTypeInst();
-    typestr dest = S->str;
     int pos;
-    while ((pos = itsRegExp.RegFind(dest.str())) >= 0)
+    while ((pos = itsRegExp.RegFind(a_str.str())) >= 0)
     {
-        char *buf = itsRegExp.GetReplaceString(t2->str.str());
+        char *buf = itsRegExp.GetReplaceString(a_replacement);
         if (buf)
         {
-            typestr tmp = dest;
-            tmp.promise(strlen(dest.str()) + strlen(buf));
+            typestr tmp = a_str;
+            tmp.promise(strlen(a_str.str()) + strlen(buf));
             tmp.str()[pos] = '\0';
             strcat(tmp.str(), buf);
-            strcat(tmp.str(), dest.str() + pos + itsRegExp.GetFindLen());
-            dest = tmp;
+            strcat(tmp.str(), a_str.str() + pos + itsRegExp.GetFindLen());
+            a_str = tmp;
             delete [] buf;
         }
-        if (!global)
+        if (!a_global)
             break;
     }
+    return true;
+}
+
+TypeInst* TEvaluateRule::RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options)
+{
+    ToString(S);
+    ToString(a_regexp);
+    ToString(a_replacement);
+    bool global = false;
+    if (a_options)
+    {
+        ToString(a_options);
+        // TODO: support for options like i
+        global = strchr(a_options->str.str(), 'g') != NULL;
+        FreeTypeInst(a_options);
+    }
+
+    typestr dest = S->str;
+    if (!RegReplaceInternal(dest, a_regexp->str.str(), a_replacement->str.str(), global))
+    {
+        typestr error = "Could not compile regular expression '";
+        error += a_regexp->str;
+        error += "'";
+        yyerror(error.str());
+        FreeTypeInst(a_regexp);
+        FreeTypeInst(a_replacement);
+        return NULL;
+    }
+
+    TypeInst *rc = AllocTypeInst();
     rc->str = dest;        
     rc->val = 0;
-    FreeTypeInst(t1);
-    FreeTypeInst(t2);
+    FreeTypeInst(a_regexp);
+    FreeTypeInst(a_replacement);
+    return rc;
+}
+
+TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
+{
+    ToString(S);
+    ToString(a_table);
+    bool global = false;
+    if (a_options)
+    {
+        ToString(a_options);
+        // TODO: support for options like i
+        global = strchr(a_options->str.str(), 'g') != NULL;
+        FreeTypeInst(a_options);
+    }
+
+    typestr dest = S->str;
+    StringTable *table = RuleDoc->GetFile()->GetStringTable(a_table->str.str());
+    if (!table)
+    {
+        typestr error = "Could not open table '";
+        error += a_table->str;
+        error += "'";
+        yyerror(error.str());
+        FreeTypeInst(a_table);
+        return NULL;
+    }
+    FreeTypeInst(a_table);
+    while (table)
+    {
+        if (!RegReplaceInternal(dest, table->m_src.str(), table->m_dst.str(), global))
+        {
+            typestr error = "Could not compile regular expression '";
+            error += table->m_src;
+            error += "'";
+            yyerror(error.str());
+            return NULL;
+        }
+        table = table->GetNext();
+    }
+
+    TypeInst *rc = AllocTypeInst();
+    rc->str = dest;        
+    rc->val = 0;
     return rc;
 }
 

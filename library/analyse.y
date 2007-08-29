@@ -86,7 +86,8 @@ protected:
   virtual void PrintDebug(const char*) = 0;
   virtual TypeInst* RegFind( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
-  virtual TypeInst* RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 ) = 0;
+  virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
+  virtual TypeInst* RegReplaceTable( TypeInst* a_table, TypeInst* a_options) = 0;
 
 */
 
@@ -120,7 +121,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <inst> BFIRST EFIRST BLAST ELAST
 %token <inst> REDO SORT NEXT LAST TABLE ORDINAL
 %token <inst> YEAR MONTH DAY HOUR MINUTE SECOND
-%token <inst> NEXTSUB PREVIOUSSUB REGFIND REGMATCH REGREPLACE
+%token <inst> NEXTSUB PREVIOUSSUB REGFIND REGMATCH REGREPLACE REGREPLACETABLE
 
 %left  SEP PLUS MOINS MULTIPLIE DIVISE
 
@@ -669,6 +670,10 @@ Translation :
                                         { PrintDebug("RegReplace(...,...)");$$=RegReplace($3,$5,NULL); $3=$5=NULL; }
 |       REGREPLACE '(' Translation ',' Translation ',' Translation ')'
                                         { PrintDebug("RegReplace(...,...,...)");$$=RegReplace($3,$5,$7); $3=$5=$7=NULL; }
+|       REGREPLACETABLE '(' Translation ')'
+                                        { PrintDebug("RegReplaceTable(...,...)");$$=RegReplaceTable($3,NULL); $3=NULL; }
+|       REGREPLACETABLE '(' Translation ',' Translation ')'
+                                        { PrintDebug("RegReplaceTable(...,...)");$$=RegReplaceTable($3,$5); $3=$5=NULL; }
 ;
 
 %%

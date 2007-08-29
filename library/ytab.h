@@ -73,14 +73,14 @@ YYID (i)
   return i;
 }
 #endif
-#define YYFINAL  106
-#define YYLAST   1128
-#define YYNTOKENS  91
+#define YYFINAL  108
+#define YYLAST   1163
+#define YYNTOKENS  92
 #define YYNNTS  12
-#define YYNRULES  139
-#define YYNSTATES  344
+#define YYNRULES  141
+#define YYNSTATES  351
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   342
+#define YYMAXUTOK   343
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -155,7 +155,8 @@ protected:
   virtual void PrintDebug(const char*) = 0;
   virtual TypeInst* RegFind( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
-  virtual TypeInst* RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 ) = 0;
+  virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
+  virtual TypeInst* RegReplaceTable( TypeInst* a_table, TypeInst* a_options) = 0;
 
 
 public:
@@ -247,7 +248,8 @@ public:
      PREVIOUSSUB = 339,
      REGFIND = 340,
      REGMATCH = 341,
-     REGREPLACE = 342
+     REGREPLACE = 342,
+     REGREPLACETABLE = 343
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

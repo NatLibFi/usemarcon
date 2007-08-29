@@ -174,8 +174,8 @@ void typestr::promise(unsigned long size)
     memcpy(m_str, tmpstr.str(), tmpstr.m_size);
 }
 
-// Lexer formatted string init
-void typestr::initstr(const char *s)
+// Rule formatted string init
+void typestr::rulestr(const char *s)
 {
     int i=1, j=0;
     allocstr(strlen(s) + 1);

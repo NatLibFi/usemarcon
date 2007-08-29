@@ -26,7 +26,7 @@ fixedpos        "/"{digits}("-"{digits})?"/"
 %%
 \'[^\']+\'      {
                   yylval.inst=((MemoryPool *) allocator)->AllocTypeInst();
-                  yylval.inst->str.initstr(yytext);
+                  yylval.inst->str.rulestr(yytext);
                   return MarcParser::STRING;
                 }
 \'\'            {
@@ -142,6 +142,7 @@ D                       return MarcParser::VARD;
 [R|r]eg[F|f]ind         return MarcParser::REGFIND;
 [R|r]eg[M|m]atch        return MarcParser::REGMATCH;
 [R|r]eg[R|r]eplace      return MarcParser::REGREPLACE;
+[R|r]eg[R|r]eplace[T|t]able return MarcParser::REGREPLACETABLE;
 [I|i]n[T|t]able         return MarcParser::INTABLE;
 {blancs}                        ;
 .                       lex_error = true;

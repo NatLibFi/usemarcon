@@ -152,6 +152,8 @@ private:
     virtual void FreeCD( TypeCD* CD );
     virtual void PrintDebug(const char *s);
 
+    bool RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global);
+
     /*
     Affichage d'une valeur d' Instruction
     */
@@ -346,10 +348,9 @@ private:
     */
     virtual TypeInst* RegMatch( TypeInst* t1 );
 
-    /*
-    RegReplace( translation, translation, translation )
-    */
-    virtual TypeInst* RegReplace( TypeInst* t1, TypeInst* t2, TypeInst* t3 );
+    virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options);
+
+    TypeInst* RegReplaceTable(TypeInst* a_table, TypeInst* a_options);
 
     /*
     InTable( translation, translation )

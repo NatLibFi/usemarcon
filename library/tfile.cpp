@@ -36,7 +36,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TFile::TFile(typestr & FileInfo, TError *ErrorHandler, char Mode, char Kind)
+TFile::TFile(const typestr & FileInfo, TError *ErrorHandler, char Mode, char Kind)
 {
     itsFileInfo = FileInfo;
     itsMode     = Mode;

@@ -303,6 +303,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\stringtable.cpp">
+			</File>
+			<File
 				RelativePath="tagnoind.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -632,6 +635,9 @@
 			</File>
 			<File
 				RelativePath="sort.h">
+			</File>
+			<File
+				RelativePath=".\stringtable.h">
 			</File>
 			<File
 				RelativePath="tagnoind.h">

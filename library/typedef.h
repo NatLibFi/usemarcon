@@ -115,8 +115,8 @@ public:
         return *this;
     }
 
-    // Lexer formatted string init
-    void initstr(const char *s);
+    // Rule formatted string init
+    void rulestr(const char *s);
 
 };
 

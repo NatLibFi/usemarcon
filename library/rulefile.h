@@ -33,6 +33,7 @@ AUTHOR
 #include "tmpplctn.h"
 #include "lien_not.h"
 #include "umrecord.h"
+#include "stringtable.h"
 
 class TRuleFile : public TFile
 {
@@ -49,16 +50,23 @@ public:
     virtual TRule         *GetFirstRule   (void)                  { return itsFirstRule; };
     virtual TCodedData    *GetCodedData   (char *theName);
     virtual void          SetFirstRule    (TRule *theRule)        { itsFirstRule=theRule; };
+    virtual StringTable   *GetStringTable (const char *a_tablename);
 
     virtual TEvaluateRule *GetEvaluateRule(void) { return &itsEvaluateRule; }
 
 protected:
+    void                  DelTreeStringTable();
+    void                  DelTreeMacros();
+
     TRuleDoc              *itsDocument;
     TRule                 *itsFirstRule;
     TCD                   *itsLastInputCD;
     TCD                   *itsLastOutputCD;
     TCodedData            *itsFirstCodedData;
     TCodedData            *itsLastCodedData;
+    StringTable           *itsFirstStringTable;
+    StringTable           *itsLastStringTable;
+    StringTable           *itsMacros;
 
     TEvaluateRule         itsEvaluateRule;
 

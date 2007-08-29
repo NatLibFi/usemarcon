@@ -90,13 +90,9 @@ void show_warning(const char *message);
 // show a message to the user
 void show_message(const char *message);
 
-// UTF-8 aware functions (somewhat crude implementations)
+// UTF-8 aware functions (utf8proc wrappers)
 unsigned int utf8_strlen(const char *str);
 unsigned int utf8_charindex(const char *str, unsigned long idx);
-unsigned int utf8_charlen(const char c);
-unsigned int utf8_glypheme_length(const char *p);
-
-// UTF-8 wrappers for utf8proc
 int utf8_stricmp(const char *str1, const char *str2);
 
 // File handling
