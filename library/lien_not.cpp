@@ -88,7 +88,7 @@ int TEvaluateRule::yylex()
     int token=itsScanner.yylex(yylval, ok, &m_allocator);
     if (!ok)
         yyerror("lex error");
-//    yylloc.text=(char *)itsScanner.yytext;
+
     return token;
 }
 
@@ -679,7 +679,7 @@ typestr TEvaluateRule::ReadCD(TypeCD *CD)
     return ptr;
 }
 
-int TEvaluateRule::Exists( TypeCD* CD ) // En mode rule edit, demander le contenu du CD (si ns ou nt a 0 => 1)
+int TEvaluateRule::Exists( TypeCD* CD ) 
 {
     FinishTCD(CD);
 
@@ -690,7 +690,27 @@ int TEvaluateRule::Exists( TypeCD* CD ) // En mode rule edit, demander le conten
     return rec->NextCD(&aCDL,&aCD);
 }
 
-int TEvaluateRule::Precedes( TypeCD* CD1, TypeCD* CD2 ) // En mode rule edit, demander le champ complet contenant les 2 CD
+int TEvaluateRule::ExistsIn(TypeInst* a_str, TypeCD* a_cd)
+{
+    FinishTCD(a_cd);
+    char subfield[3];
+    subfield[0] = START_OF_FIELD;
+    subfield[1] = a_cd->SubField[1];
+    subfield[2] = '\0';
+    char* p = strstr(a_str->str.str(), subfield);
+    int occurrence = 0;
+    while (p)
+    {
+        ++occurrence;
+        if (a_cd->ns == 0 || a_cd->ns == occurrence)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int TEvaluateRule::Precedes( TypeCD* CD1, TypeCD* CD2 ) 
 {
     FinishCD(CD1);
     FinishCD(CD2);
@@ -971,9 +991,6 @@ TypeInst* TEvaluateRule::Last_( TypeCD* cd1, TypeCD* cd2, int strict )
     return rc;
 };
 
-/*
-NEXTSUB
-*/
 TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 {
     TypeInst* rc;
@@ -994,7 +1011,7 @@ TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 
         while (InputRecord->NextCD(&CDL, &findCD))
         {
-            if (CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
+            if (!aOccurrence || CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
             {
                 TCD *nextCD = CDL->GetNext();
                 if (nextCD && *nextCD->GetSubfield() == '$')
@@ -1008,11 +1025,36 @@ TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
     rc=AllocTypeInst();
     rc->str.str(ptr ? ptr : "");
     return rc;
-};
+}
 
-/*
-PREVIOUSSUB
-*/
+TypeInst* TEvaluateRule::NextSubIn(TypeInst* aStr, TypeCD* aFindCD, TypeInst* aOccurrence)
+{
+    FinishTCD(aFindCD);
+    char subfield[3];
+    subfield[0] = START_OF_FIELD;
+    subfield[1] = aFindCD->SubField[1];
+    subfield[2] = '\0';
+
+    TypeInst* rc = AllocTypeInst();
+    
+    char* p = strstr(aStr->str.str(), subfield);
+    int occurrence = 0;
+    while (p)
+    {
+        ++occurrence;
+        if (!aOccurrence || CompareOccurrence(aOccurrence, occurrence))
+        {
+            char* p2 = strchr(p + 1, START_OF_FIELD);
+            if (p2)
+                rc->str.append_char(*(p2 + 1));
+            else
+                rc->str = "";
+            break;
+        }
+    }
+    return rc;
+}
+
 TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 {
     TypeInst* rc;
@@ -1033,7 +1075,7 @@ TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 
         while (InputRecord->NextCD(&CDL, &findCD))
         {
-            if (CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
+            if (!aOccurrence || CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
             {
                 TCD *prevCD = CDL->GetPrevious();
                 if (prevCD && *prevCD->GetSubfield() == '$')
@@ -1049,10 +1091,39 @@ TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
     return rc;
 };
 
+TypeInst* TEvaluateRule::PreviousSubIn(TypeInst* aStr, TypeCD* aFindCD, TypeInst* aOccurrence)
+{
+    FinishTCD(aFindCD);
+
+    TypeInst* rc = AllocTypeInst();
+
+    char prev_subfield = '\0';
+    char* p = strchr(aStr->str.str(), START_OF_FIELD);
+    int occurrence = 0;
+    while (p)
+    {
+        if (*(p + 1) == aFindCD->SubField[1])
+        {
+            ++occurrence;
+            if (!aOccurrence || CompareOccurrence(aOccurrence, occurrence))
+            {
+                if (prev_subfield)
+                    rc->str.append_char(prev_subfield);
+                else
+                    rc->str = "";
+                break;
+            }
+        }
+        prev_subfield = *(p + 1);
+        p = strchr(p + 1, START_OF_FIELD);
+    }
+    return rc;
+}
+
 /*
 Instruction - Instruction
 */
-TypeInst* TEvaluateRule::Soust( TypeInst* t1, TypeInst* t2 )
+TypeInst* TEvaluateRule::Subtract( TypeInst* t1, TypeInst* t2 )
 {
     if (t1->str.str() || t2->str.str())
     {
@@ -1072,7 +1143,7 @@ TypeInst* TEvaluateRule::Soust( TypeInst* t1, TypeInst* t2 )
 /*
 Instruction * Instruction
 */
-TypeInst* TEvaluateRule::Multi( TypeInst* t1, TypeInst* t2 )
+TypeInst* TEvaluateRule::Multiply( TypeInst* t1, TypeInst* t2 )
 {
     if (t1->str.str() || t2->str.str())
     {
@@ -1092,7 +1163,7 @@ TypeInst* TEvaluateRule::Multi( TypeInst* t1, TypeInst* t2 )
 /*
 Instruction : Instruction
 */
-TypeInst* TEvaluateRule::Divis( TypeInst* t1, TypeInst* t2 )
+TypeInst* TEvaluateRule::Divide( TypeInst* t1, TypeInst* t2 )
 {
     if (t1->str.str() || t2->str.str())
     {
@@ -1158,7 +1229,7 @@ int TEvaluateRule::MemSto( TypeInst* n )
         }
         if (Memoire[i]!=NULL) FreeTypeInst(Memoire[i]);
         Memoire[i]=NULL;
-        Copie( &Memoire[i], S );
+        CopyInst(&Memoire[i], S);
         FreeTypeInst(n);
         return 0;
 };
@@ -1185,7 +1256,7 @@ TypeInst* TEvaluateRule::MemMem( TypeInst* n )
         if (Memoire[i]!=NULL)
         {
             TypeInst* rc;
-            Copie(&rc,Memoire[i]);
+            CopyInst(&rc, Memoire[i]);
             FreeTypeInst(n);
             return rc;
         }
@@ -1245,7 +1316,7 @@ TypeInst* TEvaluateRule::MemExc( TypeInst* n )
         if (Memoire[i]!=NULL)
         {
             TypeInst* rc=Memoire[i];
-            Copie(&Memoire[i],S);
+            CopyInst(&Memoire[i], S);
             FreeTypeInst(n);
             return rc;
         }
@@ -1263,18 +1334,12 @@ TypeInst* TEvaluateRule::AllocTypeInst()
     return m_allocator.AllocTypeInst();
 }
 
-/*
-Liberation de la memoire associe a une Instruction
-*/
 void TEvaluateRule::FreeTypeInst( TypeInst* t )
 {
     m_allocator.FreeTypeInst(t);
 };
 
-/*
-Copie d'instruction
-*/
-int TEvaluateRule::Copie( TypeInst** In, TypeInst* From )
+int TEvaluateRule::CopyInst( TypeInst** In, TypeInst* From )
 {
     *In=AllocTypeInst();
     if (From==NULL || From->str.str()==NULL)
@@ -1374,7 +1439,7 @@ int TEvaluateRule::BoolGE( TypeInst* t1, TypeInst* t2 )
 /*
 Instruction + Instruction
 */
-TypeInst* TEvaluateRule::Ajout( TypeInst* t1, TypeInst* t2 )
+TypeInst* TEvaluateRule::Add( TypeInst* t1, TypeInst* t2 )
 {
     TypeInst* rc;
 
@@ -1399,7 +1464,7 @@ TypeInst* TEvaluateRule::Ajout( TypeInst* t1, TypeInst* t2 )
 /*
 200(1)
 */
-TypeInst* TEvaluateRule::AjoutOcc( TypeInst* t1, TypeInst* t2 )
+TypeInst* TEvaluateRule::AddOcc( TypeInst* t1, TypeInst* t2 )
 {
     TypeInst* rc;
 
@@ -1618,179 +1683,155 @@ TypeInst* TEvaluateRule::Between( TypeInst* t1, TypeInst* t2, int strict )
 /*
 REPLACE( translation BY translation [, AT ...] [, STRICT] )
 */
-TypeInst* TEvaluateRule::Replace( TypeInst* t1, TypeInst* t2, int at, int strict )
+TypeInst* TEvaluateRule::Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at, bool strict )
 {
-    TypeInst*rc;
-    TypeInst*SS;
-    int i,i1,i2;
-    int l1,l2,ok;
-
-    rc=AllocTypeInst();
     ToString(S);
-    Copie(&SS,S);
-    ToString(t1);
-    l1=strlen(t1->str.str());
-    if (t2==NULL)
-    {
-        t2=AllocTypeInst();
-        t2->val=0;
-        t2->str.str("");
-    }
-    else    ToString(t2);
-    l2=strlen(t2->str.str());
-
-    if (at==2)
-        i=strlen(SS->str.str())-l1;
-    else
-        i=0;
-
-    do
-    {
-        ok=0;
-        switch(at)
-        {
-        case 0 :
-            while(SS->str.str()[i])
-            {
-                if (memcmp( &SS->str.str()[i], t1->str.str(), l1 ) || l1 == 0) ++i;
-                else
-                {
-                    ok=1;
-                    break;
-                }
-            }
-            break;
-
-        case 1 :
-        case 3 :
-            if (memcmp( &SS->str.str()[i], t1->str.str(), l1 )==0 || l1 == 0) ok=1;
-            break;
-        case 2 :
-            if (memcmp( &SS->str.str()[i], t1->str.str(), l1 )==0 || l1 == 0) ok=1;
-            break;
-        }
-
-
-        if (ok)
-        {
-            rc->str.allocstr(strlen(SS->str.str())-l1+l2+1);
-            memcpy(rc->str.str(),SS->str.str(),i);
-            strcpy(&rc->str.str()[i],t2->str.str());
-            strcat(rc->str.str(),&SS->str.str()[i+l1]);
-            SS->str=rc->str;
-            if (at!=2) i+=l2;
-        }
-    }
-    while (ok);
-
-    if (at==3)
-    {
-        do
-        {
-            ok=0;
-            i=strlen(SS->str.str())-l1;
-            if (memcmp( &SS->str.str()[i], t1->str.str(), l1 )==0)
-            {
-                rc->str.allocstr(strlen(SS->str.str())-l1+l2+1);
-                memcpy(rc->str.str(),SS->str.str(),i);
-                strcpy(&rc->str.str()[i],t2->str.str());
-                SS->str=rc->str;
-                ok=1;
-            }
-        }
-        while (ok);
-    }
-    rc->val=0;
-    rc->str = SS->str;
-
-    i1=0;
-    i2=strlen(rc->str.str())-1;
-    if (!strict)
-    {
-        while( (unsigned char)(rc->str.str()[i1])==' ' ) ++i1;
-        while( (unsigned char)(rc->str.str()[i2])==' ' ) --i2;
-    }
-    ++i2;
-    typestr stmp=rc->str;
-    if (i2 >= i1)
-    {
-        rc->str.allocstr(i2-i1+1);
-        memcpy(rc->str.str(),&stmp.str()[i1],i2-i1);
-        rc->str.str()[i2-i1]=0;
-    }
-    else
-        rc->str.str("");
+    typestr str = S->str;
+    typestr source = ToString(t1);
+    typestr replacement = t2 ? ToString(t2) : "";
     FreeTypeInst(t1);
     FreeTypeInst(t2);
-    FreeTypeInst(SS);
+    int source_len = strlen(source.str());
+    int replacement_len = strlen(replacement.str());
+    
+    if (source_len > 0) 
+    {
+        switch (at) 
+        {
+        case SP_ANY:
+            {
+                char* p = strstr(str.str(), source.str());
+                while (p)
+                {
+                    typestr tmp;
+                    int pos = p - str.str();
+                    if (pos > 0)
+                        tmp.str(str.str(), pos);
+                    tmp += replacement;
+                    p += source_len;
+                    tmp += p;
+                    str = tmp;
+                    p = strstr(str.str() + pos + replacement_len, source.str());
+                }
+                break;
+            }
+        case SP_BEGINNING:
+        case SP_BOTH:
+            {
+                char* p = str.str();
+                while (strncmp(p, source.str(), source_len) == 0)
+                {
+                    typestr tmp;
+                    int pos = p - str.str();
+                    if (pos > 0)
+                        tmp.str(str.str(), pos);
+                    tmp += replacement;
+                    p += strlen(source.str());
+                    tmp += p;
+                    str = tmp;
+                    p = str.str() + pos + replacement_len;
+                }
+                if (at == SP_BEGINNING)
+                    break;
+            }
+        case SP_END:
+            {
+                int len = strlen(str.str());
+                if (len < source_len)
+                    break;
+                char* p = str.str() + len - source_len;
+                while (strncmp(p, source.str(), source_len) == 0)
+                {
+                    typestr tmp;
+                    int pos = p - str.str();
+                    if (pos > 0)
+                        tmp.str(str.str(), pos);
+                    tmp += replacement;
+                    p += strlen(source.str());
+                    tmp += p;
+                    str = tmp;
+                    if (pos - replacement_len < 0)
+                        break;
+                    p = str.str() + pos - replacement_len;
+                }
+                break;
+            }
+        }
+    }
+
+    if (!strict)
+    {
+        char* p = str.str();
+        while (*p == ' ')
+            ++p;
+        strcpy(str.str(), p);
+
+        p = str.str() + strlen(str.str()) - 1;
+        while (p > str.str() && *p == ' ')
+        {
+            *p = '\0';
+            --p;
+        }
+    }
+
+    TypeInst* rc = AllocTypeInst();
+    rc->val = 0;
+    rc->str = str;
     return rc;
-};
+}
 
 /*
 REPLACEOCC( translation BY translation , OCCURRENCE  [, STRICT] )
 */
-TypeInst* TEvaluateRule::ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, int strict )
+TypeInst* TEvaluateRule::ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, bool strict )
 {
-    TypeInst*rc;
-    TypeInst*SS;
-    int occ;
-    int i,i1,i2;
-    int l1,l2; //,ok;
+    typestr str = ToString(S);
+    typestr source = ToString(t1);
+    typestr replacement = t2 ? ToString(t2) : "";
+    int source_len = strlen(source.str());
+    int replacement_len = strlen(replacement.str());
+    FreeTypeInst(t1);
+    FreeTypeInst(t2);
 
-    rc=AllocTypeInst();
-    ToString(S);
-    Copie(&SS,S);
-    ToString(t1);
-    l1=strlen(t1->str.str());
-    if (t2==NULL)
+    int occurrence = 0;
+    char* p = strstr(str.str(), source.str());
+    while (p)
     {
-        t2=AllocTypeInst();
-        t2->val=0;
-        t2->str.str("");
-    }
-    else    ToString(t2);
-    l2=strlen(t2->str.str());
-
-    occ=0;
-    i=0;
-    while(SS->str.str()[i])
-    {
-        if (memcmp( &SS->str.str()[i], t1->str.str(), l1 )) ++i;
-        else
+        if (CompareOccurrence(inCondOcc, ++occurrence))
         {
-            occ++;
-            if (CompareOccurrence(inCondOcc, occ))
-            {
-                rc->str.allocstr(strlen(SS->str.str())-l1+l2+1);
-                memcpy(rc->str.str(),SS->str.str(),i);
-                strcpy(&rc->str.str()[i],t2->str.str());
-                strcat(rc->str.str(),&SS->str.str()[i+l1]);
-                SS->str=rc->str;
-                i+=l2;
-            }
-            else ++i;
+            typestr tmp;
+            int pos = p - str.str();
+            if (pos > 0)
+                tmp.str(str.str(), pos);
+            tmp += replacement;
+            tmp += p + source_len;
+            str = tmp;
+            p = strstr(str.str() + pos + replacement_len, source.str());
+        }
+        else
+            p = strstr(p + 1, source.str());
+
+    }
+    FreeTypeInst(inCondOcc);
+
+    if (!strict)
+    {
+        char* p = str.str();
+        while (*p == ' ')
+            ++p;
+        strcpy(str.str(), p);
+
+        p = str.str() + strlen(str.str()) - 1;
+        while (p > str.str() && *p == ' ')
+        {
+            *p = '\0';
+            --p;
         }
     }
 
-    rc->val=0;
-    rc->str = SS->str;
-
-    i1=0;
-    i2=strlen(rc->str.str())-1;
-    if (!strict)
-    {
-        while( (unsigned char)(rc->str.str()[i1])==' ' ) ++i1;
-        while( (unsigned char)(rc->str.str()[i2])==' ' ) --i2;
-    }
-    ++i2;
-    typestr stmp=rc->str;
-    rc->str.allocstr(i2-i1+1);
-    memcpy(rc->str.str(),&stmp.str()[i1],i2-i1);
-    rc->str.str()[i2-i1]=0;
-    FreeTypeInst(t1);
-    FreeTypeInst(t2);
-    FreeTypeInst(inCondOcc);
-    FreeTypeInst(SS);
+    TypeInst* rc = AllocTypeInst();
+    rc->val = 0;
+    rc->str = str;
     return rc;
 };
 
@@ -2249,5 +2290,138 @@ int TEvaluateRule::InTable(TypeInst* t1, TypeInst* table)
 
     FreeTypeInst(t1);
     FreeTypeInst(table);
+    return rc;
+}
+
+bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix)
+{
+    if (a_target && !a_target->str.is_empty() && strlen(a_source->str.str()) != strlen(a_target->str.str()))
+    {
+        yyerror("Source and target list must be of equal length");
+        FreeTypeInst(a_source);
+        FreeCD(a_new_pos);
+        FreeTypeInst(a_target);
+        FreeTypeInst(a_prefix);
+        FreeTypeInst(a_suffix);
+        return false;
+    }
+
+    ToString(a_source);
+    ToString(a_target);
+    ToString(a_prefix);
+    ToString(a_suffix);
+
+    bool result = false;
+
+    typestr fielddata = a_fielddata;
+    typestr subfields;
+
+    // Find the data to move and cut it from the field
+    char* p = strchr(fielddata.str(), START_OF_FIELD);
+    while (p)
+    {
+        if (strchr(a_source->str.str(), *(p + 1)))
+        {
+            if (a_target && !a_target->str.is_empty())
+            {
+                // Convert subfield code
+                int source_pos = strchr(a_source->str.str(), *(p + 1)) - a_source->str.str();
+                *(p + 1) = *(a_target->str.str() + source_pos);
+            }
+
+            char *p_end = strchr(p + 1, START_OF_FIELD);
+            if (!p_end)
+            {
+                subfields += p;
+                *p = '\0';
+                break;
+            }
+            else
+            {
+                subfields.append(p, p_end - p);
+                strcpy(p, p_end);
+                continue;
+            }
+        }
+        p = strchr(p + 1, START_OF_FIELD);
+    }
+
+    int occurrence = 0;
+    if (!subfields.is_empty())
+    {
+        // Find the correct position
+        char subfield[3];
+        subfield[0] = START_OF_FIELD;
+        subfield[1] = a_new_pos->SubField[1];
+        subfield[2] = '\0';
+        p = strstr(fielddata.str(), subfield);
+        while (p)
+        {
+            ++occurrence;
+            if (a_new_pos->ns == 0 || a_new_pos->ns == occurrence)
+            {
+                // Found
+                typestr before;
+                typestr after;
+                if (a_after)
+                {
+                    p = strchr(p + 1, START_OF_FIELD);
+                }
+                if (p)
+                {
+                    int pos = p - fielddata.str();
+                    if (pos > 0)
+                        before.str(fielddata.str(), pos);
+                    after = p;
+                }
+                else
+                {
+                    before = fielddata;
+                    after = "";
+                }
+                if (a_prefix && !a_prefix->str.is_empty())
+                    before += a_prefix->str;
+                if (a_suffix && !a_suffix->str.is_empty())
+                    subfields += a_prefix->str;
+
+                fielddata = before + subfields + after;
+                result = true;
+                break;
+            }
+            p = strstr(p + 1, a_new_pos->SubField);
+        }        
+    }
+
+    if (result)
+        a_fielddata = fielddata;
+
+    FreeTypeInst(a_source);
+    FreeCD(a_new_pos);
+    FreeTypeInst(a_target);
+    FreeTypeInst(a_prefix);
+    FreeTypeInst(a_suffix);
+
+    return result;
+}
+
+TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix)
+{
+    typestr fielddata = S->str;
+    move_subfields(fielddata, a_source, a_before, false, a_target, a_prefix, a_suffix);
+
+    TypeInst *rc = AllocTypeInst();
+    rc->str = fielddata;        
+    rc->val = 0;
+    return rc;
+}
+
+TypeInst* TEvaluateRule::MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix)
+{
+    typestr fielddata = S->str;
+    move_subfields(fielddata, a_source, a_after, true, a_target, a_prefix, a_suffix);
+        
+    TypeInst *rc = AllocTypeInst();
+    rc->str = fielddata;        
+    rc->val = 0;
     return rc;
 }

@@ -127,6 +127,7 @@ private:
 
     virtual int Precedes(TypeCD *, TypeCD *);
     virtual int Exists(TypeCD *);
+    virtual int ExistsIn(TypeInst* a_str, TypeCD* a_cd);
     virtual typestr ReadCD(TypeCD *);
     virtual typestr Table(char *Nom, char *str);
 
@@ -154,6 +155,8 @@ private:
 
     bool RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global);
 
+    bool move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix);
+
     /*
     Affichage d'une valeur d' Instruction
     */
@@ -173,26 +176,28 @@ private:
     NEXTSUB
     */
     virtual TypeInst* NextSub(TypeCD* aFindCD, TypeInst *aOccurrence);
+    virtual TypeInst* NextSubIn(TypeInst* aStr, TypeCD* aFindCD, TypeInst* aOccurrence);
 
     /*
     PREVIOUSSUB
     */
     virtual TypeInst* PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence);
+    virtual TypeInst* PreviousSubIn(TypeInst* aStr, TypeCD* aFindCD, TypeInst* aOccurrence);
 
     /*
         Instruction - Instruction
     */
-    virtual TypeInst* Soust( TypeInst* t1, TypeInst* t2 );
+    virtual TypeInst* Subtract( TypeInst* t1, TypeInst* t2 );
 
     /*
     Instruction * Instruction
     */
-    virtual TypeInst* Multi( TypeInst* t1, TypeInst* t2 );
+    virtual TypeInst* Multiply( TypeInst* t1, TypeInst* t2 );
 
     /*
     Instruction : Instruction
     */
-    virtual TypeInst* Divis( TypeInst* t1, TypeInst* t2 );
+    virtual TypeInst* Divide( TypeInst* t1, TypeInst* t2 );
 
     /*
     VAL( Instruction )
@@ -221,15 +226,9 @@ private:
 
     virtual TypeInst* AllocTypeInst();
 
-    /*
-    Liberation de la memoire associe a une Instruction
-    */
     virtual void FreeTypeInst( TypeInst* t );
 
-    /*
-    Copie d'instruction
-    */
-    virtual int Copie( TypeInst** In, TypeInst* From );
+    virtual int CopyInst( TypeInst** In, TypeInst* From );
 
     /*
         Comparaison de deux instructions
@@ -254,12 +253,12 @@ private:
     /*
         Instruction + Instruction
     */
-    virtual TypeInst* Ajout( TypeInst* t1, TypeInst* t2 );
+    virtual TypeInst* Add( TypeInst* t1, TypeInst* t2 );
 
     /*
         200(1)
     */
-    virtual TypeInst* AjoutOcc( TypeInst* t1, TypeInst* t2 );
+    virtual TypeInst* AddOcc( TypeInst* t1, TypeInst* t2 );
 
     /*
         Conversion de numerique en char* si necessaire pour une Instruction
@@ -304,12 +303,12 @@ private:
     /*
         REPLACE( translation BY translation [, AT ...] [, STRICT] )
     */
-    virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, int at, int strict );
+    virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at, bool strict );
 
     /*
         REPLACEOCC( translation BY translation , OCCURENCE  [, STRICT] )
     */
-    virtual TypeInst* ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, int strict );
+    virtual TypeInst* ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, bool strict );
 
     virtual int IsDigit( char c );
 
@@ -350,7 +349,11 @@ private:
 
     virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options);
 
-    TypeInst* RegReplaceTable(TypeInst* a_table, TypeInst* a_options);
+    virtual TypeInst* RegReplaceTable(TypeInst* a_table, TypeInst* a_options);
+
+    virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix);
+
+    virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix);
 
     /*
     InTable( translation, translation )

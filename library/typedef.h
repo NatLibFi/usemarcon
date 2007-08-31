@@ -131,8 +131,12 @@ public:
 class TypeCD
 {
 public:
-    TypeCD() : Output(false)
+    TypeCD() : Output(false), nt(0), ns(0)
     {
+        Field[0] = '\0';
+        Field[1] = '\0';
+        Field[2] = '\0';
+        Field[3] = '\0';
         SubField[0] = '\0';
         SubField[1] = '\0';
     }

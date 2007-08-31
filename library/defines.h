@@ -76,5 +76,13 @@ typedef enum DUPLICATE_PROCESSING_MODE
     DP_DELETE_SMART = 3,
 } DUPLICATE_PROCESSING_MODE;
 
+typedef enum IN_STR_POSITION
+{
+    SP_ANY = 0,
+    SP_BEGINNING = 1,
+    SP_END = 2,
+    SP_BOTH = 3,
+} IN_STR_POSITION;
+
 #endif
 

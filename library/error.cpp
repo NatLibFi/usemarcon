@@ -65,16 +65,11 @@ TError::~TError()
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,int
-                         LineNumber, const char *UserData)
+int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
+                         int LineNumber, const char *UserData)
 {
-    short          iIndice;
-    bool           bFoundCode=false;
-    char           categorie[10];
-    char           Message[1000];
-    char           ShortUserData[500];
-
-    for (iIndice = 0; iIndice < ErrorDescCount; iIndice++)
+    bool bFoundCode = false;
+    for (short iIndice = 0; iIndice < ErrorDescCount; iIndice++)
     {
         if (ErrorDesc[iIndice].errorcode == ErrorCode)
         {
@@ -83,67 +78,76 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,int
         }
     }
 
-    strncpy(ShortUserData, UserData, 500);
-    ShortUserData[499] = '\0';
-
-    // Write message to logfile ...
+    typestr message;
+    const char *category = NULL;
     switch(Severity)
     {
         case FORCER:
         case DISPLAY:
-            sprintf(Message,"WARNING (%d)-%2s\n%s",ErrorCode,bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error",ShortUserData);
-            Message[199] = '\0';
-            show_warning(Message);
+            message.allocstr(50);
+            sprintf(message.str(), "WARNING (%d) - ", ErrorCode);
+            message += bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error";
+            message += "\n";
+            message += UserData;
+            show_warning(message.str());
             return 0-ErrorCode;
-        case WARNING: strcpy(categorie,"WARNING "); break;
-        case ERROR: strcpy(categorie,"ERROR "); break;
-        case NOTICE: strcpy(categorie,"NOTICE "); break;
-        case NONERROR: strcpy(categorie,"NO ERROR "); break;
-        default: strcpy(categorie,"FATAL "); break;
+        case WARNING: category = "WARNING"; break;
+        case ERROR: category = "ERROR"; break;
+        case NOTICE: category = "NOTICE"; break;
+        case NONERROR: category = "NO ERROR"; break;
+        default: category = "FATAL"; break;
     }
 
     // Error Code setting
-    itsErrorCode=ErrorCode;
+    itsErrorCode = ErrorCode;
     itsHowManyErrors++;
 
     if (itsLogError)
     {
-        if ((ErrorCode>=9000) || (itsDebugMode))
-            fprintf(itsLogError,"%s(%d)-%s%s%s in %s:%d\n",categorie,ErrorCode,
-                bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error",*UserData ? " : " : "",
-                UserData,FileName,LineNumber);
-        else
-            fprintf(itsLogError,"%s(%d)-%s%s%s\n",categorie,ErrorCode,
-                bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error",*UserData ? " : " : "",
-                UserData);
+        fprintf(itsLogError, "%s (%d) - %s%s%s\n", category, ErrorCode,
+            bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error", *UserData ? " : " : "",
+            UserData);
+        if (ErrorCode >= 9000 || itsDebugMode)
+            fprintf(itsLogError, " in %s:%d\n", FileName, LineNumber);
+        else 
+            fprintf(itsLogError, "\n");
         fflush(itsLogError);
     }
 
-    // Write message to screen
-
-    if ((ErrorCode>=9000) || (itsDebugMode))
-        sprintf(Message,"%s(%d)-%s\n%s\nin %s:%d",categorie,ErrorCode,
-        bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error",ShortUserData,FileName,LineNumber);
-    else
-        sprintf(Message,"%s(%d)-%s\n%s",categorie,ErrorCode,
-        bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error",ShortUserData);
-    Message[999] = '\0';
     switch(Severity)
     {
     case ERROR:
     case WARNING:
     case NOTICE:
-        if (itsMode==INTERACTIVE && itsVerboseMode)
-            show_message(Message);
+        if (itsMode != INTERACTIVE || !itsVerboseMode)
+            return 0-ErrorCode;
         break;
     case NONERROR:
         // Don't show non-errors
-        break;
+        return 0-ErrorCode;
     default:
-        if (itsMode==INTERACTIVE)
-            show_message(Message);
+        if (itsMode != INTERACTIVE)
+            return 0-ErrorCode;
         break;
     }
+    
+    // Write message to screen
+    message.allocstr(100);
+    sprintf(message.str(), "%s (%d) - ", category, ErrorCode);
+    message += bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error";
+    message += "\n";
+    message += UserData;
+    if (ErrorCode >= 9000 || itsDebugMode)
+    {
+        message += " in ";
+        message += FileName;
+        message += ":";
+        char tmp[30];
+        sprintf(tmp, "%d", LineNumber);
+        message += tmp;
+    }
+    show_message(message.str());
+
     return 0-ErrorCode;
 }
 

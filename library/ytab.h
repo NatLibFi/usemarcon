@@ -73,14 +73,14 @@ YYID (i)
   return i;
 }
 #endif
-#define YYFINAL  108
-#define YYLAST   1163
-#define YYNTOKENS  92
+#define YYFINAL  117
+#define YYLAST   1356
+#define YYNTOKENS  97
 #define YYNNTS  12
-#define YYNRULES  141
-#define YYNSTATES  351
+#define YYNRULES  154
+#define YYNSTATES  405
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   343
+#define YYMAXUTOK   348
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -108,6 +108,7 @@ protected:
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
+  virtual int ExistsIn(TypeInst* a_str, TypeCD* a_cd) = 0;
   virtual int InTable(TypeInst*, TypeInst*) = 0;
   virtual typestr ReadCD(TypeCD *) = 0;
   virtual TypeCD* AllocCD() = 0;
@@ -115,10 +116,12 @@ protected:
   virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
   virtual TypeInst* Last_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
   virtual TypeInst* NextSub(TypeCD* aFindCD, TypeInst* aOccurrence) = 0;
+  virtual TypeInst* NextSubIn(TypeInst* aStr, TypeCD* aFindCD, TypeInst* aOccurrence) = 0;
   virtual TypeInst* PreviousSub(TypeCD* aFindCD, TypeInst* aOccurrence) = 0;
-  virtual TypeInst* Soust( TypeInst* t1, TypeInst* t2 ) = 0;
-  virtual TypeInst* Multi( TypeInst* t1, TypeInst* t2 ) = 0;
-  virtual TypeInst* Divis( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* PreviousSubIn(TypeInst* aStr, TypeCD* aFindCD, TypeInst* aOccurrence) = 0;
+  virtual TypeInst* Subtract( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* Multiply( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* Divide( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Value( TypeInst* t ) = 0;
   virtual int MemSto( TypeInst* n ) = 0;
   virtual TypeInst* MemMem( TypeInst* n ) = 0;
@@ -130,13 +133,13 @@ protected:
 
   virtual TypeInst* AllocTypeInst() = 0;
   virtual void FreeTypeInst( TypeInst* t ) = 0;
-  virtual int Copie( TypeInst** In, TypeInst* From ) = 0;
+  virtual int CopyInst( TypeInst** In, TypeInst* From ) = 0;
   virtual int BoolEQ( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual int BoolIn( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual int BoolGT( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual int BoolGE( TypeInst* t1, TypeInst* t2 ) = 0;
-  virtual TypeInst* Ajout( TypeInst* t1, TypeInst* t2 ) = 0;
-  virtual TypeInst* AjoutOcc( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* Add( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* AddOcc( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual char* ToString( TypeInst* t ) = 0;
   virtual TypeInst* String( TypeInst* t ) = 0;
   virtual TypeInst* Upper( TypeInst* t ) = 0;
@@ -145,8 +148,8 @@ protected:
   virtual TypeInst* From( TypeInst* t, int strict ) = 0;
   virtual TypeInst* To( TypeInst* t, int strict ) = 0;
   virtual TypeInst* Between( TypeInst* t1, TypeInst* t2, int strict ) = 0;
-  virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, int at, int strict ) = 0;
-  virtual TypeInst* ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, int strict ) = 0;
+  virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at, bool strict ) = 0;
+  virtual TypeInst* ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, bool strict ) = 0;
   virtual TypeInst* BFirst( TypeInst* t, int k ) = 0;
   virtual TypeInst* EFirst( TypeInst* t, int k ) = 0;
   virtual TypeInst* BLast( TypeInst* t, int k ) = 0;
@@ -157,6 +160,8 @@ protected:
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
   virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
   virtual TypeInst* RegReplaceTable( TypeInst* a_table, TypeInst* a_options) = 0;
+  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix) = 0;
+  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix) = 0;
 
 
 public:
@@ -169,9 +174,9 @@ public:
      WNUMBER = 260,
      WSTRING = 261,
      PLUS = 262,
-     MOINS = 263,
-     MULTIPLIE = 264,
-     DIVISE = 265,
+     MINUS = 263,
+     MULTIPLY = 264,
+     DIVIDE = 265,
      EQ = 266,
      NE = 267,
      _IN = 268,
@@ -180,76 +185,81 @@ public:
      GE = 271,
      LE = 272,
      EXISTS = 273,
-     PRECEDES = 274,
-     FOLLOWS = 275,
-     INTABLE = 276,
-     IF = 277,
-     THEN = 278,
-     ELSE = 279,
-     AND = 280,
-     OR = 281,
-     NOT = 282,
-     BY = 283,
-     _STRICT = 284,
-     AT = 285,
-     BEGINING = 286,
-     BEGINNING = 287,
-     END = 288,
-     BOTH = 289,
-     VARS = 290,
-     VARD = 291,
-     STRING = 292,
-     NUMERIC = 293,
-     VAR_N = 294,
-     VAR_NT = 295,
-     VAR_NS = 296,
-     VAR_NO = 297,
-     VAR_NTO = 298,
-     VAR_NSO = 299,
-     VAR_NEW = 300,
-     TAG = 301,
-     DTAG = 302,
-     STAG = 303,
-     FIX = 304,
-     I1 = 305,
-     I2 = 306,
-     STR = 307,
-     VAL = 308,
-     LEN = 309,
-     STO = 310,
-     MEM = 311,
-     EXC = 312,
-     CLR = 313,
-     LOWER = 314,
-     UPPER = 315,
-     FROM = 316,
-     TO = 317,
-     BETWEEN = 318,
-     _DELETE = 319,
-     REPLACE = 320,
-     REPLACEOCC = 321,
-     BFIRST = 322,
-     EFIRST = 323,
-     BLAST = 324,
-     ELAST = 325,
-     REDO = 326,
-     SORT = 327,
-     NEXT = 328,
-     LAST = 329,
-     TABLE = 330,
-     ORDINAL = 331,
-     YEAR = 332,
-     MONTH = 333,
-     DAY = 334,
-     HOUR = 335,
-     MINUTE = 336,
-     SECOND = 337,
-     NEXTSUB = 338,
-     PREVIOUSSUB = 339,
-     REGFIND = 340,
-     REGMATCH = 341,
-     REGREPLACE = 342,
-     REGREPLACETABLE = 343
+     EXISTSIN = 274,
+     PRECEDES = 275,
+     FOLLOWS = 276,
+     INTABLE = 277,
+     IF = 278,
+     THEN = 279,
+     ELSE = 280,
+     AND = 281,
+     OR = 282,
+     NOT = 283,
+     BY = 284,
+     _STRICT = 285,
+     AT = 286,
+     BEGINING = 287,
+     BEGINNING = 288,
+     END = 289,
+     BOTH = 290,
+     VARS = 291,
+     VARD = 292,
+     STRING = 293,
+     NUMERIC = 294,
+     VAR_N = 295,
+     VAR_NT = 296,
+     VAR_NS = 297,
+     VAR_NO = 298,
+     VAR_NTO = 299,
+     VAR_NSO = 300,
+     VAR_NEW = 301,
+     TAG = 302,
+     DTAG = 303,
+     STAG = 304,
+     FIX = 305,
+     I1 = 306,
+     I2 = 307,
+     STR = 308,
+     VAL = 309,
+     LEN = 310,
+     STO = 311,
+     MEM = 312,
+     EXC = 313,
+     CLR = 314,
+     LOWER = 315,
+     UPPER = 316,
+     FROM = 317,
+     TO = 318,
+     BETWEEN = 319,
+     _DELETE = 320,
+     REPLACE = 321,
+     REPLACEOCC = 322,
+     BFIRST = 323,
+     EFIRST = 324,
+     BLAST = 325,
+     ELAST = 326,
+     REDO = 327,
+     SORT = 328,
+     NEXT = 329,
+     LAST = 330,
+     TABLE = 331,
+     ORDINAL = 332,
+     YEAR = 333,
+     MONTH = 334,
+     DAY = 335,
+     HOUR = 336,
+     MINUTE = 337,
+     SECOND = 338,
+     NEXTSUB = 339,
+     NEXTSUBIN = 340,
+     PREVIOUSSUB = 341,
+     PREVIOUSSUBIN = 342,
+     REGFIND = 343,
+     REGMATCH = 344,
+     REGREPLACE = 345,
+     REGREPLACETABLE = 346,
+     MOVEBEFORE = 347,
+     MOVEAFTER = 348
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

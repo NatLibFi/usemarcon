@@ -2,7 +2,7 @@
 **************************
 version 2.10
 
-August 14 2007
+August 29 2007
 
 The National Library of Finland
 Ere Maijala
@@ -12,6 +12,23 @@ ere.maijala at helsinki.fi
 - Cleaned up the interface ("API") to USEMARCON.
 - Cleaned up file name string handling.
 - Cleaned up header file dependencies.
+- Added duplicate field and subfield processing options.
+- Fixed concatenation of a complete field with multiple subfields
+  to a single subfield.
+- Fixed peeking of output record contents (% operator) in a rule that
+  creates a temporary input field.
+- Added possibility to do RegFind in string given as a parameter.
+- Better UTF-8 support using utf8proc library.
+- Added possibility to use simple macros in the rule file.
+- Added RegReplaceTable() function that can be used to replace a list
+  of strings with a short piece of code.
+- Added possibility to split a line to multiple lines using \ in the
+  of the line.
+- Occurrence parameter in NextSub() and PreviousSub() is now optional.
+- Added MoveBefore and MoveAfter to manipulate subfield positions in
+  a field.
+- Added ExistsIn(), NextSubIn() and PreviousSubIn() to check for 
+  subfields in S or other string.
 
 **************************
 **************************
@@ -24,7 +41,7 @@ Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Fixed initialization of CD's to reset output flag. Fixes spurious 
+- Fixed initialization of CD's to reset output flag. Fixes spurious
   errors when trying to access input record.
 - Improved rule debug mode output and made all output go to console.
 
@@ -39,30 +56,30 @@ Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Renewed the core scanner and parser. Parser is now built with bison 
+- Renewed the core scanner and parser. Parser is now built with bison
   and converted to C++ by a perl script. Scanner is built with flex in
-  C++ mode. Building of them is currently not part of the regular build 
+  C++ mode. Building of them is currently not part of the regular build
   process.
 - Fixed conversion of full fields in field order mode.
 - Added NextSub($x, '>=1') and PreviousSub($x, '>=1') to handle subfield
   occurrences better.
 - Added option to convert all subfield codes to lower case
   (ConvertSubfieldCodesToLowercase=TRUE in [DEFAULT_STATES] section).
-- Added possibility to use nonbreaking conditionals (just leave 'Then' 
-  out from an 'If' clause. 
+- Added possibility to use nonbreaking conditionals (just leave 'Then'
+  out from an 'If' clause.
 - Added possibility to make USEMARCON always create a new field:
   500 | 500(New) | S
 - Fixed concatenation when converting a full field.
 - Fixed using wildcards in subfield codes in field order mode.
-- Added possibility to peek at a converted (output) field by prepending 
+- Added possibility to peek at a converted (output) field by prepending
   the tag code with % (e.g. If (%008/0-5/ = '123456') Then S).
-- Added regexp support for \s, \S, \w, \W, \d, \D, \b and \B 
-  (escape \ in actual rules (e.g. \\s). 
-- Fixed sorting of temporary fields to not lose data when using field 
+- Added regexp support for \s, \S, \w, \W, \d, \D, \b and \B
+  (escape \ in actual rules (e.g. \\s).
+- Fixed sorting of temporary fields to not lose data when using field
   order.
 - Fixed wildcard handling when converting complete fields.
 - Cleaned up a lot of code and got rid of the huge temporary buffers in
-  ErrorHandler and other static buffers. Record or field size is no 
+  ErrorHandler and other static buffers. Record or field size is no
   more limited.
 - Initial support for MARCXML and MarcXchange records (see documentation
   for more information).
@@ -70,7 +87,7 @@ ere.maijala at helsinki.fi
   number.
 - Added possibility to use wildcards (?) with Exists().
 - Empty indicators no longer cause warnings but are written out as is.
-- Added new function InTable('string', 'filename') that can be used to 
+- Added new function InTable('string', 'filename') that can be used to
   check if a value exists in a table file.
   e.g. If (InTable(S, 'table.tbl') Then S; Table('table.tbl')
 
@@ -99,34 +116,34 @@ http://www.kansalliskirjasto.fi/
 ere.maijala at helsinki.fi
 
 - Updated documentation for new features and revised parts of the old docs.
-- Separated interactive mode from file/buffer mode. Now files are used if 
-  buffers are not specified regardless of the mode. Interactive mode 
+- Separated interactive mode from file/buffer mode. Now files are used if
+  buffers are not specified regardless of the mode. Interactive mode
   controls only whether USEMARCON outputs anything on the console.
-- Added possibility to copy the input to output as the default action in 
-  translation tables. This can be accomplished with a magic token COPY in 
+- Added possibility to copy the input to output as the default action in
+  translation tables. This can be accomplished with a magic token COPY in
   #DEFAULT declaration:
-  
+
   #DEFAULT | COPY
-  
-- Added possibility to use question mark as a wildcard in rules. A question 
-  mark can replace any single character in field code or subfield code. For 
-  example the following rules would convert all fields as is (it is assumed 
+
+- Added possibility to use question mark as a wildcard in rules. A question
+  mark can replace any single character in field code or subfield code. For
+  example the following rules would convert all fields as is (it is assumed
   that 00? are control fields, thus no indicators or subfield codes):
-  
+
   00? | 00? | S
   ???I1 | ???I1 | S
   ???I2 | ???I2 | S
-  ???$? | ???$? | S     
+  ???$? | ???$? | S
 
 - Fixed UTF-8 handling. Now it should finally actually work correctly, but
-  it's still a bit limited in that it cannot handle all non-spacing 
+  it's still a bit limited in that it cannot handle all non-spacing
   characters correctly. Now the functions work on complete glypheme clusters
   (=perceived characters) in the supported ranges.
 
 - Bulletproofed several functions to cope better with broken fields.
 
-- Removed dangerous static declarations from the scanner. It's no more 
-  directly recreatable from analyse.l, pending rewrite with better 
+- Removed dangerous static declarations from the scanner. It's no more
+  directly recreatable from analyse.l, pending rewrite with better
   techniques.
 
 **************************
