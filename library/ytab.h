@@ -74,11 +74,11 @@ YYID (i)
 }
 #endif
 #define YYFINAL  117
-#define YYLAST   1356
+#define YYLAST   1372
 #define YYNTOKENS  97
 #define YYNNTS  12
-#define YYNRULES  154
-#define YYNSTATES  405
+#define YYNRULES  156
+#define YYNSTATES  411
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   348
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -160,8 +160,8 @@ protected:
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
   virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
   virtual TypeInst* RegReplaceTable( TypeInst* a_table, TypeInst* a_options) = 0;
-  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix) = 0;
-  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix) = 0;
+  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations) = 0;
+  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations) = 0;
 
 
 public:

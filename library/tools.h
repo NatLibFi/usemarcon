@@ -96,9 +96,12 @@ unsigned int utf8_charindex(const char *str, unsigned long idx);
 int utf8_stricmp(const char *str1, const char *str2);
 
 // File handling
-bool readline(typestr &line, FILE *fh);
+int readline(typestr &line, FILE *fh);
 
 // String classification
 int caps_count(const char *str);
+
+// Trim string
+void trim_string(typestr &a_dst, typestr &a_src);
 
 #endif // _TOOLS_H

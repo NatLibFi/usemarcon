@@ -103,7 +103,7 @@ int TRule::SetLib(const char *aLib)
 ///////////////////////////////////////////////////////////////////////////////
 int TRule::FromString(char *aString, int aLine)
 {
-    char    *ItemPointer;
+/*    char    *ItemPointer;
     int     NbPipes,
             MaxPos,
             CurrentPos,
@@ -118,11 +118,14 @@ int TRule::FromString(char *aString, int aLine)
 
     MaxPos=strlen(aString);
 
+
     // Count the number of '|' characters
     for (CurrentPos=RealPos,NbPipes=0; CurrentPos<MaxPos; CurrentPos++) {
         if (aString[CurrentPos]=='|') {
             NbPipes++;
+
         }
+
     }
 
     if (NbPipes>2)
@@ -144,6 +147,7 @@ int TRule::FromString(char *aString, int aLine)
         // set the CDIn with the CDIn of the previous Rule ( itsLastInputCD )
         if (!itsInputCD)
         {
+
             itsInputCD = new TCD(itsErrorHandler);
             if (!itsInputCD)
                 return -5504;
@@ -186,7 +190,106 @@ int TRule::FromString(char *aString, int aLine)
         break;
     }
 
+
     return NbPipes;
+*/    
+
+    int ReturnCode;
+
+    if (!*aString)
+        // empty lines are ignored
+        return 0;
+
+    mLine = aLine;
+
+    char* firstPipe = NULL;
+    char* secondPipe = NULL;
+
+    char* p = aString;
+    bool in_string = false;
+    while (*p)
+    {
+        if (*p == '\'')
+            in_string = !in_string;
+
+        if (!in_string && *p == '|')
+        {
+            if (!firstPipe) 
+                firstPipe = p;
+            else
+            {
+                secondPipe = p;
+                break;
+            }
+        }
+        ++p;
+    }
+
+    if (secondPipe)
+    {
+        // Looks like a full rule, check if CDIn is specified
+        p = aString;
+        typestr cdin;
+        cdin.str(p, firstPipe - p - 1);
+        cdin.replace(" ", "");
+        if (!cdin.is_empty())
+        {
+            // CDIn is specified
+            itsInputCD = new TCD(itsErrorHandler);
+            if (!itsInputCD)
+                return -5504;
+            if ((ReturnCode = itsInputCD->FromString(cdin.str(), itsLastInputCD, INPUT)) != 0)
+                return -ReturnCode;
+        }
+    }
+    if (firstPipe)
+    {
+        if (!itsInputCD)
+        {
+            // No input CD
+            itsInputCD = new TCD(itsErrorHandler);
+            if (!itsInputCD)
+                return -5504;
+            if ((ReturnCode = itsInputCD->FromString("", itsLastInputCD, INPUT)) != 0)
+                return -ReturnCode;
+        }
+        char* p_end;
+        if (secondPipe)
+        {
+            p = firstPipe + 1;
+            p_end = secondPipe - 1;
+        }
+        else
+        {
+            p = aString;
+            p_end = firstPipe - 1;
+        }
+        typestr cdout;
+        cdout.str(p, p_end - p);
+        cdout.replace(" ", "");
+
+        itsOutputCD = new TCD(itsErrorHandler);
+        if (!itsOutputCD)
+            return -5504;
+        if ((ReturnCode = itsOutputCD->FromString(cdout.str(), itsLastOutputCD, OUTPUT)) != 0)
+            return -ReturnCode;
+    }
+    
+    if (secondPipe)
+        p = secondPipe + 1;
+    else if (firstPipe)
+        p = firstPipe + 1;
+    else 
+        p = aString;
+    
+    typestr tmp = p;
+    typestr rule;
+    trim_string(rule, tmp);
+
+    if (!rule.is_empty() && SetLib(rule.str()))
+        return -5502;
+
+    return secondPipe ? 2 : firstPipe ? 1 : 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

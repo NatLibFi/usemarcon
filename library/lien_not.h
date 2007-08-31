@@ -155,7 +155,8 @@ private:
 
     bool RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global);
 
-    bool move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix);
+    bool move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, 
+        TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations);
 
     /*
     Affichage d'une valeur d' Instruction
@@ -351,9 +352,11 @@ private:
 
     virtual TypeInst* RegReplaceTable(TypeInst* a_table, TypeInst* a_options);
 
-    virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix);
+    virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, 
+        TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations);
 
-    virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix);
+    virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, 
+        TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations);
 
     /*
     InTable( translation, translation )

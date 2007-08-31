@@ -29,6 +29,8 @@ ere.maijala at helsinki.fi
   a field.
 - Added ExistsIn(), NextSubIn() and PreviousSubIn() to check for 
   subfields in S or other string.
+- Fixed rule parser to not get confused over pipe characters embedded
+  in strings.
 
 **************************
 **************************

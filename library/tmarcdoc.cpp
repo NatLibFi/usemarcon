@@ -466,7 +466,7 @@ int TMarcDoc::LoadTagNoInd(int IO, char *Path)
   Previous = Current;
 
   typestr line;
-  while (readline(line, Fic))
+  while (readline(line, Fic) > 0)
   {
     Current->SetTag(line.str());
     Current->SetNext(new TTagNoInd);

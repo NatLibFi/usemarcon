@@ -160,10 +160,11 @@ int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
         *Spec = itsFileInfo;
 
     typestr line;
-    if (!readline(line, File))
+    int lines_read;
+    if (!(lines_read = readline(line, File)))
         return 1;
 
-    ++itsLineNumber;
+    itsLineNumber += lines_read;
     if (LineNumber) *LineNumber=itsLineNumber;
 
     // The current line begins with the '#include' word

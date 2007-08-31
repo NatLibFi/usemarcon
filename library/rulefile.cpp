@@ -145,7 +145,7 @@ int TRuleFile::OpenRuleFile()
             macro = macro->GetNext();
         }
 
-        if (IsRuleAnalysed && strchr(RuleLine.str(), '|'))
+        if (IsRuleAnalysed && HasPipes(RuleLine.str()))
         {
             // This is a new rule to process
             if (itsLastInputCD) { delete itsLastInputCD;    itsLastInputCD  = NULL; }
@@ -493,4 +493,22 @@ void TRuleFile::DelTreeMacros()
         macro = next;
     }
     itsMacros = NULL;
+}
+
+bool TRuleFile::HasPipes(const char *a_str)
+{
+    const char* p = a_str;
+    bool in_string = false;
+    while (*p)
+    {
+        if (*p == '\'')
+            in_string = !in_string;
+
+        if (!in_string && *p == '|')
+        {
+            return true;
+        }
+        ++p;
+    }
+    return false;
 }

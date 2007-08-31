@@ -91,8 +91,8 @@ protected:
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
   virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
   virtual TypeInst* RegReplaceTable( TypeInst* a_table, TypeInst* a_options) = 0;
-  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix) = 0;
-  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix) = 0;
+  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations) = 0;
+  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations) = 0;
 
 */
 
@@ -712,33 +712,45 @@ Translation :
 |       REGREPLACETABLE '(' Translation ',' Translation ')'
                                         { PrintDebug("RegReplaceTable(...,...)");$$=RegReplaceTable($3,$5); $3=$5=NULL; }
 |       MOVEBEFORE '(' Translation ',' CD ')' { PrintDebug("MoveBefore(..., ...)");
-                                          $$=MoveBefore($3, $5, NULL, NULL, NULL); 
+                                          $$=MoveBefore($3, $5, NULL, NULL, NULL, NULL); 
                                           $3=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEBEFORE '(' Translation ',' CD ',' Translation ')' { PrintDebug("MoveBefore(..., ..., ...)");
-                                          $$=MoveBefore($3, $5, $7, NULL, NULL); 
+                                          $$=MoveBefore($3, $5, $7, NULL, NULL, NULL); 
                                           $3=$7=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEBEFORE '(' Translation ',' CD ',' Translation ',' Translation ',' Translation ')' { PrintDebug("MoveBefore(..., ..., ..., ..., ...)");
-                                          $$=MoveBefore($3, $5, $7, $9, $11); 
+                                          $$=MoveBefore($3, $5, $7, $9, $11, NULL); 
                                           $3=$7=$9=$11=NULL; 
                                           $5=NULL;
                                         }
+|       MOVEBEFORE '(' Translation ',' CD ',' Translation ',' Translation ',' 
+            Translation ',' Translation ')' { PrintDebug("MoveBefore(..., ..., ..., ..., ..., ...)");
+                                          $$=MoveBefore($3, $5, $7, $9, $11, $13); 
+                                          $3=$7=$9=$11=$13=NULL; 
+                                          $5=NULL;
+                                        }
 |       MOVEAFTER '(' Translation ',' CD ',' Translation ')' { PrintDebug("MoveAfter(..., ..., ...)");
-                                          $$=MoveAfter($3, $5, $7, NULL, NULL); 
+                                          $$=MoveAfter($3, $5, $7, NULL, NULL, NULL); 
                                           $3=$7=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEAFTER '(' Translation ',' CD ')' { PrintDebug("MoveAfter(..., ...)");
-                                          $$=MoveAfter($3, $5, NULL, NULL, NULL); 
+                                          $$=MoveAfter($3, $5, NULL, NULL, NULL, NULL); 
                                           $3=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEAFTER '(' Translation ',' CD ',' Translation ',' Translation ',' Translation ')' { PrintDebug("MoveAfter(..., ..., ..., ..., ...)");
-                                          $$=MoveAfter($3, $5, $7, $9, $11); 
+                                          $$=MoveAfter($3, $5, $7, $9, $11, NULL); 
                                           $3=$7=$9=$11=NULL; 
+                                          $5=NULL;
+                                        }
+|       MOVEAFTER '(' Translation ',' CD ',' Translation ',' Translation ',' 
+            Translation ',' Translation ')' { PrintDebug("MoveAfter(..., ..., ..., ..., ..., ...)");
+                                          $$=MoveAfter($3, $5, $7, $9, $11, $13); 
+                                          $3=$7=$9=$11=$13=NULL; 
                                           $5=NULL;
                                         }
 ;

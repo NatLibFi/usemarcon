@@ -943,21 +943,19 @@ NEXT ( subfield [,subfield] [,STRICT] )
 */
 TypeInst* TEvaluateRule::Next_( TypeCD* cd1, TypeCD* cd2, int strict )
 {
-    TypeInst* rc;
-    int i1,i2;
-
-    typestr temps = NextSubField( cd1, cd2 );
-    if (!temps.str()) return NULL;
-
-    rc=AllocTypeInst();
-    if (!strict)
+    typestr temps = NextSubField(cd1, cd2);
+    if (!temps.str()) 
     {
-        i1=0;i2=strlen(temps.str());
-        while( (unsigned char)(temps.str()[i1])==' ' ) ++i1;
-        while( (unsigned char)(temps.str()[i2])==' ' ) --i2;
-        ++i2;
+        FreeCD(cd1);
+        FreeCD(cd2);
+        return NULL;
     }
-    rc->str.str(&temps.str()[i1],i2-i1);
+
+    TypeInst* rc = AllocTypeInst();
+    if (!strict)
+        trim_string(rc->str, temps);
+    else
+        rc->str = temps;
 
     FreeCD(cd1);
     FreeCD(cd2);
@@ -969,22 +967,19 @@ LAST ( subfield [,subfield] [,STRICT] )
 */
 TypeInst* TEvaluateRule::Last_( TypeCD* cd1, TypeCD* cd2, int strict )
 {
-    TypeInst* rc;
-    int i1,i2;
-
     typestr temps = PreviousSubField( cd1, cd2 );
-    if (!temps.str()) return NULL;
-
-    rc=AllocTypeInst();
-    if (!strict)
+    if (!temps.str())
     {
-        i1=0;i2=strlen(temps.str());
-        while( (unsigned char)(temps.str()[i1])==' ' ) ++i1;
-        while( (unsigned char)(temps.str()[i2])==' ' ) --i2;
-        ++i2;
+        FreeCD(cd1);
+        FreeCD(cd2);
+        return NULL;
     }
-    // TODO: make this cleaner
-    rc->str.str(&tempo[i1], i2-i1);
+
+    TypeInst* rc = AllocTypeInst();
+    if (!strict)
+        trim_string(rc->str, temps);
+    else
+        rc->str = temps;
 
     FreeCD(cd1);
     FreeCD(cd2);
@@ -1128,6 +1123,8 @@ TypeInst* TEvaluateRule::Subtract( TypeInst* t1, TypeInst* t2 )
     if (t1->str.str() || t2->str.str())
     {
         yyerror("Subtraction can not be done between strings");
+        FreeTypeInst(t1);
+        FreeTypeInst(t2);
         return NULL;
     }
     else
@@ -1138,7 +1135,7 @@ TypeInst* TEvaluateRule::Subtract( TypeInst* t1, TypeInst* t2 )
         FreeTypeInst(t2);
         return rc;
     }
-};
+}
 
 /*
 Instruction * Instruction
@@ -1152,13 +1149,13 @@ TypeInst* TEvaluateRule::Multiply( TypeInst* t1, TypeInst* t2 )
     }
     else
     {
-        TypeInst* rc=AllocTypeInst();
-        rc->val=t1->val*t2->val;
+        TypeInst* rc = AllocTypeInst();
+        rc->val = t1->val * t2->val;
         FreeTypeInst(t1);
         FreeTypeInst(t2);
         return rc;
     }
-};
+}
 
 /*
 Instruction : Instruction
@@ -1168,45 +1165,51 @@ TypeInst* TEvaluateRule::Divide( TypeInst* t1, TypeInst* t2 )
     if (t1->str.str() || t2->str.str())
     {
         yyerror("Division can not be done between strings");
+        FreeTypeInst(t1);
+        FreeTypeInst(t2);
         return NULL;
     }
     else
-        if (t2->val==0)
+        if (t2->val == 0)
         {
             yyerror("Division by 0 error");
+            FreeTypeInst(t1);
+            FreeTypeInst(t2);
             return NULL;
         }
         else
         {
-            TypeInst* rc=AllocTypeInst();
-            rc->val=t1->val/t2->val;
+            TypeInst* rc = AllocTypeInst();
+            rc->val = t1->val / t2->val;
             FreeTypeInst(t1);
             FreeTypeInst(t2);
             return rc;
         }
-};
+}
 
 /*
 VAL( Instruction )
 */
-TypeInst* TEvaluateRule::Value( TypeInst* t )
+TypeInst* TEvaluateRule::Value(TypeInst* t)
 {
-    int i;
-    char*msg;
-    if (!t->str.str()) return t;
-    // TODO: cleaner string implementation
-    for (i=0;t->str.str()[i];++i)
-        if (!isdigit(t->str.str()[i]))
-        {
-            msg=(char*)malloc(strlen(t->str.str())+50);
-            sprintf(msg,"%s cannot be converted to integer",t->str.str());
-            yyerror(msg);
-            free(msg);
-        }
-        t->val=atoi(t->str.str());
-        t->str.freestr();
+    if (!t->str.str()) 
         return t;
-};
+
+    char* p = t->str.str();
+    while (p)
+    {
+        if (!isdigit(*p))
+        {
+            typestr msg = t->str;
+            msg += " cannot be converted to integer";
+            yyerror(msg.str());
+            return NULL;
+        }
+    }
+    t->val = atoi(t->str.str());
+    t->str.freestr();
+    return t;
+}
 
 /*
 STO(i)
@@ -1232,7 +1235,7 @@ int TEvaluateRule::MemSto( TypeInst* n )
         CopyInst(&Memoire[i], S);
         FreeTypeInst(n);
         return 0;
-};
+}
 
 /*
 MEM(i)
@@ -1267,7 +1270,7 @@ TypeInst* TEvaluateRule::MemMem( TypeInst* n )
             yyerror(tmp);
             return NULL;
         }
-};
+}
 
 /*
 CLR(i)
@@ -1292,7 +1295,7 @@ int TEvaluateRule::MemClr( TypeInst* n  )
         Memoire[i]=NULL;
         FreeTypeInst(n);
         return 0;
-};
+}
 
 /*
 EXC(i)
@@ -1327,7 +1330,7 @@ TypeInst* TEvaluateRule::MemExc( TypeInst* n )
             yyerror(tmp);
             return NULL;
         }
-};
+}
 
 TypeInst* TEvaluateRule::AllocTypeInst()
 {
@@ -1337,7 +1340,7 @@ TypeInst* TEvaluateRule::AllocTypeInst()
 void TEvaluateRule::FreeTypeInst( TypeInst* t )
 {
     m_allocator.FreeTypeInst(t);
-};
+}
 
 int TEvaluateRule::CopyInst( TypeInst** In, TypeInst* From )
 {
@@ -1355,7 +1358,7 @@ int TEvaluateRule::CopyInst( TypeInst** In, TypeInst* From )
         (*In)->val=From->val;
     }
     return 0;
-};
+}
 
 
 /*
@@ -1375,7 +1378,7 @@ int TEvaluateRule::BoolEQ( TypeInst* t1, TypeInst* t2 )
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
-};
+}
 
 
 /*
@@ -1393,7 +1396,7 @@ int TEvaluateRule::BoolIn( TypeInst* t1, TypeInst* t2 )
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
-};
+}
 
 
 /*
@@ -1413,7 +1416,7 @@ int TEvaluateRule::BoolGT( TypeInst* t1, TypeInst* t2 )
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
-};
+}
 
 
 /*
@@ -1433,7 +1436,7 @@ int TEvaluateRule::BoolGE( TypeInst* t1, TypeInst* t2 )
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
-};
+}
 
 
 /*
@@ -1441,56 +1444,56 @@ Instruction + Instruction
 */
 TypeInst* TEvaluateRule::Add( TypeInst* t1, TypeInst* t2 )
 {
-    TypeInst* rc;
-
-    rc=AllocTypeInst();
-    if (t1->str.str()==NULL && t2->str.str()==NULL)
+    TypeInst* rc = AllocTypeInst();
+    if (!t1->str.str() && !t2->str.str())
     {
-        rc->val=t1->val+t2->val;
+        rc->val = t1->val + t2->val;
     }
     else
     {
-        rc->val=0;
-        // TODO: cleaner string implementation
-        rc->str.allocstr(strlen(ToString(t1))+strlen(ToString(t2))+1);
-        strcpy(rc->str.str(),t1->str.str());
-        strcat(rc->str.str(),t2->str.str());
+        rc->val = 0;
+        rc->str = t1->str;
+        rc->str += t2->str;
     }
     FreeTypeInst(t1);
     FreeTypeInst(t2);
+
     return rc;
-};
+}
 
 /*
 200(1)
 */
 TypeInst* TEvaluateRule::AddOcc( TypeInst* t1, TypeInst* t2 )
 {
-    TypeInst* rc;
-
-    rc=AllocTypeInst();
-    rc->val=0;
-    rc->str.allocstr(strlen(ToString(t1))+strlen(ToString(t2))+3);
-    sprintf(rc->str.str(),"%s(%d)",t1->str.str(),t2->val);
+    TypeInst* rc = AllocTypeInst();
+    rc->val = 0;
+    rc->str = t1->str;
+    char tmp[30];
+    sprintf(tmp, "(%d)", t2->val);
+    rc->str += tmp;
     FreeTypeInst(t1);
     FreeTypeInst(t2);
+
     return rc;
-};
+}
 
 /*
 Conversion de numerique en char* si necessaire pour une Instruction
 */
-char* TEvaluateRule::ToString( TypeInst* t )
+char* TEvaluateRule::ToString(TypeInst* t)
 {
-    if (t==NULL) return NULL;
-    if (t->str.str()==NULL)
+    if (!t) 
+        return NULL;
+
+    if (!t->str.str())
     {
         char tmp[80];
-        sprintf(tmp,"%d",t->val);
+        sprintf(tmp, "%d", t->val);
         t->str.str(tmp);
     }
     return t->str.str();
-};
+}
 
 /*
 STR( Instruction )
@@ -1580,7 +1583,8 @@ TypeInst* TEvaluateRule::From( TypeInst* t, int strict )
         char *p = S->str.str() + i;
         if (!strict)
         {
-            while(*p == ' ') ++p;
+            while(*p == ' ') 
+                ++p;
         }
         rc->str.str(p);
     }
@@ -1623,11 +1627,15 @@ TypeInst* TEvaluateRule::To( TypeInst* t, int strict )
         *p = '\0';
         if (!strict)
         {
-            while(*p == ' ' && p > rc->str.str()) --p;
-            *p = '\0';
+            p = rc->str.str() + strlen(rc->str.str());
+            while(*p == ' ' && p > rc->str.str())
+            {
+                *p = '\0';
+                --p;
+            }
         }
     }
-    rc->val=0;
+    rc->val = 0;
     FreeTypeInst(t);
     return rc;
 };
@@ -1759,24 +1767,12 @@ TypeInst* TEvaluateRule::Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at
         }
     }
 
-    if (!strict)
-    {
-        char* p = str.str();
-        while (*p == ' ')
-            ++p;
-        strcpy(str.str(), p);
-
-        p = str.str() + strlen(str.str()) - 1;
-        while (p > str.str() && *p == ' ')
-        {
-            *p = '\0';
-            --p;
-        }
-    }
-
     TypeInst* rc = AllocTypeInst();
     rc->val = 0;
-    rc->str = str;
+    if (!strict)
+        trim_string(rc->str, str);
+    else
+        rc->str = str;
     return rc;
 }
 
@@ -1814,24 +1810,12 @@ TypeInst* TEvaluateRule::ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCon
     }
     FreeTypeInst(inCondOcc);
 
-    if (!strict)
-    {
-        char* p = str.str();
-        while (*p == ' ')
-            ++p;
-        strcpy(str.str(), p);
-
-        p = str.str() + strlen(str.str()) - 1;
-        while (p > str.str() && *p == ' ')
-        {
-            *p = '\0';
-            --p;
-        }
-    }
-
     TypeInst* rc = AllocTypeInst();
     rc->val = 0;
-    rc->str = str;
+    if (!strict)
+        trim_string(rc->str, str);
+    else
+        rc->str = str;
     return rc;
 };
 
@@ -2142,7 +2126,7 @@ TypeInst* TEvaluateRule::RegFind( TypeInst* t1, TypeInst* t2 )
     }
     rc->val = itsRegExp.RegFind(search_string.str());
     return rc;
-};
+}
 
 /*
 RegMatch( translation )
@@ -2199,7 +2183,6 @@ TypeInst* TEvaluateRule::RegReplace(TypeInst* a_regexp, TypeInst* a_replacement,
     if (a_options)
     {
         ToString(a_options);
-        // TODO: support for options like i
         global = strchr(a_options->str.str(), 'g') != NULL;
         FreeTypeInst(a_options);
     }
@@ -2232,7 +2215,6 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
     if (a_options)
     {
         ToString(a_options);
-        // TODO: support for options like i
         global = strchr(a_options->str.str(), 'g') != NULL;
         FreeTypeInst(a_options);
     }
@@ -2293,7 +2275,8 @@ int TEvaluateRule::InTable(TypeInst* t1, TypeInst* table)
     return rc;
 }
 
-bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix)
+bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, TypeInst* a_target, 
+                                   TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations)
 {
     if (a_target && !a_target->str.is_empty() && strlen(a_source->str.str()) != strlen(a_target->str.str()))
     {
@@ -2303,6 +2286,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
         FreeTypeInst(a_target);
         FreeTypeInst(a_prefix);
         FreeTypeInst(a_suffix);
+        FreeTypeInst(a_preserved_punctuations);
         return false;
     }
 
@@ -2310,6 +2294,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
     ToString(a_target);
     ToString(a_prefix);
     ToString(a_suffix);
+    ToString(a_preserved_punctuations);
 
     bool result = false;
 
@@ -2317,6 +2302,8 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
     typestr subfields;
 
     // Find the data to move and cut it from the field
+    bool found_after = false;
+    bool found_before = false;
     char* p = strchr(fielddata.str(), START_OF_FIELD);
     while (p)
     {
@@ -2330,7 +2317,51 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
             }
 
             char *p_end = strchr(p + 1, START_OF_FIELD);
+            bool at_eof = !p_end;
             if (!p_end)
+                p_end = p + strlen(p) - 1;
+
+            // Check for any prefix to preserve in the end of the preceding field
+            int before_len = p - fielddata.str();
+            int subfield_len = p_end - p;
+            char* pp = a_preserved_punctuations ? a_preserved_punctuations->str.str() : NULL;
+            while (pp)
+            {
+                char* end_pp = strchr(pp, '|');
+                typestr prefix;
+                if (end_pp)
+                    prefix.str(pp, end_pp - pp);
+                else
+                    prefix = pp;
+                int prefix_len = strlen(prefix.str());
+
+                // Something at the end of the subfield to be moved
+                if (!found_after && subfield_len >= prefix_len)
+                {
+                    char* prep = p_end - prefix_len;
+                    if (strncmp(prep, prefix.str(), prefix_len) == 0)
+                    {
+                        p_end -= prefix_len;
+                        found_after = true;
+                    }
+                }
+                // Something before subfield to be moved
+                if (!found_before && before_len >= prefix_len)
+                {
+                    char* prep = p - prefix_len;
+                    if (strncmp(prep, prefix.str(), prefix_len) == 0)
+                    {
+                        p -= prefix_len;
+                        found_before = true;
+                    }
+                }
+
+                if (!end_pp || (found_after && found_before))
+                    break;
+                pp = end_pp + 1;
+            }
+    
+            if (at_eof)
             {
                 subfields += p;
                 *p = '\0';
@@ -2339,7 +2370,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
             else
             {
                 subfields.append(p, p_end - p);
-                strcpy(p, p_end);
+                memmove(p, p_end, strlen(p_end) + 1);
                 continue;
             }
         }
@@ -2367,6 +2398,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
                 {
                     p = strchr(p + 1, START_OF_FIELD);
                 }
+
                 if (p)
                 {
                     int pos = p - fielddata.str();
@@ -2376,9 +2408,39 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
                 }
                 else
                 {
+                    p = fielddata.str();
                     before = fielddata;
                     after = "";
                 }
+
+                // Check for any prefix to preserve in the end of the preceding field
+                int before_len = strlen(before.str());
+                char* pp = a_preserved_punctuations ? a_preserved_punctuations->str.str() : NULL;
+                while (pp)
+                {
+                    char* end_pp = strchr(pp, '|');
+                    typestr prefix;
+                    if (end_pp)
+                        prefix.str(pp, end_pp - pp);
+                    else
+                        prefix = pp;
+                    int prefix_len = strlen(prefix.str());
+
+                    if (before_len >= prefix_len)
+                    {
+                        char* prep = before.str() + before_len - prefix_len;
+                        if (strncmp(prep, prefix.str(), prefix_len) == 0)
+                        {
+                            *prep = '\0';
+                            after = prefix + after;
+                            break;
+                        }
+                    }
+                    if (!end_pp)
+                        break;
+                    pp = end_pp + 1;
+                }
+
                 if (a_prefix && !a_prefix->str.is_empty())
                     before += a_prefix->str;
                 if (a_suffix && !a_suffix->str.is_empty())
@@ -2393,21 +2455,29 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
     }
 
     if (result)
+    printf("Field : %s\nResult: %s\nSource: %s\nPos: %s\nTarget: %s\nPreserve: %s\n\n",
+        a_fielddata.str(), fielddata.str(), a_source->str.str(), a_new_pos->SubField, a_target->str.str(),
+        a_preserved_punctuations->str.str());
+
+    if (result)
         a_fielddata = fielddata;
+
 
     FreeTypeInst(a_source);
     FreeCD(a_new_pos);
     FreeTypeInst(a_target);
     FreeTypeInst(a_prefix);
     FreeTypeInst(a_suffix);
+    FreeTypeInst(a_preserved_punctuations);
 
     return result;
 }
 
-TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix)
+TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, 
+                                    TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations)
 {
     typestr fielddata = S->str;
-    move_subfields(fielddata, a_source, a_before, false, a_target, a_prefix, a_suffix);
+    move_subfields(fielddata, a_source, a_before, false, a_target, a_prefix, a_suffix, a_preserved_punctuations);
 
     TypeInst *rc = AllocTypeInst();
     rc->str = fielddata;        
@@ -2415,10 +2485,11 @@ TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeIn
     return rc;
 }
 
-TypeInst* TEvaluateRule::MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix)
+TypeInst* TEvaluateRule::MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, 
+                                   TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations)
 {
     typestr fielddata = S->str;
-    move_subfields(fielddata, a_source, a_after, true, a_target, a_prefix, a_suffix);
+    move_subfields(fielddata, a_source, a_after, true, a_target, a_prefix, a_suffix, a_preserved_punctuations);
         
     TypeInst *rc = AllocTypeInst();
     rc->str = fielddata;        

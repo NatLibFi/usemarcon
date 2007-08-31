@@ -536,13 +536,14 @@ int utf8_stricmp(const char *str1, const char *str2)
     return result;
 }
 
-bool readline(typestr &a_line, FILE *a_fh)
+int readline(typestr &a_line, FILE *a_fh)
 {
     a_line = "";
     char buf[1024];
     if (fgets(buf, 1024, a_fh) == NULL)
-        return false;
+        return 0;
     a_line.str(buf);
+    int lines = 1;
     while (*buf)
     {
         int len = strlen(buf);
@@ -550,6 +551,7 @@ bool readline(typestr &a_line, FILE *a_fh)
         {
             if ((len == 2 && *buf == '\\') || (len > 2 && buf[len-2] == '\\' && buf[len-3] != '\\'))
             {
+                ++lines;
                 buf[len-2] = ' ';
             }
             else
@@ -559,7 +561,7 @@ bool readline(typestr &a_line, FILE *a_fh)
             break;
         a_line.append(buf);
     }
-    return true;
+    return lines;
 }
 
 int caps_count(const char *str)
@@ -574,4 +576,15 @@ int caps_count(const char *str)
         ++p;
     }
     return result;
+}
+
+void trim_string(typestr &a_dst, typestr &a_src)
+{
+    char* p = a_src.str();
+    while (*p == ' ')
+        ++p;
+    char* p_end = a_src.str() + strlen(a_src.str()) - 1;
+    while(p_end > p && *p_end == ' ')
+        --p_end;
+    a_dst.str(p, p_end - p + 1);
 }

@@ -57,6 +57,7 @@ public:
 protected:
     void                  DelTreeStringTable();
     void                  DelTreeMacros();
+    bool                  HasPipes(const char *a_str);
 
     TRuleDoc              *itsDocument;
     TRule                 *itsFirstRule;
