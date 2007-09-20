@@ -482,7 +482,7 @@ unsigned int utf8_strlen(const char *str)
     while (*p)
     {
         ++i;
-        long tmp;
+        int32_t tmp;
         unsigned int clen = utf8proc_iterate((uint8_t *) p, -1, &tmp);
         while (*p && clen > 0)
         {
@@ -504,7 +504,7 @@ unsigned int utf8_charindex(const char *str, unsigned long idx)
             ++utf8_idx;
             continue;
         }
-        long tmp;
+        int32_t tmp;
         unsigned int clen = utf8proc_iterate((uint8_t *) p, -1, &tmp);
         if (clen < 0) 
             break;

@@ -40,7 +40,7 @@ Usemarcon::~Usemarcon()
     if (m_outputMarcFileName)
         free(m_outputMarcFileName);
 
-    delete m_application;
+    delete (TUMApplication*) m_application;
 }
 
 void Usemarcon::SetInteractive(bool a_value)
