@@ -235,6 +235,8 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
                     SetTagOccurrenceNumber(CD_NO);
                 else if (!strcmp(tmp.str(), "NEW"))
                     SetTagOccurrenceNumber(CD_NEW);
+                else if (!strcmp(tmp.str(), "NEWEST"))
+                    SetTagOccurrenceNumber(CD_NEWEST);
                 else 
                     SetTagOccurrenceNumber(atoi(tmp.str()));
             }
@@ -400,6 +402,7 @@ bool TCD::ToString(typestr & a_string, int InputOrOutput)
     case CD_NTO: strcpy(szOccTag,"(nto)");              break;
     case CD_NO : strcpy(szOccTag,"(no)");               break;
     case CD_NEW: strcpy(szOccTag,"(new)");              break;
+    case CD_NEWEST: strcpy(szOccTag,"(newest)");        break;
     case CD_NT : bIsOccTagNT=true;
     case 1     :
     case 0     : strcpy(szOccTag,"");                   break;
@@ -418,6 +421,7 @@ bool TCD::ToString(typestr & a_string, int InputOrOutput)
         case CD_NSO: strcpy(szOccSub,"(nso)");          break;
         case CD_NO : strcpy(szOccSub,"(no)");           break;
         case CD_NEW: strcpy(szOccSub,"(new)");          break;
+        case CD_NEWEST: strcpy(szOccSub,"(newest)");    break;
         case CD_NS : bIsOccSubNS=true;
         case 1     :
         case 0     : strcpy(szOccSub,"");               break;

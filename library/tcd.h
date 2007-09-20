@@ -38,6 +38,7 @@ AUTHOR
 #define CD_NTO      -12
 #define CD_NSO      -13
 #define CD_NEW      -20
+#define CD_NEWEST   -21
 
 class TCD
 {

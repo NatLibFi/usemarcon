@@ -30,6 +30,7 @@ protected:
   TypeInst* NSO;
   TypeInst* NTO;
   TypeInst* NEW;
+  TypeInst* NEWEST;
   TypeInst* Memoire[100];
 
   int debug_rule;
@@ -119,7 +120,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <code> BY _STRICT AT BEGINING BEGINNING END BOTH
 
 %token <inst> VARS VARD STRING NUMERIC
-%token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW
+%token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW VAR_NEWEST
 %token <inst> TAG DTAG STAG FIX I1 I2
 %token <inst> STR VAL LEN STO MEM EXC CLR LOWER UPPER
 %token <inst> FROM TO BETWEEN _DELETE REPLACE REPLACEOCC
@@ -576,6 +577,7 @@ Translation :
 |       VAR_NTO                         { PrintDebug("NTO"); CopyInst(&$$,NTO); }
 |       VAR_NSO                         { PrintDebug("NSO");CopyInst(&$$,NSO); }
 |       VAR_NEW                         { PrintDebug("NEW");CopyInst(&$$,NEW); }
+|       VAR_NEWEST                      { PrintDebug("LAST");CopyInst(&$$,NEWEST); }
 |       VARS                            { PrintDebug("S");CopyInst(&$$,S); }
 |       VARD                            { PrintDebug("S");CopyInst(&$$,D); }
 |       CD                              { PrintDebug("CD");

@@ -28,6 +28,7 @@
 #include "rulefile.h"
 
 #define C_NEW -20;
+#define C_NEWEST -21;
 
 int TMarcScannerImpl::LexerInput(char *buf, int max_size)
 {
@@ -145,6 +146,7 @@ int TEvaluateRule::Replace_N_NT_NS( int val, int N, int NT, int NS )
     case CD_NT : return NT;
     case CD_NS : return NS;
     case CD_NEW : return C_NEW;
+    case CD_NEWEST : return C_NEWEST;
     default    : return val;
     }
 }
@@ -181,10 +183,13 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
     NTO=AllocTypeInst();
     NSO=AllocTypeInst();
     NEW=AllocTypeInst();
-    NEW->val = C_NEW;
+    NEWEST=AllocTypeInst();
     CDIn=AllocCD();
-    if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !NEW || !CDIn)
+    if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !NEW || !NEWEST || !CDIn)
         itsErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
+
+    NEW->val = C_NEW;
+    NEWEST->val = C_NEWEST;
 
     // -------------------------------------------------
     // Initialisation du fichier de communication des regles :
@@ -330,6 +335,16 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
 
             bool concatenation = false;
 
+            if (aCDOut->GetTagOccurrenceNumber() == CD_NEWEST)
+            {
+                // Find the correct occurrence number for the newest tag
+                TCD findCD(itsErrorHandler);
+                findCD.SetTag(aCDOut->GetTag());
+                if (Out->PreviousCD(&aCDLOut, &findCD))
+                    aCDOut->SetTagOccurrenceNumber(aCDLOut->GetTagOccurrenceNumber());
+                aCDLOut=Out->GetLastCDLib();
+            }
+            
             // Find previous field from CDLib and initialize value of D from it
             // Note: This is fragile code. There are old conversions that rely on the quirks
             // such as adding a new field by specifying xxx(nto) as the target.
@@ -2453,11 +2468,6 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
             p = strstr(p + 1, a_new_pos->SubField);
         }        
     }
-
-    if (result)
-    printf("Field : %s\nResult: %s\nSource: %s\nPos: %s\nTarget: %s\nPreserve: %s\n\n",
-        a_fielddata.str(), fielddata.str(), a_source->str.str(), a_new_pos->SubField, a_target->str.str(),
-        a_preserved_punctuations->str.str());
 
     if (result)
         a_fielddata = fielddata;

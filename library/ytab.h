@@ -73,14 +73,14 @@ YYID (i)
   return i;
 }
 #endif
-#define YYFINAL  117
-#define YYLAST   1372
-#define YYNTOKENS  97
+#define YYFINAL  118
+#define YYLAST   1381
+#define YYNTOKENS  98
 #define YYNNTS  12
-#define YYNRULES  156
-#define YYNSTATES  411
+#define YYNRULES  157
+#define YYNSTATES  412
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   348
+#define YYMAXUTOK   349
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -99,6 +99,7 @@ protected:
   TypeInst* NSO;
   TypeInst* NTO;
   TypeInst* NEW;
+  TypeInst* NEWEST;
   TypeInst* Memoire[100];
 
   int debug_rule;
@@ -213,53 +214,54 @@ public:
      VAR_NTO = 299,
      VAR_NSO = 300,
      VAR_NEW = 301,
-     TAG = 302,
-     DTAG = 303,
-     STAG = 304,
-     FIX = 305,
-     I1 = 306,
-     I2 = 307,
-     STR = 308,
-     VAL = 309,
-     LEN = 310,
-     STO = 311,
-     MEM = 312,
-     EXC = 313,
-     CLR = 314,
-     LOWER = 315,
-     UPPER = 316,
-     FROM = 317,
-     TO = 318,
-     BETWEEN = 319,
-     _DELETE = 320,
-     REPLACE = 321,
-     REPLACEOCC = 322,
-     BFIRST = 323,
-     EFIRST = 324,
-     BLAST = 325,
-     ELAST = 326,
-     REDO = 327,
-     SORT = 328,
-     NEXT = 329,
-     LAST = 330,
-     TABLE = 331,
-     ORDINAL = 332,
-     YEAR = 333,
-     MONTH = 334,
-     DAY = 335,
-     HOUR = 336,
-     MINUTE = 337,
-     SECOND = 338,
-     NEXTSUB = 339,
-     NEXTSUBIN = 340,
-     PREVIOUSSUB = 341,
-     PREVIOUSSUBIN = 342,
-     REGFIND = 343,
-     REGMATCH = 344,
-     REGREPLACE = 345,
-     REGREPLACETABLE = 346,
-     MOVEBEFORE = 347,
-     MOVEAFTER = 348
+     VAR_NEWEST = 302,
+     TAG = 303,
+     DTAG = 304,
+     STAG = 305,
+     FIX = 306,
+     I1 = 307,
+     I2 = 308,
+     STR = 309,
+     VAL = 310,
+     LEN = 311,
+     STO = 312,
+     MEM = 313,
+     EXC = 314,
+     CLR = 315,
+     LOWER = 316,
+     UPPER = 317,
+     FROM = 318,
+     TO = 319,
+     BETWEEN = 320,
+     _DELETE = 321,
+     REPLACE = 322,
+     REPLACEOCC = 323,
+     BFIRST = 324,
+     EFIRST = 325,
+     BLAST = 326,
+     ELAST = 327,
+     REDO = 328,
+     SORT = 329,
+     NEXT = 330,
+     LAST = 331,
+     TABLE = 332,
+     ORDINAL = 333,
+     YEAR = 334,
+     MONTH = 335,
+     DAY = 336,
+     HOUR = 337,
+     MINUTE = 338,
+     SECOND = 339,
+     NEXTSUB = 340,
+     NEXTSUBIN = 341,
+     PREVIOUSSUB = 342,
+     PREVIOUSSUBIN = 343,
+     REGFIND = 344,
+     REGMATCH = 345,
+     REGREPLACE = 346,
+     REGREPLACETABLE = 347,
+     MOVEBEFORE = 348,
+     MOVEAFTER = 349
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
