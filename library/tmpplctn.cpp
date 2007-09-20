@@ -15,6 +15,7 @@
 #define _MAIN_
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 
 #include "tools.h"
 #include "defines.h"
