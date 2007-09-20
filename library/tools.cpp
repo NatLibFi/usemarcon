@@ -540,25 +540,32 @@ int readline(typestr &a_line, FILE *a_fh)
 {
     a_line = "";
     char buf[1024];
-    if (fgets(buf, 1024, a_fh) == NULL)
-        return 0;
-    a_line.str(buf);
     int lines = 1;
-    while (*buf)
+    bool eol = false;
+    bool first = true;
+    while (!eol)
     {
+        if (fgets(buf, 1024, a_fh) == NULL)
+        {
+            if (first)
+                return 0;
+            break;
+        }
+        first = false;
+
         int len = strlen(buf);
         if (buf[len-1] == '\n')
         {
-            if ((len == 2 && *buf == '\\') || (len > 2 && buf[len-2] == '\\' && buf[len-3] != '\\'))
+            if ((len == 2 && buf[len-2] == '\\') || (len > 2 && buf[len-2] == '\\' && buf[len-3] != '\\'))
             {
                 ++lines;
                 buf[len-2] = ' ';
             }
             else
-                break;
+            {
+                eol = true;
+            }
         }
-        if (fgets(buf, 1024, a_fh) == NULL)
-            break;
         a_line.append(buf);
     }
     return lines;
