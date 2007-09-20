@@ -429,6 +429,7 @@ TCHAR *CRegExp::regatom(int *flagp)
                     regc(*regparse);
                     break;
                 }
+                ++regparse;
             }
             else if (c != _T('-'))
                 regc(c);
