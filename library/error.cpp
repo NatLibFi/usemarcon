@@ -69,7 +69,8 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
                          int LineNumber, const char *UserData)
 {
     bool bFoundCode = false;
-    for (short iIndice = 0; iIndice < ErrorDescCount; iIndice++)
+    short iIndice;
+    for (iIndice = 0; iIndice < ErrorDescCount; iIndice++)
     {
         if (ErrorDesc[iIndice].errorcode == ErrorCode)
         {
