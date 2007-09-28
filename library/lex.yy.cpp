@@ -282,8 +282,8 @@ static yyconst short int yy_acclist[273] =
        73,   72,   70,   71,   29,   77, 8195, 8195,   62,   63,
        76,   78,   74,   75,   62,   63,   60,   52,   61,   58,
        66,   81,   26,   64,   82,   51,   65,   60,   61,   50,
-       69,   95,   84,   83,   90,   91,   53,   67,   68,   92,
-       57,   97,   85,   59,   96,   88,   89,   93,   54,   86,
+       69,   95,   84,   83,   88,   89,   53,   67,   68,   92,
+       57,   97,   85,   59,   96,   90,   91,   93,   54,   86,
        87,   94
     } ;
 
@@ -1270,19 +1270,19 @@ return MarcParser::PREVIOUSSUBIN;
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-return MarcParser::REGFINDNUM;
+return MarcParser::REGFIND;
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-return MarcParser::REGFINDPOS;
+return MarcParser::REGFIND;
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-return MarcParser::REGFIND;
+return MarcParser::REGFINDNUM;
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-return MarcParser::REGFIND;
+return MarcParser::REGFINDPOS;
 	YY_BREAK
 case 92:
 YY_RULE_SETUP

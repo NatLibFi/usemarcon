@@ -74,7 +74,7 @@
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories=".;../pcre"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
@@ -91,6 +91,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\pcre\Release\pcre.lib"
 				OutputFile=".\Release\usemarcon_library.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool

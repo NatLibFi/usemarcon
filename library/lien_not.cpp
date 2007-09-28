@@ -2105,7 +2105,7 @@ TypeInst* TEvaluateRule::Table_( TypeInst* Nom )
     return rc;
 };
 
-bool TEvaluateRule::RegFindInternal(typestr &a_str, const char *a_regexp)
+bool TEvaluateRule::RegFindInternal(const char *a_str, const char *a_regexp)
 {
     int re_opts = itsUTF8Mode ? PCRE_UTF8 : 0;
     int error_code = 0;
@@ -2175,7 +2175,7 @@ TypeInst* TEvaluateRule::RegFindNum( TypeInst* t1, TypeInst* t2 )
     }
     FreeTypeInst(t1);
 
-    if (RegFindInternal(search_string, regexp.str()))
+    if (RegFindInternal(search_string.str(), regexp.str()))
     {
         rc->val = (mRegExpResult == PCRE_ERROR_NOMATCH) ? 0 : mRegExpResult;
     }
@@ -2207,7 +2207,7 @@ TypeInst* TEvaluateRule::RegFindPos( TypeInst* t1, TypeInst* t2 )
     }
     FreeTypeInst(t1);
 
-    if (RegFindInternal(search_string, regexp.str()))
+    if (RegFindInternal(search_string.str(), regexp.str()))
     {
         if (mRegExpResult != PCRE_ERROR_NOMATCH)
             rc->val = mRegExpMatchVector[0] + 1;
@@ -2219,7 +2219,7 @@ TypeInst* TEvaluateRule::RegFindPos( TypeInst* t1, TypeInst* t2 )
 TypeInst* TEvaluateRule::RegFind( TypeInst* t1, TypeInst* t2 )
 {
     TypeInst *rc = RegFindNum(t1, t2);
-    if (rc->val > 0)
+    if (rc->val >= 0)
         --rc->val;
     return rc;
 }
@@ -2249,9 +2249,11 @@ TypeInst* TEvaluateRule::RegMatch( TypeInst* t1 )
 
 bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global)
 {
-    while (1)
+    int loop_count = 0;
+    int start_pos = 0;
+    while (loop_count++ < 10000)
     {
-        if (!RegFindInternal(a_str, a_regexp))
+        if (!RegFindInternal(a_str.str() + start_pos, a_regexp))
         {
             return false;
         }
@@ -2270,7 +2272,7 @@ bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, con
                 else if (isdigit(*p))
                 {
                     int index = *p - '0';
-                    replacement.append(mRegExpSearchString.str() + mRegExpMatchVector[2 * index], mRegExpMatchVector[2 * index + 1]);
+                    replacement.append(mRegExpSearchString.str() + mRegExpMatchVector[2 * index], mRegExpMatchVector[2 * index + 1] - mRegExpMatchVector[2 * index]);
                 }
             }
             else
@@ -2282,8 +2284,11 @@ bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, con
         typestr tmp;
         tmp.str(mRegExpSearchString.str(), replace_start);
         tmp.append(replacement);
-        tmp.append(&mRegExpSearchString.str()[replace_end]);
-        a_str = tmp;
+        int prev_start_pos = start_pos;
+        start_pos = strlen(tmp.str());
+        tmp.append(mRegExpSearchString.str() + replace_end);
+        *(a_str.str() + prev_start_pos) = '\0';
+        a_str.append(tmp);
 
         if (!a_global)
             break;

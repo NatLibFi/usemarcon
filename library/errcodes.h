@@ -7,7 +7,7 @@ typedef struct
     const char *description;
 } ERRORDESC;
 
-const int ErrorDescCount = 87;
+const int ErrorDescCount = 86;
 
 const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {510, "Comment is too long and will be truncated"},
@@ -47,7 +47,6 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
 
     {3000, "Memory allocation error"},
     {3001, "Character not transcoded (unable to find it in transcoding table)"},
-    {3002, "RegFind is deprecated, prefer RegFindPos or RegFindNum"},
     
     {5000, "Memory allocation error"},
     {5001, "The selected rule file does not exist"},

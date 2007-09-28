@@ -152,7 +152,7 @@ private:
     virtual void FreeCD( TypeCD* CD );
     virtual void PrintDebug(const char *s);
 
-    bool RegFindInternal(typestr &a_str, const char *a_regexp);
+    bool RegFindInternal(const char *a_str, const char *a_regexp);
     bool RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global);
 
     bool move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, 
