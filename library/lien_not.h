@@ -35,7 +35,7 @@ AUTHOR
 #include "typedef.h"
 #include "FlexLexer.h"
 #include "mempool.h"
-#include "regexp.h"
+#include "pcre.h"
 
 // forward declarations
 class SortElem;
@@ -78,8 +78,8 @@ public:
 class TEvaluateRule : public MarcParser
 {
 public:
-    TEvaluateRule       () : ListSort(NULL), RedoStr(NULL), MainInput(NULL), AfterRedo(0),
-        Fini(0)
+    TEvaluateRule       () : ListSort(NULL), RedoStr(NULL), MainInput(NULL), AfterRedo(0), 
+        mRegExpResult(0)
     {
         debug_rule = 0;
         itsScanner.SetAllocator(&m_allocator);
@@ -114,17 +114,16 @@ private:
     TError*    itsErrorHandler;
     bool       itsUTF8Mode;
 
-    CRegExp    itsRegExp;
-
-    char TmpRule[80];
+    typestr    mRegExpSearchString;
+    int        mRegExpMatchVector[30];
+    int        mRegExpResult;
 
     int Eval;
     int Error;
     char *RedoStr;
     char *MainInput;
     int AfterRedo;
-    int Fini;
-
+    
     virtual int Precedes(TypeCD *, TypeCD *);
     virtual int Exists(TypeCD *);
     virtual int ExistsIn(TypeInst* a_str, TypeCD* a_cd);
@@ -153,6 +152,7 @@ private:
     virtual void FreeCD( TypeCD* CD );
     virtual void PrintDebug(const char *s);
 
+    bool RegFindInternal(typestr &a_str, const char *a_regexp);
     bool RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global);
 
     bool move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, 
@@ -338,9 +338,8 @@ private:
     */
     virtual TypeInst* Table_( TypeInst* Nom );
 
-    /*
-    RegFind( translation, translation )
-    */
+    virtual TypeInst* RegFindNum( TypeInst* t1, TypeInst* t2 );
+    virtual TypeInst* RegFindPos( TypeInst* t1, TypeInst* t2 );
     virtual TypeInst* RegFind( TypeInst* t1, TypeInst* t2 );
 
     /*

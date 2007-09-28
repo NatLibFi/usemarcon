@@ -224,3 +224,10 @@ void TError::WriteError(char *message)
     if (itsMode==INTERACTIVE)
         printf(message);
 }
+
+const char* TError::GetPCREErrorDesc(int a_index)
+{
+    if (a_index >= 0 && a_index <= sizeof(PCREErrorDesc) / sizeof(char *))
+        return PCREErrorDesc[a_index];
+    return "";
+}

@@ -88,6 +88,8 @@ protected:
   virtual TypeInst* ELast( TypeInst* t, int k ) = 0;
   virtual TypeInst* Table_( TypeInst* Nom ) = 0;
   virtual void PrintDebug(const char*) = 0;
+  virtual TypeInst* RegFindNum( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* RegFindPos( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* RegFind( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
   virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
@@ -128,7 +130,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <inst> REDO SORT NEXT LAST TABLE ORDINAL
 %token <inst> YEAR MONTH DAY HOUR MINUTE SECOND
 %token <inst> NEXTSUB NEXTSUBIN PREVIOUSSUB PREVIOUSSUBIN 
-%token <inst> REGFIND REGMATCH REGREPLACE REGREPLACETABLE
+%token <inst> REGFINDNUM REGFINDPOS REGFIND REGMATCH REGREPLACE REGREPLACETABLE
 %token <inst> MOVEBEFORE MOVEAFTER
 
 %left  SEP PLUS MINUS MULTIPLY DIVIDE
@@ -702,6 +704,10 @@ Translation :
                                   return 2;
                                 }
 |       TABLE '(' STRING ')'            { PrintDebug("Table(...)");$$=Table_($3); $3=NULL; }
+|       REGFINDNUM '(' Translation ')'  { PrintDebug("RegFindNum(...)");$$=RegFindNum($3, NULL); $3=NULL; }
+|       REGFINDNUM '(' Translation ',' Translation ')'     { PrintDebug("RegFindNum(...,...)");$$=RegFindNum($3,$5); $3=$5=NULL; }
+|       REGFINDPOS '(' Translation ')'  { PrintDebug("RegFindPos(...)");$$=RegFindPos($3, NULL); $3=NULL; }
+|       REGFINDPOS '(' Translation ',' Translation ')'     { PrintDebug("RegFindPos(...,...)");$$=RegFindPos($3,$5); $3=$5=NULL; }
 |       REGFIND '(' Translation ')'     { PrintDebug("RegFind(...)");$$=RegFind($3, NULL); $3=NULL; }
 |       REGFIND '(' Translation ',' Translation ')'     { PrintDebug("RegFind(...,...)");$$=RegFind($3,$5); $3=$5=NULL; }
 |       REGMATCH '(' Translation ')'    { PrintDebug("RegMatch(...)");$$=RegMatch($3); $3=NULL; }

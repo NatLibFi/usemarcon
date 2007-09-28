@@ -82,6 +82,8 @@ public:
 
     char  *GetLastErrorMessage  (void) { return itsLastErrorMessage; };
 
+    const char* GetPCREErrorDesc(int a_index);
+
     // Just an easy way to distribute this information to others
     bool  GetUTF8Mode           (void) { return itsUTF8Mode; }
     void  SetUTF8Mode           (bool UTF8Mode) { itsUTF8Mode = UTF8Mode; }

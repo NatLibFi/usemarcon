@@ -31,6 +31,12 @@ ere.maijala at helsinki.fi
   subfields in S or other string.
 - Fixed rule parser to not get confused over pipe characters embedded
   in strings.
+- Fixed regular expressions handling to handle escaped characters 
+  properly inside square brackets.
+- Added occurrence specifier "newest" that can be used to target the
+  last occurrence of the tag.
+- Switched regular expressions support to use PCRE for added features.
+- Added RegFindPos and RegFindNum.
 
 **************************
 **************************

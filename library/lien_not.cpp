@@ -154,7 +154,7 @@ int TEvaluateRule::Replace_N_NT_NS( int val, int N, int NT, int NS )
 
 void TEvaluateRule::ResetRedo()
 {
-    AfterRedo=Fini=RedoFlag=false;
+    AfterRedo=RedoFlag=false;
     if (RedoStr) free(RedoStr);
     RedoStr=NULL;
     if (MainInput) free(MainInput);
@@ -2105,10 +2105,54 @@ TypeInst* TEvaluateRule::Table_( TypeInst* Nom )
     return rc;
 };
 
-/*
-RegFind( translation, translation )
-*/
-TypeInst* TEvaluateRule::RegFind( TypeInst* t1, TypeInst* t2 )
+bool TEvaluateRule::RegFindInternal(typestr &a_str, const char *a_regexp)
+{
+    int re_opts = itsUTF8Mode ? PCRE_UTF8 : 0;
+    int error_code = 0;
+    const char *error_ptr = NULL;
+    int error_offset = 0;
+    pcre* re = pcre_compile2(a_regexp, re_opts, &error_code, &error_ptr, &error_offset, NULL);
+    if (!re)
+    {
+        typestr error = "Could not compile regular expression '";
+        error += a_regexp;
+        error += "': ";
+        error += itsErrorHandler->GetPCREErrorDesc(error_code);
+        if (error_ptr)
+        {
+            error += " at ";
+            error += error_ptr;
+        }
+        error += " (offset ";
+        char offset_str[30];
+        sprintf(offset_str, "%d", error_offset);
+        error += offset_str;
+        error += ")";
+        yyerror(error.str());
+        return false;
+    }
+
+    mRegExpSearchString = a_str;
+
+    mRegExpResult = pcre_exec(re, NULL, mRegExpSearchString.str(), strlen(mRegExpSearchString.str()), 0, 0, mRegExpMatchVector, sizeof(mRegExpMatchVector) / sizeof(int));
+    pcre_free(re);
+    if (mRegExpResult == 0)
+        mRegExpResult = sizeof(mRegExpMatchVector) / sizeof(int) / 3;
+    else if (mRegExpResult < 0 && mRegExpResult != PCRE_ERROR_NOMATCH)
+    {
+        char ret_str[30];
+        sprintf(ret_str, "%d", mRegExpResult);
+        typestr error = "Evaluation of regular expression '";
+        error += a_regexp;
+        error += "', error code ";
+        error += ret_str;
+        yyerror(error.str());
+        return false;
+    }
+    return true;
+}
+
+TypeInst* TEvaluateRule::RegFindNum( TypeInst* t1, TypeInst* t2 )
 {
     TypeInst *rc = AllocTypeInst();
     rc->val = -1;
@@ -2131,15 +2175,52 @@ TypeInst* TEvaluateRule::RegFind( TypeInst* t1, TypeInst* t2 )
     }
     FreeTypeInst(t1);
 
-    if (!itsRegExp.RegComp(regexp.str()))
+    if (RegFindInternal(search_string, regexp.str()))
     {
-        typestr error = "Could not compile regular expression '";
-        error += regexp.str();
-        error += "'";
-        yyerror(error.str());
-        return rc;
+        rc->val = (mRegExpResult == PCRE_ERROR_NOMATCH) ? 0 : mRegExpResult;
     }
-    rc->val = itsRegExp.RegFind(search_string.str());
+
+    return rc;
+}
+
+
+TypeInst* TEvaluateRule::RegFindPos( TypeInst* t1, TypeInst* t2 )
+{
+    TypeInst *rc = AllocTypeInst();
+    rc->val = -1;
+    ToString(S);
+    ToString(t1);
+
+    typestr search_string;
+    typestr regexp;
+    if (t2)
+    {
+        ToString(t2);
+        search_string = t1->str;
+        regexp = t2->str;
+        FreeTypeInst(t2);
+    }
+    else
+    {
+        search_string = S->str;
+        regexp = t1->str;
+    }
+    FreeTypeInst(t1);
+
+    if (RegFindInternal(search_string, regexp.str()))
+    {
+        if (mRegExpResult != PCRE_ERROR_NOMATCH)
+            rc->val = mRegExpMatchVector[0] + 1;
+    }
+
+    return rc;
+}
+
+TypeInst* TEvaluateRule::RegFind( TypeInst* t1, TypeInst* t2 )
+{
+    TypeInst *rc = RegFindNum(t1, t2);
+    if (rc->val > 0)
+        --rc->val;
     return rc;
 }
 
@@ -2154,35 +2235,56 @@ TypeInst* TEvaluateRule::RegMatch( TypeInst* t1 )
         FreeTypeInst(t1);
         return NULL;
     }
-    char *match = itsRegExp.GetMatch(t1->val);
-    TypeInst *rc = AllocTypeInst();
-    rc->str.str(match ? match : "");
-    delete []match;
-
+    int index = t1->val;
     FreeTypeInst(t1);
+    TypeInst *rc = AllocTypeInst();
+    if (index < 0 || index >= mRegExpResult)
+        rc->str.str("");
+    else
+    {
+        rc->str.str(mRegExpSearchString.str() + mRegExpMatchVector[2 * index], mRegExpMatchVector[2 * index + 1]);
+    }
     return rc;
 }
 
 bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global)
 {
-    if (!itsRegExp.RegComp(a_regexp))
+    while (1)
     {
-        return false;
-    }
-    int pos;
-    while ((pos = itsRegExp.RegFind(a_str.str())) >= 0)
-    {
-        char *buf = itsRegExp.GetReplaceString(a_replacement);
-        if (buf)
+        if (!RegFindInternal(a_str, a_regexp))
         {
-            typestr tmp = a_str;
-            tmp.promise(strlen(a_str.str()) + strlen(buf));
-            tmp.str()[pos] = '\0';
-            strcat(tmp.str(), buf);
-            strcat(tmp.str(), a_str.str() + pos + itsRegExp.GetFindLen());
-            a_str = tmp;
-            delete [] buf;
+            return false;
         }
+        if (mRegExpResult == PCRE_ERROR_NOMATCH)
+            break;
+        
+        typestr replacement;
+        const char *p = a_replacement;
+        while (*p)
+        {
+            if (*p == '\\')
+            {
+                ++p;
+                if (*p == '\\')
+                    replacement.append_char('\\');
+                else if (isdigit(*p))
+                {
+                    int index = *p - '0';
+                    replacement.append(mRegExpSearchString.str() + mRegExpMatchVector[2 * index], mRegExpMatchVector[2 * index + 1]);
+                }
+            }
+            else
+                replacement.append_char(*p);
+            ++p;
+        }
+        int replace_start = mRegExpMatchVector[0];
+        int replace_end = mRegExpMatchVector[1];
+        typestr tmp;
+        tmp.str(mRegExpSearchString.str(), replace_start);
+        tmp.append(replacement);
+        tmp.append(&mRegExpSearchString.str()[replace_end]);
+        a_str = tmp;
+
         if (!a_global)
             break;
     }

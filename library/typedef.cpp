@@ -160,7 +160,7 @@ void typestr::replace(const char *src, const char *dst)
 
 typestr & typestr::append(const typestr & a_str)
 {
-    append(a_str.m_str);
+    append(a_str.m_str ? a_str.m_str : "");
     return *this;
 }
 

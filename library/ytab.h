@@ -73,14 +73,14 @@ YYID (i)
   return i;
 }
 #endif
-#define YYFINAL  118
-#define YYLAST   1381
-#define YYNTOKENS  98
+#define YYFINAL  122
+#define YYLAST   1427
+#define YYNTOKENS  100
 #define YYNNTS  12
-#define YYNRULES  157
-#define YYNSTATES  412
+#define YYNRULES  161
+#define YYNSTATES  426
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   349
+#define YYMAXUTOK   351
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -157,6 +157,8 @@ protected:
   virtual TypeInst* ELast( TypeInst* t, int k ) = 0;
   virtual TypeInst* Table_( TypeInst* Nom ) = 0;
   virtual void PrintDebug(const char*) = 0;
+  virtual TypeInst* RegFindNum( TypeInst* t1, TypeInst* t2 ) = 0;
+  virtual TypeInst* RegFindPos( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* RegFind( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
   virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
@@ -256,12 +258,14 @@ public:
      NEXTSUBIN = 341,
      PREVIOUSSUB = 342,
      PREVIOUSSUBIN = 343,
-     REGFIND = 344,
-     REGMATCH = 345,
-     REGREPLACE = 346,
-     REGREPLACETABLE = 347,
-     MOVEBEFORE = 348,
-     MOVEAFTER = 349
+     REGFINDNUM = 344,
+     REGFINDPOS = 345,
+     REGFIND = 346,
+     REGMATCH = 347,
+     REGREPLACE = 348,
+     REGREPLACETABLE = 349,
+     MOVEBEFORE = 350,
+     MOVEAFTER = 351
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

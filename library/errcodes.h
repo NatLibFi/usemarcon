@@ -1,12 +1,15 @@
+#ifndef _ERRCODES_H_
+#define _ERRCODES_H_
+
 typedef struct 
 {
     int errorcode;
     const char *description;
 } ERRORDESC;
 
-const int ErrorDescCount = 86;
+const int ErrorDescCount = 87;
 
-ERRORDESC ErrorDesc[ErrorDescCount] = {
+const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {510, "Comment is too long and will be truncated"},
     {511, "Line is too long and will be truncated"},
       
@@ -44,6 +47,7 @@ ERRORDESC ErrorDesc[ErrorDescCount] = {
 
     {3000, "Memory allocation error"},
     {3001, "Character not transcoded (unable to find it in transcoding table)"},
+    {3002, "RegFind is deprecated, prefer RegFindPos or RegFindNum"},
     
     {5000, "Memory allocation error"},
     {5001, "The selected rule file does not exist"},
@@ -101,3 +105,65 @@ ERRORDESC ErrorDesc[ErrorDescCount] = {
     {9506, "Unable to read two first lines of an ASCII file"}
 };
 
+const char * PCREErrorDesc[] = {
+    "no error",  
+    "\\ at end of pattern",
+    "\\c at end of pattern",
+    "unrecognized character follows \\",
+    "numbers out of order in {} quantifier",
+    "number too big in {} quantifier",
+    "missing terminating ] for character class",
+    "invalid escape sequence in character class",
+    "range out of order in character class",
+    "nothing to repeat",
+    "",
+    "internal error: unexpected repeat",
+    "unrecognized character after (?",
+    "POSIX named classes are supported only within a class",
+    "missing )",
+    "reference to non-existent subpattern",
+    "erroffset passed as NULL",
+    "unknown option bit(s) set",
+    "missing ) after comment",
+    "[this code is not in use]",
+    "regular expression too large",
+    "failed to get memory",
+    "unmatched parentheses",
+    "internal error: code overflow",
+    "unrecognized character after (?<",
+    "lookbehind assertion is not fixed length",
+    "malformed number or name after (?(",
+    "conditional group contains more than two branches",
+    "assertion expected after (?(",
+    "(?R or (?[+-]digits must be followed by )",
+    "unknown POSIX class name",
+    "POSIX collating elements are not supported",
+    "this version of PCRE is not compiled with PCRE_UTF8 support",
+    "",
+    "character value in \\x{...} sequence is too large",
+    "invalid condition (?(0)",
+    "\\C not allowed in lookbehind assertion",
+    "PCRE does not support \\L, \\l, \\N, \\U, or \\u",
+    "number after (?C is > 255",
+    "closing ) for (?C expected",
+    "recursive call could loop indefinitely",
+    "unrecognized character after (?P",
+    "syntax error in subpattern name (missing terminator)",
+    "two named subpatterns have the same name",
+    "invalid UTF-8 string",
+    "support for \\P, \\p, and \\X has not been compiled",
+    "malformed \\P or \\p sequence",
+    "unknown property name after \\P or \\p",
+    "subpattern name is too long (maximum 32 characters)",
+    "too many named subpatterns (maximum 10,000)",
+    "",
+    "octal value is greater than \\377 (not in UTF-8 mode)",
+    "internal error: overran compiling workspace",
+    "internal error: previously-checked referenced subpattern not found",
+    "DEFINE group contains more than one branch",
+    "repeating a DEFINE group is not allowed",
+    "inconsistent NEWLINE options",
+    "\\g is not followed by a braced name or an optionally braced non-zero number",
+    "(?+ or (?- or (?(+ or (?(- must be followed by a non-zero number",
+};
+#endif
