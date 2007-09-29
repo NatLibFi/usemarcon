@@ -106,7 +106,6 @@ private:
 
     TUMRecord* InputRecord, *OutputRecord, *RealOutputRecord;
     TCDLib*    InputCDL;
-    TCD*       theCDOut;
     TRule*     CurrentRule;
     TRuleDoc*  RuleDoc;
     SortElem*  ListSort;
@@ -156,7 +155,8 @@ private:
     bool RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global);
 
     bool move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, 
-        TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations);
+        TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations,
+        TypeInst* a_preserved_subfields);
 
     /*
     Affichage d'une valeur d' Instruction
@@ -352,10 +352,10 @@ private:
     virtual TypeInst* RegReplaceTable(TypeInst* a_table, TypeInst* a_options);
 
     virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, 
-        TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations);
+        TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, TypeInst* a_preserved_subfields);
 
     virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, 
-        TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations);
+        TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, TypeInst* a_preserved_subfields);
 
     /*
     InTable( translation, translation )

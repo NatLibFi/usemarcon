@@ -14,6 +14,7 @@
 
 /*headerdef
 #include "typedef.h"
+#include "tcd.h"
 */
 
 /*classdef
@@ -22,7 +23,7 @@ protected:
   TypeInst* T;
   TypeInst* D;
   TypeCD* CDIn;
-
+  
   TypeInst* N;
   TypeInst* NT;
   TypeInst* NS;
@@ -32,6 +33,8 @@ protected:
   TypeInst* NEW;
   TypeInst* NEWEST;
   TypeInst* Memoire[100];
+
+  TCD* mCDOut;
 
   int debug_rule;
   char tempo[1000];
@@ -94,8 +97,8 @@ protected:
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
   virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
   virtual TypeInst* RegReplaceTable( TypeInst* a_table, TypeInst* a_options) = 0;
-  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations) = 0;
-  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations) = 0;
+  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, TypeInst* a_preserved_subfields) = 0;
+  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, TypeInst* a_preserved_subfields) = 0;
 
 */
 
@@ -114,7 +117,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 }
 
 
-%token <code> SEP FIN WNUMBER WSTRING
+%token <code> SEP FIN WNUMBER WSTRING 
 %token <code> PLUS MINUS MULTIPLY DIVIDE
 %token <code> EQ NE _IN GT LT GE LE
 %token <code> EXISTS EXISTSIN PRECEDES FOLLOWS INTABLE
@@ -137,7 +140,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 
 %type <inst> Program Rules Rule
 %type <inst> SetOfInstr
-%type <inst> Instruction Condition Translation
+%type <inst> Instruction Condition Translation 
 %type <tcd>  CD TAGOCC STAGOCC
 %type <code> Boolean
 
@@ -235,7 +238,10 @@ CD :
 |       STAGOCC                 { PrintDebug("Stagocc");
                                   $$=$1;
                                   $$->Fixed.freestr();
-                                  strcpy($$->Field,CDIn->Field);
+                                  if ($$->Output)
+                                    strcpy($$->Field, mCDOut->GetTag());
+                                  else
+                                    strcpy($$->Field, CDIn->Field);
                                   $$->nt=0; }
 |       FIX                     { PrintDebug("Fix");
                                   $$=AllocCD();
@@ -290,13 +296,25 @@ TAGOCC :
 STAGOCC :
         STAG                            { PrintDebug("Stag");
                                           $$=AllocCD();
-                                          strcpy($$->SubField,$1->str.str());
+                                          if (*$1->str.str() == '%')
+                                          {
+                                            $$->Output = true;
+                                            strcpy($$->SubField,$1->str.str() + 1);
+                                          }
+                                          else
+                                            strcpy($$->SubField,$1->str.str());
                                           $$->ns=0;
                                           FreeTypeInst($1);
                                           $1=NULL; }
 |       STAG '(' Translation ')'        { PrintDebug("Stag(...)");
                                           $$=AllocCD();
-                                          strcpy($$->SubField,$1->str.str());
+                                          if (*$1->str.str() == '%')
+                                          {
+                                            $$->Output = true;
+                                            strcpy($$->SubField,$1->str.str() + 1);
+                                          }
+                                          else
+                                            strcpy($$->SubField,$1->str.str());
                                           FreeTypeInst($1);
                                           $1=NULL;
                                           $$->ns=$3->val;
@@ -720,45 +738,57 @@ Translation :
 |       REGREPLACETABLE '(' Translation ',' Translation ')'
                                         { PrintDebug("RegReplaceTable(...,...)");$$=RegReplaceTable($3,$5); $3=$5=NULL; }
 |       MOVEBEFORE '(' Translation ',' CD ')' { PrintDebug("MoveBefore(..., ...)");
-                                          $$=MoveBefore($3, $5, NULL, NULL, NULL, NULL); 
+                                          $$=MoveBefore($3, $5, NULL, NULL, NULL, NULL, NULL); 
                                           $3=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEBEFORE '(' Translation ',' CD ',' Translation ')' { PrintDebug("MoveBefore(..., ..., ...)");
-                                          $$=MoveBefore($3, $5, $7, NULL, NULL, NULL); 
+                                          $$=MoveBefore($3, $5, $7, NULL, NULL, NULL, NULL); 
                                           $3=$7=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEBEFORE '(' Translation ',' CD ',' Translation ',' Translation ',' Translation ')' { PrintDebug("MoveBefore(..., ..., ..., ..., ...)");
-                                          $$=MoveBefore($3, $5, $7, $9, $11, NULL); 
+                                          $$=MoveBefore($3, $5, $7, $9, $11, NULL, NULL); 
                                           $3=$7=$9=$11=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEBEFORE '(' Translation ',' CD ',' Translation ',' Translation ',' 
             Translation ',' Translation ')' { PrintDebug("MoveBefore(..., ..., ..., ..., ..., ...)");
-                                          $$=MoveBefore($3, $5, $7, $9, $11, $13); 
+                                          $$=MoveBefore($3, $5, $7, $9, $11, $13, NULL); 
                                           $3=$7=$9=$11=$13=NULL; 
                                           $5=NULL;
                                         }
+|       MOVEBEFORE '(' Translation ',' CD ',' Translation ',' Translation ',' 
+            Translation ',' Translation ',' Translation ')' { PrintDebug("MoveBefore(..., ..., ..., ..., ..., ..., ...)");
+                                          $$=MoveBefore($3, $5, $7, $9, $11, $13, $15); 
+                                          $3=$7=$9=$11=$13=$15=NULL; 
+                                          $5=NULL;
+                                        }
 |       MOVEAFTER '(' Translation ',' CD ',' Translation ')' { PrintDebug("MoveAfter(..., ..., ...)");
-                                          $$=MoveAfter($3, $5, $7, NULL, NULL, NULL); 
+                                          $$=MoveAfter($3, $5, $7, NULL, NULL, NULL, NULL); 
                                           $3=$7=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEAFTER '(' Translation ',' CD ')' { PrintDebug("MoveAfter(..., ...)");
-                                          $$=MoveAfter($3, $5, NULL, NULL, NULL, NULL); 
+                                          $$=MoveAfter($3, $5, NULL, NULL, NULL, NULL, NULL); 
                                           $3=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEAFTER '(' Translation ',' CD ',' Translation ',' Translation ',' Translation ')' { PrintDebug("MoveAfter(..., ..., ..., ..., ...)");
-                                          $$=MoveAfter($3, $5, $7, $9, $11, NULL); 
+                                          $$=MoveAfter($3, $5, $7, $9, $11, NULL, NULL); 
                                           $3=$7=$9=$11=NULL; 
                                           $5=NULL;
                                         }
 |       MOVEAFTER '(' Translation ',' CD ',' Translation ',' Translation ',' 
             Translation ',' Translation ')' { PrintDebug("MoveAfter(..., ..., ..., ..., ..., ...)");
-                                          $$=MoveAfter($3, $5, $7, $9, $11, $13); 
+                                          $$=MoveAfter($3, $5, $7, $9, $11, $13, NULL); 
                                           $3=$7=$9=$11=$13=NULL; 
+                                          $5=NULL;
+                                        }
+|       MOVEAFTER '(' Translation ',' CD ',' Translation ',' Translation ',' 
+            Translation ',' Translation ',' Translation ')' { PrintDebug("MoveAfter(..., ..., ..., ..., ..., ..., ...)");
+                                          $$=MoveAfter($3, $5, $7, $9, $11, $13, $15); 
+                                          $3=$7=$9=$11=$13=$15=NULL; 
                                           $5=NULL;
                                         }
 ;

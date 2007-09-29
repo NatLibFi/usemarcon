@@ -3,6 +3,7 @@
 #define MarcParser_h
 
 #include "typedef.h"
+#include "tcd.h"
 
 #ifdef short
 # undef short
@@ -74,11 +75,11 @@ YYID (i)
 }
 #endif
 #define YYFINAL  122
-#define YYLAST   1427
+#define YYLAST   1440
 #define YYNTOKENS  100
 #define YYNNTS  12
-#define YYNRULES  161
-#define YYNSTATES  426
+#define YYNRULES  163
+#define YYNSTATES  432
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   351
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -91,7 +92,7 @@ protected:
   TypeInst* T;
   TypeInst* D;
   TypeCD* CDIn;
-
+  
   TypeInst* N;
   TypeInst* NT;
   TypeInst* NS;
@@ -101,6 +102,8 @@ protected:
   TypeInst* NEW;
   TypeInst* NEWEST;
   TypeInst* Memoire[100];
+
+  TCD* mCDOut;
 
   int debug_rule;
   char tempo[1000];
@@ -163,8 +166,8 @@ protected:
   virtual TypeInst* RegMatch( TypeInst* t1 ) = 0;
   virtual TypeInst* RegReplace(TypeInst* a_regexp, TypeInst* a_replacement, TypeInst* a_options) = 0;
   virtual TypeInst* RegReplaceTable( TypeInst* a_table, TypeInst* a_options) = 0;
-  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations) = 0;
-  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations) = 0;
+  virtual TypeInst* MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, TypeInst* a_preserved_subfields) = 0;
+  virtual TypeInst* MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, TypeInst* a_preserved_subfields) = 0;
 
 
 public:

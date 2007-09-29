@@ -51,7 +51,7 @@ fixedpos        "/"{digits}("-"{digits})?"/"
                 }
 {indic1}        { return MarcParser::I1; }
 {indic2}        { return MarcParser::I2; }
-{subfield}      {
+"%"?{subfield}  {
                   yylval.inst=((MemoryPool *) allocator)->AllocTypeInst();
                   yylval.inst->str.str(yytext);
                   return MarcParser::STAG;

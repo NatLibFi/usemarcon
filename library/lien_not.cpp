@@ -546,7 +546,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
             Error=0;
             RedoFlag=false;
             itsScanner.RewindBuffer();
-            theCDOut=aCDOut;
+            mCDOut=aCDOut;
             rc = yyparse();
 
             if (rc!=2)
@@ -625,6 +625,7 @@ int TEvaluateRule::End_Evaluate_Rule()
         if (NTO) FreeTypeInst(NTO); NTO=NULL;
         if (NSO) FreeTypeInst(NSO); NSO=NULL;
         if (NEW) FreeTypeInst(NEW); NEW=NULL;
+        if (NEWEST) FreeTypeInst(NEWEST); NEWEST=NULL;
         FreeCD(CDIn); CDIn=NULL;
 
         return 0;
@@ -746,7 +747,7 @@ typestr TEvaluateRule::NextSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
     FinishCD(CD1);
     FinishCD(CD2);
 
-    TCDLib* aCDL=InputCDL;
+    TCDLib* aCDL = InputCDL;
     TCD     aCD1(CD1, itsErrorHandler);
     typestr temps = "";
 
@@ -775,7 +776,7 @@ typestr TEvaluateRule::PreviousSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
     FinishCD(CD1);
     FinishCD(CD2);
 
-    TCDLib* aCDL=InputCDL;
+    TCDLib* aCDL = InputCDL;
     TCD     aCD1(CD1, itsErrorHandler);
     typestr temps = "";
 
@@ -866,11 +867,11 @@ int TEvaluateRule::MustSort( char* n )
 {
     if (ListSort)
     {
-        LastSort->SetNext(new SortElem(theCDOut, n));
+        LastSort->SetNext(new SortElem(mCDOut, n));
         LastSort=LastSort->GetNext();
     }
     else
-        ListSort=LastSort=new SortElem(theCDOut, n);
+        ListSort=LastSort=new SortElem(mCDOut, n);
     return 0;
 }
 
@@ -1014,12 +1015,11 @@ TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
     {
         FinishCD(aFindCD);
 
-        TCDLib *CDL = InputRecord->GetFirstCDLib();
+        TUMRecord* record = aFindCD->Output ? RealOutputRecord : InputRecord;
+        TCDLib *CDL = record->GetFirstCDLib();
         TCD     findCD(aFindCD, itsErrorHandler);
-        findCD.SetTag(InputCDL->GetTag());
-        findCD.SetTagOccurrenceNumber(InputCDL->GetTagOccurrenceNumber());
 
-        while (InputRecord->NextCD(&CDL, &findCD))
+        while (record->NextCD(&CDL, &findCD))
         {
             if (!aOccurrence || CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
             {
@@ -1078,12 +1078,11 @@ TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
     {
         FinishCD(aFindCD);
 
-        TCDLib *CDL = InputRecord->GetFirstCDLib();
+        TUMRecord* record = aFindCD->Output ? RealOutputRecord : InputRecord;
+        TCDLib *CDL = record->GetFirstCDLib();
         TCD     findCD(aFindCD, itsErrorHandler);
-        findCD.SetTag(InputCDL->GetTag());
-        findCD.SetTagOccurrenceNumber(InputCDL->GetTagOccurrenceNumber());
 
-        while (InputRecord->NextCD(&CDL, &findCD))
+        while (record->NextCD(&CDL, &findCD))
         {
             if (!aOccurrence || CompareOccurrence(aOccurrence, CDL->GetSubOccurrenceNumber()))
             {
@@ -2398,7 +2397,8 @@ int TEvaluateRule::InTable(TypeInst* t1, TypeInst* table)
 }
 
 bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, TypeInst* a_target, 
-                                   TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations)
+                                   TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, 
+                                   TypeInst* a_preserved_subfields)
 {
     if (a_target && !a_target->str.is_empty() && strlen(a_source->str.str()) != strlen(a_target->str.str()))
     {
@@ -2417,6 +2417,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
     ToString(a_prefix);
     ToString(a_suffix);
     ToString(a_preserved_punctuations);
+    ToString(a_preserved_subfields);
 
     bool result = false;
 
@@ -2426,12 +2427,15 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
     // Find the data to move and cut it from the field
     bool found_after = false;
     bool found_before = false;
+    bool found_subfields = false;
     char* p = strchr(fielddata.str(), START_OF_FIELD);
     while (p)
     {
-        if (strchr(a_source->str.str(), *(p + 1)))
+        bool is_preserved = a_preserved_subfields && !!strchr(a_preserved_subfields->str.str(), *(p + 1));
+        if (strchr(a_source->str.str(), *(p + 1)) || (found_subfields && is_preserved))
         {
-            if (a_target && !a_target->str.is_empty())
+            found_subfields = true;
+            if (!is_preserved && a_target && !a_target->str.is_empty())
             {
                 // Convert subfield code
                 int source_pos = strchr(a_source->str.str(), *(p + 1)) - a_source->str.str();
@@ -2495,6 +2499,10 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
                 memmove(p, p_end, strlen(p_end) + 1);
                 continue;
             }
+        }
+        else if (found_subfields)
+        {
+            break;
         }
         p = strchr(p + 1, START_OF_FIELD);
     }
@@ -2591,10 +2599,12 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
 }
 
 TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeInst* a_target, 
-                                    TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations)
+                                    TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, 
+                                    TypeInst* a_preserved_subfields)
 {
     typestr fielddata = S->str;
-    move_subfields(fielddata, a_source, a_before, false, a_target, a_prefix, a_suffix, a_preserved_punctuations);
+    move_subfields(fielddata, a_source, a_before, false, a_target, a_prefix, a_suffix, a_preserved_punctuations, 
+        a_preserved_subfields);
 
     TypeInst *rc = AllocTypeInst();
     rc->str = fielddata;        
@@ -2603,10 +2613,12 @@ TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeIn
 }
 
 TypeInst* TEvaluateRule::MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst* a_target, 
-                                   TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations)
+                                   TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, 
+                                   TypeInst* a_preserved_subfields)
 {
     typestr fielddata = S->str;
-    move_subfields(fielddata, a_source, a_after, true, a_target, a_prefix, a_suffix, a_preserved_punctuations);
+    move_subfields(fielddata, a_source, a_after, true, a_target, a_prefix, a_suffix, a_preserved_punctuations,
+        a_preserved_subfields);
         
     TypeInst *rc = AllocTypeInst();
     rc->str = fielddata;        
