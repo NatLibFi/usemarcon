@@ -266,9 +266,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\regexp.cpp">
-			</File>
-			<File
 				RelativePath="rulefile.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -625,9 +622,6 @@
 			</File>
 			<File
 				RelativePath="mrcfield.h">
-			</File>
-			<File
-				RelativePath=".\regexp.h">
 			</File>
 			<File
 				RelativePath="rulefile.h">
