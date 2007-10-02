@@ -246,7 +246,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
     CD.SetTag("000");
     TCDLib* Search=(TCDLib*)itsFirstCDLib;
     if (!NextCD(&Search,&CD))
-        itsErrorHandler->SetError(9202,ERROR);
+        itsErrorHandler->SetError(7109, ERROR);
     else
         SetLeader(Search->GetContent().str());
 

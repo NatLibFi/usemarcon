@@ -7,12 +7,9 @@ typedef struct
     const char *description;
 } ERRORDESC;
 
-const int ErrorDescCount = 86;
+const int ErrorDescCount = 85;
 
 const ERRORDESC ErrorDesc[ErrorDescCount] = {
-    {510, "Comment is too long and will be truncated"},
-    {511, "Line is too long and will be truncated"},
-      
     {1001, "Unable to reset a writing mode opened file"},
     {1002, "Invalid SCW (Segment Control Word) encountered when attempting to read a MARC record"},
     {1003, "Unable to go further in MARC file reading"},
@@ -50,6 +47,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     
     {5000, "Memory allocation error"},
     {5001, "The selected rule file does not exist"},
+    {5002, "While loop maximum count exceeded - check condition validity"},
     {5004, "Only one indicator has been found"},
     {5005, "Content of indicator is too long (>1)"},
     {5006, "Found a field with no content (possibly a control field treated as a data field)"},
@@ -81,6 +79,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {7106, "Mandatory field expected in output record"},
     {7107, "Mandatory subfield expected in output record"},
     {7108, "Field without any subfield found in output record"},
+    {7109, "Leader is mandatory and has not been converted"},
     {7501, "TControlField allocation failure when attempting to load a new output format checking rule"},
     {7502, "TCtrlSubfield allocation failure when attempting to load a new output format checking rule"},
     {7503, "First indicators list allocation failure when attempting to load a new output format checking rule"},
@@ -95,7 +94,6 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {9031, "TMARCRecord allocation failure when attempting to load the Input MARC File"},
     {9032, "TMARCRecord allocation failure when attempting to load the Output MARC File"},
     {9041, "TMARCField allocation failure when attempting to load the record into memory fields"},
-    {9202, "Leader is mandatory and has not been converted"},
     {9501, "Unable to open the ASCII mode file"},
     {9502, "Unable to open the binary mode file"},
     {9503, "Unable to delete the file"},

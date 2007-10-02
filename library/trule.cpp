@@ -51,6 +51,19 @@ TRule::TRule(TRule *aRule)
     mLine = aRule->mLine;
 }
 
+TRule::TRule(TRule *aRule, const char* aRuleStr)
+{
+    itsInputCD          = new TCD(aRule->GetInputCD());
+    itsOutputCD     = new TCD(aRule->GetOutputCD());
+    SetLib(aRuleStr);
+    itsNextRule     = aRule->GetNextRule();
+    itsPreviousRule = aRule->GetPreviousRule();
+    itsLastInputCD      = aRule->itsLastInputCD;
+    itsLastOutputCD = aRule->itsLastOutputCD;
+    itsErrorHandler = aRule->itsErrorHandler;
+    mLine = aRule->mLine;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // ~TRule
@@ -82,7 +95,7 @@ int TRule::SetLib(const char *aLib)
         c = strchr(lib.str(), '\t');
     }
 
-    if (itsLib.str())
+    if (!itsLib.is_empty())
     {
         itsLib.append_char('\n');
         itsLib.append(lib.str());
@@ -103,97 +116,6 @@ int TRule::SetLib(const char *aLib)
 ///////////////////////////////////////////////////////////////////////////////
 int TRule::FromString(char *aString, int aLine)
 {
-/*    char    *ItemPointer;
-    int     NbPipes,
-            MaxPos,
-            CurrentPos,
-            RealPos=0;
-    int     ReturnCode;
-
-    if (!*aString)
-        // empty lines are ignored
-        return 0;
-
-    mLine = aLine;
-
-    MaxPos=strlen(aString);
-
-
-    // Count the number of '|' characters
-    for (CurrentPos=RealPos,NbPipes=0; CurrentPos<MaxPos; CurrentPos++) {
-        if (aString[CurrentPos]=='|') {
-            NbPipes++;
-
-        }
-
-    }
-
-    if (NbPipes>2)
-        NbPipes=2;
-    switch(NbPipes)
-    {
-    case 2 : // the rule is a complete rule ( CDin | CDOut | Rule )
-        if ((ItemPointer=(char *)strtok(aString,"|"))!=NULL)
-            if (RemoveSpace(ItemPointer))
-                // the CDIn is not empty
-            {
-                itsInputCD = new TCD(itsErrorHandler);
-                if (!itsInputCD)
-                    return -5504;
-                if ((ReturnCode=itsInputCD->FromString(ItemPointer,itsLastInputCD,INPUT))!=0)
-                    return -ReturnCode;
-            }
-    case 1 : // the rule has no CDIn or has an empty CDIn
-        // set the CDIn with the CDIn of the previous Rule ( itsLastInputCD )
-        if (!itsInputCD)
-        {
-
-            itsInputCD = new TCD(itsErrorHandler);
-            if (!itsInputCD)
-                return -5504;
-            if ((ReturnCode=itsInputCD->FromString("",itsLastInputCD,INPUT))!=0)
-                return -ReturnCode;
-        }
-        if (NbPipes==1)
-            // the Rule is a partial rule ( CDOut | Rule )
-            ItemPointer=(char *)strtok(aString,"|");
-        else
-            // the Rule is a complete Rule with an empty CDIn
-            ItemPointer=(char *)strtok(NULL,"|");
-        if (ItemPointer)
-        {
-            itsOutputCD = new TCD(itsErrorHandler);
-            if (!itsOutputCD)
-                return -5504;
-            RemoveSpace(ItemPointer);
-            if ((ReturnCode=itsOutputCD->FromString(ItemPointer,itsLastOutputCD,OUTPUT))!=0)
-                return -ReturnCode;
-        }
-    case 0:
-        if (NbPipes==0)
-            // This line is a new part of the previous Rule
-        {
-            if (RemoveSpace(aString,AT_BEGINNING|AT_END))
-                if (SetLib(aString))
-                    return -5502;
-            return 0;
-        }
-        else
-        {
-            if ((ItemPointer=(char *)strtok(NULL,"~")))
-                if (RemoveSpace(ItemPointer,AT_BEGINNING|AT_END))
-                    if (SetLib(ItemPointer))
-                        return -5502;
-        }
-        break;
-    default:
-        break;
-    }
-
-
-    return NbPipes;
-*/    
-
     int ReturnCode;
 
     if (!*aString)

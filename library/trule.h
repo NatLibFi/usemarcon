@@ -37,6 +37,7 @@ class TRule
 public:
     TRule           (TCD *LastInputCD, TCD *LastOutputCD, TError *ErrorHandler);
     TRule           (TRule *aRule);
+    TRule           (TRule *aRule, const char* aRuleStr);
     virtual ~TRule  ();
 
     int   FromString      (char *aString, int aLine);

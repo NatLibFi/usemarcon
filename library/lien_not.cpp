@@ -26,6 +26,7 @@
 #include "truledoc.h"
 #include "tools.h"
 #include "rulefile.h"
+#include "pcre.h"
 
 #define C_NEW -20;
 #define C_NEWEST -21;
@@ -67,18 +68,14 @@ void TMarcScannerImpl::SetRule(TRule *Rule)
     else
         sprintf(itsBuffer, "S\n#");
 
-    if (!itsFirstTime)
-        yyrestart(NULL);
+    yyrestart(NULL);
 }
 
 void TMarcScannerImpl::RewindBuffer()
 {
     itsBufferPos = 0;
 
-    if (itsFirstTime)
-        itsFirstTime = false;
-    else
-        yyrestart(NULL);
+    yyrestart(NULL);
 }
 
 // Cette fonction est appellee par l'analyseur grammatical en cas d'erreur
@@ -210,8 +207,272 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
     return 0;
 }
 
+const char* TEvaluateRule::find_sep(const char *a_str)
+{
+    bool in_quotes = false;
+    int block = 0;
+    const char* p = a_str;
+    while (*p)
+    {
+        if (*p == '\'')
+            in_quotes = !in_quotes;
+        if (!in_quotes)
+        {
+            switch (*p)
+            {
+            case ';':
+                if (block == 0)
+                    return p;
+                break;
+            case '{':
+                ++block;
+                break;
+            case '}':
+                --block;
+                break;
+            }
+        }
+        ++p;
+    }
+    return p;
+}
 
+const char* TEvaluateRule::find_statement_start(const char *a_str)
+{
+    const char* p = a_str;
+    while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r')
+    {
+        ++p;
+    }
+    if ((*p == 'E' || *p == 'e') && strncmp(p + 1, "lse ", 4) == 0)
+        p += 5;
+    return p;
+}
 
+const char* TEvaluateRule::find_statement_end(const char *a_str)
+{
+    bool in_quotes = false;
+    int block = 0;
+    int paren = 0;
+    const char* p = a_str;
+    while (*p)
+    {
+        if (*p == '\'')
+            in_quotes = !in_quotes;
+        if (!in_quotes)
+        {
+            switch (*p)
+            {
+            case ';':
+                if (block == 0 && paren == 0)
+                    return p;
+                break;
+            case '{':
+                if (paren == 0)
+                    ++block;
+                break;
+            case '}':
+                if (paren == 0)
+                    --block;
+                break;
+            case '(':
+                ++paren;
+                break;
+            case ')':
+                --paren;
+                if (paren == 0 && block == 0)
+                {
+                    // Try to be compatible with old quirky syntax where 
+                    // 'If (something) and/or (something) Then ...' is legal
+                    const char *p2 = find_statement_start(p + 1);
+                    if (!(((*p2 == 'A' || *p2 == 'a') && *(p2 + 1) == 'n' && *(p2 + 2) == 'd')
+                      || ((*p2 == 'O' || *p2 == 'o') && *(p2 + 1) == 'r')))
+                        return p + 1;
+                }
+                break;
+            case 't':
+            case 'T':
+                if (block == 0 && strncmp(p + 1, "hen ", 4) == 0)
+                    return p;
+                break;
+            case 'e':
+            case 'E':
+                if (block == 0 && strncmp(p + 1, "lse ", 4) == 0)
+                    return p;
+                break;
+            }
+        }
+        ++p;
+    }
+    return p;
+}
+
+int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
+{
+    // Parse statements one by one handling conditionals separately 
+    // until If - Then returns 2.
+    typestr statement;
+    const char *rulep = a_rulestr;
+    int rc = 0;
+    while (true)
+    {
+        if (!statement.is_empty())
+        {
+            char* stmt = statement.str();
+            if (((*stmt == 'I' || *stmt == 'i') && *(stmt + 1) == 'f' && (*(stmt + 2) == ' ' || *(stmt + 2) == '('))
+              || ((*stmt == 'W' || *stmt == 'w') && *(stmt + 1) == 'h' && *(stmt + 2) == 'i' && *(stmt + 3) == 'l' && *(stmt + 4) == 'e' && (*(stmt + 5) == ' ' || *(stmt + 5) == '(')))
+            {
+                bool while_loop = *(stmt + 1) == 'h';
+                const char* p_if = find_statement_end(stmt);
+                typestr check_stmt = "Check";
+                check_stmt.append(stmt + 2, p_if - stmt - 2);
+
+                TRule rule(a_rule, check_stmt.str());
+                itsScanner.SetRule(&rule);
+                rc = yyparse();
+                bool then_found;
+                p_if = find_statement_start(p_if);
+                if ((*p_if == 'T' || *p_if == 't') && strncmp(p_if + 1, "hen ", 4) == 0)
+                {
+                    then_found = true;
+                    p_if += 5;
+                }
+                else
+                {
+                    then_found = false;
+                }
+
+                p_if = find_statement_start(p_if);
+                const char* p_stmt_true = find_statement_end(p_if);
+                if (rc == 4)
+                {
+                    statement.str(p_if, p_stmt_true - p_if);
+                }
+                else
+                {
+                    p_stmt_true = find_statement_start(p_stmt_true);
+                    const char* p_stmt_else = find_statement_end(p_stmt_true);
+                    statement.str(p_stmt_true, p_stmt_else - p_stmt_true);
+                    if (!statement.is_empty() || !then_found)
+                        rc = 0;
+                }
+                InnerParse(a_rule, statement.str());
+                int loop_counter = 0;
+                while (while_loop && rc == 4)
+                {
+                    itsScanner.RewindBuffer();
+                    rc = yyparse();
+                    if (rc == 4)
+                        InnerParse(a_rule, statement.str());
+                    if (++loop_counter >= 1000)
+                    {
+                        itsErrorHandler->SetError(5002, WARNING);
+                        break;
+                    }
+                }
+                statement = "";
+                continue;
+            }
+            else if ((*stmt == 'F' || *stmt == 'f') && *(stmt + 1) == 'o' && *(stmt + 2) == 'r' && (*(stmt + 3) == ' ' || *(stmt + 3) == '('))
+            {
+                const char* p_for = find_statement_end(stmt);
+                typestr params;
+                params.str(stmt + 4, p_for - stmt - 4);
+
+                RegExp re("[\\s(]*(.*?)\\s+[Ff]rom\\s+(\\d+)\\s+[tT]o\\s+(\\d+)(\\s+Condition\\s*\\((.*)\\))?", false);
+                int res = re.exec(params.str());
+                if (res >= 3)
+                {
+                    typestr variable, from_str, to_str, condition;
+                    re.match(1, variable);
+                    re.match(2, from_str);
+                    re.match(3, to_str);
+                    re.match(5, condition);
+                    int from = atoi(from_str.str());
+                    int to = atoi(to_str.str());
+                    int step = (from <= to ? 1 : -1);
+                    re.init("^\\s*{+\\s*(.*)\\s*}\\s*$", false);
+                    for (int i = from; (step < 0 && i >= to) || (step > 0 && i <= to); i += step)
+                    {
+                        if (!condition.is_empty())
+                        {
+                            typestr check_stmt = "Check (";
+                            check_stmt.append(condition);
+                            check_stmt.append(")");
+
+                            TRule rule(a_rule, check_stmt.str());
+                            itsScanner.SetRule(&rule);
+                            rc = yyparse();
+                            if (rc != 4)
+                                break;
+                        }
+
+                        typestr for_statement;
+                        if (re.exec(p_for) > 0)
+                            re.match(1, for_statement);
+                        else
+                            for_statement = p_for;
+                        
+                        char i_str[30];
+                        sprintf(i_str, "%ld", i);
+                        for_statement.replace(variable.str(), i_str);
+                        InnerParse(a_rule, for_statement.str());
+                    }
+                }
+                else
+                {
+                    itsErrorHandler->SetErrorD(5100, ERROR, statement.str());
+                    rc = 2;
+                }
+                statement = "";
+                continue;
+            }
+
+            TRule rule(a_rule, statement.str());
+            itsScanner.SetRule(&rule);
+            rc = yyparse();
+        }            
+
+        if (rc == 2 || !rulep)
+            break;
+        while (*rulep == ' ' || *rulep == '\t' || *rulep == '\n' || *rulep == '\r')
+            ++rulep;
+        const char* p = find_sep(rulep);
+        if (p)
+        {
+            while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r' || *rulep == ';')
+                ++p;
+            statement.str(rulep, p - rulep);
+            if (*p) 
+                rulep = p + 1;
+            else
+                rulep = NULL;
+        }
+        else
+        {
+            statement = rulep;
+            rulep = NULL;
+        }
+    }
+    return rc;
+}
+
+int TEvaluateRule::Parse(TRule* a_rule)
+{
+    char *rulestr = a_rule->GetLib();
+    int rc = 0;
+    if (mParserIfRegExp.exec(rulestr) >= 1)
+    {
+        // The rule contains conditionals
+        rc = InnerParse(a_rule, rulestr);
+    }
+    else
+    {
+        itsScanner.SetRule(a_rule);
+        rc = yyparse();
+    }
+    return rc;
+}
 
 //
 // Cette fonction effectue la conversion d'un UMRecord en un autre, conformement
@@ -227,8 +488,6 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
     RealOutputRecord = RealOut;
     CurrentRule = Rule;
 
-    bool rule_set = false;
-
     // -------------------------------------------------
     // On parcourt tous les CDLib qui correspondent au CD en entree de la regle
     TCDLib* aCDLIn;
@@ -236,6 +495,14 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
         aCDLIn = NULL;
     else
         aCDLIn = In->GetFirstCDLib();
+
+    if (debug_rule)
+    {
+        typestr tmp;
+        Rule->ToString(tmp);
+        printf("\nDebug: Processing rule: '%s'\n", tmp.str());
+    }
+
     while(true)
     {
         // Make sure that if ProcessCDL is set we process it once and break out when done
@@ -249,17 +516,6 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
         {
             if (!In->NextCD(&aCDLIn, Rule->GetInputCD()))
                 break;
-        }
-        if (!rule_set)
-        {
-            if (debug_rule)
-            {
-                typestr tmp;
-                Rule->ToString(tmp);
-                printf("\nDebug: Processing rule: '%s'\n", tmp.str());
-            }
-            itsScanner.SetRule(Rule);
-            rule_set = true;
         }
 
         // Initialisation de la memoire pour les variables de l'analyse de regles
@@ -545,9 +801,8 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
 
             Error=0;
             RedoFlag=false;
-            itsScanner.RewindBuffer();
             mCDOut=aCDOut;
-            rc = yyparse();
+            rc = Parse(Rule);
 
             if (rc!=2)
             {
@@ -1228,27 +1483,31 @@ TypeInst* TEvaluateRule::Value(TypeInst* t)
 /*
 STO(i)
 */
-int TEvaluateRule::MemSto( TypeInst* n )
+int TEvaluateRule::MemSto( TypeInst* a_index, TypeInst* a_content )
 {
-    int i=n->val;
-    if (n->str.str())
+    if (a_index->str.str())
     {
         yyerror("Sto(<string>) Index must be numeric");
+        FreeTypeInst(a_index);
+        FreeTypeInst(a_content);
         return 0;
     }
-    else
-        if (n->val<0 || n->val>99)
-        {
-            char tmp[100];
-            sprintf(tmp,"Sto(%d) Index out of bounds",n->val);
-            yyerror(tmp);
-            return 0;
-        }
-        if (Memoire[i]!=NULL) FreeTypeInst(Memoire[i]);
-        Memoire[i]=NULL;
-        CopyInst(&Memoire[i], S);
-        FreeTypeInst(n);
+    int i = a_index->val;
+    FreeTypeInst(a_index);
+    if (i < 0 || i > 99)
+    {
+        char tmp[100];
+        sprintf(tmp,"Sto(%d) Index out of bounds", i);
+        yyerror(tmp);
+        FreeTypeInst(a_content);
         return 0;
+    }
+    if (Memoire[i]) 
+        FreeTypeInst(Memoire[i]);
+    Memoire[i] = NULL;
+    CopyInst(&Memoire[i], a_content ? a_content : S);
+    FreeTypeInst(a_content);
+    return 0;
 }
 
 /*
@@ -1467,7 +1726,7 @@ TypeInst* TEvaluateRule::Add( TypeInst* t1, TypeInst* t2 )
     {
         rc->val = 0;
         rc->str = t1->str;
-        rc->str += t2->str;
+        rc->str += t2->str.str() ? t2->str : ToString(t2);
     }
     FreeTypeInst(t1);
     FreeTypeInst(t2);
@@ -2104,6 +2363,7 @@ TypeInst* TEvaluateRule::Table_( TypeInst* Nom )
     return rc;
 };
 
+// TODO: make this use the RegExp class
 bool TEvaluateRule::RegFindInternal(const char *a_str, const char *a_regexp)
 {
     int re_opts = itsUTF8Mode ? PCRE_UTF8 : 0;

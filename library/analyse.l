@@ -12,7 +12,7 @@
 
 %}
 
-blancs          [ \t\n]*
+blancs          [ \t\n{}]*
 digits          [0-9]+
 digit           [0-9]
 maj             [A-Z]
@@ -83,9 +83,7 @@ D                       return MarcParser::VARD;
 [N|n]                   return MarcParser::VAR_N;
 [N|n][E|e][W|w][E|e][S|s][T|t] return MarcParser::VAR_NEWEST;
 [N|n][E|e][W|w]         return MarcParser::VAR_NEW;
-[I|i]f                  return MarcParser::IF;
-[T|t]hen                return MarcParser::THEN;
-[E|e]lse                return MarcParser::ELSE;
+[C|c]heck               return MarcParser::CHECK;
 [A|a]nd                 return MarcParser::AND;
 [O|o]r                  return MarcParser::OR;
 [N|n]ot                 return MarcParser::NOT;

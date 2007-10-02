@@ -35,7 +35,7 @@ AUTHOR
 #include "typedef.h"
 #include "FlexLexer.h"
 #include "mempool.h"
-#include "pcre.h"
+#include "regexp.h"
 
 // forward declarations
 class SortElem;
@@ -83,6 +83,7 @@ public:
     {
         debug_rule = 0;
         itsScanner.SetAllocator(&m_allocator);
+        mParserIfRegExp.init("[Ii]f\\s*\\(", false);
     }
 
     virtual ~TEvaluateRule      ()
@@ -113,6 +114,8 @@ private:
     TError*    itsErrorHandler;
     bool       itsUTF8Mode;
 
+    RegExp     mParserIfRegExp;
+
     typestr    mRegExpSearchString;
     int        mRegExpMatchVector[30];
     int        mRegExpResult;
@@ -129,12 +132,17 @@ private:
     virtual typestr ReadCD(TypeCD *);
     virtual typestr Table(char *Nom, char *str);
 
+    const char* find_sep(const char *a_str);
+    const char* find_statement_start(const char *a_str);
+    const char* find_statement_end(const char *a_str);
+    int   InnerParse(TRule* a_rule, const char *a_rulestr);
+    int   Parse(TRule* a_rule);
+
     const char* NextBalise();
     const char* PreviousBalise();
     typestr NextSubField(TypeCD *, TypeCD *);
     typestr PreviousSubField(TypeCD *, TypeCD *);
     bool CompareOccurrence(TypeInst *aCondition, int aOccurrence);
-
 
     int   IsConcat(char *lib);
     int   Replace_N_NT_NS(int val,int N,int NT,int NS);
@@ -205,10 +213,7 @@ private:
     */
     virtual TypeInst* Value( TypeInst* t );
 
-    /*
-        STO(i)
-    */
-    virtual int MemSto( TypeInst* n );
+    virtual int MemSto( TypeInst* a_index, TypeInst* a_content = NULL );
 
     /*
         MEM(i)

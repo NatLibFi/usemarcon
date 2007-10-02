@@ -58,7 +58,7 @@ protected:
   virtual TypeInst* Multiply( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Divide( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Value( TypeInst* t ) = 0;
-  virtual int MemSto( TypeInst* n ) = 0;
+  virtual int MemSto( TypeInst* a_index, TypeInst* a_content = NULL ) = 0;
   virtual TypeInst* MemMem( TypeInst* n ) = 0;
   virtual int MemClr( TypeInst* n  ) = 0;
   virtual TypeInst* MemExc( TypeInst* n ) = 0;
@@ -121,8 +121,8 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <code> PLUS MINUS MULTIPLY DIVIDE
 %token <code> EQ NE _IN GT LT GE LE
 %token <code> EXISTS EXISTSIN PRECEDES FOLLOWS INTABLE
-%token <code> IF THEN ELSE AND OR NOT
-%token <code> BY _STRICT AT BEGINING BEGINNING END BOTH
+%token <code> CHECK AND OR NOT
+%token <code> BY _STRICT AT BEGINING BEGINNING END BOTH 
 
 %token <inst> VARS VARD STRING NUMERIC
 %token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW VAR_NEWEST
@@ -140,9 +140,9 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 
 %type <inst> Program Rules Rule
 %type <inst> SetOfInstr
-%type <inst> Instruction Condition Translation 
+%type <inst> Instruction Condition Translation
 %type <tcd>  CD TAGOCC STAGOCC
-%type <code> Boolean
+%type <code> Boolean 
 
 %%
 Program :
@@ -333,121 +333,27 @@ STAGOCC :
 ;
 
 Condition :
-        IF Boolean THEN Translation     { PrintDebug("If...Then...");
-                                          if ($2) $$=$4;
+        CHECK Boolean                   { PrintDebug("Check");
+                                          if ($2)
+                                            return 4;
                                           else
-                                          {
-                                            FreeTypeInst($4);
-                                            $4=NULL;
-                                            FreeTypeInst(S);
-                                            S=NULL;
                                             return 2;
-                                          }
-                                        }
-|       IF Boolean THEN Translation ELSE Translation
-                                        { PrintDebug("If...Then...Else...");
-                                          if ($2)
-                                          {
-                                            $$=$4;
-                                            FreeTypeInst($6);
-                                            $6=NULL;
-                                          }
-                                          else
-                                          {
-                                            $$=$6;
-                                            FreeTypeInst($4);
-                                            $4=NULL;
-                                          }
-                                        }
-|       IF Boolean THEN Condition     { PrintDebug("If...Then... (condition)");
-                                          if ($2) $$=$4;
-                                          else
-                                          {
-                                            FreeTypeInst($4);
-                                            $4=NULL;
-                                            FreeTypeInst(S);
-                                            S=NULL;
-                                            return 2;
-                                          }
-                                        }
-|       IF Boolean THEN Translation ELSE Condition
-                                        { PrintDebug("If...Then...Else... (condition)");
-                                          if ($2)
-                                          {
-                                            $$=$4;
-                                            FreeTypeInst($6);
-                                            $6=NULL;
-                                          }
-                                          else
-                                          {
-                                            $$=$6;
-                                            FreeTypeInst($4);
-                                            $4=NULL;
-                                          }
-                                        }
-|       IF Boolean Translation          { PrintDebug("If......");
-                                          if ($2) $$=$3;
-                                          else
-                                          {
-                                            CopyInst(&$$,S);
-                                            FreeTypeInst($3);
-                                            $3=NULL;
-                                          }
-                                        }
-|       IF Boolean Translation ELSE Translation
-                                        { PrintDebug("If......Else...");
-                                          if ($2)
-                                          {
-                                            $$=$3;
-                                            FreeTypeInst($5);
-                                            $5=NULL;
-                                          }
-                                          else
-                                          {
-                                            $$=$5;
-                                            FreeTypeInst($3);
-                                            $3=NULL;
-                                          }
-                                        }
-|       IF Boolean Condition            { PrintDebug("If...... (condition)");
-                                          if ($2) $$=$3;
-                                          else
-                                          {
-                                            CopyInst(&$$,S);
-                                            FreeTypeInst($3);
-                                            $3=NULL;
-                                          }
-                                        }
-|       IF Boolean Translation ELSE Condition
-                                        { PrintDebug("If......Else... (condition)");
-                                          if ($2)
-                                          {
-                                            $$=$3;
-                                            FreeTypeInst($5);
-                                            $5=NULL;
-                                          }
-                                          else
-                                          {
-                                            $$=$5;
-                                            FreeTypeInst($3);
-                                            $3=NULL;
-                                          }
                                         }
 ;
 
 
 Boolean :
         '(' Boolean ')'                 { PrintDebug("(B...)"); $$=$2; }
-|       Boolean AND Boolean             { PrintDebug("B...and B..."); $$=$1 && $3; }
-|       Boolean OR Boolean              { PrintDebug("B...or B...");$$=$1 || $3; }
-|       NOT Boolean                     { PrintDebug("!B...");$$=!$2; }
-|       Translation EQ Translation      { PrintDebug("...=...");$$=BoolEQ($1,$3); $1=$3=NULL; }
-|       Translation NE Translation      { PrintDebug("...!=...");$$=!BoolEQ($1,$3); $1=$3=NULL; }
-|       Translation _IN Translation     { PrintDebug("..._In...");$$=BoolIn($1,$3); $1=$3=NULL; }
-|       Translation GT Translation      { PrintDebug("...>...");$$=BoolGT($1,$3); $1=$3=NULL; }
-|       Translation LT Translation      { PrintDebug("...<...");$$=BoolGT($3,$1); $1=$3=NULL; }
-|       Translation GE Translation      { PrintDebug("...>=...");$$=BoolGE($1,$3); $1=$3=NULL; }
-|       Translation LE Translation      { PrintDebug("...<=...");$$=BoolGE($3,$1); $1=$3=NULL; }
+|       Boolean AND Boolean             { PrintDebug("B...and B..."); $$ = $1 && $3; }
+|       Boolean OR Boolean              { PrintDebug("B...or B..."); $$ = $1 || $3; }
+|       NOT Boolean                     { PrintDebug("!B..."); $$ = !$2; }
+|       Translation EQ Translation      { PrintDebug("...=..."); $$ = BoolEQ($1,$3); $1=$3=NULL; }
+|       Translation NE Translation      { PrintDebug("...!=..."); $$ = !BoolEQ($1,$3); $1=$3=NULL; }
+|       Translation _IN Translation     { PrintDebug("..._In..."); $$ = BoolIn($1,$3); $1=$3=NULL; }
+|       Translation GT Translation      { PrintDebug("...>..."); $$ = BoolGT($1,$3); $1=$3=NULL; }
+|       Translation LT Translation      { PrintDebug("...<..."); $$ = BoolGT($3,$1); $1=$3=NULL; }
+|       Translation GE Translation      { PrintDebug("...>=..."); $$ = BoolGE($1,$3); $1=$3=NULL; }
+|       Translation LE Translation      { PrintDebug("...<=..."); $$ = BoolGE($3,$1); $1=$3=NULL; }
 |       EXISTS '(' CD ')'               { PrintDebug("Exists(...)");
                                           $$=Exists($3);
                                           if ($$==2) return 2;
@@ -618,6 +524,7 @@ Translation :
 |       UPPER '(' Translation ')'       { PrintDebug("Upper(...)");$$=Upper($3); }
 |       LOWER '(' Translation ')'       { PrintDebug("Lower(...)");$$=Lower($3); }
 |       STO '(' Translation ')'         { PrintDebug("Sto(...)");CopyInst(&$$,S); MemSto($3); $3=NULL; }
+|       STO '(' Translation ',' Translation ')' { PrintDebug("Sto(...)"); MemSto($3, $5); $3=$5=NULL; }
 |       MEM '(' Translation ')'         { PrintDebug("Mem(...)");$$=MemMem($3); $3=NULL; }
 |       EXC '(' Translation ')'         { PrintDebug("Exc(...)");$$=MemExc($3); $3=NULL; }
 |       CLR '(' Translation ')'         { PrintDebug("Clr(...)");CopyInst(&$$,S); MemClr($3); $3=NULL; }
