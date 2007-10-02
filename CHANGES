@@ -1,15 +1,16 @@
 **************************
 **************************
-version 2.10
+version 3.00
 
-August 29 2007
+October 2 2007
 
 The National Library of Finland
 Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Cleaned up the interface ("API") to USEMARCON.
+- Cleaned up the interface ("API") to USEMARCON (big version number 
+  bump due to this).
 - Cleaned up file name string handling.
 - Cleaned up header file dependencies.
 - Added duplicate field and subfield processing options.
@@ -37,6 +38,11 @@ ere.maijala at helsinki.fi
   last occurrence of the tag.
 - Switched regular expressions support to use PCRE for added features.
 - Added RegFindPos and RegFindNum.
+- Added left-recursive If statement handling.
+- Added execution blocks for conditional processing.
+- Added While loops.
+- Added For loops.
+- Combined the documentation to a single document.
 
 **************************
 **************************
