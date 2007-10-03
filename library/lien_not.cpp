@@ -26,7 +26,7 @@
 #include "truledoc.h"
 #include "tools.h"
 #include "rulefile.h"
-#include "pcre.h"
+#include "../pcre/pcre.h"
 
 #define C_NEW -20;
 #define C_NEWEST -21;
