@@ -83,7 +83,8 @@ public:
     {
         debug_rule = 0;
         itsScanner.SetAllocator(&m_allocator);
-        mParserIfRegExp.init("[Ii]f\\s*\\(", false);
+        mParserInnerRegExp.init("([Ii]f|[Ww]hile|[Ff]or|[Ww]ith)\\s*\\(", false);
+        mParserInnerBracketRegExp.init("^\\s*{+\\s*([\\x00-\\xff]*)\\s*}\\s*$", false, true);
     }
 
     virtual ~TEvaluateRule      ()
@@ -114,7 +115,8 @@ private:
     TError*    itsErrorHandler;
     bool       itsUTF8Mode;
 
-    RegExp     mParserIfRegExp;
+    RegExp     mParserInnerRegExp;
+    RegExp     mParserInnerBracketRegExp;
 
     typestr    mRegExpSearchString;
     int        mRegExpMatchVector[30];

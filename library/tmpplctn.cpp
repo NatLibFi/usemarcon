@@ -572,6 +572,7 @@ int TUMApplication::Convert(void)
             break;
 
         ConvOk=true;
+        itsErrorHandler->SetRecordNumber(itsRecordsProcessed + 1);
         if (itsMarcDoc->Transcode(itsTransDoc)) ConvOk = false;
         if (itsMarcDoc->Convert(itsRuleDoc)) ConvOk = false;
         if (itsMarcDoc->ProcessDuplicateFields()) ConvOk = false;

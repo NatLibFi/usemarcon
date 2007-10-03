@@ -93,6 +93,8 @@ public:
     void  SetOutputXMLRecordFormat(const char *a_value) { itsOutputXMLRecordFormat = a_value; }
     typestr GetOutputXMLRecordType() { return itsOutputXMLRecordType; }
     void  SetOutputXMLRecordType(const char *a_value) { itsOutputXMLRecordType = a_value; }
+    unsigned long GetRecordNumber() { return mRecordNumber; }
+    void SetRecordNumber(unsigned long aNumber) { mRecordNumber = aNumber; }
 
     TUMApplication *GetApplication      (void) { return itsApplication; }
 
@@ -112,6 +114,7 @@ protected:
     unsigned int    itsHowManyErrors;
     int             itsVerboseMode;
     int             itsDebugMode;
+    unsigned long   mRecordNumber;
 };
 
 #endif // TError_H

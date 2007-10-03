@@ -95,7 +95,12 @@ void TEvaluateRule::yyerror( char *m )
     typestr errorstr; 
     if (*m=='s' || *m=='l')
     {
-        errorstr = m;
+        errorstr = "(record ";
+        char recno[30];
+        sprintf(recno, "%lu", itsErrorHandler->GetRecordNumber());
+        errorstr += recno;
+        errorstr += ") ";
+        errorstr += m;
         errorstr += " near ";
         errorstr += itsScanner.YYText();
     }
@@ -357,9 +362,8 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     if (!statement.is_empty() || !then_found)
                         rc = 0;
                 }
-                RegExp re("^\\s*{+\\s*(.*)\\s*}\\s*$", false, true);
-                if (re.exec(statement.str()) > 0)
-                    re.match(1, statement);
+                if (mParserInnerBracketRegExp.exec(statement.str()) > 0)
+                    mParserInnerBracketRegExp.match(1, statement);
                 InnerParse(a_rule, statement.str());
                 int loop_counter = 0;
                 while (while_loop && rc == 4)
@@ -396,7 +400,6 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     int from = atoi(from_str.str());
                     int to = atoi(to_str.str());
                     int step = (from <= to ? 1 : -1);
-                    re.init("^\\s*{+\\s*(.*)\\s*}\\s*$", false, true);
                     for (int i = from; (step < 0 && i >= to) || (step > 0 && i <= to); i += step)
                     {
                         if (!condition.is_empty())
@@ -413,8 +416,8 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                         }
 
                         typestr for_statement;
-                        if (re.exec(p_for) > 0)
-                            re.match(1, for_statement);
+                        if (mParserInnerBracketRegExp.exec(p_for) > 0)
+                            mParserInnerBracketRegExp.match(1, for_statement);
                         else
                             for_statement = p_for;
                         
@@ -432,24 +435,23 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                 statement = "";
                 continue;
             }
-            // Set(variable=value) ...
-            else if ((*stmt == 'S' || *stmt == 's') && *(stmt + 1) == 'e' && *(stmt + 2) == 't' && (*(stmt + 3) == ' ' || *(stmt + 3) == '('))
+            // With(variable=value) ...
+            else if ((*stmt == 'W' || *stmt == 'w') && *(stmt + 1) == 'i' && *(stmt + 2) == 't' && *(stmt + 3) == 'h' && (*(stmt + 4) == ' ' || *(stmt + 4) == '('))
             {
                 const char* p_set = find_statement_end(stmt);
                 typestr params;
-                params.str(stmt + 4, p_set - stmt - 4);
+                params.str(stmt + 5, p_set - stmt - 5);
 
-                RegExp re("[\\s(]*(.*?)\\s*=\\s*(.*)", false);
+                RegExp re("[\\s(]*(.*?)\\s*=\\s*(.*)\\)", false);
                 int res = re.exec(params.str());
                 if (res >= 2)
                 {
                     typestr variable, value;
                     re.match(1, variable);
                     re.match(2, value);
-                    re.init("^\\s*{+\\s*(.*)\\s*}\\s*$", false, true);
                     typestr inner_statement;
-                    if (re.exec(p_set) > 0)
-                        re.match(1, inner_statement);
+                    if (mParserInnerBracketRegExp.exec(p_set) > 0)
+                        mParserInnerBracketRegExp.match(1, inner_statement);
                     else
                         inner_statement = p_set;
                     
@@ -472,16 +474,16 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
 
         if (rc == 2 || !rulep)
             break;
-        while (*rulep == ' ' || *rulep == '\t' || *rulep == '\n' || *rulep == '\r')
+        while (*rulep == ' ' || *rulep == '\t' || *rulep == '\n' || *rulep == '\r' || *rulep == ';')
             ++rulep;
         const char* p = find_sep(rulep);
         if (p)
         {
-            while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r' || *rulep == ';')
+            while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r')
                 ++p;
             statement.str(rulep, p - rulep);
             if (*p) 
-                rulep = p + 1;
+                rulep = (*p == ';' ? p + 1 : p);
             else
                 rulep = NULL;
         }
@@ -498,9 +500,9 @@ int TEvaluateRule::Parse(TRule* a_rule)
 {
     char *rulestr = a_rule->GetLib();
     int rc = 0;
-    if (mParserIfRegExp.exec(rulestr) >= 1)
+    if (mParserInnerRegExp.exec(rulestr) >= 1)
     {
-        // The rule contains conditionals
+        // The rule contains something that we need to process separately
         rc = InnerParse(a_rule, rulestr);
     }
     else
