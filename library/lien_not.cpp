@@ -319,6 +319,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
         if (!statement.is_empty())
         {
             char* stmt = statement.str();
+            // If or While
             if (((*stmt == 'I' || *stmt == 'i') && *(stmt + 1) == 'f' && (*(stmt + 2) == ' ' || *(stmt + 2) == '('))
               || ((*stmt == 'W' || *stmt == 'w') && *(stmt + 1) == 'h' && *(stmt + 2) == 'i' && *(stmt + 3) == 'l' && *(stmt + 4) == 'e' && (*(stmt + 5) == ' ' || *(stmt + 5) == '(')))
             {
@@ -356,6 +357,9 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     if (!statement.is_empty() || !then_found)
                         rc = 0;
                 }
+                RegExp re("^\\s*{+\\s*(.*)\\s*}\\s*$", false, true);
+                if (re.exec(statement.str()) > 0)
+                    re.match(1, statement);
                 InnerParse(a_rule, statement.str());
                 int loop_counter = 0;
                 while (while_loop && rc == 4)
@@ -373,6 +377,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                 statement = "";
                 continue;
             }
+            // For (variable From x To y Condition ...)
             else if ((*stmt == 'F' || *stmt == 'f') && *(stmt + 1) == 'o' && *(stmt + 2) == 'r' && (*(stmt + 3) == ' ' || *(stmt + 3) == '('))
             {
                 const char* p_for = find_statement_end(stmt);
@@ -391,7 +396,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     int from = atoi(from_str.str());
                     int to = atoi(to_str.str());
                     int step = (from <= to ? 1 : -1);
-                    re.init("^\\s*{+\\s*(.*)\\s*}\\s*$", false);
+                    re.init("^\\s*{+\\s*(.*)\\s*}\\s*$", false, true);
                     for (int i = from; (step < 0 && i >= to) || (step > 0 && i <= to); i += step)
                     {
                         if (!condition.is_empty())
@@ -418,6 +423,38 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                         for_statement.replace(variable.str(), i_str);
                         InnerParse(a_rule, for_statement.str());
                     }
+                }
+                else
+                {
+                    itsErrorHandler->SetErrorD(5100, ERROR, statement.str());
+                    rc = 2;
+                }
+                statement = "";
+                continue;
+            }
+            // Set(variable=value) ...
+            else if ((*stmt == 'S' || *stmt == 's') && *(stmt + 1) == 'e' && *(stmt + 2) == 't' && (*(stmt + 3) == ' ' || *(stmt + 3) == '('))
+            {
+                const char* p_set = find_statement_end(stmt);
+                typestr params;
+                params.str(stmt + 4, p_set - stmt - 4);
+
+                RegExp re("[\\s(]*(.*?)\\s*=\\s*(.*)", false);
+                int res = re.exec(params.str());
+                if (res >= 2)
+                {
+                    typestr variable, value;
+                    re.match(1, variable);
+                    re.match(2, value);
+                    re.init("^\\s*{+\\s*(.*)\\s*}\\s*$", false, true);
+                    typestr inner_statement;
+                    if (re.exec(p_set) > 0)
+                        re.match(1, inner_statement);
+                    else
+                        inner_statement = p_set;
+                    
+                    inner_statement.replace(variable.str(), value.str());
+                    InnerParse(a_rule, inner_statement.str());
                 }
                 else
                 {
