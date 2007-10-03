@@ -9,7 +9,7 @@ Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Cleaned up the interface ("API") to USEMARCON (big version number 
+- Cleaned up the interface ("API") to USEMARCON (big version number
   bump due to this).
 - Cleaned up file name string handling.
 - Cleaned up header file dependencies.
@@ -28,18 +28,20 @@ ere.maijala at helsinki.fi
 - Occurrence parameter in NextSub() and PreviousSub() is now optional.
 - Added MoveBefore and MoveAfter to manipulate subfield positions in
   a field.
-- Added ExistsIn(), NextSubIn() and PreviousSubIn() to check for 
+- Added ExistsIn(), NextSubIn() and PreviousSubIn() to check for
   subfields in S or other string.
 - Fixed rule parser to not get confused over pipe characters embedded
   in strings.
-- Fixed regular expressions handling to handle escaped characters 
+- Fixed regular expressions handling to handle escaped characters
   properly inside square brackets.
 - Added occurrence specifier "newest" that can be used to target the
   last occurrence of the tag.
 - Switched regular expressions support to use PCRE for added features.
 - Added RegFindPos and RegFindNum.
-- Added left-recursive If statement handling.
-- Added execution blocks for conditional processing.
+- Added left-recursive If statement handling. A branch is no
+  more evaluated unless it matches the condition.
+- Added execution blocks for conditional processing (denoted by curly
+  brackets {}).
 - Added While loops.
 - Added For loops.
 - Combined the documentation to a single document.
