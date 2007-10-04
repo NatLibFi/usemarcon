@@ -22,34 +22,6 @@ AUTHOR
 
 class MemoryPool
 {
-private:
-    static const int m_typeinst_pool_size = 150;
-    TypeInst* m_typeinst_pool[m_typeinst_pool_size];
-    int m_typeinst_pool_pos;
-
-    static const int m_typecd_pool_size = 120;
-    TypeCD* m_typecd_pool[m_typecd_pool_size];
-    int m_typecd_pool_pos;
-
-    void ResetTypeInst(TypeInst *t)
-    {
-        t->str.freestr();
-        t->val = 0;
-    }
-
-    void ResetTypeCD(TypeCD *c)
-    {
-        c->Fixed.freestr();
-        *c->Field = '\0';
-        c->ns = 0;
-        c->nt = 0;
-        *c->SubField = '\0';
-        c->Output = false;
-    }
-
-    int typeinstsaves;
-    int typecdsaves;
-
 public:
     MemoryPool() : m_typeinst_pool_pos(-1), m_typecd_pool_pos(-1)
     {
@@ -85,9 +57,9 @@ public:
     {
         if (!t)
             return;
-        ResetTypeInst(t);
         if (m_typeinst_pool_pos < m_typeinst_pool_size - 1)
         {
+            ResetTypeInst(t);
             m_typeinst_pool[++m_typeinst_pool_pos] = t;
         }
         else
@@ -122,5 +94,30 @@ public:
         {
             delete c;
         }
+    }
+
+private:
+    static const int m_typeinst_pool_size = 150;
+    TypeInst* m_typeinst_pool[m_typeinst_pool_size];
+    int m_typeinst_pool_pos;
+
+    static const int m_typecd_pool_size = 120;
+    TypeCD* m_typecd_pool[m_typecd_pool_size];
+    int m_typecd_pool_pos;
+
+    void ResetTypeInst(TypeInst *t)
+    {
+        t->str.freestr();
+        t->val = 0;
+    }
+
+    void ResetTypeCD(TypeCD *c)
+    {
+        c->Fixed.freestr();
+        *c->Field = '\0';
+        c->ns = 0;
+        c->nt = 0;
+        *c->SubField = '\0';
+        c->Output = false;
     }
 };

@@ -556,6 +556,11 @@ int readline(typestr &a_line, FILE *a_fh)
         int len = strlen(buf);
         if (buf[len-1] == '\n')
         {
+            if (len >= 2 && buf[len-2] == '\r')
+            {
+                --len;
+                buf[len-1] = '\n';
+            }
             if ((len == 2 && buf[len-2] == '\\') || (len > 2 && buf[len-2] == '\\' && buf[len-3] != '\\'))
             {
                 ++lines;

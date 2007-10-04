@@ -223,7 +223,7 @@ void TError::WriteError(char *message)
         strncpy(itsLastErrorMessage, message, 255);
     itsLastErrorMessage[254] = '\0';
     if (itsMode==INTERACTIVE)
-        printf(message);
+        printf("%s", message);
 }
 
 const char* TError::GetPCREErrorDesc(int a_index)

@@ -316,14 +316,23 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
 {
     // Parse statements one by one handling conditionals separately 
     // until If - Then returns 2.
+    if (*a_rulestr == '\0')
+        return 1;
     typestr statement;
     const char *rulep = a_rulestr;
-    int rc = 0;
+    int rc = 1;
     while (true)
     {
         if (!statement.is_empty())
         {
             char* stmt = statement.str();
+            bool plus_instruction = false;
+            while (*stmt == ' ' || *stmt == '+')
+            {
+                if (*stmt == '+')
+                    plus_instruction = true;
+                ++stmt;
+            }
             // If or While
             if (((*stmt == 'I' || *stmt == 'i') && *(stmt + 1) == 'f' && (*(stmt + 2) == ' ' || *(stmt + 2) == '('))
               || ((*stmt == 'W' || *stmt == 'w') && *(stmt + 1) == 'h' && *(stmt + 2) == 'i' && *(stmt + 3) == 'l' && *(stmt + 4) == 'e' && (*(stmt + 5) == ' ' || *(stmt + 5) == '(')))
@@ -331,7 +340,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                 bool while_loop = *(stmt + 1) == 'h';
                 const char* p_if = find_statement_end(stmt);
                 typestr check_stmt = "Check";
-                check_stmt.append(stmt + 2, p_if - stmt - 2);
+                check_stmt.append(stmt + (while_loop ? 5 : 2), p_if - stmt - (while_loop ? 5 : 2));
 
                 TRule rule(a_rule, check_stmt.str());
                 itsScanner.SetRule(&rule);
@@ -350,28 +359,37 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
 
                 p_if = find_statement_start(p_if);
                 const char* p_stmt_true = find_statement_end(p_if);
+                typestr inner_statement;
                 if (rc == 4)
                 {
-                    statement.str(p_if, p_stmt_true - p_if);
+                    inner_statement.str(p_if, p_stmt_true - p_if);
                 }
                 else
                 {
                     p_stmt_true = find_statement_start(p_stmt_true);
+                    if (*p_stmt_true == '\0' && then_found)
+                        return rc;
                     const char* p_stmt_else = find_statement_end(p_stmt_true);
-                    statement.str(p_stmt_true, p_stmt_else - p_stmt_true);
-                    if (!statement.is_empty() || !then_found)
+                    inner_statement.str(p_stmt_true, p_stmt_else - p_stmt_true);
+                    if (!inner_statement.is_empty() || !then_found)
                         rc = 0;
                 }
-                if (mParserInnerBracketRegExp.exec(statement.str()) > 0)
-                    mParserInnerBracketRegExp.match(1, statement);
-                InnerParse(a_rule, statement.str());
+                if (mParserInnerBracketRegExp.exec(inner_statement.str()) > 0)
+                    mParserInnerBracketRegExp.match(1, inner_statement);
+                if (plus_instruction && !inner_statement.is_empty())
+                {
+                    typestr tmp = "+ ";
+                    tmp += inner_statement;
+                    inner_statement = tmp;
+                }
+                InnerParse(a_rule, inner_statement.str());
                 int loop_counter = 0;
                 while (while_loop && rc == 4)
                 {
                     itsScanner.RewindBuffer();
                     rc = yyparse();
                     if (rc == 4)
-                        InnerParse(a_rule, statement.str());
+                        InnerParse(a_rule, inner_statement.str());
                     if (++loop_counter >= 1000)
                     {
                         itsErrorHandler->SetError(5002, WARNING);
@@ -415,16 +433,23 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                                 break;
                         }
 
-                        typestr for_statement;
+                        typestr inner_statement;
                         if (mParserInnerBracketRegExp.exec(p_for) > 0)
-                            mParserInnerBracketRegExp.match(1, for_statement);
+                            mParserInnerBracketRegExp.match(1, inner_statement);
                         else
-                            for_statement = p_for;
+                            inner_statement = p_for;
                         
+                        if (plus_instruction && !inner_statement.is_empty())
+                        {
+                            typestr tmp = "+ ";
+                            tmp += inner_statement;
+                            inner_statement = tmp;
+                        }
+
                         char i_str[30];
                         sprintf(i_str, "%ld", i);
-                        for_statement.replace(variable.str(), i_str);
-                        InnerParse(a_rule, for_statement.str());
+                        inner_statement.replace(variable.str(), i_str);
+                        InnerParse(a_rule, inner_statement.str());
                     }
                 }
                 else
@@ -454,7 +479,14 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                         mParserInnerBracketRegExp.match(1, inner_statement);
                     else
                         inner_statement = p_set;
-                    
+
+                    if (plus_instruction && !inner_statement.is_empty())
+                    {
+                        typestr tmp = "+ ";
+                        tmp += inner_statement;
+                        inner_statement = tmp;
+                    }
+
                     inner_statement.replace(variable.str(), value.str());
                     InnerParse(a_rule, inner_statement.str());
                 }
@@ -500,7 +532,7 @@ int TEvaluateRule::Parse(TRule* a_rule)
 {
     char *rulestr = a_rule->GetLib();
     int rc = 0;
-    if (mParserInnerRegExp.exec(rulestr) >= 1)
+    if (rulestr && *rulestr && mParserInnerRegExp.exec(rulestr) >= 1)
     {
         // The rule contains something that we need to process separately
         rc = InnerParse(a_rule, rulestr);
@@ -562,11 +594,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
         {
             S=AllocTypeInst();
         }
-        if (!D)
-        {
-            D=AllocTypeInst();
-        }
-        if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW)
+        if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW)
             itsErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
 
         // Initialisation de S,N,NT,NS : valeurs de l'entree
@@ -623,8 +651,13 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
             NTO->str.freestr();
             NSO->str.freestr();
 
-            if (D) FreeTypeInst(D);
-            D=AllocTypeInst();
+            if (!D)
+                D = AllocTypeInst();
+            else
+            {
+                D->str.freestr();
+                D->val = 0;
+            }
 
             TCDLib* aCDLOut=Out->GetLastCDLib();
 
@@ -901,28 +934,30 @@ int TEvaluateRule::End_Evaluate_Rule()
     int i;
     // Liberation de la memoire
     for (i=0;i<100;++i)
+    {
         if (Memoire[i])
         {
             FreeTypeInst(Memoire[i]);
             Memoire[i]=NULL;
         }
+    }
 
-        if (S) FreeTypeInst(S); S=NULL;
-        if (T) FreeTypeInst(T); T=NULL;
+    if (S) FreeTypeInst(S); S=NULL;
+    if (T) FreeTypeInst(T); T=NULL;
 
-        if (D) FreeTypeInst(D); D=NULL;
+    if (D) FreeTypeInst(D); D=NULL;
 
-        if (N) FreeTypeInst(N); N=NULL;
-        if (NT) FreeTypeInst(NT); NT=NULL;
-        if (NS) FreeTypeInst(NS); NS=NULL;
-        if (NO) FreeTypeInst(NO); NO=NULL;
-        if (NTO) FreeTypeInst(NTO); NTO=NULL;
-        if (NSO) FreeTypeInst(NSO); NSO=NULL;
-        if (NEW) FreeTypeInst(NEW); NEW=NULL;
-        if (NEWEST) FreeTypeInst(NEWEST); NEWEST=NULL;
-        FreeCD(CDIn); CDIn=NULL;
+    if (N) FreeTypeInst(N); N=NULL;
+    if (NT) FreeTypeInst(NT); NT=NULL;
+    if (NS) FreeTypeInst(NS); NS=NULL;
+    if (NO) FreeTypeInst(NO); NO=NULL;
+    if (NTO) FreeTypeInst(NTO); NTO=NULL;
+    if (NSO) FreeTypeInst(NSO); NSO=NULL;
+    if (NEW) FreeTypeInst(NEW); NEW=NULL;
+    if (NEWEST) FreeTypeInst(NEWEST); NEWEST=NULL;
+    FreeCD(CDIn); CDIn=NULL;
 
-        return 0;
+    return 0;
 }
 
 void TEvaluateRule::FinishCD(TypeCD* aCD)
@@ -1254,10 +1289,10 @@ NEXT ( subfield [,subfield] [,STRICT] )
 TypeInst* TEvaluateRule::Next_( TypeCD* cd1, TypeCD* cd2, int strict )
 {
     typestr temps = NextSubField(cd1, cd2);
+    FreeCD(cd1);
+    FreeCD(cd2);
     if (!temps.str()) 
     {
-        FreeCD(cd1);
-        FreeCD(cd2);
         return NULL;
     }
 
@@ -1267,8 +1302,6 @@ TypeInst* TEvaluateRule::Next_( TypeCD* cd1, TypeCD* cd2, int strict )
     else
         rc->str = temps;
 
-    FreeCD(cd1);
-    FreeCD(cd2);
     return rc;
 };
 
@@ -1278,10 +1311,10 @@ LAST ( subfield [,subfield] [,STRICT] )
 TypeInst* TEvaluateRule::Last_( TypeCD* cd1, TypeCD* cd2, int strict )
 {
     typestr temps = PreviousSubField( cd1, cd2 );
+    FreeCD(cd1);
+    FreeCD(cd2);
     if (!temps.str())
     {
-        FreeCD(cd1);
-        FreeCD(cd2);
         return NULL;
     }
 
@@ -1291,8 +1324,6 @@ TypeInst* TEvaluateRule::Last_( TypeCD* cd1, TypeCD* cd2, int strict )
     else
         rc->str = temps;
 
-    FreeCD(cd1);
-    FreeCD(cd2);
     return rc;
 };
 
@@ -1326,6 +1357,8 @@ TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
         }
     }
 
+    FreeCD(aFindCD);
+    FreeTypeInst(aOccurrence);
     rc=AllocTypeInst();
     rc->str.str(ptr ? ptr : "");
     return rc;
@@ -1356,6 +1389,9 @@ TypeInst* TEvaluateRule::NextSubIn(TypeInst* aStr, TypeCD* aFindCD, TypeInst* aO
             break;
         }
     }
+    FreeTypeInst(aStr);
+    FreeCD(aFindCD);
+    FreeTypeInst(aOccurrence);
     return rc;
 }
 
@@ -1389,6 +1425,8 @@ TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
         }
     }
 
+    FreeCD(aFindCD);
+    FreeTypeInst(aOccurrence);
     rc=AllocTypeInst();
     rc->str.str(ptr ? ptr : "");
     return rc;
@@ -1420,6 +1458,9 @@ TypeInst* TEvaluateRule::PreviousSubIn(TypeInst* aStr, TypeCD* aFindCD, TypeInst
         prev_subfield = *(p + 1);
         p = strchr(p + 1, START_OF_FIELD);
     }
+    FreeTypeInst(aStr);
+    FreeCD(aFindCD);
+    FreeTypeInst(aOccurrence);
     return rc;
 }
 
@@ -1453,6 +1494,8 @@ TypeInst* TEvaluateRule::Multiply( TypeInst* t1, TypeInst* t2 )
     if (t1->str.str() || t2->str.str())
     {
         yyerror("Multiplication can not be done between strings");
+        FreeTypeInst(t1);
+        FreeTypeInst(t2);
         return NULL;
     }
     else
@@ -1554,34 +1597,31 @@ MEM(i)
 */
 TypeInst* TEvaluateRule::MemMem( TypeInst* n )
 {
-    int i=n->val;
     if (n->str.str())
     {
         yyerror("Mem(<string>) Index must be numeric");
+        FreeTypeInst(n);
         return NULL;
     }
-    else
-        if (n->val<0 || n->val>99)
-        {
-            char tmp[100];
-            sprintf(tmp,"Mem(%d) Index out of bounds",n->val);
-            yyerror(tmp);
-            return NULL;
-        }
-        if (Memoire[i]!=NULL)
-        {
-            TypeInst* rc;
-            CopyInst(&rc, Memoire[i]);
-            FreeTypeInst(n);
-            return rc;
-        }
-        else
-        {
-            char tmp[100];
-            sprintf(tmp,"Mem(%d) is empty",i);
-            yyerror(tmp);
-            return NULL;
-        }
+    int i=n->val;
+    FreeTypeInst(n);
+    if (i < 0 || i > 99)
+    {
+        char tmp[100];
+        sprintf(tmp,"Mem(%d) Index out of bounds", i);
+        yyerror(tmp);
+        return NULL;
+    }
+    if (Memoire[i])
+    {
+        TypeInst* rc;
+        CopyInst(&rc, Memoire[i]);
+        return rc;
+    }
+    char tmp[100];
+    sprintf(tmp,"Mem(%d) is empty",i);
+    yyerror(tmp);
+    return NULL;
 }
 
 /*
@@ -1589,24 +1629,23 @@ CLR(i)
 */
 int TEvaluateRule::MemClr( TypeInst* n  )
 {
-    int i=n->val;
     if (n->str.str())
     {
-        yyerror("Clr( String ) is not correct");
+        yyerror("Clr(<String>) Index must be numeric");
         return 0;
     }
-    else
-        if (n->val<0 || n->val>99)
-        {
-            char tmp[100];
-            sprintf(tmp,"Clr(%d) is not correct",n->val);
-            yyerror(tmp);
-            return 0;
-        }
-        FreeTypeInst(Memoire[i]);
-        Memoire[i]=NULL;
-        FreeTypeInst(n);
+    int i = n->val;
+    FreeTypeInst(n);
+    if (i < 0 || i > 99)
+    {
+        char tmp[100];
+        sprintf(tmp,"Clr(%d) Index out of bounds", i);
+        yyerror(tmp);
         return 0;
+    }
+    FreeTypeInst(Memoire[i]);
+    Memoire[i]=NULL;
+    return 0;
 }
 
 /*
@@ -1614,34 +1653,33 @@ EXC(i)
 */
 TypeInst* TEvaluateRule::MemExc( TypeInst* n )
 {
-    int i=n->val;
     if (n->str.str())
     {
         yyerror("Exc(<string>) Index must be numeric");
         return NULL;
     }
+    int i = n->val;
+    FreeTypeInst(n);
+    if (i < 0 || i > 99)
+    {
+        char tmp[100];
+        sprintf(tmp,"Exc(%d) Index out of bounds", i);
+        yyerror(tmp);
+        return NULL;
+    }
+    if (Memoire[i])
+    {
+        TypeInst* rc = Memoire[i];
+        CopyInst(&Memoire[i], S);
+        return rc;
+    }
     else
-        if (n->val<0 || n->val>99)
-        {
-            char tmp[100];
-            sprintf(tmp,"Exc(%d) Index out of bounds",n->val);
-            yyerror(tmp);
-            return NULL;
-        }
-        if (Memoire[i]!=NULL)
-        {
-            TypeInst* rc=Memoire[i];
-            CopyInst(&Memoire[i], S);
-            FreeTypeInst(n);
-            return rc;
-        }
-        else
-        {
-            char tmp[100];
-            sprintf(tmp,"Exc(%d) is empty",i);
-            yyerror(tmp);
-            return NULL;
-        }
+    {
+        char tmp[100];
+        sprintf(tmp,"Exc(%d) is empty", i);
+        yyerror(tmp);
+        return NULL;
+    }
 }
 
 TypeInst* TEvaluateRule::AllocTypeInst()
@@ -1657,11 +1695,7 @@ void TEvaluateRule::FreeTypeInst( TypeInst* t )
 int TEvaluateRule::CopyInst( TypeInst** In, TypeInst* From )
 {
     *In=AllocTypeInst();
-    if (From==NULL || From->str.str()==NULL)
-    {
-        (*In)->str.freestr();
-    }
-    else
+    if (From && From->str.str())
     {
         (*In)->str.str(From->str.str());
     }
@@ -1960,7 +1994,6 @@ TypeInst* TEvaluateRule::Between( TypeInst* t1, TypeInst* t2, int strict )
     TypeInst *rc;
     unsigned int i1,i2;
 
-    /* Suite a la remarque no 80 */
     Value(t1);
     Value(t2);
     i1=(unsigned int)(t1->val-1);

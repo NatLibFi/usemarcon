@@ -34,7 +34,7 @@ class RegExp
 private:
     pcre* m_pcre;
     typestr m_str;
-    enum { m_vector_size = 30 };
+    static const int m_vector_size = 30;
     int m_vector[m_vector_size];
     int m_match_count;
 

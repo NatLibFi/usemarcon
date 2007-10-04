@@ -334,10 +334,7 @@ STAGOCC :
 
 Condition :
         CHECK Boolean                   { PrintDebug("Check");
-                                          if ($2)
-                                            return 4;
-                                          else
-                                            return 2;
+                                          return ($2) ? 4 : 2;
                                         }
 ;
 
@@ -356,8 +353,10 @@ Boolean :
 |       Translation LE Translation      { PrintDebug("...<=..."); $$ = BoolGE($3,$1); $1=$3=NULL; }
 |       EXISTS '(' CD ')'               { PrintDebug("Exists(...)");
                                           $$=Exists($3);
+                                          FreeCD($3); 
                                           if ($$==2) return 2;
-                                          FreeCD($3); $3=NULL; }
+                                          $3=NULL; 
+                                        }
 |       EXISTSIN '(' Translation ',' CD ')' { PrintDebug("ExistsIn(..., ...)");
                                           $$=ExistsIn($3, $5);
                                           FreeTypeInst($3); $3 = NULL;
@@ -365,14 +364,15 @@ Boolean :
                                         }
 |       CD PRECEDES CD                  { PrintDebug("...Precedes...");
                                           $$=Precedes($1,$3);
-                                          if ($$==2) return 2;
                                           FreeCD($1); $1=NULL;
-                                          FreeCD($3); $3=NULL; }
+                                          FreeCD($3); $3=NULL; 
+                                          if ($$==2) return 2;
+                                        }
 |       CD FOLLOWS CD                   { PrintDebug("...Follows...");
                                           $$=Precedes($3,$1);
-                                          if ($$==2) return 2;
                                           FreeCD($3); $3=NULL;
                                           FreeCD($1); $1=NULL; 
+                                          if ($$==2) return 2;
                                         }
 |       INTABLE '(' Translation ',' Translation ')' { PrintDebug("InTable(..., ...)");
                                           $$=InTable($3, $5);
@@ -503,16 +503,16 @@ Translation :
 |       VAR_NTO                         { PrintDebug("NTO"); CopyInst(&$$,NTO); }
 |       VAR_NSO                         { PrintDebug("NSO");CopyInst(&$$,NSO); }
 |       VAR_NEW                         { PrintDebug("NEW");CopyInst(&$$,NEW); }
-|       VAR_NEWEST                      { PrintDebug("LAST");CopyInst(&$$,NEWEST); }
+|       VAR_NEWEST                      { PrintDebug("NEWEST");CopyInst(&$$,NEWEST); }
 |       VARS                            { PrintDebug("S");CopyInst(&$$,S); }
-|       VARD                            { PrintDebug("S");CopyInst(&$$,D); }
+|       VARD                            { PrintDebug("D");CopyInst(&$$,D); }
 |       CD                              { PrintDebug("CD");
-                                          $$=AllocTypeInst();
                                           typestr ptr = ReadCD($1);
+                                          FreeCD($1);
                                           if (!ptr.str()) return 2;
+                                          $$=AllocTypeInst();
                                           $$->str = ptr;
                                           $$->val=0;
-                                          FreeCD($1);
                                         }
 |       Translation PLUS Translation    { PrintDebug("...+...");$$=Add($1,$3); $1=$3=NULL; }
 |       Translation MINUS Translation   { PrintDebug("...-...");$$=Subtract($1,$3); $1=$3=NULL; }
@@ -524,7 +524,7 @@ Translation :
 |       UPPER '(' Translation ')'       { PrintDebug("Upper(...)");$$=Upper($3); }
 |       LOWER '(' Translation ')'       { PrintDebug("Lower(...)");$$=Lower($3); }
 |       STO '(' Translation ')'         { PrintDebug("Sto(...)");CopyInst(&$$,S); MemSto($3); $3=NULL; }
-|       STO '(' Translation ',' Translation ')' { PrintDebug("Sto(...)"); MemSto($3, $5); $3=$5=NULL; }
+|       STO '(' Translation ',' Translation ')' { PrintDebug("Sto(...)"); CopyInst(&$$,S); MemSto($3, $5); $3=$5=NULL; }
 |       MEM '(' Translation ')'         { PrintDebug("Mem(...)");$$=MemMem($3); $3=NULL; }
 |       EXC '(' Translation ')'         { PrintDebug("Exc(...)");$$=MemExc($3); $3=NULL; }
 |       CLR '(' Translation ')'         { PrintDebug("Clr(...)");CopyInst(&$$,S); MemClr($3); $3=NULL; }

@@ -48,7 +48,7 @@ bool StringTable::Load(const typestr a_filename)
     int lineno;
     while (!file.NextLine(&line, &include_file, &lineno))
     {
-        char *p = strchr(line.str(), '//');
+        char *p = strstr(line.str(), "//");
         if (p) 
             *p = '\0';
 

@@ -36,7 +36,7 @@ bool RegExp::init(const char *a_regexp, bool a_utf8, bool a_multiline)
     if (a_utf8)
         re_opts |= PCRE_UTF8;
     if (a_multiline) 
-        re_opts |= PCRE_MULTILINE;
+        re_opts |= PCRE_MULTILINE | PCRE_DOTALL;
     m_error_code = 0;
     m_error_pos = 0;
     const char *error_ptr = NULL;
@@ -73,7 +73,7 @@ int RegExp::match_end(int a_index)
 
 void RegExp::match(int a_index, typestr &a_str)
 {
-    if (a_index < 0 || a_index >= m_vector_size / 3)
+    if (a_index < 0 || a_index >= m_vector_size / 3 || a_index > m_match_count)
         a_str.freestr();
     else
         a_str.str(m_str.str() + m_vector[2 * a_index], m_vector[2 * a_index + 1] - m_vector[2 * a_index]);

@@ -922,7 +922,7 @@ int TMarcRecord::ProcessDuplicateFields(DUPLICATE_PROCESSING_MODE a_subfields, D
                         else if (duplicate_subfield == 2)
                         {
                             if (comp_end)
-                                strcpy(comp_p, comp_end);
+                                memmove(comp_p, comp_end, strlen(comp_end) + 1);
                             else
                                 *comp_p = '\0';
                             field->SetLib(marcdata.str());

@@ -614,6 +614,7 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
                     newCDLib->SetContent(aSubCDLib->GetContent());
                     
                     insertedCDLib = newCDLib;
+                    delete aSubCDLib;
                     continue;
                 }
             }

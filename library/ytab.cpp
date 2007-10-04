@@ -245,8 +245,8 @@ static const yytype_uint16 yyrline[] =
 {
        0,   149,   149,   172,   177,   184,   185,   189,   190,   199,
      200,   201,   209,   215,   222,   229,   238,   246,   255,   265,
-     279,   297,   309,   323,   328,   336,   346,   347,   348,   349,
-     350,   351,   352,   353,   354,   355,   356,   357,   361,   366,
+     279,   297,   309,   323,   328,   336,   343,   344,   345,   346,
+     347,   348,   349,   350,   351,   352,   353,   354,   360,   365,
      371,   377,   385,   386,   387,   388,   398,   408,   418,   428,
      438,   448,   461,   464,   468,   472,   476,   480,   483,   487,
      491,   495,   499,   500,   501,   502,   503,   504,   505,   506,
@@ -1718,10 +1718,7 @@ yyreduce:
   case 25:
 
     { PrintDebug("Check");
-                                          if ((yyvsp[(2) - (2)].code))
-                                            return 4;
-                                          else
-                                            return 2;
+                                          return ((yyvsp[(2) - (2)].code)) ? 4 : 2;
                                         }
     break;
 
@@ -1784,8 +1781,10 @@ yyreduce:
 
     { PrintDebug("Exists(...)");
                                           (yyval.code)=Exists((yyvsp[(3) - (4)].tcd));
+                                          FreeCD((yyvsp[(3) - (4)].tcd)); 
                                           if ((yyval.code)==2) return 2;
-                                          FreeCD((yyvsp[(3) - (4)].tcd)); (yyvsp[(3) - (4)].tcd)=NULL; }
+                                          (yyvsp[(3) - (4)].tcd)=NULL; 
+                                        }
     break;
 
   case 38:
@@ -1801,18 +1800,19 @@ yyreduce:
 
     { PrintDebug("...Precedes...");
                                           (yyval.code)=Precedes((yyvsp[(1) - (3)].tcd),(yyvsp[(3) - (3)].tcd));
-                                          if ((yyval.code)==2) return 2;
                                           FreeCD((yyvsp[(1) - (3)].tcd)); (yyvsp[(1) - (3)].tcd)=NULL;
-                                          FreeCD((yyvsp[(3) - (3)].tcd)); (yyvsp[(3) - (3)].tcd)=NULL; }
+                                          FreeCD((yyvsp[(3) - (3)].tcd)); (yyvsp[(3) - (3)].tcd)=NULL; 
+                                          if ((yyval.code)==2) return 2;
+                                        }
     break;
 
   case 40:
 
     { PrintDebug("...Follows...");
                                           (yyval.code)=Precedes((yyvsp[(3) - (3)].tcd),(yyvsp[(1) - (3)].tcd));
-                                          if ((yyval.code)==2) return 2;
                                           FreeCD((yyvsp[(3) - (3)].tcd)); (yyvsp[(3) - (3)].tcd)=NULL;
                                           FreeCD((yyvsp[(1) - (3)].tcd)); (yyvsp[(1) - (3)].tcd)=NULL; 
+                                          if ((yyval.code)==2) return 2;
                                         }
     break;
 
@@ -2046,7 +2046,7 @@ yyreduce:
 
   case 69:
 
-    { PrintDebug("LAST");CopyInst(&(yyval.inst),NEWEST); }
+    { PrintDebug("NEWEST");CopyInst(&(yyval.inst),NEWEST); }
     break;
 
   case 70:
@@ -2056,18 +2056,18 @@ yyreduce:
 
   case 71:
 
-    { PrintDebug("S");CopyInst(&(yyval.inst),D); }
+    { PrintDebug("D");CopyInst(&(yyval.inst),D); }
     break;
 
   case 72:
 
     { PrintDebug("CD");
-                                          (yyval.inst)=AllocTypeInst();
                                           typestr ptr = ReadCD((yyvsp[(1) - (1)].tcd));
+                                          FreeCD((yyvsp[(1) - (1)].tcd));
                                           if (!ptr.str()) return 2;
+                                          (yyval.inst)=AllocTypeInst();
                                           (yyval.inst)->str = ptr;
                                           (yyval.inst)->val=0;
-                                          FreeCD((yyvsp[(1) - (1)].tcd));
                                         }
     break;
 
@@ -2123,7 +2123,7 @@ yyreduce:
 
   case 83:
 
-    { PrintDebug("Sto(...)"); MemSto((yyvsp[(3) - (6)].inst), (yyvsp[(5) - (6)].inst)); (yyvsp[(3) - (6)].inst)=(yyvsp[(5) - (6)].inst)=NULL; }
+    { PrintDebug("Sto(...)"); CopyInst(&(yyval.inst),S); MemSto((yyvsp[(3) - (6)].inst), (yyvsp[(5) - (6)].inst)); (yyvsp[(3) - (6)].inst)=(yyvsp[(5) - (6)].inst)=NULL; }
     break;
 
   case 84:
