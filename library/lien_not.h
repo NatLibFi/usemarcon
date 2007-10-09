@@ -83,7 +83,7 @@ public:
     {
         debug_rule = 0;
         itsScanner.SetAllocator(&m_allocator);
-        mParserInnerRegExp.init("([Ii]f|[Ww]hile|[Ff]or|[Ww]ith)\\s*\\(", false);
+        mParserInnerRegExp.init("([Ii]f|[Ww]hile|[Ff]or|[Ww]ith)[\\s\\(]", false);
         mParserInnerBracketRegExp.init("^\\s*{+\\s*([\\x00-\\xff]*)\\s*}\\s*$", false, true);
     }
 

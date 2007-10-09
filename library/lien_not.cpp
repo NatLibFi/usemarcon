@@ -420,11 +420,14 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     int step = (from <= to ? 1 : -1);
                     for (int i = from; (step < 0 && i >= to) || (step > 0 && i <= to); i += step)
                     {
+                        char i_str[30];
+                        sprintf(i_str, "%ld", i);
                         if (!condition.is_empty())
                         {
                             typestr check_stmt = "Check (";
                             check_stmt.append(condition);
                             check_stmt.append(")");
+                            check_stmt.replace(variable.str(), i_str);
 
                             TRule rule(a_rule, check_stmt.str());
                             itsScanner.SetRule(&rule);
@@ -446,8 +449,6 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                             inner_statement = tmp;
                         }
 
-                        char i_str[30];
-                        sprintf(i_str, "%ld", i);
                         inner_statement.replace(variable.str(), i_str);
                         InnerParse(a_rule, inner_statement.str());
                     }
