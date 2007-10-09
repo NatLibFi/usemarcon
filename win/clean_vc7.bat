@@ -1,6 +1,6 @@
 @echo off
 
-cd library
+cd pcre
 devenv pcre.vcproj /clean "Release"
 if errorlevel 1 goto error
 cd ..
