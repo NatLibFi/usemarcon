@@ -475,6 +475,27 @@ void show_message(const char *message)
     printf("Message: %s\n", message);
 }
 
+unsigned int utf8_glypheme_length(const char *p)
+{
+    //unsigned int len = utf8_charlen(*p);
+
+    int32_t cp;
+    unsigned int len = utf8proc_iterate((uint8_t *) p, -1, &cp);
+
+    // Check for combining characters
+    const char *p2 = p + len;
+    while (*p2)
+    {
+        unsigned int comb_len = utf8proc_iterate((uint8_t *) p2, -1, &cp);
+        const utf8proc_property_t* prop = utf8proc_get_property(cp);
+        if (!prop->combining_class)
+            break;
+        len += comb_len;
+        p2 += comb_len;
+    }
+    return len;
+}
+
 unsigned int utf8_strlen(const char *str)
 {
     const char *p = str;
@@ -482,8 +503,7 @@ unsigned int utf8_strlen(const char *str)
     while (*p)
     {
         ++i;
-        int32_t tmp;
-        unsigned int clen = utf8proc_iterate((uint8_t *) p, -1, &tmp);
+        unsigned int clen = utf8_glypheme_length(p);
         while (*p && clen > 0)
         {
             ++p;
@@ -504,8 +524,7 @@ unsigned int utf8_charindex(const char *str, unsigned long idx)
             ++utf8_idx;
             continue;
         }
-        int32_t tmp;
-        unsigned int clen = utf8proc_iterate((uint8_t *) p, -1, &tmp);
+        unsigned int clen = utf8_glypheme_length(p);
         if (clen < 0) 
             break;
         utf8_idx += clen;
