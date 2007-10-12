@@ -357,20 +357,20 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     then_found = false;
                 }
 
-                p_if = find_statement_start(p_if);
-                const char* p_stmt_true = find_statement_end(p_if);
+                const char* p_stmt_true = find_statement_start(p_if);
+                const char* p_stmt_true_end = find_statement_end(p_stmt_true);
                 typestr inner_statement;
                 if (rc == 4)
                 {
-                    inner_statement.str(p_if, p_stmt_true - p_if);
+                    inner_statement.str(p_stmt_true, p_stmt_true_end - p_stmt_true);
                 }
                 else
                 {
-                    p_stmt_true = find_statement_start(p_stmt_true);
-                    if (*p_stmt_true == '\0' && then_found)
+                    const char* p_stmt_else = find_statement_start(p_stmt_true_end);
+                    if (*p_stmt_else == '\0' && then_found)
                         return rc;
-                    const char* p_stmt_else = find_statement_end(p_stmt_true);
-                    inner_statement.str(p_stmt_true, p_stmt_else - p_stmt_true);
+                    const char* p_stmt_else_end = find_sep(p_stmt_else);
+                    inner_statement.str(p_stmt_else, p_stmt_else_end - p_stmt_else);
                     if (!inner_statement.is_empty() || !then_found)
                         rc = 0;
                 }
@@ -382,14 +382,18 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     tmp += inner_statement;
                     inner_statement = tmp;
                 }
-                InnerParse(a_rule, inner_statement.str());
+                if (InnerParse(a_rule, inner_statement.str()) == 2)
+                    rc = 2;
                 int loop_counter = 0;
                 while (while_loop && rc == 4)
                 {
                     itsScanner.RewindBuffer();
                     rc = yyparse();
                     if (rc == 4)
-                        InnerParse(a_rule, inner_statement.str());
+                    {
+                        if (InnerParse(a_rule, inner_statement.str()) == 2)
+                            rc = 2; 
+                    }
                     if (++loop_counter >= 1000)
                     {
                         itsErrorHandler->SetError(5002, WARNING);
@@ -904,7 +908,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
             }
             delete aCDOut;
         }
-        while( rc==3 );
+        while (rc == 3);
 
         if (!ProcessCDL)
         {
