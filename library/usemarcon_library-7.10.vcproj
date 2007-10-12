@@ -1,167 +1,118 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="7.10"
 	Name="usemarcon_library"
-	ProjectGUID="{2DF37370-8E90-4C21-ACEA-1345F3C26E24}"
-	>
+	ProjectGUID="{2DF37370-8E90-4C21-ACEA-1345F3C26E24}">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;../pcre"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				BufferSecurityCheck="true"
-				UsePrecompiledHeader="0"
+				BufferSecurityCheck="TRUE"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/usemarcon_library.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				WarnAsError="true"
-				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
-			/>
+				WarnAsError="TRUE"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="4"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				Culture="1035"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="..\pcre\Debug\pcre.lib"
 				OutputFile=".\Debug\usemarcon_library.lib"
-				SuppressStartupBanner="true"
-			/>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				Culture="1035"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="2"
 				AdditionalIncludeDirectories=".;../pcre"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC;_CRT_SECURE_NO_DEPRECATE"
-				StringPooling="true"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC"
+				StringPooling="TRUE"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/usemarcon_library.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="true"
-				SuppressStartupBanner="true"
-			/>
+				WarnAsError="TRUE"
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				Culture="1035"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="..\pcre\Release\pcre.lib"
 				OutputFile=".\Release\usemarcon_library.lib"
-				SuppressStartupBanner="true"
-			/>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				Culture="1035"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -169,754 +120,587 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			>
+			Filter="">
 			<File
-				RelativePath="chckfile.cpp"
-				>
+				RelativePath="chckfile.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="codedata.cpp"
-				>
+				RelativePath="codedata.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="ctrlfld.cpp"
-				>
+				RelativePath="ctrlfld.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="error.cpp"
-				>
+				RelativePath="error.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="lex.yy.cpp"
-				>
+				RelativePath="lex.yy.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="lien_not.cpp"
-				>
+				RelativePath="lien_not.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="marcfile.cpp"
-				>
+				RelativePath="marcfile.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mrcfield.cpp"
-				>
+				RelativePath="mrcfield.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\regexp.cpp"
-				>
+				RelativePath=".\regexp.cpp">
 			</File>
 			<File
-				RelativePath="rulefile.cpp"
-				>
+				RelativePath="rulefile.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="semi.cpp"
-				>
+				RelativePath="semi.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\stringtable.cpp"
-				>
+				RelativePath=".\stringtable.cpp">
 			</File>
 			<File
-				RelativePath="tagnoind.cpp"
-				>
+				RelativePath="tagnoind.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tcd.cpp"
-				>
+				RelativePath="tcd.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tcdlib.cpp"
-				>
+				RelativePath="tcdlib.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tchckdoc.cpp"
-				>
+				RelativePath="tchckdoc.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tfile.cpp"
-				>
+				RelativePath="tfile.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tmarcdoc.cpp"
-				>
+				RelativePath="tmarcdoc.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tmarcrec.cpp"
-				>
+				RelativePath="tmarcrec.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tmpplctn.cpp"
-				>
+				RelativePath="tmpplctn.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tools.cpp"
-				>
+				RelativePath="tools.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="trnsfile.cpp"
-				>
+				RelativePath="trnsfile.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="trule.cpp"
-				>
+				RelativePath="trule.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="truledoc.cpp"
-				>
+				RelativePath="truledoc.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="ttrnsdoc.cpp"
-				>
+				RelativePath="ttrnsdoc.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\typedef.cpp"
-				>
+				RelativePath=".\typedef.cpp">
 			</File>
 			<File
-				RelativePath="umrecord.cpp"
-				>
+				RelativePath="umrecord.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\usemarconlib.cpp"
-				>
+				RelativePath=".\usemarconlib.cpp">
 			</File>
 			<File
-				RelativePath=".\utf8proc.cpp"
-				>
+				RelativePath=".\utf8proc.cpp">
 			</File>
 			<File
-				RelativePath="ytab.cpp"
-				>
+				RelativePath="ytab.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
+						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			>
+			Filter="">
 			<File
-				RelativePath="chckfile.h"
-				>
+				RelativePath="chckfile.h">
 			</File>
 			<File
-				RelativePath="codedata.h"
-				>
+				RelativePath="codedata.h">
 			</File>
 			<File
-				RelativePath="ctrlfld.h"
-				>
+				RelativePath="ctrlfld.h">
 			</File>
 			<File
-				RelativePath="defines.h"
-				>
+				RelativePath="defines.h">
 			</File>
 			<File
-				RelativePath="errcodes.h"
-				>
+				RelativePath="errcodes.h">
 			</File>
 			<File
-				RelativePath="error.h"
-				>
+				RelativePath="error.h">
 			</File>
 			<File
-				RelativePath=".\FlexLexer.h"
-				>
+				RelativePath=".\FlexLexer.h">
 			</File>
 			<File
-				RelativePath="lien_not.h"
-				>
+				RelativePath="lien_not.h">
 			</File>
 			<File
-				RelativePath=".\marc8.h"
-				>
+				RelativePath=".\marc8.h">
 			</File>
 			<File
-				RelativePath="marcfile.h"
-				>
+				RelativePath="marcfile.h">
 			</File>
 			<File
-				RelativePath=".\mempool.h"
-				>
+				RelativePath=".\mempool.h">
 			</File>
 			<File
-				RelativePath="mrcfield.h"
-				>
+				RelativePath="mrcfield.h">
 			</File>
 			<File
-				RelativePath=".\regexp.h"
-				>
+				RelativePath=".\regexp.h">
 			</File>
 			<File
-				RelativePath="rulefile.h"
-				>
+				RelativePath="rulefile.h">
 			</File>
 			<File
-				RelativePath="semi.h"
-				>
+				RelativePath="semi.h">
 			</File>
 			<File
-				RelativePath="sort.h"
-				>
+				RelativePath="sort.h">
 			</File>
 			<File
-				RelativePath=".\stringtable.h"
-				>
+				RelativePath=".\stringtable.h">
 			</File>
 			<File
-				RelativePath="tagnoind.h"
-				>
+				RelativePath="tagnoind.h">
 			</File>
 			<File
-				RelativePath="tcd.h"
-				>
+				RelativePath="tcd.h">
 			</File>
 			<File
-				RelativePath="tcdlib.h"
-				>
+				RelativePath="tcdlib.h">
 			</File>
 			<File
-				RelativePath="tchckdoc.h"
-				>
+				RelativePath="tchckdoc.h">
 			</File>
 			<File
-				RelativePath="tfile.h"
-				>
+				RelativePath="tfile.h">
 			</File>
 			<File
-				RelativePath="tmarcdoc.h"
-				>
+				RelativePath="tmarcdoc.h">
 			</File>
 			<File
-				RelativePath="tmarcrec.h"
-				>
+				RelativePath="tmarcrec.h">
 			</File>
 			<File
-				RelativePath="tmpplctn.h"
-				>
+				RelativePath="tmpplctn.h">
 			</File>
 			<File
-				RelativePath="tools.h"
-				>
+				RelativePath="tools.h">
 			</File>
 			<File
-				RelativePath="trnsfile.h"
-				>
+				RelativePath="trnsfile.h">
 			</File>
 			<File
-				RelativePath="trule.h"
-				>
+				RelativePath="trule.h">
 			</File>
 			<File
-				RelativePath="truledoc.h"
-				>
+				RelativePath="truledoc.h">
 			</File>
 			<File
-				RelativePath="ttrnsdoc.h"
-				>
+				RelativePath="ttrnsdoc.h">
 			</File>
 			<File
-				RelativePath="typedef.h"
-				>
+				RelativePath="typedef.h">
 			</File>
 			<File
-				RelativePath="umrecord.h"
-				>
+				RelativePath="umrecord.h">
 			</File>
 			<File
-				RelativePath=".\usemarconlib.h"
-				>
+				RelativePath=".\usemarconlib.h">
 			</File>
 			<File
-				RelativePath=".\utf8proc.h"
-				>
+				RelativePath=".\utf8proc.h">
 			</File>
 			<File
-				RelativePath="ytab.h"
-				>
+				RelativePath="ytab.h">
 			</File>
 		</Filter>
 		<File
-			RelativePath="analyse.l"
-			>
+			RelativePath="analyse.l">
 		</File>
 		<File
-			RelativePath="analyse.y"
-			>
+			RelativePath="analyse.y">
 		</File>
 	</Files>
 	<Globals>
