@@ -34,7 +34,7 @@ public:
         itsCD = new TCD(aCD->GetErrorHandler());
         itsCD->SetTag(aCD->GetTag());
         itsCD->SetTagOccurrenceNumber(aCD->GetTagOccurrenceNumber());
-        itsLSubField=strdup(alist);
+        itsLSubField=_strdup(alist);
         itsNext=NULL;
     };
     ~SortElem()

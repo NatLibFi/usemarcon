@@ -68,7 +68,7 @@ int TMarcFile::Open()
             "<collection>\n";
 
             unsigned long len = strlen(xml.str());
-            if (write(iFile, xml.str(), len) != len)
+            if (_write(iFile, xml.str(), len) != len)
                 return 1;
         }
     }
@@ -222,7 +222,7 @@ int TMarcFile::read_marc(unsigned long a_length, char * a_buffer)
             else
             {
                 m_filebuffer.allocstr(TB + 1);
-                lng = ::read(iFile, m_filebuffer.str(), TB);
+                lng = _read(iFile, m_filebuffer.str(), TB);
             }
 
             if (lng == -1)
@@ -620,7 +620,7 @@ int TMarcFile::write_marc(unsigned long a_length, char *a_buffer)
             memcpy(&m_filebuffer.str()[BufPos], &a_buffer[pbuf], remaining);
             pbuf = pbuf + remaining;
             length_remaining -= remaining;
-            if (write(iFile, m_filebuffer.str(), TB) != TB)
+            if (_write(iFile, m_filebuffer.str(), TB) != TB)
                 return 1;
             BufPos = 0;
         }
@@ -645,7 +645,7 @@ int TMarcFile::Close()
             m_filebuffer.str()[TB] = '\0';
             BufPos = TB;
         }
-        if ((unsigned long)write(iFile, m_filebuffer.str(), BufPos) != BufPos)
+        if ((unsigned long)_write(iFile, m_filebuffer.str(), BufPos) != BufPos)
             return itsErrorHandler->SetError(1006,ERROR);
 
         m_filebuffer = "";
@@ -657,7 +657,7 @@ int TMarcFile::Close()
             typestr xml = "</collection>\n";
 
             unsigned long len = strlen(xml.str());
-            if (write(iFile, xml.str(), len) != len)
+            if (_write(iFile, xml.str(), len) != len)
                 return itsErrorHandler->SetError(1006,ERROR);
         }
     }

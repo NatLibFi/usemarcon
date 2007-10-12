@@ -84,9 +84,9 @@ int TFile::Open()
     else
     {
         if (itsMode==FILE_READ)
-            iFile=::open(itsFileInfo.str(),O_RDONLY|O_BINARY,0640);
+            iFile=::_open(itsFileInfo.str(),O_RDONLY|O_BINARY,0640);
         else
-            iFile=::open(itsFileInfo.str(),O_CREAT|O_WRONLY|O_TRUNC|O_BINARY,0640);
+            iFile=::_open(itsFileInfo.str(),O_CREAT|O_WRONLY|O_TRUNC|O_BINARY,0640);
 
         if (iFile == -1)
             return itsErrorHandler->SetErrorD(9502, WARNING, itsFileInfo.str());
@@ -114,7 +114,7 @@ int TFile::Close()
     else
     {
         if (iFile != -1)
-            close(iFile);
+            _close(iFile);
     }
     File=NULL;
     iFile=-1;
@@ -299,9 +299,9 @@ long TFile::GetSize(void)
 
     if (itsKind==FILE_BINARY)
     {
-        OldPosition=lseek(iFile,0,SEEK_CUR);
-        EndPosition=lseek(iFile,0,SEEK_END);
-        lseek(iFile,OldPosition,SEEK_SET);
+        OldPosition=_lseek(iFile,0,SEEK_CUR);
+        EndPosition=_lseek(iFile,0,SEEK_END);
+        _lseek(iFile,OldPosition,SEEK_SET);
     }
     else
     {
@@ -322,7 +322,7 @@ long TFile::GetSize(void)
 long TFile::GetPos(void)
 {
  if (itsKind==FILE_BINARY)
-     return lseek(iFile,0,SEEK_CUR);
+     return _lseek(iFile,0,SEEK_CUR);
  else
      return ftell(File);
 }

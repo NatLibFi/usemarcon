@@ -481,7 +481,7 @@ int TMarcRecord::ToXMLString(typestr &a_xml)
             a_xml.append_char(indicators[1] ? indicators[1] : ' ');
             a_xml.append("\">\n");
 
-            char *p = strchr(marcdata, START_OF_FIELD);
+            const char *p = strchr(marcdata, START_OF_FIELD);
             while (p)
             {
                 char code = p[1];

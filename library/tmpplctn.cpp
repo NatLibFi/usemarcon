@@ -669,7 +669,7 @@ int TUMApplication::ToHexa(const char* str)
             i,
             max=strlen(str)-1,
             d;
-    char    *StrBis=strdup(str);
+    char    *StrBis=_strdup(str);
 
     for (i=max,d=1;i>=0;--i)
     {
@@ -702,6 +702,6 @@ void TUMApplication::SetMarcRecord(const char *a_record, int a_length)
 
 void TUMApplication::GetMarcRecord(char *&a_record, int &a_length)
 {
-    a_record = m_record ? strdup(m_record) : NULL;
+    a_record = m_record ? _strdup(m_record) : NULL;
     a_length = m_recordLen;
 }

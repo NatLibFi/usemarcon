@@ -171,10 +171,7 @@ int TMarcField::SetLib(const char *aLib)
 
 int TMarcField::SetLib(const char *aLib,unsigned int aSize)
 {
-    // TODO: beautify
-    itsLib.allocstr(aSize+1);
-    memcpy(itsLib.str(),aLib,aSize);
-    itsLib.str()[aSize]=0;
+    itsLib.str(aLib, aSize);
     return 0;
 }
 
