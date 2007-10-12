@@ -754,7 +754,7 @@ void TUMRecord::GetOccurrenceNumbersForNew(const char *a_tag, int a_tag_occurren
         if (Search->GetTagOccurrenceNumber() == a_tag_occurrence)
             a_sub_occurrence = Search->GetSubOccurrenceNumber() + 1;
         else
-            a_sub_occurrence = 0;
+            a_sub_occurrence = 1;
     }
     else
     {
