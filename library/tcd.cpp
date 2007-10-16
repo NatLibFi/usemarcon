@@ -283,12 +283,12 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
             // Invalid SS
             return 5203;
         RealPos=CurrentPos;
-        // Search for the Occurence Sub
+        // Search for the Occurrence Sub
         if (String[RealPos]=='(')
-            // There is an ocuurence Sub
+            // There is an occurrence Sub
         {
             RealPos++;
-            // Try to read the occurence Sub
+            // Try to read the occurrence Sub
             for (CurrentPos=RealPos; CurrentPos<MaxPos && String[CurrentPos]!=')'; )
                 CurrentPos++;
             if (CurrentPos-RealPos)
@@ -309,7 +309,7 @@ int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
                 else if (!strcmp(tmp.str(), "NO"))
                     SetSubOccurrenceNumber(CD_NO);
                 else
-                    SetTagOccurrenceNumber(atoi(tmp.str()));
+                    SetSubOccurrenceNumber(atoi(tmp.str()));
             }
             else
                 // the occurence Sub is empty
