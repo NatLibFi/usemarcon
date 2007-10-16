@@ -226,9 +226,21 @@ void TError::WriteError(char *message)
         printf("%s", message);
 }
 
-const char* TError::GetPCREErrorDesc(int a_index)
+const char* TError::GetPCRECompileErrorDesc(int a_index)
 {
-    if (a_index >= 0 && a_index <= sizeof(PCREErrorDesc) / sizeof(char *))
-        return PCREErrorDesc[a_index];
+    if (a_index >= 0 && a_index <= sizeof(PCRECompileErrorDesc) / sizeof(char *))
+        return PCRECompileErrorDesc[a_index];
     return "";
+}
+
+const char* TError::GetPCREExecErrorDesc(int a_errorcode)
+{
+    for (int i = 0; i < PCREExecErrorDescCount; i++)
+    {
+        if (PCREExecErrorDesc[i].errorcode == a_errorcode)
+        {
+			return PCREExecErrorDesc[i].description;
+        }
+    }
+	return NULL;
 }

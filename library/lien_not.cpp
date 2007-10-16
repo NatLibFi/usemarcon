@@ -2453,7 +2453,7 @@ bool TEvaluateRule::RegFindInternal(const char *a_str, const char *a_regexp)
         typestr error = "Could not compile regular expression '";
         error += a_regexp;
         error += "': ";
-        error += itsErrorHandler->GetPCREErrorDesc(error_code);
+        error += itsErrorHandler->GetPCRECompileErrorDesc(error_code);
         if (error_ptr)
         {
             error += " at ";
@@ -2482,6 +2482,12 @@ bool TEvaluateRule::RegFindInternal(const char *a_str, const char *a_regexp)
         error += a_regexp;
         error += "', error code ";
         error += ret_str;
+		if (itsErrorHandler->GetPCREExecErrorDesc(mRegExpResult))
+		{
+			error += " (";
+			error += itsErrorHandler->GetPCREExecErrorDesc(mRegExpResult);
+			error += ")";
+		}
         yyerror(error.str());
         return false;
     }

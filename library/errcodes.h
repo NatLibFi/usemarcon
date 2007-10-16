@@ -102,7 +102,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {9506, "Unable to read two first lines of an ASCII file"}
 };
 
-const char * PCREErrorDesc[] = {
+const char * PCRECompileErrorDesc[] = {
     "no error",  
     "\\ at end of pattern",
     "\\c at end of pattern",
@@ -163,4 +163,24 @@ const char * PCREErrorDesc[] = {
     "\\g is not followed by a braced name or an optionally braced non-zero number",
     "(?+ or (?- or (?(+ or (?(- must be followed by a non-zero number",
 };
+
+const int PCREExecErrorDescCount = 14;
+
+const ERRORDESC PCREExecErrorDesc[PCREExecErrorDescCount] = {
+	{-2, "Internal error: Either code or subject was passed as NULL, or ovector was NULL and ovecsize was not zero"},
+	{-3, "Internal error: An unrecognized bit was set in the options argument"},
+	{-4, "Internal error: Bad magic number, possible memory corruption"},
+	{-5, "Internal error: An unknown item was encountered in the compiled pattern"},
+	{-6, "Memory allocation failed"},
+	{-8, "The backtracking limit was reached"},
+	{-10, "Invalid UTF-8 byte sequence was detected"},
+	{-11, "The UTF-8 byte sequence was valid, but the value of startoffset did not point to the beginning of a UTF-8 character."},
+	{-12, "Internal error: Partial match"},
+	{-13, "Internal error: Invalid pattern for partial match"},
+	{-14, "An unexpected internal error has occurred. This error could be caused by a bug in PCRE or by overwriting of the compiled pattern."},
+	{-15, "Internal error: Value of the ovecsize argument is negative."},
+	{-21, "The internal recursion limit was reached"},
+	{-23, "Internal error: An invalid combination of PCRE_NEWLINE_xxx options was given"},
+};
+
 #endif
