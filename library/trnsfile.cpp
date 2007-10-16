@@ -91,7 +91,7 @@ int TTransFile::Open()
 
                 // Creation de l'arbre lexicographique
                 if (*InListe.str())
-                    insere((unsigned char*)InListe.str(), (unsigned char*)_strdup(OutListe.str()));
+                    insere((unsigned char*)InListe.str(), (unsigned char*)l_strdup(OutListe.str()));
 
             }
         }

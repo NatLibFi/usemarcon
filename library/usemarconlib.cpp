@@ -64,7 +64,7 @@ void Usemarcon::SetMarcRecord(const char *a_record, int a_length)
 
 void Usemarcon::GetMarcRecord(char *&a_record, int &a_length)
 {
-    a_record = m_record ? _strdup(m_record) : NULL;
+    a_record = m_record ? l_strdup(m_record) : NULL;
     a_length = m_length;
 }
 
@@ -74,7 +74,7 @@ void Usemarcon::SetIniFileName(const char *a_iniFile)
         return;
     if (m_iniFileName)
         free(m_iniFileName);
-    m_iniFileName = _strdup(a_iniFile);
+    m_iniFileName = l_strdup(a_iniFile);
     m_initialized = false;
 }
 
@@ -82,14 +82,14 @@ void Usemarcon::SetInputMarcFileName(const char *a_filename)
 {
     if (m_inputMarcFileName)
         free(m_inputMarcFileName);
-    m_inputMarcFileName = _strdup(a_filename);
+    m_inputMarcFileName = l_strdup(a_filename);
 }
 
 void Usemarcon::SetOutputMarcFileName(const char *a_filename)
 {
     if (m_outputMarcFileName)
         free(m_outputMarcFileName);
-    m_outputMarcFileName = _strdup(a_filename);
+    m_outputMarcFileName = l_strdup(a_filename);
 }
 
 void Usemarcon::SetLastErrorMessage(const char *a_msg)

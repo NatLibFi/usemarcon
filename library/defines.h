@@ -50,6 +50,22 @@ AUTHOR
   #define strcasecmp _stricmp
 #endif
 
+#if defined(_MSC_VER)
+  #define l_strdup _strdup
+  #define l_open _open
+  #define l_close _close
+  #define l_read _read
+  #define l_write _write
+  #define l_lseek _lseek
+#else
+  #define l_strdup strdup
+  #define l_open open
+  #define l_close close
+  #define l_read read
+  #define l_write write
+  #define l_lseek lseek
+#endif
+
 #define MAXPATH 1024
 
 #if !defined(TRUE)
