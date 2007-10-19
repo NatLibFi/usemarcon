@@ -136,7 +136,8 @@ typestr2 TCDLib::GetContent(TCD* theCD)
             if (*(Courant->GetSubfield()) == 0)
             {
                 content += Courant->GetContent();
-                content.s2 += Courant->GetContent().s2;
+                if (!Courant->GetContent().s2.is_empty())
+                    content.s2 += Courant->GetContent().s2;
             }
             else
             {
@@ -150,9 +151,12 @@ typestr2 TCDLib::GetContent(TCD* theCD)
                     content.append_char(*(Courant->GetSubfield()+1)); 
                     content.append(Courant->GetContent());
 
-                    content.s2.append_char(START_OF_FIELD);
-                    content.s2.append_char(*(Courant->GetSubfield()+1)); 
-                    content.s2.append(Courant->GetContent().s2);
+                    if (!Courant->GetContent().s2.is_empty())
+                    {
+                        content.s2.append_char(START_OF_FIELD);
+                        content.s2.append_char(*(Courant->GetSubfield()+1)); 
+                        content.s2.append(Courant->GetContent().s2);
+                    }
                 }
             }
             Courant=(TCDLib*)Courant->GetNext();
