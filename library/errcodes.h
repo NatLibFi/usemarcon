@@ -7,9 +7,10 @@ typedef struct
     const char *description;
 } ERRORDESC;
 
-const int ErrorDescCount = 85;
+const int ErrorDescCount = 87;
 
 const ERRORDESC ErrorDesc[ErrorDescCount] = {
+    // Messages during reading of the input file
     {1001, "Unable to reset a writing mode opened file"},
     {1002, "Invalid SCW (Segment Control Word) encountered when attempting to read a MARC record"},
     {1003, "Unable to go further in MARC file reading"},
@@ -23,6 +24,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {1501, "MARC buffer allocation failure"},
     {1502, "Error encountered when attempting to read the MARC file"},
     
+    // Messages during checking the input record
     {2001, "Invalid input format checking rule (item expected)"},
     {2002, "Invalid or absent tag in input format checking rule"},
     {2003, "Format checking rule redundancy in input format checking file"},
@@ -41,10 +43,14 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {2502, "TCtrlSubfield allocation failure when attempting to load a new input format checking rule"},
     {2503, "First indicators list allocation failure when attempting to load a new input format checking rule"},
     {2504, "Second indicators list allocation failure when attempting to load a new input format checking rule"},
+    {2601, "Invalid or missing linkage subfield"},
+    {2602, "Linked field not found"},
 
+    // Messages during character transcoding
     {3000, "Memory allocation error"},
     {3001, "Character not transcoded (unable to find it in transcoding table)"},
     
+    // Messages during rule analysis or conversion
     {5000, "Memory allocation error"},
     {5001, "The selected rule file does not exist"},
     {5002, "While loop maximum count exceeded - check condition validity"},
@@ -65,6 +71,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {5506, "Buffer allocation failure when attempting to split the rule"},
     {5507, "TCD allocation failure when attempting to load CD from MARC record"},
     
+    // Messages during checking the output record
     {7001, "Invalid output format checking rule (item expected)"},
     {7002, "Invalid or absent tag in output format checking rule"},
     {7003, "Format checking rule redundancy in output format checking file"},
@@ -85,6 +92,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {7503, "First indicators list allocation failure when attempting to load a new output format checking rule"},
     {7504, "Second indicators list allocation failure when attempting to load a new output format checking rule"},
 
+    // Other (internal) errors
     {9001, "TRuleFile allocation failure when attempting to load the Rule File"},
     {9011, "TCheckFile allocation failure when attempting to load the Input Check File"},
     {9012, "TCheckFile allocation failure when attempting to load the Output Check File"},
@@ -167,20 +175,20 @@ const char * PCRECompileErrorDesc[] = {
 const int PCREExecErrorDescCount = 14;
 
 const ERRORDESC PCREExecErrorDesc[PCREExecErrorDescCount] = {
-	{-2, "Internal error: Either code or subject was passed as NULL, or ovector was NULL and ovecsize was not zero"},
-	{-3, "Internal error: An unrecognized bit was set in the options argument"},
-	{-4, "Internal error: Bad magic number, possible memory corruption"},
-	{-5, "Internal error: An unknown item was encountered in the compiled pattern"},
-	{-6, "Memory allocation failed"},
-	{-8, "The backtracking limit was reached"},
-	{-10, "Invalid UTF-8 byte sequence was detected"},
-	{-11, "The UTF-8 byte sequence was valid, but the value of startoffset did not point to the beginning of a UTF-8 character."},
-	{-12, "Internal error: Partial match"},
-	{-13, "Internal error: Invalid pattern for partial match"},
-	{-14, "An unexpected internal error has occurred. This error could be caused by a bug in PCRE or by overwriting of the compiled pattern."},
-	{-15, "Internal error: Value of the ovecsize argument is negative."},
-	{-21, "The internal recursion limit was reached"},
-	{-23, "Internal error: An invalid combination of PCRE_NEWLINE_xxx options was given"},
+    {-2, "Internal error: Either code or subject was passed as NULL, or ovector was NULL and ovecsize was not zero"},
+    {-3, "Internal error: An unrecognized bit was set in the options argument"},
+    {-4, "Internal error: Bad magic number, possible memory corruption"},
+    {-5, "Internal error: An unknown item was encountered in the compiled pattern"},
+    {-6, "Memory allocation failed"},
+    {-8, "The backtracking limit was reached"},
+    {-10, "Invalid UTF-8 byte sequence was detected"},
+    {-11, "The UTF-8 byte sequence was valid, but the value of startoffset did not point to the beginning of a UTF-8 character."},
+    {-12, "Internal error: Partial match"},
+    {-13, "Internal error: Invalid pattern for partial match"},
+    {-14, "An unexpected internal error has occurred. This error could be caused by a bug in PCRE or by overwriting of the compiled pattern."},
+    {-15, "Internal error: Value of the ovecsize argument is negative."},
+    {-21, "The internal recursion limit was reached"},
+    {-23, "Internal error: An invalid combination of PCRE_NEWLINE_xxx options was given"},
 };
 
 #endif

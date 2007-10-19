@@ -164,7 +164,7 @@ int TTransDoc::ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut)
     if (!MarcOut->GetLeader())
     {
         typestr tmp = "Notice '";
-        tmp += MarcIn->GetFirstField()->GetLib();
+        tmp += MarcIn->GetFirstField()->GetLib1();
         tmp += "' : leader '";
         tmp += MarcIn->GetLeader();
         tmp += '\'';
@@ -194,11 +194,12 @@ int TTransDoc::ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut)
 
         // On transcode le libelle
         typestr result;
-        Out->SetLib(Transcode(In->GetLib(), &result, In->GetLib(), In->GetTag()));
-        if (!Out->GetLib())
+        Out->SetLib1(Transcode(In->GetLib1(), &result, In->GetLib1(), In->GetTag()));
+        Out->SetLib2(Transcode(In->GetLib2(), &result, In->GetLib2(), In->GetTag()));
+        if (!Out->GetLib1() || !Out->GetLib2())
         {
             typestr tmp = "Notice '";
-            tmp += In->GetLib();
+            tmp += In->GetLib1();
             tmp += "' : field '";
             tmp += In->GetTag();
             tmp += '\'';

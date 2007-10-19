@@ -34,6 +34,7 @@ AUTHOR
 #define EMPTY_ITEM		"\"\""
 
 #define START_OF_FIELD '\x1f'
+#define START_OF_FIELD_STR "\x1f"
 #define END_OF_FIELD '\x1e'
 #define END_OF_RECORD '\x1d'
 

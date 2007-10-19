@@ -83,19 +83,21 @@ public:
     char  *GetLastErrorMessage  (void) { return itsLastErrorMessage; };
 
     const char* GetPCRECompileErrorDesc(int a_index);
-	const char* GetPCREExecErrorDesc(int a_errorcode);
+    const char* GetPCREExecErrorDesc(int a_errorcode);
 
     // Just an easy way to distribute this information to others
-    bool  GetUTF8Mode           (void) { return itsUTF8Mode; }
-    void  SetUTF8Mode           (bool UTF8Mode) { itsUTF8Mode = UTF8Mode; }
-    bool  GetConvertSubfieldCodesToLowercase(void) { return itsConvertSubfieldCodesToLowercase; }
-    void  SetConvertSubfieldCodesToLowercase(bool a_value) { itsConvertSubfieldCodesToLowercase = a_value; }
+    bool GetUTF8Mode           (void) { return itsUTF8Mode; }
+    void SetUTF8Mode           (bool UTF8Mode) { itsUTF8Mode = UTF8Mode; }
+    bool GetConvertSubfieldCodesToLowercase(void) { return itsConvertSubfieldCodesToLowercase; }
+    void SetConvertSubfieldCodesToLowercase(bool a_value) { itsConvertSubfieldCodesToLowercase = a_value; }
     typestr GetOutputXMLRecordFormat() { return itsOutputXMLRecordFormat; }
-    void  SetOutputXMLRecordFormat(const char *a_value) { itsOutputXMLRecordFormat = a_value; }
+    void SetOutputXMLRecordFormat(const char *a_value) { itsOutputXMLRecordFormat = a_value; }
     typestr GetOutputXMLRecordType() { return itsOutputXMLRecordType; }
     void  SetOutputXMLRecordType(const char *a_value) { itsOutputXMLRecordType = a_value; }
     unsigned long GetRecordNumber() { return mRecordNumber; }
     void SetRecordNumber(unsigned long aNumber) { mRecordNumber = aNumber; }
+    bool GetHandleLinkedFields() { return mHandleLinkedFields; }
+    void SetHandleLinkedFields(bool a_value) { mHandleLinkedFields = a_value; }
 
     TUMApplication *GetApplication      (void) { return itsApplication; }
 
@@ -116,6 +118,7 @@ protected:
     int             itsVerboseMode;
     int             itsDebugMode;
     unsigned long   mRecordNumber;
+    bool            mHandleLinkedFields;
 };
 
 #endif // TError_H

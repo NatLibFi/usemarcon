@@ -45,7 +45,7 @@ protected:
   virtual int Exists(TypeCD*) = 0;
   virtual int ExistsIn(TypeInst* a_str, TypeCD* a_cd) = 0;
   virtual int InTable(TypeInst*, TypeInst*) = 0;
-  virtual typestr ReadCD(TypeCD *) = 0;
+  virtual typestr2 ReadCD(TypeCD *) = 0;
   virtual TypeCD* AllocCD() = 0;
   virtual void FreeCD( TypeCD* CD ) = 0;
   virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
@@ -74,15 +74,14 @@ protected:
   virtual int BoolGT( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual int BoolGE( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Add( TypeInst* t1, TypeInst* t2 ) = 0;
-  virtual TypeInst* AddOcc( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual char* ToString( TypeInst* t ) = 0;
   virtual TypeInst* String( TypeInst* t ) = 0;
   virtual TypeInst* Upper( TypeInst* t ) = 0;
   virtual TypeInst* Lower( TypeInst* t ) = 0;
   virtual TypeInst* Len( TypeInst* t ) = 0;
-  virtual TypeInst* From( TypeInst* t, int strict ) = 0;
-  virtual TypeInst* To( TypeInst* t, int strict ) = 0;
-  virtual TypeInst* Between( TypeInst* t1, TypeInst* t2, int strict ) = 0;
+  virtual TypeInst* From(TypeInst* t, bool a_strict) = 0;
+  virtual TypeInst* To(TypeInst* t, bool a_strict) = 0;
+  virtual TypeInst* Between(TypeInst* t1, TypeInst* t2, bool a_strict) = 0;
   virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at, bool strict ) = 0;
   virtual TypeInst* ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, bool strict ) = 0;
   virtual TypeInst* BFirst( TypeInst* t, int k ) = 0;
@@ -134,7 +133,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <inst> YEAR MONTH DAY HOUR MINUTE SECOND
 %token <inst> NEXTSUB NEXTSUBIN PREVIOUSSUB PREVIOUSSUBIN 
 %token <inst> REGFINDNUM REGFINDPOS REGFIND REGMATCH REGREPLACE REGREPLACETABLE
-%token <inst> MOVEBEFORE MOVEAFTER
+%token <inst> MOVEBEFORE MOVEAFTER MOVEFIRST MOVELAST
 
 %left  SEP PLUS MINUS MULTIPLY DIVIDE
 
@@ -507,7 +506,7 @@ Translation :
 |       VARS                            { PrintDebug("S");CopyInst(&$$,S); }
 |       VARD                            { PrintDebug("D");CopyInst(&$$,D); }
 |       CD                              { PrintDebug("CD");
-                                          typestr ptr = ReadCD($1);
+                                          typestr2 ptr = ReadCD($1);
                                           FreeCD($1);
                                           if (!ptr.str()) return 2;
                                           $$=AllocTypeInst();
@@ -528,16 +527,16 @@ Translation :
 |       MEM '(' Translation ')'         { PrintDebug("Mem(...)");$$=MemMem($3); $3=NULL; }
 |       EXC '(' Translation ')'         { PrintDebug("Exc(...)");$$=MemExc($3); $3=NULL; }
 |       CLR '(' Translation ')'         { PrintDebug("Clr(...)");CopyInst(&$$,S); MemClr($3); $3=NULL; }
-|       FROM '(' Translation ')'        { PrintDebug("From(...)");$$=From($3,0); $3=NULL; }
+|       FROM '(' Translation ')'        { PrintDebug("From(...)");$$=From($3, false); $3=NULL; }
 |       FROM '(' Translation ',' _STRICT ')'
-                                        { PrintDebug("From(...,_STRICT)");$$=From($3,1); $3=NULL; }
-|       TO '(' Translation ')'          { PrintDebug("To(...)");$$=To($3,0); $3=NULL; }
+                                        { PrintDebug("From(...,_STRICT)");$$=From($3, true); $3=NULL; }
+|       TO '(' Translation ')'          { PrintDebug("To(...)");$$=To($3, false); $3=NULL; }
 |       TO '(' Translation ',' _STRICT ')'
-                                        { PrintDebug("To(...,_STRICT)");$$=To($3,1); $3=NULL; }
+                                        { PrintDebug("To(...,_STRICT)");$$=To($3, true); $3=NULL; }
 |       BETWEEN '(' Translation ',' Translation ')'
-                                        { PrintDebug("Between(...)");$$=Between($3,$5,0); $3=$5=NULL; }
+                                        { PrintDebug("Between(...)");$$=Between($3, $5, false); $3=$5=NULL; }
 |       BETWEEN '(' Translation ',' Translation ',' _STRICT ')'
-                                        { PrintDebug("Between(...,_STRICT)");$$=Between($3,$5,1); $3=$5=NULL; }
+                                        { PrintDebug("Between(...,_STRICT)");$$=Between($3, $5, true); $3=$5=NULL; }
 |       _DELETE '(' Translation ')'     { PrintDebug("Delete(...)");$$=Replace($3, NULL, SP_ANY, 0); $3=NULL; }
 |       _DELETE '(' Translation ',' AT BEGINING ')'
                                         { PrintDebug("Delete(..., AT BEGINING)");$$=Replace($3, NULL, SP_BEGINNING, false); $3=NULL; }
@@ -697,6 +696,50 @@ Translation :
                                           $$=MoveAfter($3, $5, $7, $9, $11, $13, $15); 
                                           $3=$7=$9=$11=$13=$15=NULL; 
                                           $5=NULL;
+                                        }
+|       MOVEFIRST '(' Translation ')' { PrintDebug("MoveFirst(...)");
+                                          $$=MoveBefore($3, NULL, NULL, NULL, NULL, NULL, NULL); 
+                                          $3=NULL; 
+                                        }
+|       MOVEFIRST '(' Translation ',' Translation ')' { PrintDebug("MoveFirst(..., ...)");
+                                          $$=MoveBefore($3, NULL, $5, NULL, NULL, NULL, NULL); 
+                                          $3=$5=NULL; 
+                                        }
+|       MOVEFIRST '(' Translation ',' Translation ',' Translation ',' Translation ')' { PrintDebug("MoveFirst(..., ..., ..., ...)");
+                                          $$=MoveBefore($3, NULL, $5, $7, $9, NULL, NULL); 
+                                          $3=$5=$7=$9=NULL; 
+                                        }
+|       MOVEFIRST '(' Translation ',' Translation ',' Translation ',' 
+            Translation ',' Translation ')' { PrintDebug("MoveFirst(..., ..., ..., ..., ...)");
+                                          $$=MoveBefore($3, NULL, $5, $7, $9, $11, NULL); 
+                                          $3=$5=$7=$9=$11=NULL; 
+                                        }
+|       MOVEFIRST '(' Translation ',' Translation ',' Translation ',' 
+            Translation ',' Translation ',' Translation ')' { PrintDebug("MoveFirst(..., ..., ..., ..., ..., ...)");
+                                          $$=MoveBefore($3, NULL, $5, $7, $9, $11, $13); 
+                                          $3=$5=$7=$9=$11=$13=NULL; 
+                                        }
+|       MOVELAST '(' Translation ')' { PrintDebug("MoveLast(...)");
+                                          $$=MoveAfter($3, NULL, NULL, NULL, NULL, NULL, NULL); 
+                                          $3=NULL; 
+                                        }
+|       MOVELAST '(' Translation ',' Translation ')' { PrintDebug("MoveLast(..., ...)");
+                                          $$=MoveAfter($3, NULL, $5, NULL, NULL, NULL, NULL); 
+                                          $3=$5=NULL; 
+                                        }
+|       MOVELAST '(' Translation ',' Translation ',' Translation ',' Translation ')' { PrintDebug("MoveLast(..., ..., ..., ...)");
+                                          $$=MoveAfter($3, NULL, $5, $7, $9, NULL, NULL); 
+                                          $3=$5=$7=$9=NULL; 
+                                        }
+|       MOVELAST '(' Translation ',' Translation ',' Translation ',' 
+            Translation ',' Translation ')' { PrintDebug("MoveLast(..., ..., ..., ..., ...)");
+                                          $$=MoveAfter($3, NULL, $5, $7, $9, $11, NULL); 
+                                          $3=$5=$7=$9=$11=NULL; 
+                                        }
+|       MOVELAST '(' Translation ',' Translation ',' Translation ',' 
+            Translation ',' Translation ',' Translation ')' { PrintDebug("MoveLast(..., ..., ..., ..., ..., ...)");
+                                          $$=MoveAfter($3, NULL, $5, $7, $9, $11, $13); 
+                                          $3=$5=$7=$9=$11=$13=NULL; 
                                         }
 ;
 

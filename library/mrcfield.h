@@ -43,7 +43,8 @@ public:
     char       *GetIndicators(void)            { return itsIndicators; };
     char       GetI1         (void)            { return itsIndicators[0]; };
     char       GetI2         (void)            { return itsIndicators[1]; };
-    char       *GetLib       (void)            { return itsLib.str(); };
+    char       *GetLib1      (void)            { return itsLib.str(); };
+    char       *GetLib2      (void)            { return itsLib.s2.str(); };
     TMarcField *GetNextField (void)            { return itsNextField; };
 
     int     SetTag        (const char *aTagString);
@@ -51,14 +52,17 @@ public:
     int     SetIndicators (const char *theIndicators);
     int     SetI1         (char anIndicator)      { itsIndicators[0]=anIndicator; return 0; };
     int     SetI2         (char anIndicator)      { itsIndicators[1]=anIndicator; return 0; };  
-    int     SetLib        (const char *aLib);
-    int     SetLib        (const char *aLib, unsigned int aSize);
+    void    SetLib        (const typestr2& a_lib)  { itsLib = a_lib; }
+    void    SetLib1       (const char *aLib);
+    void    SetLib1       (const char *aLib, unsigned int aSize);
+    void    SetLib2       (const char *aLib);
+    void    SetLib2       (const char *aLib, unsigned int aSize);
     TMarcField  *SetNextField   (TMarcField *theNextField)  { itsNextField=theNextField; return itsNextField; };
        
 protected:
     char      itsTag[4];
     char      itsIndicators[3];
-    typestr   itsLib;
+    typestr2  itsLib;
     TMarcField  *itsNextField;
 };
  

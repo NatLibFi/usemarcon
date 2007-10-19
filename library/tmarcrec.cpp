@@ -62,7 +62,8 @@ TMarcRecord::TMarcRecord(const TMarcRecord &aRecord)
         // On recopie le tag et les indicateurs du champ en entree
         Out->SetTag(In->GetTag());
         Out->SetIndicators(In->GetIndicators());
-        Out->SetLib(In->GetLib());
+        Out->SetLib1(In->GetLib1());
+        Out->SetLib2(In->GetLib2());
         In=In->GetNextField();
     }
 
@@ -118,7 +119,8 @@ TMarcRecord & TMarcRecord::operator=(const TMarcRecord &aRecord)
         // On recopie le tag et les indicateurs du champ en entree
         Out->SetTag(In->GetTag());
         Out->SetIndicators(In->GetIndicators());
-        Out->SetLib(In->GetLib());
+        Out->SetLib1(In->GetLib1());
+        Out->SetLib2(In->GetLib2());
         In=In->GetNextField();
     }
 
@@ -220,8 +222,7 @@ int TMarcRecord::FromString(char* MarcString)
         lngchamp-=2;
     }
 
-    if (champ->SetLib(&MarcString[dd],(unsigned int)lngchamp-1))
-        return itsErrorHandler->SetError(1009,ERROR);
+    champ->SetLib1(&MarcString[dd],(unsigned int)lngchamp-1);
 
     while (MarcString[pos] != '\x1E')  // end of directory
     {
@@ -266,8 +267,7 @@ int TMarcRecord::FromString(char* MarcString)
             lngchamp = 1;
         }
 
-        if (champ->SetLib(&MarcString[dd],(unsigned int)lngchamp-1))
-            return itsErrorHandler->SetError(1009,ERROR);
+        champ->SetLib1(&MarcString[dd],(unsigned int)lngchamp-1);
     }
 
     champ->SetNextField(NULL);
@@ -348,10 +348,10 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
                                 field_data += unescape_xml(subfield);
                             }
                         }
-                        field->SetLib(field_data.str());
+                        field->SetLib1(field_data.str());
                     }
                     else
-                        field->SetLib(unescape_xml(content).str());
+                        field->SetLib1(unescape_xml(content).str());
 
                 }
             }
@@ -378,7 +378,7 @@ int TMarcRecord::ToString(typestr & a_marcstr)
     while (field != NULL)
     {
         char *tag = field->GetTag();
-        char *marcdata = field->GetLib();
+        char *marcdata = field->GetLib1();
 
         char temps[20];
         unsigned long lng = strlen(marcdata);
@@ -459,7 +459,7 @@ int TMarcRecord::ToXMLString(typestr &a_xml)
     while (field)
     {
         const char *tag = field->GetTag();
-        const char *marcdata = field->GetLib();
+        const char *marcdata = field->GetLib1();
         unsigned long lng = strlen(marcdata);
         bool have_ind = IsFieldWithIndicators(OUTPUT, tag, marcdata, lng);
         if (!have_ind)
@@ -862,7 +862,7 @@ int TMarcRecord::ProcessDuplicateFields(DUPLICATE_PROCESSING_MODE a_subfields, D
         TMarcField *field = itsFirstField;
         while (field)
         {
-            typestr marcdata = field->GetLib();
+            typestr marcdata = field->GetLib1();
 
             char *p = strchr(marcdata.str(), START_OF_FIELD);
             while (p)
@@ -915,7 +915,7 @@ int TMarcRecord::ProcessDuplicateFields(DUPLICATE_PROCESSING_MODE a_subfields, D
                         if (duplicate_subfield == 1)
                         {
                             strcpy(p, end);
-                            field->SetLib(marcdata.str());
+                            field->SetLib1(marcdata.str());
                             end = p - 1;
                             break;
                         }
@@ -925,7 +925,7 @@ int TMarcRecord::ProcessDuplicateFields(DUPLICATE_PROCESSING_MODE a_subfields, D
                                 memmove(comp_p, comp_end, strlen(comp_end) + 1);
                             else
                                 *comp_p = '\0';
-                            field->SetLib(marcdata.str());
+                            field->SetLib1(marcdata.str());
                             comp_end = comp_p - 1;
                         }
                     }
@@ -958,17 +958,17 @@ int TMarcRecord::ProcessDuplicateFields(DUPLICATE_PROCESSING_MODE a_subfields, D
                 int duplicate_field = 0;
                 if (a_fields == DP_DELETE)
                 {
-                    if (strcmp(field->GetLib(), comp_field->GetLib()) == 0) 
+                    if (strcmp(field->GetLib1(), comp_field->GetLib1()) == 0) 
                         duplicate_field = 2;
                 }
                 else if (a_fields == DP_DELETE_IGNORE_CASE || a_fields == DP_DELETE_SMART)
                 {
-                    if (utf8_stricmp(field->GetLib(), comp_field->GetLib()) == 0)
+                    if (utf8_stricmp(field->GetLib1(), comp_field->GetLib1()) == 0)
                     {
                         if (a_fields == DP_DELETE_SMART)
                         {
-                            int caps1 = caps_count(field->GetLib());
-                            int caps2 = caps_count(comp_field->GetLib());
+                            int caps1 = caps_count(field->GetLib1());
+                            int caps2 = caps_count(comp_field->GetLib1());
                             if (caps1 <= caps2) 
                                 duplicate_field = 2;
                             else

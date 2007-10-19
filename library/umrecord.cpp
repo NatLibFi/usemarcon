@@ -221,7 +221,7 @@ int TUMRecord::PartialSort(TCDLib *aFirst)
 //
 // FromCD
 //
-// Cette methode cree l'arbre des champs a partir de l'arbre des CDLibs
+// This method creates the field list from the CDLib list
 //
 ///////////////////////////////////////////////////////////////////////////////
 int TUMRecord::FromCD(TRuleFile *RuleFile)
@@ -305,16 +305,15 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             // GetContent va donc reconstruire le contenu complet du champ
 
             CD.SetSubfield(NO_SUBFIELD);
-            NewField->SetLib(CDLib->GetContent(&CD).str());
-
+            NewField->SetLib(CDLib->GetContent(&CD));
 
             // Si un lib existe bien, on insere ce nouveau champ dans
             // la notice de sortie. Si on n'a pas encore de champ dans la notice,
             // on initialise itsFirstField, sinon on concatene au champ courant
 
-            if (NewField->GetLib())
+            if (NewField->GetLib1())
             {
-                if (*(NewField->GetLib()))
+                if (*(NewField->GetLib1()))
                 {
                     if (itsFirstField==NULL)
                         itsFirstField=Field=NewField;
@@ -340,6 +339,10 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             CDLib = (TCDLib *)CDLib->GetNext();
         }
     }
+
+    if (itsErrorHandler->GetHandleLinkedFields())
+        SeparateLinkedFields();
+
     return itsErrorHandler->GetErrorCode();
 }
 
@@ -347,13 +350,16 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
 //
 // ToCD
 //
-// Cette methode cree l'arbre des CDLib a partir de l'arbre des champs (Field)
+// This method creates the CDLib list from the field list
 //
 ///////////////////////////////////////////////////////////////////////////////
 int TUMRecord::ToCD(void)
 {
     TMarcField      *Field=itsFirstField;
     TCDLib          CDLib(itsErrorHandler);
+
+    if (itsErrorHandler->GetHandleLinkedFields())
+        MergeLinkedFields();
 
     // On supprime l'ancien arbre de CDLib
     DelTreeCDLib();
@@ -362,7 +368,7 @@ int TUMRecord::ToCD(void)
     // Ce CDLib sera identifie par un numero de champ '000'
     // On insere ensuite ce CDLib dans la liste des CDLib.
     CDLib.SetTag("000");
-    CDLib.SetContent(itsLeader);
+    CDLib.SetContent(itsLeader, "");
     CDLib.SetTagOccurrenceNumber(1);
     InsertCDLib(&CDLib);
 
@@ -391,13 +397,13 @@ int TUMRecord::ToCD(void)
 
             // On affecte le contenu du CDLib avec l'indicateur, et on insere ce
             // nouveau CDLib dans la liste des CDLibs
-            CDLib.SetContent(tmp);
+            CDLib.SetContent(tmp, "");
             InsertCDLib(&CDLib);
 
             // On fait ensuite de meme pour le second indicateur
             CDLib.SetSubfield(SECOND_INDICATOR);
             *tmp=Field->GetI2();
-            CDLib.SetContent(tmp);
+            CDLib.SetContent(tmp, "");
             InsertCDLib(&CDLib);
         }
 
@@ -405,12 +411,13 @@ int TUMRecord::ToCD(void)
         // sous-champ. Lors de l'insertion par InsereCDLib, ce CDLib sera decoupe en
         // CDLib unitaires
         CDLib.SetSubfield(NO_SUBFIELD);
-        CDLib.SetContent(Field->GetLib());
+        CDLib.SetContent(Field->GetLib1(), Field->GetLib2());
         InsertCDLib(&CDLib);
 
         // On passe ensuite au champ suivant
         Field = Field->GetNextField();
     }
+
     return itsErrorHandler->GetErrorCode();
 }
 
@@ -567,7 +574,7 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
 
     TCDLib* aSubCDLib;
     bool subfields_found = false;
-    int pos=0;
+    int pos=0, pos2=0;
     char sf[3];
     if (aCDLib->GetSubfield()) 
         strcpy(sf, aCDLib->GetSubfield());
@@ -576,7 +583,7 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
     int sub_ns = CDIn ? CDIn->GetSubOccurrenceNumber() : 0;
     int sub_n = CDIn ? CDIn->GetOccurrenceNumber() : 0;
     TCDLib *insertedCDLib = NULL;
-    while (aCDLib->NextSubCDLib(&aSubCDLib, &pos, sf))
+    while (aCDLib->NextSubCDLib(&aSubCDLib, &pos, &pos2, sf))
     {
         if (CDIn)
         {
@@ -663,7 +670,7 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
     if (subfieldFound)
     {
         // Corresponding CDLib already exists, update it
-        Search->SetContent(aCDLib->GetContent().str(), CDIn);
+        Search->SetContent(aCDLib->GetContent(), CDIn);
         return Search;
     }
     else
@@ -760,5 +767,124 @@ void TUMRecord::GetOccurrenceNumbersForNew(const char *a_tag, int a_tag_occurren
     {
         a_occurrence = 1;
         a_sub_occurrence = 1;
+    }
+}
+
+void TUMRecord::MergeLinkedFields()
+{
+    RegExp re(START_OF_FIELD_STR "6(\\d+)\\-(\\d+)");
+
+    // Iterate all 880 fields
+    TMarcField* field = itsFirstField;
+    TMarcField* prev_field = NULL;
+    while (field)
+    {
+        if (strcmp(field->GetTag(), "880") != 0)
+        {
+            prev_field = field;
+            field = field->GetNextField();
+            continue;
+        }
+        const char* data = field->GetLib1();
+        if (re.exec(data) <= 0)
+        {
+            typestr tmp = "Notice '";
+            tmp += field->GetLib1();
+            tmp += "' : field '";
+            tmp += field->GetTag();
+            tmp += "'";
+            itsErrorHandler->SetErrorD(2601, WARNING, tmp.str());
+        }
+        else
+        {
+            typestr fieldcode;
+            typestr occurrence;
+            re.match(1, fieldcode);
+            re.match(2, occurrence);
+
+            // Find linked field
+            bool match_found = false;
+            TMarcField* linked_field = itsFirstField;
+            while (NextField(&linked_field, fieldcode.str()) == 0)
+            {
+                const char* linked_data = linked_field->GetLib1();
+
+                if (re.exec(data) > 0)
+                {
+                    typestr linked_occurrence;
+                    re.match(2, linked_occurrence);
+                    if (occurrence == linked_occurrence)
+                    {
+                        // We have a match
+                        match_found = true;
+                        linked_field->SetLib2(data);
+                        break;
+                    }
+                }
+            }
+            if (!match_found)
+            {
+                typestr tmp = "Notice '";
+                tmp += field->GetLib1();
+                tmp += "' : field '";
+                tmp += field->GetTag();
+                tmp += "'";
+                itsErrorHandler->SetErrorD(2602, WARNING, tmp.str());
+            }
+        }
+        // Delete the 880 field
+        TMarcField *tmp_field = field;
+        field = field->GetNextField();
+        if (!prev_field)
+            itsFirstField = field;
+        else
+            prev_field->SetNextField(field);
+        delete tmp_field;
+    }
+}
+
+void TUMRecord::SeparateLinkedFields()
+{
+    TMarcField* field = itsFirstField;
+    TMarcField* prev_field880 = NULL;
+    while (field)
+    {
+        if (field->GetLib2() && *field->GetLib2())
+        {
+            TMarcField* field880 = new TMarcField();
+            field880->SetTag("880");
+            field880->SetIndicators(field->GetIndicators());
+            field880->SetLib1(field->GetLib2());
+            field880->SetLib2(NULL);
+
+            if (prev_field880)
+            {
+                field880->SetNextField(prev_field880->GetNextField());
+                prev_field880->SetNextField(field880);
+            }
+            else
+            {
+                // Find correct position
+                TMarcField* field_pos = itsFirstField;
+                while (field_pos)
+                {
+                    if (strcmp(field_pos->GetTag(), "880") >= 0)
+                        break;
+                    TMarcField* next = field_pos->GetNextField();
+                    if (next)
+                        field_pos = next;
+                    else
+                        break;
+                }
+                if (field_pos)
+                {
+                    field880->SetNextField(field_pos->GetNextField());
+                    field_pos->SetNextField(field880);
+                }
+            }
+            prev_field880 = field880;
+        }
+        field->SetLib2(NULL);
+        field = field->GetNextField();
     }
 }

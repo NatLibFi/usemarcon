@@ -59,6 +59,9 @@ protected:
     void GetOccurrenceNumbersForNew(const char *a_tag, int a_tag_occurrence, const char *a_subfield, 
                                     int &a_occurrence, int &a_sub_occurrence);
 
+    void MergeLinkedFields();
+    void SeparateLinkedFields();
+
 private:
     char              *itsSearchedField;
     bool              itsSearchedFieldFound;

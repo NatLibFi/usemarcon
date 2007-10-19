@@ -151,6 +151,8 @@ D                       return MarcParser::VARD;
 [I|i]n[T|t]able         return MarcParser::INTABLE;
 [M|m]ove[B|b]efore      return MarcParser::MOVEBEFORE;
 [M|m]ove[A|a]fter       return MarcParser::MOVEAFTER;
+[M|m]ove[F|f]irst       return MarcParser::MOVEFIRST;
+[M|m]ove[L|l]ast        return MarcParser::MOVELAST;
 {blancs}                        ;
 .                       lex_error = true;
 %%

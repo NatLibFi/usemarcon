@@ -37,6 +37,7 @@ TError::TError(TUMApplication* theApplication, const char *LogFileName, const ch
     itsUTF8Mode            = false;
     itsConvertSubfieldCodesToLowercase = false;
     mRecordNumber = 0;
+    mHandleLinkedFields = false;
 
     // Logfile opening
     if (*LogFileName)
@@ -239,8 +240,8 @@ const char* TError::GetPCREExecErrorDesc(int a_errorcode)
     {
         if (PCREExecErrorDesc[i].errorcode == a_errorcode)
         {
-			return PCREExecErrorDesc[i].description;
+            return PCREExecErrorDesc[i].description;
         }
     }
-	return NULL;
+    return NULL;
 }

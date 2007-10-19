@@ -619,3 +619,9 @@ void trim_string(typestr &a_dst, typestr &a_src)
         --p_end;
     a_dst.str(p, p_end - p + 1);
 }
+
+void trim_string2(typestr2 &a_dst, typestr2 &a_src)
+{
+    trim_string(a_dst, a_src);
+    trim_string(a_dst.s2, a_src.s2);
+}

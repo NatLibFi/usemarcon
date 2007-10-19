@@ -533,6 +533,16 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
     }
 
+    get_ini_string("DEFAULT_VALUES", "HandleLinkedFields", "", inistr, itsIniFile.str());
+    if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
+    {
+        itsErrorHandler->SetHandleLinkedFields(true);
+    }
+    else
+    {
+        itsErrorHandler->SetHandleLinkedFields(false);
+    }
+
     return 0;
 }
 

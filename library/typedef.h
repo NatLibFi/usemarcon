@@ -28,7 +28,7 @@ AUTHOR
 
 class typestr
 {
-private:
+protected:
     static const unsigned int buffersize = 200;
     char m_buffer[buffersize];
 
@@ -38,7 +38,7 @@ private:
 public:
     typestr();
     typestr(const typestr & t);
-    typestr(const char *t);
+    typestr(const char* t);
 
     ~typestr();
 
@@ -120,13 +120,25 @@ public:
 
 };
 
+class typestr2 : public typestr
+{
+public:
+    typestr s2;
+
+    typestr2 & operator=(const typestr2 & t)
+    {
+        str(t.cstr());
+        s2.str(t.s2.cstr());
+        return *this;
+    }
+};
+
 class TypeInst
 {
 public:
     int val;
-    typestr str;
+    typestr2 str;
 };
-
 
 class TypeCD
 {

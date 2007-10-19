@@ -38,20 +38,20 @@ public:
     TCDLib          (TCD* aCD);
     ~TCDLib         (void);
 
-    typestr   GetContent      (TCD* aCD=NULL);
-    int       SetContent      (const char *aContent, TCD* aCD=NULL);
-    int       SetContent      (const typestr & aContent, TCD* aCD=NULL);
+    typestr2  GetContent      (TCD* aCD=NULL);
+    int       SetContent      (const char *aContent, const char *aContent2, TCD* aCD=NULL);
+    int       SetContent      (const typestr2 & aContent, TCD* aCD=NULL);
     void      ResetContent    (void);
     int       IsEqual         (TCD* aCD, int aTagOccurrenceNumberOverride = -1);
     int       IsLess          (TCD* aCD);
-    int       NextSubCDLib    (TCDLib** pCDLib, int*, char*);
+    int       NextSubCDLib    (TCDLib** pCDLib, int*, int*, char*);
 
     friend  int  operator ==  (TCDLib& aCDLib, TCD& aCD) { return aCDLib.IsEqual(&aCD); };
     friend  int  operator !=  (TCDLib& aCDLib, TCD& aCD) { return !aCDLib.IsEqual(&aCD); };
     friend  int  operator <   (TCDLib& aCDLib, TCD& aCD) { return aCDLib.IsLess(&aCD); };
 
 protected:
-    typestr itsContent;
+    typestr2 itsContent;
 };
 
 #endif

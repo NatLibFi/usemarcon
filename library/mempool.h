@@ -108,6 +108,7 @@ private:
     void ResetTypeInst(TypeInst *t)
     {
         t->str.freestr();
+        t->str.s2.freestr();
         t->val = 0;
     }
 

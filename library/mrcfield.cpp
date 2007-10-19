@@ -43,7 +43,8 @@ TMarcField::TMarcField(TMarcField *aField)
     itsIndicators[0] = aField->GetI1();
     itsIndicators[1] = aField->GetI2();
     itsIndicators[2] = '\0';
-    SetLib(aField->GetLib());
+    SetLib1(aField->GetLib1());
+    SetLib2(aField->GetLib2());
     if (aField->GetNextField())
         itsNextField = new TMarcField(aField->GetNextField());
     else
@@ -141,11 +142,6 @@ int TMarcField::SetTag(int aTagNumber)
     return 0;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// SetIndicators
-//
-///////////////////////////////////////////////////////////////////////////////
 int TMarcField::SetIndicators(const char *theIndicators)
 {
     unsigned long len = strlen(theIndicators);
@@ -155,24 +151,34 @@ int TMarcField::SetIndicators(const char *theIndicators)
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// SetLib
-//
-///////////////////////////////////////////////////////////////////////////////
-int TMarcField::SetLib(const char *aLib)
+void TMarcField::SetLib1(const char *aLib)
 {
     if (!aLib || !*aLib)
-        return 0;
+        return;
 
     itsLib.str(aLib);
-    return 0;
+    return;
 }
 
-int TMarcField::SetLib(const char *aLib,unsigned int aSize)
+void TMarcField::SetLib1(const char *aLib, unsigned int aSize)
 {
     itsLib.str(aLib, aSize);
-    return 0;
+    return;
+}
+
+void TMarcField::SetLib2(const char *aLib)
+{
+    if (!aLib || !*aLib)
+        return;
+
+    itsLib.s2.str(aLib);
+    return;
+}
+
+void TMarcField::SetLib2(const char *aLib, unsigned int aSize)
+{
+    itsLib.s2.str(aLib, aSize);
+    return;
 }
 
 

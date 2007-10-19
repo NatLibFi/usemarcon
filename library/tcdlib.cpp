@@ -110,7 +110,7 @@ TCDLib::~TCDLib(void)
 //   correspondant ... et en ne prenant en final que l'intervalle voulu.
 //
 ///////////////////////////////////////////////////////////////////////////////
-typestr TCDLib::GetContent(TCD* theCD)
+typestr2 TCDLib::GetContent(TCD* theCD)
 {
     // Si aCD est NULL on retourne simplement le contenu complet du CDLib
 
@@ -121,7 +121,9 @@ typestr TCDLib::GetContent(TCD* theCD)
     // suivant, correspondant au champ identifie par aCD.
     // S'ilest precise, il suffit de prendre son contenu
 
-    typestr content = "";
+    typestr2 content;
+    content.str("");
+    content.s2.str("");
     if (*(theCD->GetSubfield())==0)
     {
         TCDLib* Courant=this;
@@ -134,6 +136,7 @@ typestr TCDLib::GetContent(TCD* theCD)
             if (*(Courant->GetSubfield()) == 0)
             {
                 content += Courant->GetContent();
+                content.s2 += Courant->GetContent().s2;
             }
             else
             {
@@ -146,6 +149,10 @@ typestr TCDLib::GetContent(TCD* theCD)
                     content.append_char(START_OF_FIELD);
                     content.append_char(*(Courant->GetSubfield()+1)); 
                     content.append(Courant->GetContent());
+
+                    content.s2.append_char(START_OF_FIELD);
+                    content.s2.append_char(*(Courant->GetSubfield()+1)); 
+                    content.s2.append(Courant->GetContent().s2);
                 }
             }
             Courant=(TCDLib*)Courant->GetNext();
@@ -175,11 +182,15 @@ typestr TCDLib::GetContent(TCD* theCD)
     // Si les positions sont definies, on extrait les donnees correspondantes
 
     if (aBeginning > MaxPos || aEnd > MaxPos || (aEnd > 0 && aBeginning > aEnd))
-        return "";
+    {
+        return typestr2();
+    }
 
-    typestr result;
+    typestr2 result;
     if (aEnd==-1)
-        result = &content.str()[aBeginning];
+    {
+        result.str(&content.str()[aBeginning]);
+    }
     else
     {
         --aEnd;
@@ -213,21 +224,22 @@ void TCDLib::ResetContent(void)
 // Le CDLib doit etre unitaire
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TCDLib::SetContent(const typestr & aContent, TCD* aCD)
+int TCDLib::SetContent(const typestr2 & aContent, TCD* aCD)
 {
-    return SetContent(aContent.cstr(), aCD);
+    return SetContent(aContent.cstr(), aContent.s2.cstr(), aCD);
 }
 
-int TCDLib::SetContent(const char *pContent, TCD* aCD)
+int TCDLib::SetContent(const char *aContent, const char *aContent2, TCD* aCD)
 {
     // Si aCD est NULL on remplit simplement le CDLib (test de validite a effectuer
     // en dehors de la fonction afin d'avoir le contexte de l'erreur).
 
     if (aCD==NULL)
     {
-        if (*itsSubfield=='I' && pContent && pContent[0] != '\0' && pContent[1] != '\0')
-            itsErrorHandler->SetErrorD(5005,ERROR,pContent);
-        itsContent.str(pContent);
+        if (*itsSubfield=='I' && aContent && aContent[0] != '\0' && aContent[1] != '\0')
+            itsErrorHandler->SetErrorD(5005, ERROR, aContent);
+        itsContent.str(aContent);
+        itsContent.s2.str(aContent2);
         return 0;
     }
 
@@ -254,43 +266,43 @@ int TCDLib::SetContent(const char *pContent, TCD* aCD)
 
         typestr tmpstr = itsContent.str() ? itsContent.str() : "";
 
-        if (itsErrorHandler->GetUTF8Mode() && pContent)
+        if (itsErrorHandler->GetUTF8Mode() && aContent)
         {
             int oldBegining = aBeginning;
             aBeginning = utf8_charindex(tmpstr.str(), aBeginning);
-            aEnd = utf8_charindex(pContent, aEnd) + aBeginning - oldBegining;
+            aEnd = utf8_charindex(aContent, aEnd) + aBeginning - oldBegining;
         }
         int MaxPos = strlen(tmpstr.str());
-        unsigned long pContentLen = strlen(pContent);
+        unsigned long aContentLen = strlen(aContent);
 
-        tmpstr.promise(aBeginning + pContentLen + 1);
+        tmpstr.promise(aBeginning + aContentLen + 1);
         for (int i = MaxPos; i < aBeginning; tmpstr.str()[i++] = ' ');
 
-        if (pContent && *pContent)
+        if (aContent && *aContent)
         {
             if (aEnd == -1)
             {
-                memcpy(&tmpstr.str()[aBeginning], pContent, pContentLen);
-                aEnd = aBeginning + pContentLen - 1;
+                memcpy(&tmpstr.str()[aBeginning], aContent, aContentLen);
+                aEnd = aBeginning + aContentLen - 1;
             }
             else
             {
                 --aEnd;
                 // Avoid copying more than we have
-                int contentsize = pContentLen + 1;
+                int contentsize = aContentLen + 1;
                 int copysize = aEnd - aBeginning + 1;
                 if (contentsize < copysize)
                     copysize = contentsize;
-                memcpy(&tmpstr.str()[aBeginning], pContent, copysize);
+                memcpy(&tmpstr.str()[aBeginning], aContent, copysize);
             }
         }
-        if (MaxPos<=aEnd) 
-            tmpstr.str()[aEnd+1] = '\0';
-        SetContent(tmpstr.str());
+        if (MaxPos <= aEnd) 
+            tmpstr.str()[aEnd + 1] = '\0';
+        SetContent(tmpstr.str(), "");
     }
     else
     {
-        SetContent(pContent);
+        SetContent(aContent, aContent2);
     }
 
     return 0;
@@ -373,11 +385,11 @@ int TCDLib::IsLess( TCD* aCD )
 // Cette methode renvoie 1 si un sous-CDLib a ete trouve, 0 sinon
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TCDLib::NextSubCDLib(TCDLib** pCDLib, int* _pos, char* defst)
+int TCDLib::NextSubCDLib(TCDLib** pCDLib, int* _pos, int* _pos2, char* defst)
 {
     TCDLib* aCDLib;
     bool    first;
-    int     pos=*_pos, startpos;
+    int     pos=*_pos, startpos, pos2=*_pos2, startpos2;
     char    sub[3];
 
     if (!itsContent.str())
@@ -392,45 +404,40 @@ int TCDLib::NextSubCDLib(TCDLib** pCDLib, int* _pos, char* defst)
     // On parcourt tous les caracteres du contenu du CDLib, a partir de la position
     // passee en parametre
 
-    while(itsContent.str()[pos])
+    while (itsContent.str()[pos])
     {
         if (itsContent.str()[pos] == START_OF_FIELD && itsContent.str()[pos+1] != '\0')
         {
-            typestr tmpstr;
+            typestr2 sub_content;
             if (first && pos && *defst)
             {
-                // Si on est a la premiere balise et qu'on n'est pas au debut du champ
-                // et qu'un ss-champ par defaut est specifie, on le rempli avec le debut du champ
+                // First subfield, not in the beginning of the field and default subfield code is specified
+                // -> return the field contents as the subfield.
                 sub[1] = defst[1];
                 startpos = 0;
-                tmpstr.promise(pos + 1);
-                tmpstr.str()[pos] = '\0';
-                memcpy(tmpstr.str(), itsContent.str(), pos);
-                tmpstr.str()[pos] = '\0';
+                sub_content.promise(pos + 1);
+                sub_content.str()[pos] = '\0';
+                memcpy(sub_content.str(), itsContent.str(), pos);
+                sub_content.str()[pos] = '\0';
             }
             else
             {
-                // Si on trouve une balise, on recopie le contenu du sous-champ dans
-                // itsErrorHandler->Temporary, jusqu'a la balise suivante
-
+                // Found a subfield
                 sub[1] = itsContent.str()[pos+1];
                 pos += 2;
                 startpos = pos;
                 while(itsContent.str()[pos] && itsContent.str()[pos] != START_OF_FIELD) 
                     ++pos;
-                tmpstr.promise(pos - startpos + 1);
-                memcpy(tmpstr.str(), &itsContent.str()[startpos], pos - startpos);
-                tmpstr.str()[pos - startpos] = '\0';
+                sub_content.promise(pos - startpos + 1);
+                memcpy(sub_content.str(), &itsContent.str()[startpos], pos - startpos);
+                sub_content.str()[pos - startpos] = '\0';
             }
 
-
-            // On cree un nouveau CDLib correspondant au sous-champ trouve
-            first = false;
+            // Create a new CDLib for the subfield
             aCDLib=new TCDLib(itsErrorHandler);
             aCDLib->SetTag(itsTag);
             aCDLib->SetTagOccurrenceNumber(itsTagOccurrenceNumber);
             aCDLib->SetSubfield(sub);
-            aCDLib->SetContent(tmpstr.str());
 
             // Find out the subfield occurrence number (ns)
             int ns = 0;
@@ -443,12 +450,52 @@ int TCDLib::NextSubCDLib(TCDLib** pCDLib, int* _pos, char* defst)
 
             *pCDLib=aCDLib;
             *_pos=pos;
+
+            // Read linked subfield
+            if (itsContent.s2.str() && strlen(itsContent.s2.str()) > (unsigned int)pos2) 
+            {
+                while (itsContent.s2.str()[pos2])
+                {
+                    if (itsContent.s2.str()[pos2] == START_OF_FIELD && itsContent.s2.str()[pos2+1] != '\0')
+                    {
+                        if (first && pos2 && *defst)
+                        {
+                            // First subfield, not in the beginning of the field and default subfield code is specified
+                            // -> return the field contents as the subfield.
+                            startpos2 = 0;
+                            sub_content.s2.promise(pos2 + 1);
+                            sub_content.s2.str()[pos2] = '\0';
+                            memcpy(sub_content.s2.str(), itsContent.s2.str(), pos2);
+                            sub_content.s2.str()[pos2] = '\0';
+                        }
+                        else
+                        {
+                            // Found a subfield
+                            pos2 += 2;
+                            startpos2 = pos2;
+                            while(itsContent.s2.str()[pos2] && itsContent.s2.str()[pos2] != START_OF_FIELD) 
+                                ++pos2;
+                            sub_content.s2.promise(pos2 - startpos2 + 1);
+                            memcpy(sub_content.s2.str(), &itsContent.s2.str()[startpos2], pos2 - startpos2);
+                            sub_content.s2.str()[pos2 - startpos2] = '\0';
+                        }
+
+                        *_pos2=pos2;
+                        break;
+                    }
+                    ++pos2;
+                }
+            }
+            aCDLib->SetContent(sub_content);
+            first = false;
+
             return 1;
         }
         ++pos;
     }
 
     *_pos=pos;
+    *_pos2=pos2;
     return 0;
 }
 

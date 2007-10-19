@@ -303,7 +303,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             if ((!CurrentControl->GetTagRepeatable()) && (CurrentControl->GetTagOccurrency()))
                 // le champ courant est occurent alors qu'il est thȨoriquement non rȨpȨtable
             {
-                typestr tmp = typestr("Notice '") + CurrentField->GetLib() + "' : field '" + CurrentField->GetTag() + "'";
+                typestr tmp = typestr("Notice '") + CurrentField->GetLib1() + "' : field '" + CurrentField->GetTag() + "'";
                 itsErrorHandler->SetErrorD(IO==INPUT ? 2101 : 7101, WARNING, tmp.str());
             }
             else
@@ -319,7 +319,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                     // Warning only if the indicator value is invalid
                     // (passing empty values as proper ones)
                     typestr tmp = "Notice '";
-                    tmp += CurrentField->GetLib();
+                    tmp += CurrentField->GetLib1();
                     tmp += "' : field '";
                     tmp += CurrentField->GetTag();
                     tmp += "' (ind '";
@@ -338,7 +338,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                     // Warning only if the indicator value is invalid
                     // (passing empty values as proper ones)
                     typestr tmp = "Notice '";
-                    tmp += CurrentField->GetLib();
+                    tmp += CurrentField->GetLib1();
                     tmp += "' : field '";
                     tmp += CurrentField->GetTag();
                     tmp += "' (ind '";
@@ -357,7 +357,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                     // La balise courante ne fait pas partie de la liste des sous-champs possibles
                 {
                     typestr tmp = "Notice '";
-                    tmp += CurrentField->GetLib();
+                    tmp += CurrentField->GetLib1();
                     tmp += "' : field '";
                     tmp += CurrentField->GetTag(); 
                     tmp += "' (subfield '$";
@@ -373,7 +373,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             if ((!OneSubAtLeast) && (CurrentControl->GetFirstSubfield()))
             {
                 typestr tmp = "Notice '";
-                tmp += CurrentField->GetLib();
+                tmp += CurrentField->GetLib1();
                 tmp += "' : field '";
                 tmp += CurrentControl->GetTag();
                 tmp += "'";
@@ -386,7 +386,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                     // le sous-champ courant n'a pas ȨtȨ rencontrȨ malgrȿs sont caractȿre obligatoire
                 {
                     typestr tmp = "Notice '";
-                    tmp += CurrentField->GetLib();
+                    tmp += CurrentField->GetLib1();
                     tmp += "' : field '";
                     tmp += CurrentControl->GetTag();
                     tmp += "' (subfield '$";
@@ -403,7 +403,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             // Rencontre d'un champ non prȨvu
         {
             typestr tmp = "Notice '";
-            tmp += CurrentField->GetLib();
+            tmp += CurrentField->GetLib1();
             tmp += "' : field '";
             tmp += CurrentField->GetTag();
             tmp += "'";

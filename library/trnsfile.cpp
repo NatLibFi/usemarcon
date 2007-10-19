@@ -122,7 +122,7 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
     if (!MarcOut->GetLeader())
     {
         typestr tmp = "Notice '";
-        tmp += MarcIn->GetFirstField()->GetLib();
+        tmp += MarcIn->GetFirstField()->GetLib1();
         tmp += "' : leader '";
         tmp += MarcIn->GetLeader();
         tmp += '\'';
@@ -152,12 +152,14 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
 
         // On transcode le libelle
         typestr result;
-        Transcode(In->GetLib(), result, In->GetLib(), In->GetTag());
-        Out->SetLib(result.str());
-        if (!Out->GetLib())
+        Transcode(In->GetLib1(), result, In->GetLib1(), In->GetTag());
+        Out->SetLib1(result.str());
+        Transcode(In->GetLib2(), result, In->GetLib2(), In->GetTag());
+        Out->SetLib2(result.str());
+        if (!Out->GetLib1() || !Out->GetLib2())
         {
             typestr tmp = "Notice '";
-            tmp += In->GetLib();
+            tmp += In->GetLib1();
             tmp += "' : field '";
             tmp += In->GetTag();
             tmp += '\'';

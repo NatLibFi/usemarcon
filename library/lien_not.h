@@ -131,20 +131,21 @@ private:
     virtual int Precedes(TypeCD *, TypeCD *);
     virtual int Exists(TypeCD *);
     virtual int ExistsIn(TypeInst* a_str, TypeCD* a_cd);
-    virtual typestr ReadCD(TypeCD *);
+    virtual typestr2 ReadCD(TypeCD *);
     virtual typestr Table(char *Nom, char *str);
 
     const char* find_sep(const char *a_str);
     const char* find_statement_start(const char *a_str);
     const char* find_statement_end(const char *a_str);
+    const char* find_else_or_sep(const char *a_str);
     int   InnerParse(TRule* a_rule, const char *a_rulestr);
     int   Parse(TRule* a_rule);
 
     const char* NextBalise();
     const char* PreviousBalise();
-    typestr NextSubField(TypeCD *, TypeCD *);
-    typestr PreviousSubField(TypeCD *, TypeCD *);
-    bool CompareOccurrence(TypeInst *aCondition, int aOccurrence);
+    typestr2 NextSubField(TypeCD *, TypeCD *);
+    typestr2 PreviousSubField(TypeCD *, TypeCD *);
+    bool CompareOccurrence(typestr& aCondition, int aOccurrence);
 
     int   IsConcat(char *lib);
     int   Replace_N_NT_NS(int val,int N,int NT,int NS);
@@ -167,6 +168,13 @@ private:
     bool move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, 
         TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations,
         TypeInst* a_preserved_subfields);
+
+    // TODO: optimize return types?
+    typestr from(typestr& a_str, int a_index, bool a_strict);
+    typestr to(typestr& a_str, int a_index, bool a_strict);
+    typestr between(typestr& a_str, unsigned int a_from, unsigned int a_to, bool a_strict);
+    typestr replace(typestr& a_str, typestr& a_source, typestr& a_replacement, IN_STR_POSITION a_at, bool a_strict);
+    typestr replaceocc(typestr& a_str, typestr& a_source, typestr& a_replacement, typestr& a_condition, bool a_strict);
 
     /*
     Affichage d'une valeur d' Instruction
@@ -264,11 +272,6 @@ private:
     virtual TypeInst* Add( TypeInst* t1, TypeInst* t2 );
 
     /*
-        200(1)
-    */
-    virtual TypeInst* AddOcc( TypeInst* t1, TypeInst* t2 );
-
-    /*
         Conversion de numerique en char* si necessaire pour une Instruction
     */
     virtual char* ToString( TypeInst* t );
@@ -293,24 +296,12 @@ private:
     */
     virtual TypeInst* Len( TypeInst* t );
 
-    /*
-        FROM( translation [, STRICT] )
-    */
-    virtual TypeInst* From( TypeInst* t, int strict );
+    virtual TypeInst* From(TypeInst* t, bool a_strict);
 
-    /*
-        TO( translation [, STRICT] )
-    */
-    virtual TypeInst* To( TypeInst* t, int strict );
+    virtual TypeInst* To(TypeInst* t, bool a_strict);
 
-    /*
-        BETWEEN( translation , translation [, STRICT] )
-    */
-    virtual TypeInst* Between( TypeInst* t1, TypeInst* t2, int strict );
+    virtual TypeInst* Between(TypeInst* t1, TypeInst* t2, bool a_strict);
 
-    /*
-        REPLACE( translation BY translation [, AT ...] [, STRICT] )
-    */
     virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at, bool strict );
 
     /*

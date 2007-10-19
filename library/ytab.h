@@ -74,14 +74,14 @@ YYID (i)
   return i;
 }
 #endif
-#define YYFINAL  122
-#define YYLAST   1280
-#define YYNTOKENS  98
+#define YYFINAL  126
+#define YYLAST   1472
+#define YYNTOKENS  100
 #define YYNNTS  12
-#define YYNRULES  157
-#define YYNSTATES  424
+#define YYNRULES  167
+#define YYNSTATES  460
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   349
+#define YYMAXUTOK   351
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -114,7 +114,7 @@ protected:
   virtual int Exists(TypeCD*) = 0;
   virtual int ExistsIn(TypeInst* a_str, TypeCD* a_cd) = 0;
   virtual int InTable(TypeInst*, TypeInst*) = 0;
-  virtual typestr ReadCD(TypeCD *) = 0;
+  virtual typestr2 ReadCD(TypeCD *) = 0;
   virtual TypeCD* AllocCD() = 0;
   virtual void FreeCD( TypeCD* CD ) = 0;
   virtual TypeInst* Next_( TypeCD* cd1, TypeCD* cd2, int strict ) = 0;
@@ -143,15 +143,14 @@ protected:
   virtual int BoolGT( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual int BoolGE( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual TypeInst* Add( TypeInst* t1, TypeInst* t2 ) = 0;
-  virtual TypeInst* AddOcc( TypeInst* t1, TypeInst* t2 ) = 0;
   virtual char* ToString( TypeInst* t ) = 0;
   virtual TypeInst* String( TypeInst* t ) = 0;
   virtual TypeInst* Upper( TypeInst* t ) = 0;
   virtual TypeInst* Lower( TypeInst* t ) = 0;
   virtual TypeInst* Len( TypeInst* t ) = 0;
-  virtual TypeInst* From( TypeInst* t, int strict ) = 0;
-  virtual TypeInst* To( TypeInst* t, int strict ) = 0;
-  virtual TypeInst* Between( TypeInst* t1, TypeInst* t2, int strict ) = 0;
+  virtual TypeInst* From(TypeInst* t, bool a_strict) = 0;
+  virtual TypeInst* To(TypeInst* t, bool a_strict) = 0;
+  virtual TypeInst* Between(TypeInst* t1, TypeInst* t2, bool a_strict) = 0;
   virtual TypeInst* Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at, bool strict ) = 0;
   virtual TypeInst* ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCondOcc, bool strict ) = 0;
   virtual TypeInst* BFirst( TypeInst* t, int k ) = 0;
@@ -266,7 +265,9 @@ public:
      REGREPLACE = 346,
      REGREPLACETABLE = 347,
      MOVEBEFORE = 348,
-     MOVEAFTER = 349
+     MOVEAFTER = 349,
+     MOVEFIRST = 350,
+     MOVELAST = 351
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
