@@ -290,106 +290,101 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
     TCtrlSubfield   *CurrentCtrlSub = NULL;
     int    Position = 0;
     char   Balise;
-    int    OneSubAtLeast=0;
+    bool   AtLeastOneSub = false;
 
     CurrentField = aRecord->GetFirstField();
     while (CurrentField)
     {
-        // Control du champ courant
+        // Find control field for current field
         if ((CurrentControl=FindControlField(CurrentField->GetTag()))!=NULL)
-            // il existe une regle de controle sur le champ courant
         {
-            // Control d'occurence du champ courant
+            // Check repeatability
             if ((!CurrentControl->GetTagRepeatable()) && (CurrentControl->GetTagOccurrency()))
-                // le champ courant est occurent alors qu'il est thȨoriquement non rȨpȨtable
             {
-                typestr tmp = typestr("Notice '") + CurrentField->GetLib1() + "' : field '" + CurrentField->GetTag() + "'";
+                // Non-repeatable field repeated
+                char rec[50];
+                sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+                typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
                 itsErrorHandler->SetErrorD(IO==INPUT ? 2101 : 7101, WARNING, tmp.str());
             }
             else
-                // Comptabilisation du champ controlȨ
+            {
+                // Update control field
                 CurrentControl->SetTagOccurrency();
+            }
 
-            // Test des premiers indicateurs
+            // Check first indicator
             if (TestIndicator(CurrentField->GetI1(),CurrentControl->GetFirstIndicators()))
-                // Le premier indicateur ne fait pas partie de la liste des indicateurs possibles
             {
                 if (CurrentField->GetI1())
                 {
                     // Warning only if the indicator value is invalid
                     // (passing empty values as proper ones)
-                    typestr tmp = "Notice '";
-                    tmp += CurrentField->GetLib1();
-                    tmp += "' : field '";
-                    tmp += CurrentField->GetTag();
-                    tmp += "' (ind '";
+                    char rec[50];
+                    sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+                    typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                    tmp += " (ind '";
                     tmp += CurrentField->GetI1();
                     tmp += "')";
                     itsErrorHandler->SetErrorD(IO==INPUT ? 2102 : 7102, WARNING, tmp.str());
                 }
             }
 
-            // Test des seconds indicateurs
+            // Check second indicator
             if (TestIndicator(CurrentField->GetI2(),CurrentControl->GetSecondIndicators()))
-                // Le deuxiȿme indicateur ne fait pas partie de la liste des indicateurs possibles
             {
                 if (CurrentField->GetI2())
                 {
                     // Warning only if the indicator value is invalid
                     // (passing empty values as proper ones)
-                    typestr tmp = "Notice '";
-                    tmp += CurrentField->GetLib1();
-                    tmp += "' : field '";
-                    tmp += CurrentField->GetTag();
-                    tmp += "' (ind '";
+                    char rec[50];
+                    sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+                    typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                    tmp += " (ind '";
                     tmp += CurrentField->GetI2();
                     tmp += "')";
                     itsErrorHandler->SetErrorD(IO==INPUT ? 2103 : 7103, WARNING, tmp.str());
                 }
             }
 
-            // Test de chacun des sous-champs
+            // Check subfields
             Position=0;
             Balise='*';
             while (CurrentField->NextSubField(&Position, &Balise))
             {
                 if (TestSubfield(Balise,CurrentControl->GetFirstSubfield()))
-                    // La balise courante ne fait pas partie de la liste des sous-champs possibles
                 {
-                    typestr tmp = "Notice '";
-                    tmp += CurrentField->GetLib1();
-                    tmp += "' : field '";
-                    tmp += CurrentField->GetTag(); 
-                    tmp += "' (subfield '$";
+                    // Invalid or redundant subfield
+                    char rec[50];
+                    sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+                    typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                    tmp += " (subfield '$";
                     tmp += Balise;
                     tmp += "')";
                     itsErrorHandler->SetErrorD(IO==INPUT ? 2104 : 7104, WARNING, tmp.str());
                 }
                 else
-                    OneSubAtLeast=1;
+                    AtLeastOneSub = true;
                 Balise='*';
             }
-            // Test de la prȨsence d'au moins une balise par champ ( sauf les champs fixes )
-            if ((!OneSubAtLeast) && (CurrentControl->GetFirstSubfield()))
+            // Check that there is at least one subfield in each field (ignoring control fields)
+            if ((!AtLeastOneSub) && (CurrentControl->GetFirstSubfield()))
             {
-                typestr tmp = "Notice '";
-                tmp += CurrentField->GetLib1();
-                tmp += "' : field '";
-                tmp += CurrentControl->GetTag();
-                tmp += "'";
+                char rec[50];
+                sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+                typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
                 itsErrorHandler->SetErrorD(IO==INPUT ? 2108 : 7108, WARNING, tmp.str());
             }
             CurrentCtrlSub=CurrentControl->GetFirstSubfield();
             while(CurrentCtrlSub)
             {
                 if ((CurrentCtrlSub->GetSubMandatory()) && (!CurrentCtrlSub->GetSubOccurency()))
-                    // le sous-champ courant n'a pas ȨtȨ rencontrȨ malgrȿs sont caractȿre obligatoire
                 {
-                    typestr tmp = "Notice '";
-                    tmp += CurrentField->GetLib1();
-                    tmp += "' : field '";
-                    tmp += CurrentControl->GetTag();
-                    tmp += "' (subfield '$";
+                    // A mandatory subfield is missing
+                    char rec[50];
+                    sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+                    typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                    tmp += " (subfield '$";
                     tmp += CurrentCtrlSub->GetSub();
                     tmp += "')";
                     itsErrorHandler->SetErrorD(IO==INPUT ? 2107 : 7107, WARNING, tmp.str());
@@ -400,35 +395,33 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             CurrentControl->ResetSubOccurency(CurrentControl->GetFirstSubfield());
         }
         else
-            // Rencontre d'un champ non prȨvu
         {
-            typestr tmp = "Notice '";
-            tmp += CurrentField->GetLib1();
-            tmp += "' : field '";
-            tmp += CurrentField->GetTag();
-            tmp += "'";
+            // Unexpected field 
+            char rec[50];
+            sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+            typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
             itsErrorHandler->SetErrorD(IO==INPUT ? 2105 : 7105, WARNING, tmp.str());
         }
         CurrentField = CurrentField->GetNextField();
     }
 
-    // Test de la presence de tous les champs et sous-champs obligatoires
+    // Check presense of mandatory fields
     CurrentControl = GetFirstCheckField();
     while (CurrentControl)
     {
         if ((CurrentControl->GetTagMandatory()) && (!CurrentControl->GetTagOccurrency()))
-            // le champ courant n'a pas ȨtȨ rencontrȨ malgrȿs sont caractȿre obligatoire
         {
-            typestr tmp = "Notice: field '";
+            // Missing mandatory field
+            char rec[50];
+            sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+            typestr tmp = typestr(rec) + "Field ";
             tmp += CurrentControl->GetTag();
-            tmp += "'";
             itsErrorHandler->SetErrorD(IO==INPUT ? 2106 : 7106, WARNING, tmp.str());
         }
         CurrentControl->SetTagOccurrency(0);
         CurrentControl=CurrentControl->GetNextTag();
     }
 
-    // Notice correcte
     return itsErrorHandler->GetErrorCode();
 }
 

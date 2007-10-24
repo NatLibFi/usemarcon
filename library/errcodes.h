@@ -13,7 +13,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     // Messages during reading of the input file
     {1001, "Unable to reset a writing mode opened file"},
     {1002, "Invalid SCW (Segment Control Word) encountered when attempting to read a MARC record"},
-    {1003, "Unable to go further in MARC file reading"},
+    {1003, "End of MARC file"},
     {1004, "Invalid length encountered when attempting to read a MARC record"},
     {1005, "Unable to go further in MARC file writing"},
     {1006, "Unable to flush the MARC output file"},

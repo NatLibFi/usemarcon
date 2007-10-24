@@ -97,7 +97,7 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
         case WARNING: category = "WARNING"; break;
         case ERROR: category = "ERROR"; break;
         case NOTICE: category = "NOTICE"; break;
-        case NONERROR: category = "NO ERROR"; break;
+        case NONERROR: category = "INFO"; break;
         default: category = "FATAL"; break;
     }
 

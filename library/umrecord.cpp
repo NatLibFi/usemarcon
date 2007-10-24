@@ -246,7 +246,11 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
     CD.SetTag("000");
     TCDLib* Search=(TCDLib*)itsFirstCDLib;
     if (!NextCD(&Search,&CD))
-        itsErrorHandler->SetError(7109, ERROR);
+    {
+        char tmp[50];
+        sprintf(tmp, "(record %ld)", itsErrorHandler->GetRecordNumber());
+        itsErrorHandler->SetErrorD(7109, ERROR, tmp);
+    }
     else
         SetLeader(Search->GetContent().str());
 
@@ -289,7 +293,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             {
                 char tmp[80];
                 NewField->SetI2(' ');
-                sprintf(tmp,"I2 is missing in field %s",NewField->GetTag());
+                sprintf(tmp,"(record %ld) I2 is missing in field %s", itsErrorHandler->GetRecordNumber(), NewField->GetTag());
                 itsErrorHandler->SetErrorD( 5004, WARNING, tmp );
             }
 
@@ -297,7 +301,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             {
                 char tmp[80];
                 NewField->SetI1(' ');
-                sprintf(tmp,"I1 is missing in field %s",NewField->GetTag());
+                sprintf(tmp,"(record %ld) I1 is missing in field %s", itsErrorHandler->GetRecordNumber(), NewField->GetTag());
                 itsErrorHandler->SetErrorD( 5004, WARNING, tmp );
             }
 
