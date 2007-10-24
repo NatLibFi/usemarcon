@@ -45,6 +45,7 @@ ere.maijala at helsinki.fi
 - Added While loops.
 - Added For loops.
 - Combined the documentation to a single document.
+- Added record number to logged error and warning messages.
 
 **************************
 **************************
