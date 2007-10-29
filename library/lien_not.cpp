@@ -2689,7 +2689,8 @@ bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, con
         int replace_start = mRegExpMatchVector[0];
         int replace_end = mRegExpMatchVector[1];
         typestr tmp;
-        tmp.str(mRegExpSearchString.str(), replace_start);
+        if (replace_start > 0)
+            tmp.str(mRegExpSearchString.str(), replace_start);
         tmp.append(replacement);
         int prev_start_pos = start_pos;
         start_pos = strlen(tmp.str());
