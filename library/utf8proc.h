@@ -67,7 +67,7 @@ typedef long int32_t;
 typedef unsigned long uint32_t;
 typedef int16_t ssize_t;
 #else
-#include <stdbool.h>
+//#include <stdbool.h>
 #include <inttypes.h>
 #endif
 

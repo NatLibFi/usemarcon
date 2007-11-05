@@ -13,7 +13,7 @@ Building in other systems:
 First build PCRE by entering pcre directory and giving the following commands:
 
 chmod +x CleanTxt config.guess config.sub configure depcomp Detrail install-sh perltest.pl PrepareRelease RunGrepTest RunTest 132html
-./configure --enable-utf8 --enable-unicode-properties
+./configure --enable-utf8 --enable-unicode-properties --disable-shared
 make
 
 If you're unable to build PCRE as it is in the USEMARCON distribution, you can download
