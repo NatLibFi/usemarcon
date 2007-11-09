@@ -2,15 +2,14 @@
 **************************
 version 3.00
 
-October 4 2007
+November 9 2007
 
 The National Library of Finland
 Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Cleaned up the interface ("API") to USEMARCON (big version number
-  bump due to this).
+- Cleaned up the interface ("API") to USEMARCON.
 - Cleaned up file name string handling.
 - Cleaned up header file dependencies.
 - Added duplicate field and subfield processing options.
@@ -46,6 +45,7 @@ ere.maijala at helsinki.fi
 - Added For loops.
 - Combined the documentation to a single document.
 - Added record number to logged error and warning messages.
+- Conversion will now fail if the specified ini file cannot be opened.
 
 **************************
 **************************
