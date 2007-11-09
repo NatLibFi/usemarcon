@@ -99,12 +99,10 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
 {
     m_interactive = a_interactive;
 
-    if (!a_iniFileName)
+    if (!a_iniFileName || !*a_iniFileName)
     {
         if (a_interactive)
-        {
             printf("ERROR: INI file not specified\n");
-        }
         return -1;
     }
 
@@ -134,7 +132,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
 
     // Create an instance of TError
     typestr inistr;
-    get_ini_filename("DEFAULT_FILES","ErrorLogFile","",inistr,itsIniFile.str());
+    get_ini_filename("DEFAULT_FILES", "ErrorLogFile", "", inistr, itsIniFile.str());
     itsErrorHandler  = new TError(this, inistr.str());
 
     // Set itsErrorHandler mode according to run mode
@@ -143,10 +141,9 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     else
         itsErrorHandler->SetMode(NONINTERACTIVE);
 
-
-    if (!*itsIniFile.str())
+    if (!file_available(itsIniFile.str()))
     {
-        itsErrorHandler->WriteError("END non OK : no .ini file specified\n");
+        itsErrorHandler->WriteError("Unable to open .ini file\n");
         return -1;
     }
 
@@ -188,7 +185,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     itsRuleDoc = new TRuleDoc(this);
     if (!itsRuleDoc)
     {
-        itsErrorHandler->WriteError("END non OK : No rule structure created\n");
+        itsErrorHandler->WriteError("Failed to create rule structure\n");
         return -1;
     }
 
@@ -200,6 +197,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     else if (itsRuleDoc->OpenRuleFile(inistr.str()) == false)
     {
         itsErrorHandler->WriteError("Unable to open rule file\n");
+        return -1;
     }
 
     // Initialize itsTransDoc
@@ -208,7 +206,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     itsTransDoc = new TTransDoc(itsErrorHandler);
     if (!itsTransDoc)
     {
-        itsErrorHandler->WriteError("END non OK : No transcoding structure created\n");
+        itsErrorHandler->WriteError("Failed to create transcoding structure\n");
         return -1;
     }
     get_ini_filename("DEFAULT_FILES", "TranscodingCharacterTable", "", inistr, itsIniFile.str());
@@ -232,7 +230,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
 
     if (!itsCheckDoc)
     {
-        itsErrorHandler->WriteError("END non OK : No transcoding structure created\n");
+        itsErrorHandler->WriteError("Failed to create transcoding structure\n");
         return -1;
     }
 
@@ -262,7 +260,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     itsMarcDoc = new TMarcDoc(this);
     if (!itsMarcDoc)
     {
-        itsErrorHandler->WriteError("END non OK : No marc structure created\n");
+        itsErrorHandler->WriteError("Failed to create marc structure\n");
         return -1;
     }
 
@@ -285,7 +283,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
             get_ini_filename("DEFAULT_FILES", "MarcInputFile", "", inistr, itsIniFile.str());
             if (!*inistr.str())
             {
-                itsErrorHandler->WriteError("END non OK : Input MARC file not specified\n");
+                itsErrorHandler->WriteError("Input MARC file not specified\n");
                 return -1;
             }
             filespec = inistr;
@@ -317,7 +315,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
         else
         {
-            itsErrorHandler->WriteError("END non OK : Unknown input file format");
+            itsErrorHandler->WriteError("Unknown input file format");
             return -1;
         }
     }
@@ -385,7 +383,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
             get_ini_filename("DEFAULT_FILES", "MarcOutputFile", "", inistr, itsIniFile.str());
             if (!*inistr.str())
             {
-                itsErrorHandler->WriteError("END non OK : Output MARC file not specified\n");
+                itsErrorHandler->WriteError("Output MARC file not specified\n");
                 return -1;
             }
             filespec = inistr;
@@ -424,7 +422,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
         else
         {
-            itsErrorHandler->WriteError("END non OK : Unknown output file format");
+            itsErrorHandler->WriteError("Unknown output file format");
             return -1;
         }
     }
@@ -501,7 +499,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
         else
         {
-            itsErrorHandler->WriteError("END non OK : Unknown duplicate subfield processing mode");
+            itsErrorHandler->WriteError("Unknown duplicate subfield processing mode");
             return -1;
         }
     }
@@ -528,7 +526,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
         else
         {
-            itsErrorHandler->WriteError("END non OK : Unknown duplicate field processing mode");
+            itsErrorHandler->WriteError("Unknown duplicate field processing mode");
             return -1;
         }
     }
@@ -554,13 +552,13 @@ int TUMApplication::Convert(void)
 
     if (!itsMarcDoc->Open(INPUT))
     {
-        itsErrorHandler->WriteError("END non OK : Unable to open input MARC file\n");
+        itsErrorHandler->WriteError("Unable to open input MARC file\n");
         return -1;
     }
 
     if (!itsMarcDoc->Open(OUTPUT))
     {
-        itsErrorHandler->WriteError("END non OK : Unable to open output MARC file\n");
+        itsErrorHandler->WriteError("Unable to open output MARC file\n");
         return -1;
     }
 
@@ -615,7 +613,7 @@ int TUMApplication::Convert(void)
         if ((itsErrorHandler->GetTooManyErrors()) && (itsErrorHandler->GetHowManyErrors()>itsErrorHandler->GetTooManyErrors()))
         {
             // Maximum number of errors exceeded
-            itsErrorHandler->WriteError("END non OK : Maximum errors to be encountered has been reached\n");
+            itsErrorHandler->WriteError("Maximum errors to be encountered has been reached\n");
 
             if (itsUpdateOrdinal)
             {
@@ -643,7 +641,7 @@ int TUMApplication::Convert(void)
     {
         printf("100%\n");
         char msg[1000];
-        sprintf(msg, "END OK %ld Converted Records : %ld without error and %ld with error(s)\n",
+        sprintf(msg, "%ld Converted Records: %ld without error and %ld with error(s)\n",
             itsRecordsProcessed, itsRecordsOk, itsRecordsFailed);
         itsErrorHandler->WriteError(msg);
     }

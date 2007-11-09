@@ -59,16 +59,16 @@ while test $# -gt 0; do
   shift
 done
 
-lusemarcon="-lusemarcon"
+lusemarcon="-lusemarcon -lpcre"
 
 if test "$lib_thread" = "yes" -a -n "@CFLAGSTHREADS@"; then
     lusemarcon="-lusemarcon $lusemarcon"
-fi 
+fi
 
 if test "$usemarcon_echo_source" = "yes"; then
-    BIN=${yaz_build_root}/bin
-    USEMARCONLALIB="${usemarcon_build_root}/library/libusemarcon.la $yazextralibs"
-    USEMARCONINC="-I${usemarcon_build_root}/library"
+    BIN=${usemarcon_build_root}/bin
+    USEMARCONLALIB="${usemarcon_build_root}/library/libusemarcon.la ${usemarcon_build_root}/pcre/libpcre.la $usemarconextralibs"
+    USEMARCONINC="-I${usemarcon_build_root}/library -I${usemarcon_build_root}/pcre"
 else
     USEMARCONBIN=${usemarconprefix}/bin
 

@@ -46,6 +46,9 @@ void trim_string(char *str);
 // trim single and double quotes from the beginning and the end of the string
 void trim_string_quotes(char *str);
 
+// check if a file can be opened for reading
+bool file_available(const char* a_filename);
+
 // read a string from the specified ini file
 void get_ini_string(const char *section_name,
                     const char *key_name,

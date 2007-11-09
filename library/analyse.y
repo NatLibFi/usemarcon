@@ -214,7 +214,7 @@ CD :
 |       TAGOCC STAGOCC          { PrintDebug("Tagocc Stagocc");
                                   $$=$1;
                                   $$->Fixed.freestr();
-                                  strcpy($$->SubField,$2->SubField);
+                                  memmove($$->SubField, $2->SubField, sizeof($$->SubField));
                                   $$->ns=$2->ns;
                                   FreeCD($2);
                                   $2=NULL;}
@@ -332,7 +332,7 @@ STAGOCC :
 ;
 
 Condition :
-        CHECK Boolean                   { PrintDebug("Check");
+        CHECK Boolean                   { PrintDebug("Condition");
                                           return ($2) ? 4 : 2;
                                         }
 ;

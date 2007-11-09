@@ -1622,7 +1622,7 @@ yyreduce:
     { PrintDebug("Tagocc Stagocc");
                                   (yyval.tcd)=(yyvsp[(1) - (2)].tcd);
                                   (yyval.tcd)->Fixed.freestr();
-                                  strcpy((yyval.tcd)->SubField,(yyvsp[(2) - (2)].tcd)->SubField);
+                                  memmove((yyval.tcd)->SubField, (yyvsp[(2) - (2)].tcd)->SubField, sizeof((yyval.tcd)->SubField));
                                   (yyval.tcd)->ns=(yyvsp[(2) - (2)].tcd)->ns;
                                   FreeCD((yyvsp[(2) - (2)].tcd));
                                   (yyvsp[(2) - (2)].tcd)=NULL;}
@@ -1780,7 +1780,7 @@ yyreduce:
 
   case 25:
 
-    { PrintDebug("Check");
+    { PrintDebug("Condition");
                                           return ((yyvsp[(2) - (2)].code)) ? 4 : 2;
                                         }
     break;

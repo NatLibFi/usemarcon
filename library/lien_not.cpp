@@ -383,7 +383,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
             {
                 bool while_loop = *(stmt + 1) == 'h';
                 const char* p_if = find_statement_end(stmt);
-                typestr check_stmt = "Check";
+                typestr check_stmt = "Condition";
                 check_stmt.append(stmt + (while_loop ? 5 : 2), p_if - stmt - (while_loop ? 5 : 2));
 
                 TRule rule(a_rule, check_stmt.str());
@@ -472,7 +472,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                         sprintf(i_str, "%ld", i);
                         if (!condition.is_empty())
                         {
-                            typestr check_stmt = "Check (";
+                            typestr check_stmt = "Condition (";
                             check_stmt.append(condition);
                             check_stmt.append(")");
                             check_stmt.replace(variable.str(), i_str);
@@ -1086,6 +1086,10 @@ int TEvaluateRule::Exists( TypeCD* CD )
 int TEvaluateRule::ExistsIn(TypeInst* a_str, TypeCD* a_cd)
 {
     FinishTCD(a_cd);
+
+    if (a_str->str.is_empty())
+        return 0;
+
     char subfield[3];
     subfield[0] = START_OF_FIELD;
     subfield[1] = a_cd->SubField[1];
@@ -2811,21 +2815,8 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
     if (a_target && !a_target->str.is_empty() && strlen(a_source->str.str()) != strlen(a_target->str.str()))
     {
         yyerror("Source and target list must be of equal length");
-        FreeTypeInst(a_source);
-        FreeCD(a_new_pos);
-        FreeTypeInst(a_target);
-        FreeTypeInst(a_prefix);
-        FreeTypeInst(a_suffix);
-        FreeTypeInst(a_preserved_punctuations);
         return false;
     }
-
-    ToString(a_source);
-    ToString(a_target);
-    ToString(a_prefix);
-    ToString(a_suffix);
-    ToString(a_preserved_punctuations);
-    ToString(a_preserved_subfields);
 
     bool result = false;
 
@@ -3012,14 +3003,6 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
     if (result)
         a_fielddata = fielddata;
 
-
-    FreeTypeInst(a_source);
-    FreeCD(a_new_pos);
-    FreeTypeInst(a_target);
-    FreeTypeInst(a_prefix);
-    FreeTypeInst(a_suffix);
-    FreeTypeInst(a_preserved_punctuations);
-
     return result;
 }
 
@@ -3027,6 +3010,14 @@ TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeIn
                                     TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, 
                                     TypeInst* a_preserved_subfields)
 {
+    ToString(a_source);
+    FinishCD(a_before);
+    ToString(a_target);
+    ToString(a_prefix);
+    ToString(a_suffix);
+    ToString(a_preserved_punctuations);
+    ToString(a_preserved_subfields);
+
     TypeInst *rc = AllocTypeInst();
     rc->str = S->str;
     move_subfields(rc->str, a_source, a_before, false, a_target, a_prefix, a_suffix, a_preserved_punctuations, 
@@ -3034,6 +3025,15 @@ TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeIn
     if (!rc->str.s2.is_empty())
         move_subfields(rc->str.s2, a_source, a_before, false, a_target, a_prefix, a_suffix, a_preserved_punctuations, 
             a_preserved_subfields);
+
+    FreeTypeInst(a_source);
+    FreeCD(a_before);
+    FreeTypeInst(a_target);
+    FreeTypeInst(a_prefix);
+    FreeTypeInst(a_suffix);
+    FreeTypeInst(a_preserved_punctuations);
+    FreeTypeInst(a_preserved_subfields);
+
     return rc;
 }
 
@@ -3041,6 +3041,14 @@ TypeInst* TEvaluateRule::MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst
                                    TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations, 
                                    TypeInst* a_preserved_subfields)
 {
+    ToString(a_source);
+    FinishCD(a_after);
+    ToString(a_target);
+    ToString(a_prefix);
+    ToString(a_suffix);
+    ToString(a_preserved_punctuations);
+    ToString(a_preserved_subfields);
+
     TypeInst *rc = AllocTypeInst();
     rc->str = S->str;
     move_subfields(rc->str, a_source, a_after, true, a_target, a_prefix, a_suffix, a_preserved_punctuations,
@@ -3048,5 +3056,14 @@ TypeInst* TEvaluateRule::MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst
     if (!rc->str.s2.is_empty())
         move_subfields(rc->str.s2, a_source, a_after, true, a_target, a_prefix, a_suffix, a_preserved_punctuations,
             a_preserved_subfields);
+
+    FreeTypeInst(a_source);
+    FreeCD(a_after);
+    FreeTypeInst(a_target);
+    FreeTypeInst(a_prefix);
+    FreeTypeInst(a_suffix);
+    FreeTypeInst(a_preserved_punctuations);
+    FreeTypeInst(a_preserved_subfields);
+
     return rc;
 }

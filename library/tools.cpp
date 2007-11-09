@@ -194,6 +194,17 @@ void trim_string_quotes(char *str)
         memmove(str, p, len - 1);
 }
 
+bool file_available(const char* a_filename)
+{
+    FILE *f;
+    if ((f = fopen(a_filename, "r")))
+    {
+        fclose(f);
+        return true;
+    }
+    return false;
+}
+
 void get_ini_string(const char *section_name,
                     const char *key_name,
                     const char *default_value,

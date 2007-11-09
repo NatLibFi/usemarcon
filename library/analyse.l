@@ -83,7 +83,7 @@ D                       return MarcParser::VARD;
 [N|n]                   return MarcParser::VAR_N;
 [N|n][E|e][W|w][E|e][S|s][T|t] return MarcParser::VAR_NEWEST;
 [N|n][E|e][W|w]         return MarcParser::VAR_NEW;
-[C|c]heck               return MarcParser::CHECK;
+[C|c]ondition           return MarcParser::CHECK;
 [A|a]nd                 return MarcParser::AND;
 [O|o]r                  return MarcParser::OR;
 [N|n]ot                 return MarcParser::NOT;
