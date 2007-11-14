@@ -925,7 +925,7 @@ int TEvaluateRule::Evaluate_Rule( TUMRecord* In, TUMRecord* Out, TUMRecord* Real
             mCDOut=aCDOut;
             rc = Parse(Rule);
 
-            if (rc!=2)
+            if (rc != 2)
             {
                 TCDLib aCDLOut(aCDOut);
                 aCDLOut.SetBeginning(0);
@@ -2653,7 +2653,7 @@ TypeInst* TEvaluateRule::RegMatch( TypeInst* t1 )
         rc->str.str("");
     else
     {
-        rc->str.str(mRegExpSearchString.str() + mRegExpMatchVector[2 * index], mRegExpMatchVector[2 * index + 1]);
+        rc->str.str(mRegExpSearchString.str() + mRegExpMatchVector[2 * index], mRegExpMatchVector[2 * index + 1] - mRegExpMatchVector[2 * index] + 1);
     }
     return rc;
 }

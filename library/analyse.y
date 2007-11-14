@@ -508,10 +508,9 @@ Translation :
 |       CD                              { PrintDebug("CD");
                                           typestr2 ptr = ReadCD($1);
                                           FreeCD($1);
-                                          if (!ptr.str()) return 2;
                                           $$=AllocTypeInst();
                                           $$->str = ptr;
-                                          $$->val=0;
+                                          $$->val = 0;
                                         }
 |       Translation PLUS Translation    { PrintDebug("...+...");$$=Add($1,$3); $1=$3=NULL; }
 |       Translation MINUS Translation   { PrintDebug("...-...");$$=Subtract($1,$3); $1=$3=NULL; }
