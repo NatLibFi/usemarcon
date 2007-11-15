@@ -41,3 +41,4 @@ rd program\.libs
 del config.log
 del usemarcon-config
 del library\libusemarcon.la
+del win\cleanrelease.bat
