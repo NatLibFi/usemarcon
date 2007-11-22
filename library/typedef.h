@@ -124,12 +124,29 @@ class typestr2 : public typestr
 {
 public:
     typestr s2;
+    char script[11];
+
+    typestr2()
+    {
+        *script = '\0';
+    }
 
     typestr2 & operator=(const typestr2 & t)
     {
         str(t.cstr());
         s2.str(t.s2.cstr());
+        if (!*script)
+            strcpy(script, t.script);
         return *this;
+    }
+
+    void set_script(const char *a_script)
+    {
+        if (!*script && a_script && *a_script)
+        {
+            strncpy(script, a_script, 10);
+            script[10] = '\0';
+        }
     }
 };
 

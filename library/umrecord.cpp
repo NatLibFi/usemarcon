@@ -372,7 +372,7 @@ int TUMRecord::ToCD(void)
     // Ce CDLib sera identifie par un numero de champ '000'
     // On insere ensuite ce CDLib dans la liste des CDLib.
     CDLib.SetTag("000");
-    CDLib.SetContent(itsLeader, "");
+    CDLib.SetContent(itsLeader, "", "");
     CDLib.SetTagOccurrenceNumber(1);
     InsertCDLib(&CDLib);
 
@@ -401,13 +401,13 @@ int TUMRecord::ToCD(void)
 
             // On affecte le contenu du CDLib avec l'indicateur, et on insere ce
             // nouveau CDLib dans la liste des CDLibs
-            CDLib.SetContent(tmp, "");
+            CDLib.SetContent(tmp, "", "");
             InsertCDLib(&CDLib);
 
             // On fait ensuite de meme pour le second indicateur
             CDLib.SetSubfield(SECOND_INDICATOR);
             *tmp=Field->GetI2();
-            CDLib.SetContent(tmp, "");
+            CDLib.SetContent(tmp, "", "");
             InsertCDLib(&CDLib);
         }
 
@@ -415,7 +415,7 @@ int TUMRecord::ToCD(void)
         // sous-champ. Lors de l'insertion par InsereCDLib, ce CDLib sera decoupe en
         // CDLib unitaires
         CDLib.SetSubfield(NO_SUBFIELD);
-        CDLib.SetContent(Field->GetLib1(), Field->GetLib2());
+        CDLib.SetContent(Field->GetLib1(), Field->GetLib2(), Field->GetScript());
         InsertCDLib(&CDLib);
 
         // On passe ensuite au champ suivant
@@ -776,7 +776,7 @@ void TUMRecord::GetOccurrenceNumbersForNew(const char *a_tag, int a_tag_occurren
 
 void TUMRecord::MergeLinkedFields()
 {
-    RegExp re(START_OF_FIELD_STR "6(\\d+)\\-(\\d+)");
+    RegExp re(START_OF_FIELD_STR "6(\\d+)\\-(\\d+)([^" START_OF_FIELD_STR "]*)");
 
     // Iterate all 880 fields
     TMarcField* field = itsFirstField;
@@ -803,8 +803,10 @@ void TUMRecord::MergeLinkedFields()
         {
             typestr fieldcode;
             typestr occurrence;
+            typestr script;
             re.match(1, fieldcode);
             re.match(2, occurrence);
+            re.match(3, script);
 
             // Find linked field
             bool match_found = false;
@@ -822,6 +824,7 @@ void TUMRecord::MergeLinkedFields()
                         // We have a match
                         match_found = true;
                         linked_field->SetLib2(data);
+                        linked_field->SetScript(script.str());
                         break;
                     }
                 }
@@ -849,16 +852,35 @@ void TUMRecord::MergeLinkedFields()
 
 void TUMRecord::SeparateLinkedFields()
 {
+    RegExp re_replace(START_OF_FIELD_STR "6.*?" START_OF_FIELD_STR);
+    RegExp re_add_rep(START_OF_FIELD_STR);
     TMarcField* field = itsFirstField;
     TMarcField* prev_field880 = NULL;
+    int field_num = 0;
     while (field)
     {
         if (field->GetLib2() && *field->GetLib2())
         {
+            ++field_num;
+            char link_normal[30], link_880[30];
+            sprintf(link_normal, START_OF_FIELD_STR "6880-%02d" START_OF_FIELD_STR, field_num);
+            sprintf(link_880, START_OF_FIELD_STR "6%03s-%02d%s" START_OF_FIELD_STR, field->GetTag(), field_num, field->GetScript());
+
+            typestr fielddata = field->GetLib2();
+            int res = re_replace.replace(fielddata, link_880, false);
+            if (res < 0)
+                itsErrorHandler->SetError(5601, WARNING);
+            if (res == 0)
+            {
+                res = re_add_rep.replace(fielddata, link_880, false);
+                if (res < 0)
+                    itsErrorHandler->SetError(5601, WARNING);
+            }
+
             TMarcField* field880 = new TMarcField();
             field880->SetTag("880");
             field880->SetIndicators(field->GetIndicators());
-            field880->SetLib1(field->GetLib2());
+            field880->SetLib1(fielddata.str());
             field880->SetLib2(NULL);
 
             if (prev_field880)
@@ -887,6 +909,18 @@ void TUMRecord::SeparateLinkedFields()
                 }
             }
             prev_field880 = field880;
+
+            fielddata = field->GetLib1();
+            res = re_replace.replace(fielddata, link_normal, false);
+            if (res < 0)
+                itsErrorHandler->SetError(5601, WARNING);
+            if (res == 0)
+            {
+                res = re_add_rep.replace(fielddata, link_normal, false);
+                if (res < 0)
+                    itsErrorHandler->SetError(5601, WARNING);
+            }
+            field->SetLib1(fielddata.str());
         }
         field->SetLib2(NULL);
         field = field->GetNextField();

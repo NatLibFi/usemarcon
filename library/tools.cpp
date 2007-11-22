@@ -635,4 +635,5 @@ void trim_string2(typestr2 &a_dst, typestr2 &a_src)
 {
     trim_string(a_dst, a_src);
     trim_string(a_dst.s2, a_src.s2);
+    a_dst.set_script(a_src.script);
 }

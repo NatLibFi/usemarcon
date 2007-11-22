@@ -49,6 +49,7 @@ public:
 
     bool init(const char *a_regexp, bool a_utf8 = true, bool a_multiline = false);
     int exec(const char *a_str);
+    int replace(typestr &a_str, const char *a_replacement, bool a_global);
 
     int match_count() { return m_match_count; }
     int match_start(int a_index);

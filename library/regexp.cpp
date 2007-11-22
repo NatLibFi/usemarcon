@@ -12,6 +12,7 @@
  *
  */
 
+#include <ctype.h>
 #include "regexp.h"
 
 RegExp::RegExp() : m_pcre(NULL), m_match_count(0), m_error_code(0), m_error_pos(0) 
@@ -55,6 +56,58 @@ int RegExp::exec(const char *a_str)
     if (m_match_count == 0)
         m_match_count = m_vector_size / 3;
     return m_match_count;
+}
+
+int RegExp::replace(typestr &a_str, const char *a_replacement, bool a_global)
+{
+    int loop_count = 0;
+    int start_pos = 0;
+    int replaced = 0;
+    while (loop_count++ < 10000)
+    {
+        int res = exec(a_str.str() + start_pos);
+        if (res == PCRE_ERROR_NOMATCH)
+            break;
+        if (res < 0)
+            return res;
+        
+        typestr replacement;
+        const char *p = a_replacement;
+        while (*p)
+        {
+            if (*p == '\\')
+            {
+                ++p;
+                if (*p == '\\')
+                    replacement.append_char('\\');
+                else if (isdigit(*p))
+                {
+                    int index = *p - '0';
+                    replacement.append(m_str.str() + m_vector[2 * index], m_vector[2 * index + 1] - m_vector[2 * index]);
+                }
+            }
+            else
+                replacement.append_char(*p);
+            ++p;
+        }
+        int replace_start = m_vector[0];
+        int replace_end = m_vector[1];
+        typestr tmp;
+        if (replace_start > 0)
+            tmp.str(m_str.str(), replace_start);
+        tmp.append(replacement);
+        int prev_start_pos = start_pos;
+        start_pos = strlen(tmp.str());
+        tmp.append(m_str.str() + replace_end);
+        *(a_str.str() + prev_start_pos) = '\0';
+        a_str.append(tmp);
+
+        ++replaced;
+
+        if (!a_global)
+            break;
+    }
+    return replaced;
 }
 
 int RegExp::match_start(int a_index)

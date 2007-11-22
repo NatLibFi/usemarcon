@@ -138,6 +138,7 @@ typestr2 TCDLib::GetContent(TCD* theCD)
                 content += Courant->GetContent();
                 if (!Courant->GetContent().s2.is_empty())
                     content.s2 += Courant->GetContent().s2;
+                content.set_script(Courant->GetContent().script);
             }
             else
             {
@@ -157,6 +158,7 @@ typestr2 TCDLib::GetContent(TCD* theCD)
                         content.s2.append_char(*(Courant->GetSubfield()+1)); 
                         content.s2.append(Courant->GetContent().s2);
                     }
+                    content.set_script(Courant->GetContent().script);
                 }
             }
             Courant=(TCDLib*)Courant->GetNext();
@@ -185,12 +187,13 @@ typestr2 TCDLib::GetContent(TCD* theCD)
 
     // Si les positions sont definies, on extrait les donnees correspondantes
 
+    typestr2 result;
+    result.set_script(content.script);
     if (aBeginning > MaxPos || aEnd > MaxPos || (aEnd > 0 && aBeginning > aEnd))
     {
-        return typestr2();
+        return result;
     }
 
-    typestr2 result;
     if (aEnd==-1)
     {
         result.str(&content.str()[aBeginning]);
@@ -230,11 +233,13 @@ void TCDLib::ResetContent(void)
 ///////////////////////////////////////////////////////////////////////////////
 int TCDLib::SetContent(const typestr2 & aContent, TCD* aCD)
 {
-    return SetContent(aContent.cstr(), aContent.s2.cstr(), aCD);
+    return SetContent(aContent.cstr(), aContent.s2.cstr(), aContent.script, aCD);
 }
 
-int TCDLib::SetContent(const char *aContent, const char *aContent2, TCD* aCD)
+int TCDLib::SetContent(const char *aContent, const char *aContent2, const char *aScript, TCD* aCD)
 {
+    itsContent.set_script(aScript);
+
     // Si aCD est NULL on remplit simplement le CDLib (test de validite a effectuer
     // en dehors de la fonction afin d'avoir le contexte de l'erreur).
 
@@ -302,11 +307,11 @@ int TCDLib::SetContent(const char *aContent, const char *aContent2, TCD* aCD)
         }
         if (MaxPos <= aEnd) 
             tmpstr.str()[aEnd + 1] = '\0';
-        SetContent(tmpstr.str(), "");
+        SetContent(tmpstr.str(), "", "");
     }
     else
     {
-        SetContent(aContent, aContent2);
+        SetContent(aContent, aContent2, aScript);
     }
 
     return 0;
@@ -413,6 +418,7 @@ int TCDLib::NextSubCDLib(TCDLib** pCDLib, int* _pos, int* _pos2, char* defst)
         if (itsContent.str()[pos] == START_OF_FIELD && itsContent.str()[pos+1] != '\0')
         {
             typestr2 sub_content;
+            sub_content.set_script(itsContent.script);
             if (first && pos && *defst)
             {
                 // First subfield, not in the beginning of the field and default subfield code is specified

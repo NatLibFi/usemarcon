@@ -39,13 +39,14 @@ public:
     
     int     NextSubField    (int *_Position, char* _SubField);
   
-    char       *GetTag       (void)            { return itsTag; };
-    char       *GetIndicators(void)            { return itsIndicators; };
-    char       GetI1         (void)            { return itsIndicators[0]; };
-    char       GetI2         (void)            { return itsIndicators[1]; };
-    char       *GetLib1      (void)            { return itsLib.str(); };
-    char       *GetLib2      (void)            { return itsLib.s2.str(); };
-    TMarcField *GetNextField (void)            { return itsNextField; };
+    char       *GetTag       (void)            { return itsTag; }
+    char       *GetIndicators(void)            { return itsIndicators; }
+    char       GetI1         (void)            { return itsIndicators[0]; }
+    char       GetI2         (void)            { return itsIndicators[1]; }
+    char       *GetLib1      (void)            { return itsLib.str(); }
+    char       *GetLib2      (void)            { return itsLib.s2.str(); }
+    const char *GetScript    (void)            { return itsLib.script; }
+    TMarcField *GetNextField (void)            { return itsNextField; }
 
     int     SetTag        (const char *aTagString);
     int     SetTag        (int aTagNumber);
@@ -57,6 +58,7 @@ public:
     void    SetLib1       (const char *aLib, unsigned int aSize);
     void    SetLib2       (const char *aLib);
     void    SetLib2       (const char *aLib, unsigned int aSize);
+    void    SetScript     (const char *aScript);
     TMarcField  *SetNextField   (TMarcField *theNextField)  { itsNextField=theNextField; return itsNextField; };
        
 protected:

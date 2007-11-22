@@ -196,6 +196,7 @@ int TTransDoc::ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut)
         typestr result;
         Out->SetLib1(Transcode(In->GetLib1(), &result, In->GetLib1(), In->GetTag()));
         Out->SetLib2(Transcode(In->GetLib2(), &result, In->GetLib2(), In->GetTag()));
+        Out->SetScript(In->GetScript());
         if (!Out->GetLib1() || !Out->GetLib2())
         {
             typestr tmp = "Notice '";

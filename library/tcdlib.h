@@ -39,7 +39,7 @@ public:
     ~TCDLib         (void);
 
     typestr2  GetContent      (TCD* aCD=NULL);
-    int       SetContent      (const char *aContent, const char *aContent2, TCD* aCD=NULL);
+    int       SetContent      (const char *aContent, const char *aContent2, const char *aScript, TCD* aCD=NULL);
     int       SetContent      (const typestr2 & aContent, TCD* aCD=NULL);
     void      ResetContent    (void);
     int       IsEqual         (TCD* aCD, int aTagOccurrenceNumberOverride = -1);

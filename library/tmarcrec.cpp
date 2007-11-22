@@ -64,7 +64,8 @@ TMarcRecord::TMarcRecord(const TMarcRecord &aRecord)
         Out->SetIndicators(In->GetIndicators());
         Out->SetLib1(In->GetLib1());
         Out->SetLib2(In->GetLib2());
-        In=In->GetNextField();
+        Out->SetScript(In->GetScript());
+        In = In->GetNextField();
     }
 
 
@@ -121,7 +122,8 @@ TMarcRecord & TMarcRecord::operator=(const TMarcRecord &aRecord)
         Out->SetIndicators(In->GetIndicators());
         Out->SetLib1(In->GetLib1());
         Out->SetLib2(In->GetLib2());
-        In=In->GetNextField();
+        Out->SetScript(In->GetScript());
+        In = In->GetNextField();
     }
 
 

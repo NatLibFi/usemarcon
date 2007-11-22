@@ -156,6 +156,7 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
         Out->SetLib1(result.str());
         Transcode(In->GetLib2(), result, In->GetLib2(), In->GetTag());
         Out->SetLib2(result.str());
+        Out->SetScript(In->GetScript());
         if (!Out->GetLib1())
         {
             char rec[50];

@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "error.h"
 #include "tcdlib.h"
 #include "sort.h"
@@ -1767,12 +1768,11 @@ int TEvaluateRule::CopyInst( TypeInst** In, TypeInst* From )
     *In=AllocTypeInst();
     if (From && From->str.str())
     {
-        (*In)->str.str(From->str.str());
-        (*In)->str.s2.str(From->str.s2.str());
+        (*In)->str = From->str;
     }
     if (From)
     {
-        (*In)->val=From->val;
+        (*In)->val = From->val;
     }
     return 0;
 }
@@ -1874,6 +1874,7 @@ TypeInst* TEvaluateRule::Add( TypeInst* t1, TypeInst* t2 )
         rc->str.append(t2->str);
         if (!rc->str.s2.is_empty()) 
             rc->str.s2.append(t2->str);
+        rc->str.set_script(t2->str.script);
     }
     FreeTypeInst(t1);
     FreeTypeInst(t2);
@@ -1992,6 +1993,7 @@ TypeInst* TEvaluateRule::From(TypeInst* t, bool a_strict)
     rc->str.str(from(S->str, i, a_strict).str());
     if (!S->str.s2.is_empty()) 
         rc->str.s2.str(from(S->str.s2, i, a_strict).str());
+    rc->str.set_script(S->str.script);
     return rc;
 };
 
@@ -2041,6 +2043,7 @@ TypeInst* TEvaluateRule::To(TypeInst* t, bool a_strict)
     rc->str.str(to(S->str, i, a_strict).str());
     if (!S->str.s2.is_empty()) 
         rc->str.s2.str(to(S->str.s2, i, a_strict).str());
+    rc->str.set_script(S->str.script);
     return rc;
 };
 
@@ -2091,6 +2094,7 @@ TypeInst* TEvaluateRule::Between(TypeInst* t1, TypeInst* t2, bool a_strict)
     rc->str.str(between(S->str, i1, i2, a_strict).str());
     if (!S->str.s2.is_empty()) 
         rc->str.s2.str(between(S->str.s2, i1, i2, a_strict).str());
+    rc->str.set_script(S->str.script);
     return rc;
 };
 
@@ -2187,6 +2191,7 @@ TypeInst* TEvaluateRule::Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at
     rc->str.str(replace(S->str, source, replacement, at, strict).str());
     if (!S->str.s2.is_empty())
         rc->str.s2.str(replace(S->str.s2, source, replacement, at, strict).str());
+    rc->str.set_script(S->str.script);
     return rc;
 }
 
@@ -2237,6 +2242,7 @@ TypeInst* TEvaluateRule::ReplaceOcc( TypeInst* t1, TypeInst* t2, TypeInst* inCon
     rc->str.str(replaceocc(S->str, source, replacement, condition, strict).str());
     if (!S->str.s2.is_empty())
         rc->str.s2.str(replaceocc(S->str.s2, source, replacement, condition, strict).str());
+    rc->str.set_script(S->str.script);
     return rc;
 };
 
@@ -2737,6 +2743,7 @@ TypeInst* TEvaluateRule::RegReplace(TypeInst* a_regexp, TypeInst* a_replacement,
         FreeTypeInst(a_replacement);
         return NULL;
     }
+    rc->str.set_script(S->str.script);
 
     FreeTypeInst(a_regexp);
     FreeTypeInst(a_replacement);
@@ -2765,6 +2772,7 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
         error += "'";
         yyerror(error.str());
         FreeTypeInst(a_table);
+        FreeTypeInst(rc);
         return NULL;
     }
     FreeTypeInst(a_table);
@@ -2772,14 +2780,17 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
     {
         if (!RegReplaceInternal(rc->str, table->m_src.str(), table->m_dst.str(), global))
         {
+            FreeTypeInst(rc);
             return NULL;
         }
         if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, table->m_src.str(), table->m_dst.str(), global))
         {
+            FreeTypeInst(rc);
             return NULL;
         }
         table = table->GetNext();
     }
+    rc->str.set_script(S->str.script);
     return rc;
 }
 
@@ -3020,6 +3031,8 @@ TypeInst* TEvaluateRule::MoveBefore(TypeInst* a_source, TypeCD* a_before, TypeIn
 
     TypeInst *rc = AllocTypeInst();
     rc->str = S->str;
+    rc->str.set_script(S->str.script);
+
     move_subfields(rc->str, a_source, a_before, false, a_target, a_prefix, a_suffix, a_preserved_punctuations, 
         a_preserved_subfields);
     if (!rc->str.s2.is_empty())
@@ -3051,6 +3064,8 @@ TypeInst* TEvaluateRule::MoveAfter(TypeInst* a_source, TypeCD* a_after, TypeInst
 
     TypeInst *rc = AllocTypeInst();
     rc->str = S->str;
+    rc->str.set_script(S->str.script);
+
     move_subfields(rc->str, a_source, a_after, true, a_target, a_prefix, a_suffix, a_preserved_punctuations,
         a_preserved_subfields);
     if (!rc->str.s2.is_empty())

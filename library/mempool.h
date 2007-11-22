@@ -109,6 +109,7 @@ private:
     {
         t->str.freestr();
         t->str.s2.freestr();
+        *t->str.script = '\0';
         t->val = 0;
     }
 

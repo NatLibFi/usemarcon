@@ -45,6 +45,7 @@ TMarcField::TMarcField(TMarcField *aField)
     itsIndicators[2] = '\0';
     SetLib1(aField->GetLib1());
     SetLib2(aField->GetLib2());
+    SetScript(aField->GetScript());
     if (aField->GetNextField())
         itsNextField = new TMarcField(aField->GetNextField());
     else
@@ -181,6 +182,11 @@ void TMarcField::SetLib2(const char *aLib, unsigned int aSize)
     return;
 }
 
+void TMarcField::SetScript(const char *aScript)
+{
+    if (!aScript || !*aScript)
+        return;
 
-
-
+    itsLib.set_script(aScript);
+    return;
+}

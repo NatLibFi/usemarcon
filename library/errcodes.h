@@ -7,7 +7,7 @@ typedef struct
     const char *description;
 } ERRORDESC;
 
-const int ErrorDescCount = 87;
+const int ErrorDescCount = 88;
 
 const ERRORDESC ErrorDesc[ErrorDescCount] = {
     // Messages during reading of the input file
@@ -70,6 +70,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {5505, "TCDLib allocation failure when attempting to deal with other input CDs"},
     {5506, "Buffer allocation failure when attempting to split the rule"},
     {5507, "TCD allocation failure when attempting to load CD from MARC record"},
+    {5601, "Failed to add $6 link field"},
     
     // Messages during checking the output record
     {7001, "Invalid output format checking rule (item expected)"},
