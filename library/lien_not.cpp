@@ -1872,8 +1872,8 @@ TypeInst* TEvaluateRule::Add( TypeInst* t1, TypeInst* t2 )
         rc->str = t1->str;
         ToString(t2);
         rc->str.append(t2->str);
-        if (!rc->str.s2.is_empty()) 
-            rc->str.s2.append(t2->str);
+        if (!t2->str.s2.is_empty()) 
+            rc->str.s2.append(t2->str.s2);
         rc->str.set_script(t2->str.script);
     }
     FreeTypeInst(t1);
