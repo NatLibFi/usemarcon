@@ -2659,7 +2659,7 @@ TypeInst* TEvaluateRule::RegMatch( TypeInst* t1 )
         rc->str.str("");
     else
     {
-        rc->str.str(mRegExpSearchString.str() + mRegExpMatchVector[2 * index], mRegExpMatchVector[2 * index + 1] - mRegExpMatchVector[2 * index] + 1);
+        rc->str.str(mRegExpSearchString.str() + mRegExpMatchVector[2 * index], mRegExpMatchVector[2 * index + 1] - mRegExpMatchVector[2 * index]);
     }
     return rc;
 }
