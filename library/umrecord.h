@@ -49,7 +49,6 @@ public:
     virtual TCDLib    *InsertCDLib    (TCDLib *aCDLib, TCD *CD=NULL, bool aReplace = false);
     virtual TCDLib    *GetFirstCDLib (void) const           { return itsFirstCDLib; };
     virtual TCDLib    *GetLastCDLib  (void) const           { return itsLastCDLib; };
-    virtual void      PrintCD(void);
     virtual int       DelTreeCDLib        (void);
 
 protected:

@@ -327,7 +327,7 @@ int TCDLib::IsEqual( TCD* aCD, int aTagOccurrenceNumberOverride /*= -1*/ )
     // CDLib equals CD provided:
 
     // 1 - The tags are identical or aCD has a matching wildcard
-    char *tag = aCD->GetTag();
+    const char *tag = aCD->GetTag();
     if (tag[0] != '?' && tag[0] != itsTag[0])
         return 0;
     if (tag[0] != '\0')
@@ -348,7 +348,7 @@ int TCDLib::IsEqual( TCD* aCD, int aTagOccurrenceNumberOverride /*= -1*/ )
 
     // 2 - Subfield isn't specified or is identical or aCD has 
     // a matching wildcard
-    char *subfield = aCD->GetSubfield();
+    const char *subfield = aCD->GetSubfield();
     if (*subfield)
     {
         if ((subfield[0] != '?' && subfield[0] != itsSubfield[0]) ||

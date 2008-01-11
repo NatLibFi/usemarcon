@@ -71,12 +71,12 @@ public:
 
     bool operator == (const char *s)
     {
-        return strcmp(m_str, s) == 0;
+        return strcmp(m_str ? m_str : "", s ? s : "") == 0;
     }
 
     bool operator == (typestr & t)
     {
-        return strcmp(m_str, t.str()) == 0;
+        return strcmp(m_str ? m_str : "", t.str() ? t.str() : "") == 0;
     }
 
     typestr & operator + (const typestr & t)

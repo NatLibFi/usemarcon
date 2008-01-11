@@ -22,8 +22,6 @@
 #define FIRST_INDICATOR     "I1"
 #define SECOND_INDICATOR    "I2"
 
-extern int debug_umrecord;
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // TUMRecord
@@ -236,12 +234,6 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
     if (RuleFile)
         RuleFile->GetEvaluateRule()->SortRecord(this);
 
-    if (debug_umrecord)
-    {
-        printf("Dans FromCD :\n");
-        PrintCD();
-    }
-
     // On recherche le CD de tag '000', pour remplir le label
     CD.SetTag("000");
     TCDLib* Search=(TCDLib*)itsFirstCDLib;
@@ -435,7 +427,7 @@ bool TUMRecord::NextCD(TCDLib **CDLib, TCD *CD)
     // Check if a field with this code exists at all, unless a wildcard is used
     if (!CD->TagContainsWildcard())
     {
-        char *cdtag = CD->GetTag();
+        const char *cdtag = CD->GetTag();
         long tagnum = atol(cdtag);
         if (tagnum == 0 && (cdtag[0] != '0' || cdtag[1] != '0' || cdtag[2] != '0'))
             tagnum = -1;
@@ -721,19 +713,6 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
                 itsLastCDLib->SetSubOccurrenceNumber(sub_occurrence);
         }
         return itsLastCDLib;
-    }
-}
-
-void TUMRecord::PrintCD()
-{
-    TCDLib* Courant=itsFirstCDLib;
-    while (Courant)
-    {
-        printf("%-3s(%d)%-2s[%d]\t{%d}\t<%s>\n",
-            Courant->GetTag(), Courant->GetTagOccurrenceNumber(),
-            Courant->GetSubfield(), Courant->GetSubOccurrenceNumber(),
-            Courant->GetOccurrenceNumber(), Courant->GetContent().str());
-        Courant=(TCDLib*)Courant->GetNext();
     }
 }
 

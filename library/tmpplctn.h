@@ -61,7 +61,7 @@ public:
     virtual TTransDoc     *GetTransDoc(void) { return itsTransDoc; };
     TRuleDoc              *itsRuleDoc;
     TError                *GetErrorHandler(void);
-    int                   GetDebugRule(void) { return itsDebugRule; }
+    bool                  GetDebugRule(void) { return itsDebugRule; }
     unsigned long         GetOrdinal(void) { return itsOrdinal; }
     bool                  GetUTF8Mode(void) { return itsUTF8Mode; }
     bool                  GetConvertInFieldOrder(void) { return itsConvertInFieldOrder; }
@@ -82,7 +82,7 @@ private:
     TError                *itsErrorHandler;
     double                itsSize;
     long                  itsRecordsProcessed;
-    int                   itsDebugRule;
+    bool                  itsDebugRule;
     unsigned long         itsOrdinal;
     bool                  itsUpdateOrdinal;
     bool                  itsUTF8Mode;

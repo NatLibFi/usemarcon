@@ -26,8 +26,6 @@ TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
 : TFile(FileSpec, Application->GetErrorHandler())
 {
     itsFirstRule        = NULL;
-    itsLastInputCD      = NULL;
-    itsLastOutputCD     = NULL;
     itsFirstCodedData   = NULL;
     itsLastCodedData    = NULL;
     itsFirstStringTable = NULL;
@@ -36,6 +34,7 @@ TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
     itsDocument         = NULL;
     itsApplication      = Application;
     itsErrorHandler     = Application->GetErrorHandler();
+    mRulesDisabled      = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,8 +51,6 @@ TRuleFile::~TRuleFile()
     DelTreeCodedData();
     DelTreeStringTable();
     DelTreeMacros();
-    if (itsLastInputCD) { delete itsLastInputCD;    itsLastInputCD  = NULL; }
-    if (itsLastOutputCD)    { delete itsLastOutputCD;   itsLastOutputCD = NULL; }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,8 +64,6 @@ int TRuleFile::CloseRuleFile()
     DelTreeRule();
     DelTreeCodedData();
     DelTreeStringTable();
-    if (itsLastInputCD) { delete itsLastInputCD;    itsLastInputCD  = NULL; }
-    if (itsLastOutputCD)    { delete itsLastOutputCD;   itsLastOutputCD = NULL; }
     return 0;
 }
 
@@ -100,17 +95,22 @@ int TRuleFile::OpenRuleFile()
     itsDocument = new TRuleDoc(itsApplication);
 
     // Load the rule on into a Rule memory tree
-    CurrentRule = new TRule(NULL, NULL, itsErrorHandler);
+    CurrentRule = new TRule(itsErrorHandler);
     if (!CurrentRule)
         return itsErrorHandler->SetError(5501,ERROR);
     CurrentRule->SetPreviousRule(NULL);
     itsFirstRule = CurrentRule;
     IsRuleAnalysed = false;
     StringTable *current_macro = NULL;
+    TCD* lastInputCD = NULL;
+    TCD* lastOutputCD = NULL;
+    typestr block;
     while (!NextLine(&RuleLine,&IncludedFileSpec,&Line)) // Read a Line from the Rule File
     {
-        char *p = strstr(RuleLine.str(), "#define macro ");
-        if (p)
+        char *p = RuleLine.str();
+        while (*p == ' ' || *p == '\t')
+            ++p;
+        if (strncmp(p, "#define macro ", 14) == 0)
         {
             p += 14;
             typestr src;
@@ -119,8 +119,8 @@ int TRuleFile::OpenRuleFile()
             {
                 typestr error;
                 error.allocstr(strlen(IncludedFileSpec.str()) + strlen(RuleLine.str()) + 100);
-                sprintf(error.str(), "in file '%s' at line %d :\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
-                return  itsErrorHandler->SetErrorD(5100, ERROR, error.str());
+                sprintf(error.str(), "in file '%s' at line %d:\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
+                return itsErrorHandler->SetErrorD(5100, ERROR, error.str());
             }
             if (!current_macro)
             {
@@ -136,6 +136,38 @@ int TRuleFile::OpenRuleFile()
             current_macro->m_dst = dst;
             continue;
         }
+        else if (strncmp(p, "#define version ", 16) == 0)
+        {
+            int version = atoi(p + 16);
+            if (version == 0 || version > RULE_VERSION)
+            {
+                typestr error;
+                char tmp[30];
+                error = "File: ";
+                error += IncludedFileSpec.str();
+                error += ", line ";
+                sprintf(tmp, "%ld", Line);
+                error += tmp;
+                error += ". Supported rule version: ";
+                sprintf(tmp, "%ld", RULE_VERSION);
+                error += tmp;
+                if (version > 0)
+                {
+                    error += ", required rule version: ";
+                    error += (p + 16);
+                }
+                error += ". ";
+
+                return itsErrorHandler->SetErrorD(version == 0 ? 5050 : 5051, ERROR, error.str());
+            }
+            continue;
+        }
+        else if (strncmp(p, "#block ", 7) == 0)
+        {
+            p += 7;
+            block = p;
+            continue;
+        }
 
         // Apply macros
         StringTable *macro = itsMacros;
@@ -148,25 +180,21 @@ int TRuleFile::OpenRuleFile()
         if (IsRuleAnalysed && HasPipes(RuleLine.str()))
         {
             // This is a new rule to process
-            if (itsLastInputCD) { delete itsLastInputCD;    itsLastInputCD  = NULL; }
-            if (CurrentRule->GetInputCD())
-                itsLastInputCD = new TCD(CurrentRule->GetInputCD());
-            if (itsLastOutputCD)    { delete itsLastOutputCD;   itsLastOutputCD = NULL; }
-            if (CurrentRule->GetOutputCD())
-                itsLastOutputCD = new TCD(CurrentRule->GetOutputCD());
-            CurrentRule->SetNextRule(new TRule(itsLastInputCD,itsLastOutputCD,itsErrorHandler)); // Memory loading passed
+            lastInputCD = CurrentRule->GetInputCD();
+            lastOutputCD = CurrentRule->GetOutputCD();
+            CurrentRule->SetNextRule(new TRule(itsErrorHandler)); 
             if (!CurrentRule->GetNextRule())
             {
                 typestr Illustration;
                 Illustration.allocstr(strlen(IncludedFileSpec.str()) + strlen(RuleLine.str()) + 100);
-                sprintf(Illustration.str(), "in file '%s' at line %d :\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
+                sprintf(Illustration.str(), "in file '%s' at line %d:\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
                 return  itsErrorHandler->SetErrorD(5501,ERROR,Illustration.str());
             }
             CurrentRule->GetNextRule()->SetPreviousRule(CurrentRule);
             CurrentRule = CurrentRule->GetNextRule();
         }
 
-        if ((Result=CurrentRule->FromString(RuleLine.str(), Line))<0) // Load Input and Output CDs in CDs
+        if ((Result=CurrentRule->FromString(RuleLine.str(), Line, lastInputCD, lastOutputCD))<0) // Load Input and Output CDs in CDs
             // Error on rule
         {
             typestr Illustration;
@@ -180,9 +208,12 @@ int TRuleFile::OpenRuleFile()
             //if (CurrentRule->GetLib())      { delete(CurrentRule->GetLib());        CurrentRule->SetLib(NULL);  }
             IsRuleAnalysed = false;
         }
-        else
-            if (Result>0)
-                IsRuleAnalysed = true;
+        else if (Result > 0)
+        {
+          IsRuleAnalysed = true;
+        }
+
+        CurrentRule->SetBlockName(block.str());
     }
     CurrentRule->SetNextRule(NULL);
 
@@ -204,31 +235,55 @@ int TRuleFile::OpenRuleFile()
 
 int TRuleFile::ConvertInRuleOrder( TUMRecord* In, TUMRecord* Out )
 {
-    TRule*  aRule=itsFirstRule;
-
     itsErrorHandler->Reset();
 
     itsEvaluateRule.Init_Evaluate_Rule(itsDocument, itsApplication->GetRuleDoc(),
         itsApplication->GetErrorHandler(), itsApplication->GetDebugRule(),
         itsApplication->GetOrdinal(), itsApplication->GetUTF8Mode());
 
-    // On parcourt chaque regle, et on en fait l'evaluation
-    while( aRule )
+    // Evaluate all rules
+    TRule* aRule = itsFirstRule;
+    while (aRule)
     {
         TCD *OutputCD = aRule->GetOutputCD();
+        bool change_block = false;
         if (aRule->GetInputCD()->TagContainsWildcard() || !OutputCD->TagIsWildcard())
         {
             if (OutputCD->GetIN())
             {
-                itsEvaluateRule.Evaluate_Rule(In, In, Out, aRule);
+                itsEvaluateRule.Evaluate_Rule(In, In, Out, aRule, change_block);
                 In->SortCD();
             }
             else
             {
-                itsEvaluateRule.Evaluate_Rule(In, Out, Out, aRule);
+                itsEvaluateRule.Evaluate_Rule(In, Out, Out, aRule, change_block);
             }
         }
-        aRule=aRule->GetNextRule();
+        if (change_block)
+        {
+            typestr next_block = itsEvaluateRule.GetNextBlockName();
+            typestr old_block = aRule->GetBlockName();
+            aRule = aRule->GetNextRule();
+            while (aRule)
+            {
+                typestr new_block = aRule->GetBlockName();
+                if (next_block.is_empty())
+                {
+                    if (!(new_block == old_block))
+                        break;
+                }
+                else
+                {
+                    if (new_block == next_block)
+                        break;
+                }
+                aRule = aRule->GetNextRule();
+            }
+        }
+        else
+        {
+            aRule = aRule->GetNextRule(); 
+        }
     }
 
     itsEvaluateRule.End_Evaluate_Rule();
@@ -236,7 +291,7 @@ int TRuleFile::ConvertInRuleOrder( TUMRecord* In, TUMRecord* Out )
     return itsErrorHandler->GetErrorCode();
 }
 
-int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
+int TRuleFile::ConvertInFieldOrder(TUMRecord* In, TUMRecord* Out)
 {
     itsErrorHandler->Reset();
 
@@ -244,16 +299,35 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
         itsApplication->GetErrorHandler(), itsApplication->GetDebugRule(),
         itsApplication->GetOrdinal(), itsApplication->GetUTF8Mode());
 
+
+    if (mRulesDisabled)
+    {
+        // Reset state
+        TRule* rule = itsFirstRule;
+        while (rule)
+        {
+            rule->SetDisabled(false);
+            rule = rule->GetNextRule();
+        }
+        mRulesDisabled = false;
+    }
+
     TCDLib* CDLIn=In->GetFirstCDLib();
     TCDLib* Last = In->GetLastCDLib();
     while (CDLIn)
     {
         bool can_match_tag_wildcard = true;
         bool can_match_subfield_wildcard = true;
-        TRule* aRule=itsFirstRule;
-        while(aRule)
+        TRule* rule = itsFirstRule;
+        while (rule)
         {
-            TCD *RuleCD = aRule->GetInputCD();
+            if (rule->GetDisabled())
+            {
+                rule = rule->GetNextRule();
+                continue;
+            }
+            TCD *RuleCD = rule->GetInputCD();
+            bool change_block = false;
             if (*CDLIn == *RuleCD)
             {
                 do // for easy exit only
@@ -268,7 +342,7 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
                             break;
                     }
 
-                    // If the rule contains wildcard, it's only accepted if non-wildcard
+                    // If the rule contains a wildcard, it's only accepted if non-wildcard
                     // rules for the field have not been processed already
                     if (RuleCD->TagContainsWildcard())
                     {
@@ -288,24 +362,51 @@ int TRuleFile::ConvertInFieldOrder( TUMRecord* In, TUMRecord* Out )
                     {
                         can_match_subfield_wildcard = false;
                     }
-                    if (RuleCD->TagContainsWildcard() || !aRule->GetOutputCD()->TagIsWildcard())
+                    if (RuleCD->TagContainsWildcard() || !rule->GetOutputCD()->TagIsWildcard())
                     {
-                        if (aRule->GetOutputCD()->GetIN())
+                        if (rule->GetOutputCD()->GetIN())
                         {
-                            itsEvaluateRule.Evaluate_Rule(In, In, Out, aRule, CDLIn);
+                            itsEvaluateRule.Evaluate_Rule(In, In, Out, rule, change_block, CDLIn);
                             // Only added fields can be sorted here, otherwise our
                             // processing order would be broken
                             In->PartialSort((TCDLib *) Last->GetNext());
                         }
                         else
                         {
-                            itsEvaluateRule.Evaluate_Rule(In, Out, Out, aRule, CDLIn);
+                            itsEvaluateRule.Evaluate_Rule(In, Out, Out, rule, change_block, CDLIn);
                         }
                     }
                 } 
                 while (false);
             }
-            aRule=aRule->GetNextRule();
+            if (change_block)
+            {
+                mRulesDisabled = true;
+                typestr next_block = itsEvaluateRule.GetNextBlockName();
+                typestr old_block = rule->GetBlockName();
+                rule->SetDisabled(true);
+                rule = rule->GetNextRule();
+                while (rule)
+                {
+                    typestr new_block = rule->GetBlockName();
+                    if (next_block.is_empty())
+                    {
+                        if (!(new_block == old_block))
+                            break;
+                    }
+                    else
+                    {
+                        if (new_block == next_block)
+                            break;
+                    }
+                    rule->SetDisabled(true);
+                    rule = rule->GetNextRule();
+                }
+            }
+            else
+            {
+                rule = rule->GetNextRule(); 
+            }
         }
 
         CDLIn = (TCDLib *)CDLIn->GetNext();

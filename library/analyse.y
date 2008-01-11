@@ -36,10 +36,11 @@ protected:
 
   TCD* mCDOut;
 
-  int debug_rule;
-  char tempo[1000];
-  bool RedoFlag;
-  unsigned long ordinal;
+  bool m_debug_rule;
+  bool mRedoFlag;
+  unsigned long m_ordinal;
+  bool mChangeBlock;
+  typestr mNextBlockName;
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
@@ -120,7 +121,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <code> PLUS MINUS MULTIPLY DIVIDE
 %token <code> EQ NE _IN GT LT GE LE
 %token <code> EXISTS EXISTSIN PRECEDES FOLLOWS INTABLE
-%token <code> CHECK AND OR NOT
+%token <code> CHECK AND OR NOT NEXTBLOCK
 %token <code> BY _STRICT AT BEGINING BEGINNING END BOTH 
 
 %token <inst> VARS VARD STRING NUMERIC
@@ -146,7 +147,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %%
 Program :
         Rules                   {
-                                  if (!RedoFlag)
+                                  if (!mRedoFlag)
                                   {
                                         FreeTypeInst(S);
                                         CopyInst(&S,$$);
@@ -199,7 +200,7 @@ Instruction :
 |       Translation
 |       REDO                    { PrintDebug("Redo");
                                   CopyInst(&$$,S);
-                                  RedoFlag=true;
+                                  mRedoFlag = true;
                                   CopyInst(&T,S);
                                 }
 ;
@@ -335,6 +336,19 @@ Condition :
         CHECK Boolean                   { PrintDebug("Condition");
                                           return ($2) ? 4 : 2;
                                         }
+|		NEXTBLOCK                       { PrintDebug("NextBlock");
+										  mChangeBlock = true;
+										  return 2;
+										}
+|		NEXTBLOCK '(' ')'               { PrintDebug("NextBlock");
+										  mChangeBlock = true;
+										  return 2;
+										}
+|		NEXTBLOCK '(' Translation ')'   { PrintDebug("NextBlock(...)");
+										  mChangeBlock = true;
+										  mNextBlockName = $3->str;
+										  return 2;
+										}
 ;
 
 
@@ -390,6 +404,7 @@ Translation :
                                           time(&ns);
                                           lt=localtime(&ns);
                                           $$=AllocTypeInst();
+                                          char tempo[10];
                                           sprintf(tempo,"%04d",1900+lt->tm_year);
                                           $$->str.str(tempo);
                                           $$->val=0;
@@ -400,6 +415,7 @@ Translation :
                                           time(&ns);
                                           lt=localtime(&ns);
                                           $$=AllocTypeInst();
+                                          char tempo[10];
                                           sprintf(tempo,"%02d",lt->tm_mon+1);
                                           $$->str.str(tempo);
                                           $$->val=0;
@@ -410,6 +426,7 @@ Translation :
                                           time(&ns);
                                           lt=localtime(&ns);
                                           $$=AllocTypeInst();
+                                          char tempo[10];
                                           sprintf(tempo,"%02d",lt->tm_mday);
                                           $$->str.str(tempo);
                                           $$->val=0;
@@ -420,6 +437,7 @@ Translation :
                                           time(&ns);
                                           lt=localtime(&ns);
                                           $$=AllocTypeInst();
+                                          char tempo[10];
                                           sprintf(tempo,"%02d",lt->tm_hour);
                                           $$->str.str(tempo);
                                           $$->val=0;
@@ -430,6 +448,7 @@ Translation :
                                           time(&ns);
                                           lt=localtime(&ns);
                                           $$=AllocTypeInst();
+                                          char tempo[10];
                                           sprintf(tempo,"%02d",lt->tm_min);
                                           $$->str.str(tempo);
                                           $$->val=0;
@@ -440,20 +459,19 @@ Translation :
                                           time(&ns);
                                           lt=localtime(&ns);
                                           $$=AllocTypeInst();
+                                          char tempo[10];
                                           sprintf(tempo,"%02d",lt->tm_sec);
                                           $$->str.str(tempo);
                                           $$->val=0;
                                         }
 |       ORDINAL '(' Translation ')'     {
-                                          int i,j;
-                                          char tmp1[20];
                                           $$=AllocTypeInst();
-                                          sprintf(tmp1,"%d",ordinal);
-                                          for (j=0,i=strlen(tmp1);i<$3->val;++i,++j)
-                                           tempo[j]='0';
-                                          strcpy(&tempo[j],tmp1);
-                                          $$->str.str(tempo);
-                                          $$->val=0;
+                                          char tmp1[20];
+                                          sprintf(tmp1, "%d", m_ordinal);
+                                          for (int i = strlen(tmp1); i < $3->val; ++i)
+                                            $$->str.append_char('0');
+                                          $$->str.append(tmp1);
+                                          $$->val = 0;
                                           FreeTypeInst($3);
                                           $3=NULL;
                                         }

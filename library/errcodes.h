@@ -7,7 +7,7 @@ typedef struct
     const char *description;
 } ERRORDESC;
 
-const int ErrorDescCount = 88;
+const int ErrorDescCount = 90;
 
 const ERRORDESC ErrorDesc[ErrorDescCount] = {
     // Messages during reading of the input file
@@ -52,11 +52,13 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     
     // Messages during rule analysis or conversion
     {5000, "Memory allocation error"},
-    {5001, "The selected rule file does not exist"},
+    {5001, "The rule file does not exist"},
     {5002, "While loop maximum count exceeded - check condition validity"},
     {5004, "Only one indicator has been found"},
     {5005, "Content of indicator is too long (>1)"},
     {5006, "Found a field with no content (possibly a control field treated as a data field)"},
+    {5050, "Unable to parse version number (expected a number)"},
+    {5051, "Rule file requires higher version than supported"},
     {5100, "Rule analysis error"},
     {5101, "A CDOut like TTT(no)... has an invalid subfield occurrence number (no, nso or nto)"},
     {5102, "A CDOut like ...SS(no) has an invalid field occurrence number (no, nso or nto)"},

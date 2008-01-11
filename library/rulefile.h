@@ -61,8 +61,6 @@ protected:
 
     TRuleDoc              *itsDocument;
     TRule                 *itsFirstRule;
-    TCD                   *itsLastInputCD;
-    TCD                   *itsLastOutputCD;
     TCodedData            *itsFirstCodedData;
     TCodedData            *itsLastCodedData;
     StringTable           *itsFirstStringTable;
@@ -75,5 +73,7 @@ private:
     TUMApplication        *itsApplication;
 
     TError                *ErrorHandler;
+
+    bool                  mRulesDisabled;
 };
 #endif

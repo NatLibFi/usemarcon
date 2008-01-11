@@ -21,16 +21,15 @@
 // TRule
 //
 ///////////////////////////////////////////////////////////////////////////////
-TRule::TRule(TCD *LastInputCD, TCD *LastOutputCD, TError *ErrorHandler)
+TRule::TRule(TError *ErrorHandler)
 {
-    itsInputCD      = NULL;
-    itsOutputCD     = NULL;
-    itsNextRule     = NULL;
-    itsPreviousRule = NULL;
-    itsLastInputCD      = LastInputCD;
-    itsLastOutputCD = LastOutputCD;
-    itsErrorHandler = ErrorHandler;
+    mInputCD      = NULL;
+    mOutputCD     = NULL;
+    mNextRule     = NULL;
+    mPreviousRule = NULL;
+    mErrorHandler = ErrorHandler;
     mLine = 0;
+    mDisabled = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,28 +39,26 @@ TRule::TRule(TCD *LastInputCD, TCD *LastOutputCD, TError *ErrorHandler)
 ///////////////////////////////////////////////////////////////////////////////
 TRule::TRule(TRule *aRule)
 {
-    itsInputCD          = new TCD(aRule->GetInputCD());
-    itsOutputCD     = new TCD(aRule->GetOutputCD());
+    mInputCD          = new TCD(aRule->GetInputCD());
+    mOutputCD     = new TCD(aRule->GetOutputCD());
     SetLib(aRule->GetLib());
-    itsNextRule     = aRule->GetNextRule();
-    itsPreviousRule = aRule->GetPreviousRule();
-    itsLastInputCD      = aRule->itsLastInputCD;
-    itsLastOutputCD = aRule->itsLastOutputCD;
-    itsErrorHandler = aRule->itsErrorHandler;
+    mNextRule     = aRule->GetNextRule();
+    mPreviousRule = aRule->GetPreviousRule();
+    mErrorHandler = aRule->mErrorHandler;
     mLine = aRule->mLine;
+    mDisabled = aRule->mDisabled;
 }
 
 TRule::TRule(TRule *aRule, const char* aRuleStr)
 {
-    itsInputCD          = new TCD(aRule->GetInputCD());
-    itsOutputCD     = new TCD(aRule->GetOutputCD());
+    mInputCD          = new TCD(aRule->GetInputCD());
+    mOutputCD     = new TCD(aRule->GetOutputCD());
     SetLib(aRuleStr);
-    itsNextRule     = aRule->GetNextRule();
-    itsPreviousRule = aRule->GetPreviousRule();
-    itsLastInputCD      = aRule->itsLastInputCD;
-    itsLastOutputCD = aRule->itsLastOutputCD;
-    itsErrorHandler = aRule->itsErrorHandler;
+    mNextRule     = aRule->GetNextRule();
+    mPreviousRule = aRule->GetPreviousRule();
+    mErrorHandler = aRule->mErrorHandler;
     mLine = aRule->mLine;
+    mDisabled = aRule->mDisabled;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,8 +68,8 @@ TRule::TRule(TRule *aRule, const char* aRuleStr)
 ///////////////////////////////////////////////////////////////////////////////
 TRule::~TRule()
 {
-    if (itsInputCD) { delete itsInputCD;    itsInputCD  = NULL; }
-    if(itsOutputCD) { delete itsOutputCD;   itsOutputCD = NULL; }
+    if (mInputCD) { delete mInputCD; mInputCD  = NULL; }
+    if (mOutputCD) { delete mOutputCD; mOutputCD = NULL; }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,17 +92,17 @@ int TRule::SetLib(const char *aLib)
         c = strchr(lib.str(), '\t');
     }
 
-    if (!itsLib.is_empty())
+    if (!mLib.is_empty())
     {
-        itsLib.append_char('\n');
-        itsLib.append(lib.str());
+        mLib.append_char('\n');
+        mLib.append(lib.str());
     }
     else
     {
-        itsLib = lib;
+        mLib = lib;
     }
-    if (!itsLib.str())
-        return itsErrorHandler->SetError(5502,ERROR);
+    if (!mLib.str())
+        return mErrorHandler->SetError(5502,ERROR);
     return 0;
 }
 
@@ -114,7 +111,7 @@ int TRule::SetLib(const char *aLib)
 // FromString
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TRule::FromString(char *aString, int aLine)
+int TRule::FromString(char *aString, int aLine, const TCD* aDefaultInputCD, const TCD* aDefaultOutputCD)
 {
     int ReturnCode;
 
@@ -157,22 +154,22 @@ int TRule::FromString(char *aString, int aLine)
         if (!cdin.is_empty())
         {
             // CDIn is specified
-            itsInputCD = new TCD(itsErrorHandler);
-            if (!itsInputCD)
+            mInputCD = new TCD(mErrorHandler);
+            if (!mInputCD)
                 return -5504;
-            if ((ReturnCode = itsInputCD->FromString(cdin.str(), itsLastInputCD, INPUT)) != 0)
+            if ((ReturnCode = mInputCD->FromString(cdin.str(), aDefaultInputCD, INPUT)) != 0)
                 return -ReturnCode;
         }
     }
     if (firstPipe)
     {
-        if (!itsInputCD)
+        if (!mInputCD)
         {
             // No input CD
-            itsInputCD = new TCD(itsErrorHandler);
-            if (!itsInputCD)
+            mInputCD = new TCD(mErrorHandler);
+            if (!mInputCD)
                 return -5504;
-            if ((ReturnCode = itsInputCD->FromString("", itsLastInputCD, INPUT)) != 0)
+            if ((ReturnCode = mInputCD->FromString("", aDefaultInputCD, INPUT)) != 0)
                 return -ReturnCode;
         }
         char* p_end;
@@ -190,10 +187,10 @@ int TRule::FromString(char *aString, int aLine)
         cdout.str(p, p_end - p);
         cdout.replace(" ", "");
 
-        itsOutputCD = new TCD(itsErrorHandler);
-        if (!itsOutputCD)
+        mOutputCD = new TCD(mErrorHandler);
+        if (!mOutputCD)
             return -5504;
-        if ((ReturnCode = itsOutputCD->FromString(cdout.str(), itsLastOutputCD, OUTPUT)) != 0)
+        if ((ReturnCode = mOutputCD->FromString(cdout.str(), aDefaultOutputCD, OUTPUT)) != 0)
             return -ReturnCode;
     }
     
@@ -223,17 +220,17 @@ bool TRule::ToString(typestr & a_string)
 {
     a_string = "";
 
-    if ((!itsInputCD) || (!itsOutputCD))
+    if ((!mInputCD) || (!mOutputCD))
         return false;
 
     typestr tmp;
-    if (!itsInputCD->ToString(tmp, INPUT))
+    if (!mInputCD->ToString(tmp, INPUT))
         // Absence du Tag d'entrȨe
         return false;
     a_string += tmp;
     a_string += " | ";
     
-    if (!itsOutputCD->ToString(tmp, OUTPUT))
+    if (!mOutputCD->ToString(tmp, OUTPUT))
         // Absence du Tag de sortie
         return false;
     a_string += tmp;
@@ -242,9 +239,9 @@ bool TRule::ToString(typestr & a_string)
 
     a_string += " | ";
 
-    if (itsLib.str())
+    if (mLib.str())
     {
-        a_string += itsLib;
+        a_string += mLib;
         a_string.replace("\n", "                             ");
     }
     return true;

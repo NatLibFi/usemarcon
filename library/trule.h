@@ -35,40 +35,44 @@ AUTHOR
 class TRule
 {
 public:
-    TRule           (TCD *LastInputCD, TCD *LastOutputCD, TError *ErrorHandler);
+    TRule           (TError *ErrorHandler);
     TRule           (TRule *aRule);
     TRule           (TRule *aRule, const char* aRuleStr);
     virtual ~TRule  ();
 
-    int   FromString      (char *aString, int aLine);
-    bool  ToString      (typestr & a_string);
-    void  ResetLib        (void)              { itsLib.freestr(); };
+    int   FromString      (char *aString, int aLine, const TCD* aDefaultInputCD, const TCD* aDefaultOutputCD);
+    bool  ToString        (typestr & a_string);
+    void  ResetLib        (void)              { mLib.freestr(); }
 
-    inline TCD   *GetInputCD     (void)              { return itsInputCD; };
-    inline TCD   *GetOutputCD    (void)              { return itsOutputCD; };
-    inline char  *GetLib         (void)              { return itsLib.str(); };
-    inline TRule *GetNextRule    (void)              { return itsNextRule; };
-    inline TRule *GetPreviousRule(void)              { return itsPreviousRule; };
+    inline TCD   *GetInputCD     (void)         { return mInputCD; }
+    inline TCD   *GetOutputCD    (void)         { return mOutputCD; }
+    inline char  *GetLib         (void)         { return mLib.str(); }
+    inline TRule *GetNextRule    (void)         { return mNextRule; }
+    inline TRule *GetPreviousRule(void)         { return mPreviousRule; }
+    inline char  *GetBlockName   (void)         { return mBlockName.str(); }
+    inline bool  GetDisabled     (void)         { return mDisabled; }
 
-    int   SetInputCD      (TCD* aCD)          { itsInputCD=aCD; return 0; };
-    int   SetOutputCD     (TCD *aCD)          { itsOutputCD=aCD; return 0; };
+    void  SetInputCD      (TCD* aCD)            { mInputCD=aCD; }
+    void  SetOutputCD     (TCD *aCD)            { mOutputCD=aCD; }
     int   SetLib          (const char *aLib);
-    int   SetNextRule     (TRule *NextRule)   { itsNextRule=NextRule; return 0; };
-    int   SetPreviousRule (TRule *PreviousRule)   { itsPreviousRule=PreviousRule; return 0; };
+    void  SetNextRule     (TRule *NextRule)     { mNextRule=NextRule; }
+    void  SetPreviousRule (TRule *PreviousRule) { mPreviousRule = PreviousRule; }
+    void  SetBlockName    (const char *aLib)    { mBlockName = aLib; }
+    void  SetDisabled     (bool aValue)         { mDisabled = aValue; }
 
     int   GetLineNo() { return mLine; }
 
 protected:
-    TCD           *itsInputCD;
-    TCD           *itsOutputCD;
-    TCD           *itsLastInputCD;
-    TCD           *itsLastOutputCD;
-    typestr       itsLib;
-    TRule         *itsNextRule;
-    TRule         *itsPreviousRule;
+    TCD           *mInputCD;
+    TCD           *mOutputCD;
+    typestr       mLib;
+    TRule         *mNextRule;
+    TRule         *mPreviousRule;
     int           mLine;
-
-    TError        *itsErrorHandler;
+    typestr       mBlockName;
+    bool          mDisabled;
+    
+    TError        *mErrorHandler;
 };
 
 #endif

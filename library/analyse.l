@@ -153,6 +153,7 @@ D                       return MarcParser::VARD;
 [M|m]ove[A|a]fter       return MarcParser::MOVEAFTER;
 [M|m]ove[F|f]irst       return MarcParser::MOVEFIRST;
 [M|m]ove[L|l]ast        return MarcParser::MOVELAST;
+[N|n]ext[B|b]lock       return MarcParser::NEXTBLOCK;
 {blancs}                        ;
 .                       lex_error = true;
 %%

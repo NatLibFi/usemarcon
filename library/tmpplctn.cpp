@@ -22,8 +22,6 @@
 #include "tmpplctn.h"
 #include "truledoc.h"
 
-int debug_umrecord;
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Application class constructor
@@ -45,7 +43,7 @@ TUMApplication::TUMApplication(void) /*: CApplication()*/
     itsSize         = 0;
     itsRecordsProcessed = 0L;
 
-    itsDebugRule    = 0;
+    itsDebugRule    = false;
     itsOrdinal      = 0L;
     itsUpdateOrdinal = false;
     itsUTF8Mode     = false;
@@ -150,8 +148,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     if (m_interactive)
         printf("Loading .ini file parameters...\n");
 
-    debug_umrecord=0;
-    itsDebugRule=0;
+    itsDebugRule = false;
 
     get_ini_string("DEFAULT_STATES","IsVerboseExecutionModeChecked","",inistr,itsIniFile.str());
     if (!strcasecmp(inistr.str(),"true") || m_forceVerbose) 
@@ -174,9 +171,9 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
 
     get_ini_string("DEBUG","IsDebugExecutionModeChecked","",inistr,itsIniFile.str());
     if (!strcasecmp(inistr.str(),"true")) {
-        itsDebugRule = 1;
+        itsDebugRule = true;
     } else {
-        itsDebugRule = 0;
+        itsDebugRule = false;
     }
 
     // Initialize itsRuleDoc

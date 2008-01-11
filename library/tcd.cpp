@@ -175,7 +175,7 @@ void TCD::SetFixedPos(char *String)
 // FromString
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TCD::FromString(char *aString, TCD *Last, int InputOrOutput)
+int TCD::FromString(char *aString, const TCD *Last, int InputOrOutput)
 {
     int MaxPos,
         CurrentPos,
@@ -409,7 +409,7 @@ bool TCD::ToString(typestr & a_string, int InputOrOutput)
     default    : sprintf(szOccTag,"(%d)",Occurrence);   break;
     }
 
-    char *subfield = GetSubfield();
+    const char *subfield = GetSubfield();
     if (*subfield)
     {
         // [(n2)]

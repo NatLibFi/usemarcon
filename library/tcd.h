@@ -48,19 +48,19 @@ public:
     TCD             (TypeCD*, TError *ErrorHandler);
     virtual ~TCD    ();
 
-    int   FromString      (char *aString, TCD *Last, int InputOrOutput);
+    int   FromString      (char *aString, const TCD *Last, int InputOrOutput);
     bool  ToString        (typestr & a_string, int InputOrOutput);
 
-    TCD   *GetPrevious            (void)      { return itsPrevious; };
-    TCD   *GetNext                (void)      { return itsNext; };
-    char  *GetTag                 (void)      { return itsTag; };
-    char  *GetSubfield            (void)      { return itsSubfield; };
-    int   GetOccurrenceNumber     (void)      { return itsOccurrenceNumber; };
-    int   GetTagOccurrenceNumber  (void)      { return itsTagOccurrenceNumber; };
-    int   GetSubOccurrenceNumber  (void)      { return itsSubOccurrenceNumber; };
-    int   GetBeginning            (void)      { return itsBeginning; };
-    int   GetEnd                  (void)      { return itsEnd; };
-    int   GetIN                   ()      { return _IN; };
+    TCD *GetPrevious              (void) const { return itsPrevious; };
+    TCD *GetNext                  (void) const { return itsNext; };
+    const char *GetTag            (void) const { return itsTag; };
+    const char *GetSubfield       (void) const { return itsSubfield; };
+    int   GetOccurrenceNumber     (void) const { return itsOccurrenceNumber; };
+    int   GetTagOccurrenceNumber  (void) const { return itsTagOccurrenceNumber; };
+    int   GetSubOccurrenceNumber  (void) const { return itsSubOccurrenceNumber; };
+    int   GetBeginning            (void) const { return itsBeginning; };
+    int   GetEnd                  (void) const { return itsEnd; };
+    int   GetIN                   (void) const { return _IN; };
 
     void  SetPrevious             (TCD *aCD)                  { itsPrevious=aCD; };
     void  SetNext                 (TCD *aCD)                  { itsNext=aCD; };

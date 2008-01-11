@@ -49,40 +49,40 @@ class TCDLib;
 class TMarcScannerImpl : public yyFlexLexer
 {
 private:
-    long itsBufferLen;
-    long itsBufferPos;
-    char *itsBuffer;
-    bool itsFirstTime;
+    long mBufferLen;
+    long mBufferPos;
+    char *mBuffer;
+    bool mFirstTime;
     MemoryPool *m_allocator;
     int mLine;
 
 protected:
     virtual int LexerInput(char *buf,int max_size);
 public:
-    TMarcScannerImpl() : itsBufferLen(0), itsBufferPos(0), itsBuffer(NULL), itsFirstTime(true), mLine(0)
+    TMarcScannerImpl() : mBufferLen(0), mBufferPos(0), mBuffer(NULL), mFirstTime(true), mLine(0)
     {
     }
     ~TMarcScannerImpl()
     {
-        if (itsBuffer)
-            free(itsBuffer);
+        if (mBuffer)
+            free(mBuffer);
     }
 
     void SetRule(TRule *Rule);
     void RewindBuffer();
     void SetAllocator(MemoryPool *mp) { m_allocator = mp; }
-    const char *getCurrentLineContents() { return itsBuffer ? itsBuffer : ""; }
+    const char *getCurrentLineContents() { return mBuffer ? mBuffer : ""; }
     int getCurrentLineNo() { return mLine; }
 };
 
 class TEvaluateRule : public MarcParser
 {
 public:
-    TEvaluateRule       () : ListSort(NULL), RedoStr(NULL), MainInput(NULL), AfterRedo(0), 
+    TEvaluateRule       () : mListSort(NULL), mRedoStr(NULL), mMainInput(NULL), mAfterRedo(0), 
         mRegExpResult(0)
     {
-        debug_rule = 0;
-        itsScanner.SetAllocator(&m_allocator);
+        m_debug_rule = false;
+        mScanner.SetAllocator(&m_allocator);
         mParserInnerRegExp.init("([Ii]f|[Ww]hile|[Ff]or|[Ww]ith)[\\s\\(]", false);
         mParserInnerBracketRegExp.init("^\\s*{+\\s*([\\x00-\\xff]*)\\s*}\\s*$", false, true);
     }
@@ -92,28 +92,30 @@ public:
     }
 
     int   Init_Evaluate_Rule(void *Doc,TRuleDoc *RDoc,TError *ErrorHandler,
-            int dbg_rule, unsigned long ord, bool UTF8Mode);
-    int   Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealOut, TRule* Rule, TCDLib *ProcessCDL = NULL);
+            bool dbg_rule, unsigned long ord, bool UTF8Mode);
+    int   Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealOut, TRule* Rule, bool & aChangeBlock, TCDLib *ProcessCDL = NULL);
     int   End_Evaluate_Rule();
 
     int   SortRecord(TUMRecord* aRecord);
+
+    const char* GetNextBlockName() { return mNextBlockName.str(); }
 
     virtual int yylex();
     virtual void yyerror(char *m);
 
 private:
-    TMarcScannerImpl itsScanner;
+    TMarcScannerImpl mScanner;
 
     MemoryPool m_allocator;
 
-    TUMRecord* InputRecord, *OutputRecord, *RealOutputRecord;
-    TCDLib*    InputCDL;
-    TRule*     CurrentRule;
-    TRuleDoc*  RuleDoc;
-    SortElem*  ListSort;
-    SortElem*  LastSort;
-    TError*    itsErrorHandler;
-    bool       itsUTF8Mode;
+    TUMRecord* mInputRecord, *mOutputRecord, *mRealOutputRecord;
+    TCDLib*    mInputCDL;
+    TRule*     mCurrentRule;
+    TRuleDoc*  mRuleDoc;
+    SortElem*  mListSort;
+    SortElem*  mLastSort;
+    TError*    mErrorHandler;
+    bool       mUTF8Mode;
 
     RegExp     mParserInnerRegExp;
     RegExp     mParserInnerBracketRegExp;
@@ -122,11 +124,11 @@ private:
     int        mRegExpMatchVector[30];
     int        mRegExpResult;
 
-    int Eval;
-    int Error;
-    char *RedoStr;
-    char *MainInput;
-    int AfterRedo;
+    int mEval;
+    int mError;
+    char *mRedoStr;
+    char *mMainInput;
+    int mAfterRedo;
     
     virtual int Precedes(TypeCD *, TypeCD *);
     virtual int Exists(TypeCD *);
