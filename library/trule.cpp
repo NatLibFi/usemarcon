@@ -29,7 +29,7 @@ TRule::TRule(TError *ErrorHandler)
     mPreviousRule = NULL;
     mErrorHandler = ErrorHandler;
     mLine = 0;
-    mDisabled = false;
+    mConditionGroup = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,8 @@ TRule::TRule(TRule *aRule)
     mPreviousRule = aRule->GetPreviousRule();
     mErrorHandler = aRule->mErrorHandler;
     mLine = aRule->mLine;
-    mDisabled = aRule->mDisabled;
+    mCondition = aRule->mCondition;
+    mConditionGroup = aRule->mConditionGroup;
 }
 
 TRule::TRule(TRule *aRule, const char* aRuleStr)
@@ -58,7 +59,8 @@ TRule::TRule(TRule *aRule, const char* aRuleStr)
     mPreviousRule = aRule->GetPreviousRule();
     mErrorHandler = aRule->mErrorHandler;
     mLine = aRule->mLine;
-    mDisabled = aRule->mDisabled;
+    mCondition = aRule->mCondition;
+    mConditionGroup = aRule->mConditionGroup;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

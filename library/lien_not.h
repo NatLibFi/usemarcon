@@ -93,12 +93,11 @@ public:
 
     int   Init_Evaluate_Rule(void *Doc,TRuleDoc *RDoc,TError *ErrorHandler,
             bool dbg_rule, unsigned long ord, bool UTF8Mode);
-    int   Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealOut, TRule* Rule, bool & aChangeBlock, TCDLib *ProcessCDL = NULL);
+    int   Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealOut, TRule* Rule, TCDLib* ProcessCDL = NULL);
+    int   TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLIn, TRule* aRule, bool & aPassed);
     int   End_Evaluate_Rule();
 
     int   SortRecord(TUMRecord* aRecord);
-
-    const char* GetNextBlockName() { return mNextBlockName.str(); }
 
     virtual int yylex();
     virtual void yyerror(char *m);

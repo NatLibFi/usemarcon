@@ -34,7 +34,6 @@ TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
     itsDocument         = NULL;
     itsApplication      = Application;
     itsErrorHandler     = Application->GetErrorHandler();
-    mRulesDisabled      = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,7 +103,10 @@ int TRuleFile::OpenRuleFile()
     StringTable *current_macro = NULL;
     TCD* lastInputCD = NULL;
     TCD* lastOutputCD = NULL;
-    typestr block;
+    typestr condition;
+    int condition_count = 0;
+    int condition_group = 0;
+    bool reset_condition = false;
     while (!NextLine(&RuleLine,&IncludedFileSpec,&Line)) // Read a Line from the Rule File
     {
         char *p = RuleLine.str();
@@ -113,6 +115,8 @@ int TRuleFile::OpenRuleFile()
         if (strncmp(p, "#define macro ", 14) == 0)
         {
             p += 14;
+            while (*p == ' ' || *p == '\t') 
+                ++p;
             typestr src;
             typestr dst;
             if (!StringTable::parse_line(p, src, dst))
@@ -138,7 +142,10 @@ int TRuleFile::OpenRuleFile()
         }
         else if (strncmp(p, "#define version ", 16) == 0)
         {
-            int version = atoi(p + 16);
+            p += 16;
+            while (*p == ' ' || *p == '\t') 
+                ++p;
+            int version = atoi(p);
             if (version == 0 || version > RULE_VERSION)
             {
                 typestr error;
@@ -154,7 +161,7 @@ int TRuleFile::OpenRuleFile()
                 if (version > 0)
                 {
                     error += ", required rule version: ";
-                    error += (p + 16);
+                    error += (p);
                 }
                 error += ". ";
 
@@ -162,10 +169,19 @@ int TRuleFile::OpenRuleFile()
             }
             continue;
         }
-        else if (strncmp(p, "#block ", 7) == 0)
+        else if (strncmp(p, "#if ", 4) == 0)
         {
-            p += 7;
-            block = p;
+            p += 4;
+            while (*p == ' ' || *p == '\t') 
+                ++p;
+            condition = p;
+            condition_group = ++condition_count;
+            reset_condition = false;
+            continue;
+        }
+        else if (strncmp(p, "#endif", 7) == 0)
+        {
+            reset_condition = true;
             continue;
         }
 
@@ -180,6 +196,12 @@ int TRuleFile::OpenRuleFile()
         if (IsRuleAnalysed && HasPipes(RuleLine.str()))
         {
             // This is a new rule to process
+            if (reset_condition)
+            {
+                condition_group = 0;
+                condition.freestr();
+                reset_condition = false;
+            }
             lastInputCD = CurrentRule->GetInputCD();
             lastOutputCD = CurrentRule->GetOutputCD();
             CurrentRule->SetNextRule(new TRule(itsErrorHandler)); 
@@ -213,7 +235,7 @@ int TRuleFile::OpenRuleFile()
           IsRuleAnalysed = true;
         }
 
-        CurrentRule->SetBlockName(block.str());
+        CurrentRule->SetCondition(condition.str(), condition_group);
     }
     CurrentRule->SetNextRule(NULL);
 
@@ -233,7 +255,7 @@ int TRuleFile::OpenRuleFile()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int TRuleFile::ConvertInRuleOrder( TUMRecord* In, TUMRecord* Out )
+int TRuleFile::ConvertInRuleOrder(TUMRecord* In, TUMRecord* Out)
 {
     itsErrorHandler->Reset();
 
@@ -245,45 +267,26 @@ int TRuleFile::ConvertInRuleOrder( TUMRecord* In, TUMRecord* Out )
     TRule* aRule = itsFirstRule;
     while (aRule)
     {
+        const char* condition = aRule->GetCondition();
+        if (condition && *condition)
+        {
+            itsErrorHandler->SetErrorD(5602, ERROR, "#if condition");
+            break;
+        }
         TCD *OutputCD = aRule->GetOutputCD();
-        bool change_block = false;
         if (aRule->GetInputCD()->TagContainsWildcard() || !OutputCD->TagIsWildcard())
         {
             if (OutputCD->GetIN())
             {
-                itsEvaluateRule.Evaluate_Rule(In, In, Out, aRule, change_block);
+                itsEvaluateRule.Evaluate_Rule(In, In, Out, aRule);
                 In->SortCD();
             }
             else
             {
-                itsEvaluateRule.Evaluate_Rule(In, Out, Out, aRule, change_block);
+                itsEvaluateRule.Evaluate_Rule(In, Out, Out, aRule);
             }
         }
-        if (change_block)
-        {
-            typestr next_block = itsEvaluateRule.GetNextBlockName();
-            typestr old_block = aRule->GetBlockName();
-            aRule = aRule->GetNextRule();
-            while (aRule)
-            {
-                typestr new_block = aRule->GetBlockName();
-                if (next_block.is_empty())
-                {
-                    if (!(new_block == old_block))
-                        break;
-                }
-                else
-                {
-                    if (new_block == next_block)
-                        break;
-                }
-                aRule = aRule->GetNextRule();
-            }
-        }
-        else
-        {
-            aRule = aRule->GetNextRule(); 
-        }
+        aRule = aRule->GetNextRule(); 
     }
 
     itsEvaluateRule.End_Evaluate_Rule();
@@ -295,22 +298,11 @@ int TRuleFile::ConvertInFieldOrder(TUMRecord* In, TUMRecord* Out)
 {
     itsErrorHandler->Reset();
 
+    bool debug_rule = itsApplication->GetDebugRule();
+
     itsEvaluateRule.Init_Evaluate_Rule(itsDocument, itsApplication->GetRuleDoc(),
-        itsApplication->GetErrorHandler(), itsApplication->GetDebugRule(),
+        itsApplication->GetErrorHandler(), debug_rule,
         itsApplication->GetOrdinal(), itsApplication->GetUTF8Mode());
-
-
-    if (mRulesDisabled)
-    {
-        // Reset state
-        TRule* rule = itsFirstRule;
-        while (rule)
-        {
-            rule->SetDisabled(false);
-            rule = rule->GetNextRule();
-        }
-        mRulesDisabled = false;
-    }
 
     TCDLib* CDLIn=In->GetFirstCDLib();
     TCDLib* Last = In->GetLastCDLib();
@@ -321,13 +313,7 @@ int TRuleFile::ConvertInFieldOrder(TUMRecord* In, TUMRecord* Out)
         TRule* rule = itsFirstRule;
         while (rule)
         {
-            if (rule->GetDisabled())
-            {
-                rule = rule->GetNextRule();
-                continue;
-            }
             TCD *RuleCD = rule->GetInputCD();
-            bool change_block = false;
             if (*CDLIn == *RuleCD)
             {
                 do // for easy exit only
@@ -364,49 +350,55 @@ int TRuleFile::ConvertInFieldOrder(TUMRecord* In, TUMRecord* Out)
                     }
                     if (RuleCD->TagContainsWildcard() || !rule->GetOutputCD()->TagIsWildcard())
                     {
+                        // Rule matches, check possible condition
+                        const char* condition = rule->GetCondition();
+                        if (condition && *condition)
+                        {
+                            bool passed = false;
+                            if (itsEvaluateRule.CheckCondition(In, Out, CDLIn, rule, passed) || !passed)
+                            {
+                                if (debug_rule)
+                                {
+                                    typestr tmp;
+                                    rule->ToString(tmp);
+                                    printf("\nDebug: Condition %s not passed, ignoring rule: '%s'\n", condition, tmp.str());
+                                }
+                                // Find the last rule in this condition group and get out.
+                                int group = rule->GetConditionGroup();
+                                TRule* prev_rule = rule;
+                                rule = rule->GetNextRule();
+                                while (rule && group == rule->GetConditionGroup())
+                                {
+                                    if (debug_rule)
+                                    {
+                                        typestr tmp;
+                                        rule->ToString(tmp);
+                                        printf("\nDebug: Condition %s not passed, ignoring rule: '%s'\n", condition, tmp.str());
+                                    }
+                                    prev_rule = rule;
+                                    rule = rule->GetNextRule();
+                                }
+                                rule = prev_rule;
+                                break;
+                            }
+                        }
+
                         if (rule->GetOutputCD()->GetIN())
                         {
-                            itsEvaluateRule.Evaluate_Rule(In, In, Out, rule, change_block, CDLIn);
+                            itsEvaluateRule.Evaluate_Rule(In, In, Out, rule, CDLIn);
                             // Only added fields can be sorted here, otherwise our
                             // processing order would be broken
                             In->PartialSort((TCDLib *) Last->GetNext());
                         }
                         else
                         {
-                            itsEvaluateRule.Evaluate_Rule(In, Out, Out, rule, change_block, CDLIn);
+                            itsEvaluateRule.Evaluate_Rule(In, Out, Out, rule, CDLIn);
                         }
                     }
                 } 
                 while (false);
             }
-            if (change_block)
-            {
-                mRulesDisabled = true;
-                typestr next_block = itsEvaluateRule.GetNextBlockName();
-                typestr old_block = rule->GetBlockName();
-                rule->SetDisabled(true);
-                rule = rule->GetNextRule();
-                while (rule)
-                {
-                    typestr new_block = rule->GetBlockName();
-                    if (next_block.is_empty())
-                    {
-                        if (!(new_block == old_block))
-                            break;
-                    }
-                    else
-                    {
-                        if (new_block == next_block)
-                            break;
-                    }
-                    rule->SetDisabled(true);
-                    rule = rule->GetNextRule();
-                }
-            }
-            else
-            {
-                rule = rule->GetNextRule(); 
-            }
+            rule = rule->GetNextRule(); 
         }
 
         CDLIn = (TCDLib *)CDLIn->GetNext();

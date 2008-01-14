@@ -75,6 +75,8 @@ fixedpos        "/"{digits}("-"{digits})?"/"
 ":"                     return MarcParser::DIVIDE;
 S                       return MarcParser::VARS;
 D                       return MarcParser::VARD;
+[T|t][A|a][G|g]         return MarcParser::VAR_TAG;
+[S|s][U|u][B|b]         return MarcParser::VAR_SUB;
 [N|n][T|t][O|o]         return MarcParser::VAR_NTO;
 [N|n][S|s][O|o]         return MarcParser::VAR_NSO;
 [N|n][T|t]              return MarcParser::VAR_NT;
@@ -153,7 +155,6 @@ D                       return MarcParser::VARD;
 [M|m]ove[A|a]fter       return MarcParser::MOVEAFTER;
 [M|m]ove[F|f]irst       return MarcParser::MOVEFIRST;
 [M|m]ove[L|l]ast        return MarcParser::MOVELAST;
-[N|n]ext[B|b]lock       return MarcParser::NEXTBLOCK;
 {blancs}                        ;
 .                       lex_error = true;
 %%

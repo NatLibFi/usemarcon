@@ -164,54 +164,6 @@ void TEvaluateRule::ResetRedo()
     mMainInput = NULL;
 }
 
-int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHandler,
-                                      bool dbg_rule, unsigned long ord, bool UTF8Mode)
-{
-    m_debug_rule = dbg_rule;
-#if YY_MarcParser_DEBUG != 0
-    YY_MarcParser_DEBUG_FLAG = debug_rule;
-#endif
-    m_ordinal = ord;
-    mRuleDoc = RDoc;
-    mErrorHandler = ErrorHandler;
-    mUTF8Mode = UTF8Mode;
-    int i;
-    S=AllocTypeInst();
-    D=AllocTypeInst();
-    N=AllocTypeInst();
-    NT=AllocTypeInst();
-    NS=AllocTypeInst();
-    NO=AllocTypeInst();
-    NTO=AllocTypeInst();
-    NSO=AllocTypeInst();
-    NEW=AllocTypeInst();
-    NEWEST=AllocTypeInst();
-    CDIn=AllocCD();
-    if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !NEW || !NEWEST || !CDIn)
-        mErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
-
-    NEW->val = C_NEW;
-    NEWEST->val = C_NEWEST;
-
-    // -------------------------------------------------
-    // Initialisation du fichier de communication des regles :
-    // pour evaluer les regles par lex&yacc, il faut les ecrire dans
-    // un fichier. Le fichier suivant est ouvert avec une taille de bloc
-    // normalement suffisante pour que la regle ne soit jamais physiquement
-    // flushe sur disque
-
-    // On initialise les memoires. Elles ne sont pas remises a zero entre chaque
-    // notice, ce qui permet de recuperer des infos des notices precedantes par exemple.
-    for (i=0;i<100;++i)
-    {
-        Memoire[i]=AllocTypeInst();
-        if (!Memoire[i])
-            mErrorHandler->SetErrorD(5000,ERROR,"When initialising memories");
-    }
-
-    return 0;
-}
-
 const char* TEvaluateRule::find_sep(const char *a_str)
 {
     bool in_quotes = false;
@@ -594,16 +546,58 @@ int TEvaluateRule::Parse(TRule* a_rule)
     return rc;
 }
 
-//
-// Cette fonction effectue la conversion d'un UMRecord en un autre, conformement
-// a une regle.
-//
-
-int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealOut, TRule* Rule, bool & aChangeBlock, TCDLib* ProcessCDL /* = NULL */)
+int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHandler,
+                                      bool dbg_rule, unsigned long ord, bool UTF8Mode)
 {
-    mChangeBlock = false;
-    aChangeBlock = false;
+    m_debug_rule = dbg_rule;
+#if YY_MarcParser_DEBUG != 0
+    YY_MarcParser_DEBUG_FLAG = debug_rule;
+#endif
+    m_ordinal = ord;
+    mRuleDoc = RDoc;
+    mErrorHandler = ErrorHandler;
+    mUTF8Mode = UTF8Mode;
+    int i;
+    S=AllocTypeInst();
+    D=AllocTypeInst();
+    N=AllocTypeInst();
+    NT=AllocTypeInst();
+    NS=AllocTypeInst();
+    NO=AllocTypeInst();
+    NTO=AllocTypeInst();
+    NSO=AllocTypeInst();
+    NEW=AllocTypeInst();
+    NEWEST=AllocTypeInst();
+    V_TAG=AllocTypeInst();
+    V_SUB=AllocTypeInst();
+    CDIn=AllocCD();
+    if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !NEW || !NEWEST || !CDIn || !V_TAG || !V_SUB)
+        mErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
 
+    NEW->val = C_NEW;
+    NEWEST->val = C_NEWEST;
+
+    // -------------------------------------------------
+    // Initialisation du fichier de communication des regles :
+    // pour evaluer les regles par lex&yacc, il faut les ecrire dans
+    // un fichier. Le fichier suivant est ouvert avec une taille de bloc
+    // normalement suffisante pour que la regle ne soit jamais physiquement
+    // flushe sur disque
+
+    // On initialise les memoires. Elles ne sont pas remises a zero entre chaque
+    // notice, ce qui permet de recuperer des infos des notices precedantes par exemple.
+    for (i=0;i<100;++i)
+    {
+        Memoire[i]=AllocTypeInst();
+        if (!Memoire[i])
+            mErrorHandler->SetErrorD(5000,ERROR,"When initialising memories");
+    }
+
+    return 0;
+}
+
+int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealOut, TRule* Rule, TCDLib* ProcessCDL /* = NULL */)
+{
     mInputRecord = In;
     mOutputRecord = Out;
     mRealOutputRecord = RealOut;
@@ -644,8 +638,8 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
         {
             S=AllocTypeInst();
         }
-        if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW)
-            mErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
+        if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW || !V_TAG || !V_SUB)
+            return mErrorHandler->SetErrorD(5000, ERROR, "When initialising variables");
 
         // Initialisation de S,N,NT,NS : valeurs de l'entree
         N->str.freestr();
@@ -662,6 +656,11 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
         inCD.ReplaceWildcards(aCDLIn->GetTag(), aCDLIn->GetSubfield());
         S->str = aCDLIn->GetContent(&inCD);
         mInputCDL = aCDLIn;
+        V_TAG->str.str(inCD.GetTag());
+        const char* sub = inCD.GetSubfield();
+        if (sub && *sub == '$')
+            ++sub;
+        V_SUB->str.str(sub);
 
         if (m_debug_rule)
         {
@@ -674,7 +673,6 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
         strcpy(CDIn->SubField, aCDLIn->GetSubfield());
         CDIn->nt=aCDLIn->GetTagOccurrenceNumber();
         CDIn->ns=aCDLIn->GetSubOccurrenceNumber();
-
 
         // -------------------------------------------------
         // Boucle d'evaluation de la regle
@@ -956,12 +954,6 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
         }
         while (rc == 3);
 
-        if (mChangeBlock)
-        {
-            aChangeBlock = true;
-            break;
-        }
-
         if (!ProcessCDL)
         {
             // Move to the next field in input
@@ -985,6 +977,73 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
     return mErrorHandler->GetErrorCode();
 }
 
+int TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLIn, TRule* aRule, bool & aPassed)
+{
+    mInputRecord = aIn;
+    mOutputRecord = aOut;
+    mRealOutputRecord = aOut;
+    mCurrentRule = aRule;
+
+    aPassed = false;
+
+    if (m_debug_rule)
+    {
+        typestr tmp;
+        aRule->ToString(tmp);
+        printf("\nDebug: Checking conditions for rule: '%s', condition: '%s'\n", tmp.str(), aRule->GetCondition());
+    }
+
+    if (!S)
+    {
+        S=AllocTypeInst();
+    }
+    if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW || !V_TAG || !V_SUB)
+        return mErrorHandler->SetErrorD(5000, ERROR, "When initialising variables");
+
+    // Initialize S, N, NT, NS
+    N->str.freestr();
+    NT->str.freestr();
+    NS->str.freestr();
+    N->val = aCDLIn->GetOccurrenceNumber();
+    NT->val = aCDLIn->GetTagOccurrenceNumber();
+    if (*(aRule->GetInputCD()->GetSubfield()))
+        NS->val = aCDLIn->GetSubOccurrenceNumber();
+    else
+        NS->val = 0;
+    S->val = 0;
+    TCD inCD = aRule->GetInputCD();
+    inCD.ReplaceWildcards(aCDLIn->GetTag(), aCDLIn->GetSubfield());
+    S->str = aCDLIn->GetContent(&inCD);
+    mInputCDL = aCDLIn;
+    V_TAG->str.str(inCD.GetTag());
+    const char* sub = inCD.GetSubfield();
+    if (sub && *sub == '$')
+        ++sub;
+    V_SUB->str.str(sub);
+
+    if (m_debug_rule)
+    {
+        printf("Debug: Input field: %s%s o:%d t-o:%d s-o:%d: '%s'\n", aCDLIn->GetTag(), aCDLIn->GetSubfield() ? aCDLIn->GetSubfield() : "", 
+            aCDLIn->GetOccurrenceNumber(), aCDLIn->GetTagOccurrenceNumber(), aCDLIn->GetSubOccurrenceNumber(), S->str.str());
+    }
+
+    // Initialisation des parametres du CDIn
+    strcpy(CDIn->Field, aCDLIn->GetTag());
+    strcpy(CDIn->SubField, aCDLIn->GetSubfield());
+    CDIn->nt = aCDLIn->GetTagOccurrenceNumber();
+    CDIn->ns = aCDLIn->GetSubOccurrenceNumber();
+
+    typestr check_stmt = "Condition ";
+    check_stmt.append(aRule->GetCondition());
+
+    TRule rule(aRule, check_stmt.str());
+    mScanner.SetRule(&rule);
+    int rc = yyparse();
+
+    aPassed = (rc == 3);
+
+    return mErrorHandler->GetErrorCode();
+}
 
 int TEvaluateRule::End_Evaluate_Rule()
 {
@@ -1012,6 +1071,8 @@ int TEvaluateRule::End_Evaluate_Rule()
     if (NSO) FreeTypeInst(NSO); NSO=NULL;
     if (NEW) FreeTypeInst(NEW); NEW=NULL;
     if (NEWEST) FreeTypeInst(NEWEST); NEWEST=NULL;
+    if (V_TAG) FreeTypeInst(V_TAG); V_TAG=NULL;
+    if (V_SUB) FreeTypeInst(V_SUB); V_SUB=NULL;
     FreeCD(CDIn); CDIn=NULL;
 
     return 0;

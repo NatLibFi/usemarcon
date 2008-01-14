@@ -75,13 +75,13 @@ YYID (i)
 }
 #endif
 #define YYFINAL  128
-#define YYLAST   1449
-#define YYNTOKENS  101
+#define YYLAST   1410
+#define YYNTOKENS  102
 #define YYNNTS  12
-#define YYNRULES  170
-#define YYNSTATES  465
+#define YYNRULES  169
+#define YYNSTATES  462
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   352
+#define YYMAXUTOK   353
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -93,6 +93,8 @@ protected:
   TypeInst* D;
   TypeCD* CDIn;
   
+  TypeInst* V_TAG;
+  TypeInst* V_SUB;
   TypeInst* N;
   TypeInst* NT;
   TypeInst* NS;
@@ -108,8 +110,6 @@ protected:
   bool m_debug_rule;
   bool mRedoFlag;
   unsigned long m_ordinal;
-  bool mChangeBlock;
-  typestr mNextBlockName;
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
@@ -134,7 +134,7 @@ protected:
   virtual TypeInst* MemExc( TypeInst* n ) = 0;
 
   virtual typestr Table( char*, char* ) = 0;
-  virtual int   MustSort( char* ) = 0;
+  virtual int MustSort( char* ) = 0;
 
   virtual TypeInst* AllocTypeInst() = 0;
   virtual void FreeTypeInst( TypeInst* t ) = 0;
@@ -199,77 +199,78 @@ public:
      AND = 279,
      OR = 280,
      NOT = 281,
-     NEXTBLOCK = 282,
-     BY = 283,
-     _STRICT = 284,
-     AT = 285,
-     BEGINING = 286,
-     BEGINNING = 287,
-     END = 288,
-     BOTH = 289,
-     VARS = 290,
-     VARD = 291,
-     STRING = 292,
-     NUMERIC = 293,
-     VAR_N = 294,
-     VAR_NT = 295,
-     VAR_NS = 296,
-     VAR_NO = 297,
-     VAR_NTO = 298,
-     VAR_NSO = 299,
-     VAR_NEW = 300,
-     VAR_NEWEST = 301,
-     TAG = 302,
-     DTAG = 303,
-     STAG = 304,
-     FIX = 305,
-     I1 = 306,
-     I2 = 307,
-     STR = 308,
-     VAL = 309,
-     LEN = 310,
-     STO = 311,
-     MEM = 312,
-     EXC = 313,
-     CLR = 314,
-     LOWER = 315,
-     UPPER = 316,
-     FROM = 317,
-     TO = 318,
-     BETWEEN = 319,
-     _DELETE = 320,
-     REPLACE = 321,
-     REPLACEOCC = 322,
-     BFIRST = 323,
-     EFIRST = 324,
-     BLAST = 325,
-     ELAST = 326,
-     REDO = 327,
-     SORT = 328,
-     NEXT = 329,
-     LAST = 330,
-     TABLE = 331,
-     ORDINAL = 332,
-     YEAR = 333,
-     MONTH = 334,
-     DAY = 335,
-     HOUR = 336,
-     MINUTE = 337,
-     SECOND = 338,
-     NEXTSUB = 339,
-     NEXTSUBIN = 340,
-     PREVIOUSSUB = 341,
-     PREVIOUSSUBIN = 342,
-     REGFINDNUM = 343,
-     REGFINDPOS = 344,
-     REGFIND = 345,
-     REGMATCH = 346,
-     REGREPLACE = 347,
-     REGREPLACETABLE = 348,
-     MOVEBEFORE = 349,
-     MOVEAFTER = 350,
-     MOVEFIRST = 351,
-     MOVELAST = 352
+     BY = 282,
+     _STRICT = 283,
+     AT = 284,
+     BEGINING = 285,
+     BEGINNING = 286,
+     END = 287,
+     BOTH = 288,
+     VARS = 289,
+     VARD = 290,
+     STRING = 291,
+     NUMERIC = 292,
+     VAR_N = 293,
+     VAR_NT = 294,
+     VAR_NS = 295,
+     VAR_NO = 296,
+     VAR_NTO = 297,
+     VAR_NSO = 298,
+     VAR_NEW = 299,
+     VAR_NEWEST = 300,
+     VAR_TAG = 301,
+     VAR_SUB = 302,
+     TAG = 303,
+     DTAG = 304,
+     STAG = 305,
+     FIX = 306,
+     I1 = 307,
+     I2 = 308,
+     STR = 309,
+     VAL = 310,
+     LEN = 311,
+     STO = 312,
+     MEM = 313,
+     EXC = 314,
+     CLR = 315,
+     LOWER = 316,
+     UPPER = 317,
+     FROM = 318,
+     TO = 319,
+     BETWEEN = 320,
+     _DELETE = 321,
+     REPLACE = 322,
+     REPLACEOCC = 323,
+     BFIRST = 324,
+     EFIRST = 325,
+     BLAST = 326,
+     ELAST = 327,
+     REDO = 328,
+     SORT = 329,
+     NEXT = 330,
+     LAST = 331,
+     TABLE = 332,
+     ORDINAL = 333,
+     YEAR = 334,
+     MONTH = 335,
+     DAY = 336,
+     HOUR = 337,
+     MINUTE = 338,
+     SECOND = 339,
+     NEXTSUB = 340,
+     NEXTSUBIN = 341,
+     PREVIOUSSUB = 342,
+     PREVIOUSSUBIN = 343,
+     REGFINDNUM = 344,
+     REGFINDPOS = 345,
+     REGFIND = 346,
+     REGMATCH = 347,
+     REGREPLACE = 348,
+     REGREPLACETABLE = 349,
+     MOVEBEFORE = 350,
+     MOVEAFTER = 351,
+     MOVEFIRST = 352,
+     MOVELAST = 353
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

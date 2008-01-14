@@ -49,16 +49,15 @@ public:
     inline char  *GetLib         (void)         { return mLib.str(); }
     inline TRule *GetNextRule    (void)         { return mNextRule; }
     inline TRule *GetPreviousRule(void)         { return mPreviousRule; }
-    inline char  *GetBlockName   (void)         { return mBlockName.str(); }
-    inline bool  GetDisabled     (void)         { return mDisabled; }
+    inline char  *GetCondition   (void)         { return mCondition.str(); }
+    inline int   GetConditionGroup(void)        { return mConditionGroup; }
 
     void  SetInputCD      (TCD* aCD)            { mInputCD=aCD; }
     void  SetOutputCD     (TCD *aCD)            { mOutputCD=aCD; }
     int   SetLib          (const char *aLib);
     void  SetNextRule     (TRule *NextRule)     { mNextRule=NextRule; }
     void  SetPreviousRule (TRule *PreviousRule) { mPreviousRule = PreviousRule; }
-    void  SetBlockName    (const char *aLib)    { mBlockName = aLib; }
-    void  SetDisabled     (bool aValue)         { mDisabled = aValue; }
+    void  SetCondition    (const char *aCondition, int aGroup)  { mCondition = aCondition; mConditionGroup = aGroup; }
 
     int   GetLineNo() { return mLine; }
 
@@ -69,8 +68,8 @@ protected:
     TRule         *mNextRule;
     TRule         *mPreviousRule;
     int           mLine;
-    typestr       mBlockName;
-    bool          mDisabled;
+    typestr       mCondition;
+    int           mConditionGroup;
     
     TError        *mErrorHandler;
 };

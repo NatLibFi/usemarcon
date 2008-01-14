@@ -2,7 +2,7 @@
 **************************
 version 3.00
 
-November 9 2007
+January 14 2008
 
 The National Library of Finland
 Ere Maijala
@@ -46,6 +46,11 @@ ere.maijala at helsinki.fi
 - Combined the documentation to a single document.
 - Added record number to logged error and warning messages.
 - Conversion will now fail if the specified ini file cannot be opened.
+- Added possibility to define minimum version that can be used for the
+  conversion. USEMARCON 3.00 has rule version 300. See #define in the
+  manual for more information.
+- Added possibility to use "global" conditions for a group of rules.
+  See #if in manual for more information.
 
 **************************
 **************************

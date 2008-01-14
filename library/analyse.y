@@ -24,6 +24,8 @@ protected:
   TypeInst* D;
   TypeCD* CDIn;
   
+  TypeInst* V_TAG;
+  TypeInst* V_SUB;
   TypeInst* N;
   TypeInst* NT;
   TypeInst* NS;
@@ -39,8 +41,6 @@ protected:
   bool m_debug_rule;
   bool mRedoFlag;
   unsigned long m_ordinal;
-  bool mChangeBlock;
-  typestr mNextBlockName;
 
   virtual int Precedes(TypeCD*, TypeCD*) = 0;
   virtual int Exists(TypeCD*) = 0;
@@ -65,7 +65,7 @@ protected:
   virtual TypeInst* MemExc( TypeInst* n ) = 0;
 
   virtual typestr Table( char*, char* ) = 0;
-  virtual int   MustSort( char* ) = 0;
+  virtual int MustSort( char* ) = 0;
 
   virtual TypeInst* AllocTypeInst() = 0;
   virtual void FreeTypeInst( TypeInst* t ) = 0;
@@ -121,11 +121,11 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <code> PLUS MINUS MULTIPLY DIVIDE
 %token <code> EQ NE _IN GT LT GE LE
 %token <code> EXISTS EXISTSIN PRECEDES FOLLOWS INTABLE
-%token <code> CHECK AND OR NOT NEXTBLOCK
+%token <code> CHECK AND OR NOT 
 %token <code> BY _STRICT AT BEGINING BEGINNING END BOTH 
 
 %token <inst> VARS VARD STRING NUMERIC
-%token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW VAR_NEWEST
+%token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW VAR_NEWEST VAR_TAG VAR_SUB
 %token <inst> TAG DTAG STAG FIX I1 I2
 %token <inst> STR VAL LEN STO MEM EXC CLR LOWER UPPER
 %token <inst> FROM TO BETWEEN _DELETE REPLACE REPLACEOCC
@@ -336,19 +336,6 @@ Condition :
         CHECK Boolean                   { PrintDebug("Condition");
                                           return ($2) ? 4 : 2;
                                         }
-|		NEXTBLOCK                       { PrintDebug("NextBlock");
-										  mChangeBlock = true;
-										  return 2;
-										}
-|		NEXTBLOCK '(' ')'               { PrintDebug("NextBlock");
-										  mChangeBlock = true;
-										  return 2;
-										}
-|		NEXTBLOCK '(' Translation ')'   { PrintDebug("NextBlock(...)");
-										  mChangeBlock = true;
-										  mNextBlockName = $3->str;
-										  return 2;
-										}
 ;
 
 
@@ -523,6 +510,8 @@ Translation :
 |       VAR_NEWEST                      { PrintDebug("NEWEST");CopyInst(&$$,NEWEST); }
 |       VARS                            { PrintDebug("S");CopyInst(&$$,S); }
 |       VARD                            { PrintDebug("D");CopyInst(&$$,D); }
+|       VAR_TAG                         { PrintDebug("TAG");CopyInst(&$$, V_TAG); }
+|       VAR_SUB                         { PrintDebug("TAG");CopyInst(&$$, V_SUB); }
 |       CD                              { PrintDebug("CD");
                                           typestr2 ptr = ReadCD($1);
                                           FreeCD($1);
