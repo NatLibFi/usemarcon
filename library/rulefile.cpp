@@ -23,13 +23,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
-: TFile(FileSpec, Application->GetErrorHandler())
+: TFile(FileSpec, Application->GetErrorHandler()), mStringTables(Application->GetErrorHandler())
 {
     itsFirstRule        = NULL;
     itsFirstCodedData   = NULL;
     itsLastCodedData    = NULL;
-    itsFirstStringTable = NULL;
-    itsLastStringTable  = NULL;
     itsMacros           = NULL;
     itsDocument         = NULL;
     itsApplication      = Application;
@@ -48,8 +46,8 @@ TRuleFile::~TRuleFile()
 
     DelTreeRule();
     DelTreeCodedData();
-    DelTreeStringTable();
-    DelTreeMacros();
+    if (itsMacros)
+        delete itsMacros;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,7 +60,6 @@ int TRuleFile::CloseRuleFile()
     // Unload the Rule tree from memory
     DelTreeRule();
     DelTreeCodedData();
-    DelTreeStringTable();
     return 0;
 }
 
@@ -84,7 +81,11 @@ int TRuleFile::OpenRuleFile()
     if (Exists()==false)
         return itsErrorHandler->SetErrorD(5001, WARNING, itsFileInfo.str());
 
-    DelTreeMacros();
+    if (itsMacros)
+    {
+        delete itsMacros;
+        itsMacros = NULL;
+    }
 
     // Open the Rule file in Reading mode
     itsMode = FILE_READ;
@@ -100,7 +101,6 @@ int TRuleFile::OpenRuleFile()
     CurrentRule->SetPreviousRule(NULL);
     itsFirstRule = CurrentRule;
     IsRuleAnalysed = false;
-    StringTable *current_macro = NULL;
     TCD* lastInputCD = NULL;
     TCD* lastOutputCD = NULL;
     typestr condition;
@@ -127,18 +127,13 @@ int TRuleFile::OpenRuleFile()
                 sprintf(error.str(), "in file '%s' at line %d:\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
                 return itsErrorHandler->SetErrorD(5100, ERROR, error.str());
             }
-            if (!current_macro)
+            if (!itsMacros)
             {
                 itsMacros = new StringTable(itsErrorHandler);
-                current_macro = itsMacros;
             }
-            else
-            {
-                current_macro->SetNext(new StringTable(itsErrorHandler));
-                current_macro = current_macro->GetNext();
-            }
-            current_macro->m_src = src;
-            current_macro->m_dst = dst;
+            StringTableItem* macro = itsMacros->AddItem();
+            macro->m_src = src;
+            macro->m_dst = dst;
             continue;
         }
         else if (strncmp(p, "#define version ", 16) == 0)
@@ -210,7 +205,7 @@ int TRuleFile::OpenRuleFile()
         }
 
         // Apply macros
-        StringTable *macro = itsMacros;
+        StringTableItem* macro = itsMacros ? itsMacros->GetFirstItem() : NULL;
         while (macro)
         {
             RuleLine.replace(macro->m_src.str(), macro->m_dst.str());
@@ -547,28 +542,10 @@ TCodedData  *TRuleFile::GetCodedData(char *theName)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// DelTreeStringTable
-//
-///////////////////////////////////////////////////////////////////////////////
-void TRuleFile::DelTreeStringTable(void)
-{
-    StringTable *table = itsFirstStringTable;
-
-    while (table)
-    {
-        StringTable *next = table->GetNext();
-        delete table;
-        table = next;
-    }
-    itsFirstStringTable = itsLastStringTable = NULL;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // GetStringTable
 //
 ///////////////////////////////////////////////////////////////////////////////
-StringTable *TRuleFile::GetStringTable(const char *a_tablename)
+StringTable* TRuleFile::GetStringTable(const char *a_tablename)
 {
     itsErrorHandler->Reset();
 
@@ -581,16 +558,16 @@ StringTable *TRuleFile::GetStringTable(const char *a_tablename)
         append_filename(filename, ".tbl");
 
     // Check if the table has been loaded already
-    StringTable *table = itsFirstStringTable;
+    StringTable* table = mStringTables.GetFirstTable();
     while (table)
     {
         if (table->GetName() == filename)
             return table;
-        table = table->GetNext();
+        table = table->GetNextTable();
     }
     
     // Load the table
-    table = new StringTable(itsErrorHandler);
+    table = mStringTables.AddTable();
     if (!table)
         return NULL;
 
@@ -599,29 +576,7 @@ StringTable *TRuleFile::GetStringTable(const char *a_tablename)
         delete table;
         return NULL;
     }
-
-    if (!itsLastStringTable)
-    {
-        itsFirstStringTable = itsLastStringTable = table;
-    }
-    else
-    {
-        itsLastStringTable->SetNext(table);
-        itsLastStringTable = table;
-    }
     return table;
-}
-
-void TRuleFile::DelTreeMacros()
-{
-    StringTable *macro = itsMacros;
-    while(macro)
-    {
-        StringTable *next = macro->GetNext();
-        delete macro;
-        macro = next;
-    }
-    itsMacros = NULL;
 }
 
 bool TRuleFile::HasPipes(const char *a_str)

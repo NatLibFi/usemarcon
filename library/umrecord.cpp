@@ -307,17 +307,14 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             // la notice de sortie. Si on n'a pas encore de champ dans la notice,
             // on initialise itsFirstField, sinon on concatene au champ courant
 
-            if (NewField->GetLib1())
+            if (NewField->GetLib1() && *(NewField->GetLib1()))
             {
-                if (*(NewField->GetLib1()))
+                if (itsFirstField==NULL)
+                    itsFirstField=Field=NewField;
+                else
                 {
-                    if (itsFirstField==NULL)
-                        itsFirstField=Field=NewField;
-                    else
-                    {
-                        Field->SetNextField(NewField);
-                        Field=NewField;
-                    }
+                    Field->SetNextField(NewField);
+                    Field=NewField;
                 }
             }
             else

@@ -15,33 +15,44 @@
 #include "stringtable.h"
 #include "tfile.h"
 
-StringTable::StringTable(TError* a_errorhandler) : m_next(NULL), m_errorhandler(a_errorhandler) 
+StringTableItem::StringTableItem() : m_next(NULL)
+{
+}
+
+StringTable::StringTable(TError* a_errorhandler) : m_first(NULL), m_last(NULL), m_next_table(NULL),
+  m_errorhandler(a_errorhandler) 
 {
 }
 
 StringTable::~StringTable()
 {
+    DeleteItems();
+}
+
+void StringTable::DeleteItems()
+{
+    StringTableItem* item = m_first;
+    while (item)
+    {
+        StringTableItem* next = item->GetNext();
+        delete item;
+        item = next;
+    }
+    m_first = NULL;
+    m_last = NULL;
 }
 
 bool StringTable::Load(const typestr a_filename)
 {
     m_name = a_filename;
 
-    while (m_next)
-    {
-        StringTable* next = m_next->GetNext();
-        delete m_next;
-        m_next = next;
-    }
-    m_next = NULL;
+    DeleteItems();
 
     TFile file(a_filename, m_errorhandler);
 
     int res = file.Open();
     if (res != 0)
         return false;
-
-    StringTable *entry = NULL;
 
     typestr line;
     typestr include_file;
@@ -57,22 +68,25 @@ bool StringTable::Load(const typestr a_filename)
         if (!parse_line(line.str(), src, dst))
             continue;
 
-        if (!entry)
-        {
-            entry = this;
-            m_src.rulestr(src.str());
-            m_dst.rulestr(dst.str());
-        }
-        else
-        {
-            StringTable *new_entry = new StringTable(m_errorhandler);
-            new_entry->m_src.rulestr(src.str());
-            new_entry->m_dst.rulestr(dst.str());
-            entry->SetNext(new_entry);
-            entry = new_entry;
-        }
+        StringTableItem* new_entry = AddItem();
+        new_entry->m_src = src;
+        new_entry->m_dst = dst;
     }
     return true;
+}
+
+StringTableItem* StringTable::AddItem()
+{
+    if (!m_first)
+    {
+        m_first = new StringTableItem();
+        m_last = m_first;
+        return m_first;
+    }
+    StringTableItem* item = new StringTableItem();
+    m_last->SetNext(item);
+    m_last = item;
+    return item;
 }
 
 bool StringTable::parse_line(const char *a_line, typestr &a_src, typestr &a_dst)
@@ -99,4 +113,40 @@ bool StringTable::parse_line(const char *a_line, typestr &a_src, typestr &a_dst)
     a_dst.str(begin, p - begin);
 
     return true;
+}
+
+StringTableList::StringTableList(TError *a_errorhandler) : m_first(NULL), m_last(NULL), m_errorhandler(a_errorhandler)
+{
+}
+
+StringTableList::~StringTableList()
+{
+    DeleteTables();
+}
+
+void StringTableList::DeleteTables()
+{
+    StringTable* table = m_first;
+    while (table)
+    {
+        StringTable* next = table->GetNextTable();
+        delete table;
+        table = next;
+    }
+    m_first = NULL;
+    m_last = NULL;
+}
+
+StringTable* StringTableList::AddTable()
+{
+    if (!m_first)
+    {
+        m_first = new StringTable(m_errorhandler);
+        m_last = m_first;
+        return m_first;
+    }
+    StringTable* table = new StringTable(m_errorhandler);
+    m_last->SetNextTable(table);
+    m_last = table;
+    return table;
 }

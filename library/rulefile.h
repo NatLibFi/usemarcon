@@ -54,16 +54,13 @@ public:
     virtual TEvaluateRule *GetEvaluateRule(void) { return &itsEvaluateRule; }
 
 protected:
-    void                  DelTreeStringTable();
-    void                  DelTreeMacros();
     bool                  HasPipes(const char *a_str);
 
     TRuleDoc              *itsDocument;
     TRule                 *itsFirstRule;
     TCodedData            *itsFirstCodedData;
     TCodedData            *itsLastCodedData;
-    StringTable           *itsFirstStringTable;
-    StringTable           *itsLastStringTable;
+    StringTableList       mStringTables;
     StringTable           *itsMacros;
 
     TEvaluateRule         itsEvaluateRule;

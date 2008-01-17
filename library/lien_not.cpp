@@ -2846,19 +2846,20 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
         return NULL;
     }
     FreeTypeInst(a_table);
-    while (table)
+    StringTableItem* item = table->GetFirstItem();
+    while (item)
     {
-        if (!RegReplaceInternal(rc->str, table->m_src.str(), table->m_dst.str(), global))
+        if (!RegReplaceInternal(rc->str, item->m_src.str(), item->m_dst.str(), global))
         {
             FreeTypeInst(rc);
             return NULL;
         }
-        if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, table->m_src.str(), table->m_dst.str(), global))
+        if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, item->m_src.str(), item->m_dst.str(), global))
         {
             FreeTypeInst(rc);
             return NULL;
         }
-        table = table->GetNext();
+        item = item->GetNext();
     }
     rc->str.set_script(S->str.script);
     return rc;

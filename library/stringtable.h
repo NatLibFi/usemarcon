@@ -28,30 +28,67 @@ AUTHOR
 #include "typedef.h"
 #include "error.h"
 
-class StringTable
+class StringTableItem
 {
 public:
-    StringTable(TError *a_errorhandler); 
-    ~StringTable();
-    
-    StringTable *GetNext() { return m_next; }
-    void SetNext(StringTable *a_next) { m_next = a_next; }
+    StringTableItem(); 
 
-    typestr GetName() { return m_name; }
-
-    bool Load(const typestr a_filename);
-
-    static bool parse_line(const char *a_line, typestr &a_src, typestr &a_dst);
+    StringTableItem *GetNext() { return m_next; }
+    void SetNext(StringTableItem *a_next) { m_next = a_next; }
 
 // Easy access before style, and these don't need internal management:
     typestr m_src;
     typestr m_dst;
 
 private:
+    StringTableItem* m_next;
+};
+
+class StringTable
+{
+public:
+    StringTable(TError *a_errorhandler); 
+    ~StringTable();
+    
+    typestr GetName() { return m_name; }
+
+    bool Load(const typestr a_filename);
+    StringTableItem* AddItem();
+    StringTableItem* GetFirstItem() { return m_first; }
+
+    StringTable* GetNextTable() { return m_next_table; }
+    void SetNextTable(StringTable *a_next) { m_next_table = a_next; }
+  
+    static bool parse_line(const char *a_line, typestr &a_src, typestr &a_dst);
+
+private:
     StringTable(); 
 
-    StringTable *m_next;
+    void DeleteItems();
+
+    StringTableItem* m_first;
+    StringTableItem* m_last;
+    StringTable* m_next_table;
     typestr m_name;
+    TError *m_errorhandler;
+};
+
+class StringTableList
+{
+public:
+    StringTableList(TError *a_errorhandler); 
+    ~StringTableList();
+    
+    StringTable* AddTable();
+    StringTable* GetFirstTable() { return m_first; }
+
+private:
+    StringTableList();
+
+    void DeleteTables();
+
+    StringTable* m_first;
+    StringTable* m_last;
     TError *m_errorhandler;
 };
 
