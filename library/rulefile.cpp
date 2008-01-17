@@ -192,7 +192,7 @@ int TRuleFile::OpenRuleFile()
             reset_condition = false;
             continue;
         }
-        else if (strncmp(p, "#endif", 7) == 0)
+        else if (strncmp(p, "#endif", 6) == 0)
         {
             if (condition_group == 0)
             {
