@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2003
- *  Adapted by The National Library of Finland, 2004-2007
+ *  Adapted by The National Library of Finland, 2004-2008
  *
  *  File:  rulefile.cpp
  *
@@ -106,6 +106,7 @@ int TRuleFile::OpenRuleFile()
     typestr condition;
     int condition_count = 0;
     int condition_group = 0;
+    int condition_line = 0;
     bool reset_condition = false;
     while (!NextLine(&RuleLine,&IncludedFileSpec,&Line)) // Read a Line from the Rule File
     {
@@ -171,16 +172,39 @@ int TRuleFile::OpenRuleFile()
         }
         else if (strncmp(p, "#if ", 4) == 0)
         {
+            if (condition_group != 0 && !reset_condition)
+            {
+                typestr error;
+                char tmp[30];
+                error = "File: ";
+                error += IncludedFileSpec.str();
+                error += ", line ";
+                sprintf(tmp, "%ld", Line);
+                error += tmp;
+                return itsErrorHandler->SetErrorD(5603, ERROR, error.str());
+            }
             p += 4;
             while (*p == ' ' || *p == '\t') 
                 ++p;
             condition = p;
             condition_group = ++condition_count;
+            condition_line = Line;
             reset_condition = false;
             continue;
         }
         else if (strncmp(p, "#endif", 7) == 0)
         {
+            if (condition_group == 0)
+            {
+                typestr error;
+                char tmp[30];
+                error = "File: ";
+                error += IncludedFileSpec.str();
+                error += ", line ";
+                sprintf(tmp, "%ld", Line);
+                error += tmp;
+                return itsErrorHandler->SetErrorD(5604, ERROR, error.str());
+            }
             reset_condition = true;
             continue;
         }
@@ -238,6 +262,18 @@ int TRuleFile::OpenRuleFile()
         CurrentRule->SetCondition(condition.str(), condition_group);
     }
     CurrentRule->SetNextRule(NULL);
+    if (condition_group != 0 && !reset_condition)
+    {
+        typestr error;
+        char tmp[30];
+        error = "File: ";
+        error += IncludedFileSpec.str();
+        error += ", line ";
+        sprintf(tmp, "%ld", condition_line);
+        error += tmp;
+        return itsErrorHandler->SetErrorD(5605, ERROR, error.str());
+    }
+
 
     // Close the Rule file
     Close();
