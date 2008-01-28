@@ -573,7 +573,6 @@ StringTable* TRuleFile::GetStringTable(const char *a_tablename)
 
     if (!table->Load(filename.str()))
     {
-        delete table;
         return NULL;
     }
     return table;

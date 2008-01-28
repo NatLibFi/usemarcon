@@ -261,6 +261,11 @@ const char* TEvaluateRule::find_statement_end(const char *a_str)
         }
         ++p;
     }
+    if (paren != 0)
+    {
+        mErrorHandler->SetErrorD(5100, ERROR, a_str);
+        return NULL;
+    }
     return p;
 }
 
@@ -308,6 +313,14 @@ const char* TEvaluateRule::find_else_or_sep(const char *a_str)
     return p;
 }
 
+bool TEvaluateRule::check_balance(const char* a_str)
+{
+    const char* p = a_str;
+    bool in_quotes = false;
+
+    return true;
+}
+
 int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
 {
     // Parse statements one by one handling conditionals separately 
@@ -335,8 +348,14 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
             {
                 bool while_loop = *(stmt + 1) == 'h';
                 const char* p_if = find_statement_end(stmt);
+                if (!p_if)
+                {
+                    rc = 2;
+                    break;
+                }
                 typestr check_stmt = "Condition";
                 check_stmt.append(stmt + (while_loop ? 5 : 2), p_if - stmt - (while_loop ? 5 : 2));
+
 
                 TRule rule(a_rule, check_stmt.str());
                 mScanner.SetRule(&rule);
@@ -403,6 +422,11 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
             else if ((*stmt == 'F' || *stmt == 'f') && *(stmt + 1) == 'o' && *(stmt + 2) == 'r' && (*(stmt + 3) == ' ' || *(stmt + 3) == '('))
             {
                 const char* p_for = find_statement_end(stmt);
+                if (!p_for)
+                {
+                    rc = 2;
+                    break;
+                }
                 typestr params;
                 params.str(stmt + 4, p_for - stmt - 4);
 
@@ -465,6 +489,11 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
             else if ((*stmt == 'W' || *stmt == 'w') && *(stmt + 1) == 'i' && *(stmt + 2) == 't' && *(stmt + 3) == 'h' && (*(stmt + 4) == ' ' || *(stmt + 4) == '('))
             {
                 const char* p_set = find_statement_end(stmt);
+                if (!p_set)
+                {
+                    rc = 2;
+                    break;
+                }
                 typestr params;
                 params.str(stmt + 5, p_set - stmt - 5);
 
@@ -1040,7 +1069,7 @@ int TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLI
     mScanner.SetRule(&rule);
     int rc = yyparse();
 
-    aPassed = (rc == 3);
+    aPassed = (rc == 4);
 
     return mErrorHandler->GetErrorCode();
 }
@@ -2849,12 +2878,16 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
     StringTableItem* item = table->GetFirstItem();
     while (item)
     {
-        if (!RegReplaceInternal(rc->str, item->m_src.str(), item->m_dst.str(), global))
+        typestr src;
+        typestr dst;
+        src.rulestr(item->m_src.str());
+        dst.rulestr(item->m_dst.str());
+        if (!RegReplaceInternal(rc->str, src.str(), dst.str(), global))
         {
             FreeTypeInst(rc);
             return NULL;
         }
-        if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, item->m_src.str(), item->m_dst.str(), global))
+        if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, src.str(), dst.str(), global))
         {
             FreeTypeInst(rc);
             return NULL;

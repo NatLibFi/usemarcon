@@ -1,5 +1,21 @@
 **************************
 **************************
+version 3.01
+
+January 28 2008
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed global conditions.
+- Fixed RegReplaceTable.
+- Added check for unbalanced parenthesis to conditions.
+
+
+**************************
+**************************
 version 3.00
 
 January 17 2008

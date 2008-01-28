@@ -139,6 +139,7 @@ private:
     const char* find_statement_start(const char *a_str);
     const char* find_statement_end(const char *a_str);
     const char* find_else_or_sep(const char *a_str);
+    bool check_balance(const char* a_str);
     int   InnerParse(TRule* a_rule, const char *a_rulestr);
     int   Parse(TRule* a_rule);
 

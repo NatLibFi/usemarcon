@@ -177,6 +177,11 @@ void typestr::promise(unsigned long size)
 // Rule formatted string init
 void typestr::rulestr(const char *s)
 {
+    if (!s || !*s || !*(s + 1))
+    {
+        freestr();
+        return;
+    }
     int i=1, j=0;
     allocstr(strlen(s) + 1);
 

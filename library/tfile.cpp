@@ -78,7 +78,12 @@ int TFile::Open()
         sprintf(mode,"%c",itsMode);
         if ((File=fopen(itsFileInfo.str(), mode))==NULL)
         {
-            return itsErrorHandler->SetErrorD(9501, WARNING, itsFileInfo.str());
+            char err[20];
+            sprintf(err, "%d", errno);
+            typestr msg = itsFileInfo;
+            msg += " error ";
+            msg += err;
+            return itsErrorHandler->SetErrorD(9501, WARNING, msg.str());
         }
     }
     else
