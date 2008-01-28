@@ -2763,8 +2763,9 @@ TypeInst* TEvaluateRule::RegMatch( TypeInst* t1 )
     return rc;
 }
 
-bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global)
+bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global, bool &a_replaced)
 {
+    a_replaced = false;
     int loop_count = 0;
     int start_pos = 0;
     while (loop_count++ < 10000)
@@ -2776,6 +2777,7 @@ bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, con
         if (mRegExpResult == PCRE_ERROR_NOMATCH)
             break;
         
+        a_replaced = true;
         typestr replacement;
         const char *p = a_replacement;
         while (*p)
@@ -2829,14 +2831,16 @@ TypeInst* TEvaluateRule::RegReplace(TypeInst* a_regexp, TypeInst* a_replacement,
     TypeInst *rc = AllocTypeInst();
     rc->str = S->str;        
     
-    if (!RegReplaceInternal(rc->str, a_regexp->str.str(), a_replacement->str.str(), global))
+    bool replaced = false;
+    if (!RegReplaceInternal(rc->str, a_regexp->str.str(), a_replacement->str.str(), global, replaced))
     {
         FreeTypeInst(a_regexp);
         FreeTypeInst(a_replacement);
         return NULL;
     }
 
-    if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, a_regexp->str.str(), a_replacement->str.str(), global))
+    if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, a_regexp->str.str(), a_replacement->str.str(), global, 
+        replaced))
     {
         FreeTypeInst(a_regexp);
         FreeTypeInst(a_replacement);
@@ -2854,10 +2858,12 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
     ToString(S);
     ToString(a_table);
     bool global = false;
+    bool first_only = false;
     if (a_options)
     {
         ToString(a_options);
         global = strchr(a_options->str.str(), 'g') != NULL;
+        first_only = strchr(a_options->str.str(), 'f') != NULL;
         FreeTypeInst(a_options);
     }
 
@@ -2882,16 +2888,20 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
         typestr dst;
         src.rulestr(item->m_src.str());
         dst.rulestr(item->m_dst.str());
-        if (!RegReplaceInternal(rc->str, src.str(), dst.str(), global))
+        bool replaced = false;
+        if (!RegReplaceInternal(rc->str, src.str(), dst.str(), global, replaced))
         {
             FreeTypeInst(rc);
             return NULL;
         }
-        if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, src.str(), dst.str(), global))
+        bool replaced2 = false;
+        if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, src.str(), dst.str(), global, replaced2))
         {
             FreeTypeInst(rc);
             return NULL;
         }
+        if (first_only && (replaced || replaced2)) 
+            break;
         item = item->GetNext();
     }
     rc->str.set_script(S->str.script);

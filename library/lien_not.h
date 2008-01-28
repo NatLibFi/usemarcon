@@ -165,7 +165,7 @@ private:
     virtual void PrintDebug(const char *s);
 
     bool RegFindInternal(const char *a_str, const char *a_regexp);
-    bool RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global);
+    bool RegReplaceInternal(typestr &a_str, const char *a_regexp, const char *a_replacement, bool a_global, bool &a_replaced);
 
     bool move_subfields(typestr &a_fielddata, TypeInst* a_source, TypeCD* a_new_pos, bool a_after, 
         TypeInst* a_target, TypeInst* a_prefix, TypeInst* a_suffix, TypeInst* a_preserved_punctuations,

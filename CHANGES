@@ -12,6 +12,8 @@ ere.maijala at helsinki.fi
 - Fixed global conditions.
 - Fixed RegReplaceTable.
 - Added check for unbalanced parenthesis to conditions.
+- Added 'f' option for RegReplaceTable to only do the first 
+  matching replace.
 
 
 **************************
