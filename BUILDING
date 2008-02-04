@@ -1,26 +1,30 @@
 
 Building in Windows:
 
-Run win\buildwin.bat (VC++ .NET 2003). Make sure the build environment
+Run win\build_vc7.bat (VC++ .NET 2003), win\build_vc8.bat (VC++ 2005) or
+win\build_vct.bat (VC++ Toolkit 2003). Make sure the build environment
 is properly set up first (if not by default, run vcvars32.bat or such).
 There are also MS VC++ projects in library and program directories.
 
-The build has been tested using MS Visual C++ .NET 2003 under Windows XP.
+The build has been tested using MS Visual C++ 2005 under Windows XP.
 
 
 Building in other systems:
 
-First build PCRE by entering pcre directory and giving the following commands:
+First build PCRE by giving the following commands in the usemarcon base directory:
 
+cd pcre
 chmod +x CleanTxt config.guess config.sub configure depcomp Detrail install-sh perltest.pl PrepareRelease RunGrepTest RunTest 132html
-./configure --enable-utf8 --enable-unicode-properties --disable-shared
+./configure --enable-utf8 --enable-unicode-properties --disable-shared --disable-cpp
 make
+cd ..
 
 If you're unable to build PCRE as it is in the USEMARCON distribution, you can download
 the PCRE distribution from <ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/>,
-unpack it to pcre directory (no version number) and try again.
+unpack it to pcre directory (no version number) and try again. USEMARCON requires only
+the basic pcre library.
 
-Then back in usemarcon directory:
+Then build USEMARCON itself (again in usemarcon base directory):
 
 chmod +x Makefile.am buildconf.sh config.guess config.sub configure install-sh missing mkinstalldirs usemarcon-config.in
 ./configure
