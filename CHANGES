@@ -2,7 +2,7 @@
 **************************
 version 3.02
 
-February 4 2008
+February 8 2008
 
 The National Library of Finland
 Ere Maijala
@@ -13,6 +13,7 @@ ere.maijala at helsinki.fi
 - Updated PCRE build instructions to disable pcrecpp (not needed).
 - Fixed USEMARCON program build to link with libpcre instead of
   libpcrecpp.
+- Fixed a possible bug in trimming of rule lines.
 
 
 **************************
