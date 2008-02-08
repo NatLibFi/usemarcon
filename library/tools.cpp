@@ -625,10 +625,17 @@ void trim_string(typestr &a_dst, typestr &a_src)
     char* p = a_src.str();
     while (*p == ' ')
         ++p;
-    char* p_end = a_src.str() + strlen(a_src.str()) - 1;
-    while(p_end > p && *p_end == ' ')
-        --p_end;
-    a_dst.str(p, p_end - p + 1);
+    if (*p)
+    {
+        char* p_end = a_src.str() + strlen(a_src.str()) - 1;
+        while(p_end > p && *p_end == ' ')
+            --p_end;
+        a_dst.str(p, p_end - p + 1);
+    }
+    else
+    {
+        a_dst.str("");
+    }
 }
 
 void trim_string2(typestr2 &a_dst, typestr2 &a_src)
