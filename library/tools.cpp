@@ -590,6 +590,7 @@ int readline(typestr &a_line, FILE *a_fh)
             {
                 --len;
                 buf[len-1] = '\n';
+                buf[len] = '\0';
             }
             if ((len == 2 && buf[len-2] == '\\') || (len > 2 && buf[len-2] == '\\' && buf[len-3] != '\\'))
             {
