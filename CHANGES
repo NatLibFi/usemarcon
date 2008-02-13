@@ -13,7 +13,8 @@ ere.maijala at helsinki.fi
 - Updated PCRE build instructions to disable pcrecpp (not needed).
 - Fixed USEMARCON program build to link with libpcre instead of
   libpcrecpp.
-- Fixed a possible bug in trimming of rule lines.
+- Fixed a possible bug in trimming of rule lines and removal
+  of CR at end of line.
 
 
 **************************
@@ -30,7 +31,7 @@ ere.maijala at helsinki.fi
 - Fixed global conditions.
 - Fixed RegReplaceTable.
 - Added check for unbalanced parenthesis to conditions.
-- Added 'f' option for RegReplaceTable to only do the first 
+- Added 'f' option for RegReplaceTable to only do the first
   matching replace.
 
 
