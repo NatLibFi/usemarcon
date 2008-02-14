@@ -9,9 +9,9 @@ Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Fixed a one time memory leak in TUMApplication.
+- Fixed a one time memory leak in TUMApplication (old bug).
 - Fixed an invalid file write attempt when converting record in
-  a memory buffer.
+  a memory buffer (old bug).
 
 
 **************************
