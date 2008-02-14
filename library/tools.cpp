@@ -624,12 +624,12 @@ int caps_count(const char *str)
 void trim_string(typestr &a_dst, typestr &a_src)
 {
     char* p = a_src.str();
-    while (*p == ' ')
+    while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r')
         ++p;
     if (*p)
     {
         char* p_end = a_src.str() + strlen(a_src.str()) - 1;
-        while(p_end > p && *p_end == ' ')
+        while (p_end > p && (*p_end == ' ' || *p_end == '\t' || *p_end == '\n' || *p_end == '\r'))
             --p_end;
         a_dst.str(p, p_end - p + 1);
     }
