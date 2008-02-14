@@ -1,5 +1,21 @@
 **************************
 **************************
+version 3.03
+
+February 14 2008
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed a one time memory leak in TUMApplication.
+- Fixed an invalid file write attempt when converting record in
+  a memory buffer.
+
+
+**************************
+**************************
 version 3.02
 
 February 14 2008

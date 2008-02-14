@@ -81,6 +81,8 @@ TUMApplication::~TUMApplication( void )
         delete itsErrorHandler;
         itsErrorHandler = NULL;
     }
+
+    free(m_record);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -701,8 +703,8 @@ void TUMApplication::SetMarcRecord(const char *a_record, int a_length)
 
     m_recordLen = a_length;
     m_record = reinterpret_cast<char *>(malloc(m_recordLen + 1));
-    memset(m_record, 0, m_recordLen + 1);
     memcpy(m_record, a_record, m_recordLen);
+    m_record[m_recordLen] = '\0';
 }
 
 void TUMApplication::GetMarcRecord(char *&a_record, int &a_length)

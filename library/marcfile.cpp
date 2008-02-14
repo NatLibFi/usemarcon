@@ -635,7 +635,7 @@ int TMarcFile::write_marc(unsigned long a_length, char *a_buffer)
 ///////////////////////////////////////////////////////////////////////////////
 int TMarcFile::Close()
 {
-    if (itsMode == FILE_WRITE)
+    if (itsMode == FILE_WRITE && !itsApplication->GetMarcRecordAvailable())
     {
         if (GetMarcInfoLastBlock())
         {

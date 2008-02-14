@@ -80,6 +80,7 @@ int main( int argc, char** argv )
         FILE *fp;
         int iInLength = 0;
         char acInRecord[100001];
+        memset(acInRecord, 0, sizeof(acInRecord));
         fp = fopen("c:\\usemarcon\\input.bib", "r");
         if (fp)
         {
