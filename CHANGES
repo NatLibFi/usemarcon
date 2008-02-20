@@ -1,5 +1,20 @@
 **************************
 **************************
+version 3.04
+
+February 20 2008
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed setting of input record in second and subsequent calls
+  to Usemarcon->Convert(). API mode only.
+
+
+**************************
+**************************
 version 3.03
 
 February 14 2008

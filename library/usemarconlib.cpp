@@ -111,6 +111,10 @@ int Usemarcon::Convert()
         if (!res)
             m_initialized = true;
     }
+    else
+    {
+        application->SetMarcRecord(m_record, m_length);
+    }
     if (!res)
     {
         res = application->Convert();
