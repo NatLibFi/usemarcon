@@ -2119,8 +2119,8 @@ typestr TEvaluateRule::to(typestr& a_str, int a_index, bool a_strict)
     *p = '\0';
     if (!a_strict)
     {
-        p = rc.str() + strlen(rc.str());
-        while(*p == ' ' && p > rc.str())
+        p = rc.str() + strlen(rc.str()) - 1;
+        while(p >= rc.str() && *p == ' ')
         {
             *p = '\0';
             --p;

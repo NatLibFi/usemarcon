@@ -11,6 +11,7 @@ ere.maijala at helsinki.fi
 
 - Fixed setting of input record in second and subsequent calls
   to Usemarcon->Convert(). API mode only.
+- Fixed trimming of whitespace in the result of To() command.
 
 
 **************************
