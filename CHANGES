@@ -1,5 +1,20 @@
 **************************
 **************************
+version 3.05
+
+February 27 2008
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed spurious 5006 error messages.
+- Added record number to warning 2602.
+
+
+**************************
+**************************
 version 3.04
 
 February 21 2008

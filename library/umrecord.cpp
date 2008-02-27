@@ -808,11 +808,9 @@ void TUMRecord::MergeLinkedFields()
             }
             if (!match_found)
             {
-                typestr tmp = "Notice '";
-                tmp += field->GetLib1();
-                tmp += "' : field '";
-                tmp += field->GetTag();
-                tmp += "'";
+                char rec[50];
+                sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
+                typestr tmp = typestr(rec) + typestr("Field ") + field->GetTag() + ": '" + field->GetLib1() + "'";
                 itsErrorHandler->SetErrorD(2602, WARNING, tmp.str());
             }
         }
