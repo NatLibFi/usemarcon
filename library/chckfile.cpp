@@ -302,9 +302,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             if ((!CurrentControl->GetTagRepeatable()) && (CurrentControl->GetTagOccurrency()))
             {
                 // Non-repeatable field repeated
-                char rec[50];
-                sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-                typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
                 itsErrorHandler->SetErrorD(IO==INPUT ? 2101 : 7101, WARNING, tmp.str());
             }
             else
@@ -320,9 +318,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                 {
                     // Warning only if the indicator value is invalid
                     // (passing empty values as proper ones)
-                    char rec[50];
-                    sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-                    typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                    typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
                     tmp += " (ind '";
                     tmp += CurrentField->GetI1();
                     tmp += "')";
@@ -337,9 +333,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                 {
                     // Warning only if the indicator value is invalid
                     // (passing empty values as proper ones)
-                    char rec[50];
-                    sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-                    typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                    typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
                     tmp += " (ind '";
                     tmp += CurrentField->GetI2();
                     tmp += "')";
@@ -355,9 +349,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                 if (TestSubfield(Balise,CurrentControl->GetFirstSubfield()))
                 {
                     // Invalid or redundant subfield
-                    char rec[50];
-                    sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-                    typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                    typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
                     tmp += " (subfield '$";
                     tmp += Balise;
                     tmp += "')";
@@ -370,9 +362,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             // Check that there is at least one subfield in each field (ignoring control fields)
             if ((!AtLeastOneSub) && (CurrentControl->GetFirstSubfield()))
             {
-                char rec[50];
-                sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-                typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
                 itsErrorHandler->SetErrorD(IO==INPUT ? 2108 : 7108, WARNING, tmp.str());
             }
             CurrentCtrlSub=CurrentControl->GetFirstSubfield();
@@ -381,9 +371,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                 if ((CurrentCtrlSub->GetSubMandatory()) && (!CurrentCtrlSub->GetSubOccurency()))
                 {
                     // A mandatory subfield is missing
-                    char rec[50];
-                    sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-                    typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+                    typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
                     tmp += " (subfield '$";
                     tmp += CurrentCtrlSub->GetSub();
                     tmp += "')";
@@ -397,9 +385,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
         else
         {
             // Unexpected field 
-            char rec[50];
-            sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-            typestr tmp = typestr(rec) + typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
+            typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
             itsErrorHandler->SetErrorD(IO==INPUT ? 2105 : 7105, WARNING, tmp.str());
         }
         CurrentField = CurrentField->GetNextField();
@@ -412,9 +398,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
         if ((CurrentControl->GetTagMandatory()) && (!CurrentControl->GetTagOccurrency()))
         {
             // Missing mandatory field
-            char rec[50];
-            sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-            typestr tmp = typestr(rec) + "Field ";
+            typestr tmp = "Field ";
             tmp += CurrentControl->GetTag();
             itsErrorHandler->SetErrorD(IO==INPUT ? 2106 : 7106, WARNING, tmp.str());
         }

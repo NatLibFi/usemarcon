@@ -37,6 +37,7 @@ TError::TError(TUMApplication* theApplication, const char *LogFileName, const ch
     itsUTF8Mode            = false;
     itsConvertSubfieldCodesToLowercase = false;
     mRecordNumber = 0;
+    *mRecordId = '\0';
     mHandleLinkedFields = false;
 
     // Logfile opening
@@ -81,6 +82,18 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
         }
     }
 
+    const char* description = bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error";
+    char rec_info[100];
+    if (*description == '*')
+    {
+        ++description;
+        sprintf(rec_info, "(record %ld%s%s) ", mRecordNumber, *mRecordId ? ", " : "", mRecordId);
+    }
+    else
+    {
+        *rec_info = '\0';
+    }
+
     typestr message;
     const char *category = NULL;
     switch(Severity)
@@ -89,8 +102,9 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
         case DISPLAY:
             message.allocstr(50);
             sprintf(message.str(), "WARNING (%d) - ", ErrorCode);
-            message += bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error";
+            message += description;
             message += "\n";
+            message += rec_info;
             message += UserData;
             show_warning(message.str());
             return 0-ErrorCode;
@@ -107,9 +121,8 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
 
     if (itsLogError)
     {
-        fprintf(itsLogError, "%s (%d) - %s%s%s\n", category, ErrorCode,
-            bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error", *UserData ? " : " : "",
-            UserData);
+        fprintf(itsLogError, "%s (%d) - %s%s%s%s\n", category, ErrorCode,
+            description, rec_info, *UserData ? " : " : "", UserData);
         if (ErrorCode >= 9000 || itsDebugMode)
             fprintf(itsLogError, " in %s:%d\n", FileName, LineNumber);
         else 
@@ -137,8 +150,9 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
     // Write message to screen
     message.allocstr(100);
     sprintf(message.str(), "%s (%d) - ", category, ErrorCode);
-    message += bFoundCode ? ErrorDesc[iIndice].description : "Unknown Error";
+    message += description;
     message += "\n";
+    message += rec_info;
     message += UserData;
     if (ErrorCode >= 9000 || itsDebugMode)
     {
@@ -204,7 +218,8 @@ int TError::OpenErrorLogFile(const char *Name)
     char *pcTime = asctime(localtime(&ns));
     if (pcTime)
     {
-        fprintf(itsLogError,"\n\n ----------------------------------- \n Started at : %s\n",pcTime);
+        fprintf(itsLogError,"\n\n-----------------------------------\nUSEMARCON v%s started at %s\n", 
+            USEMARCON_VERSION, pcTime);
     }
     fflush(itsLogError);
     return 0;

@@ -121,9 +121,7 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
     MarcOut->SetLeader(MarcIn->GetLeader());
     if (!MarcOut->GetLeader())
     {
-        char rec[50];
-        sprintf(rec, "(record %ld)", itsErrorHandler->GetRecordNumber());
-        typestr tmp = typestr(rec) + " Leader '";
+        typestr tmp = "Leader '";
         tmp += MarcIn->GetLeader();
         tmp += '\'';
         itsErrorHandler->SetErrorD(3000, ERROR, tmp.str());
@@ -159,9 +157,7 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
         Out->SetScript(In->GetScript());
         if (!Out->GetLib1())
         {
-            char rec[50];
-            sprintf(rec, "(record %ld)", itsErrorHandler->GetRecordNumber());
-            typestr tmp = typestr(rec) + " Field ";
+            typestr tmp = "Field ";
             tmp += In->GetTag();
             tmp += ": '";
             tmp += In->GetLib1();

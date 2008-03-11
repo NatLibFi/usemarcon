@@ -32,6 +32,7 @@ TMarcRecord::TMarcRecord(TUMApplication *Application)
     itsInputIndSeparatorsID = 0;
     itsOutputIndSeparatorsID = 0;
     itsErrorHandler     = Application->GetErrorHandler();
+    *m_recordId = '\0';
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -42,6 +43,8 @@ TMarcRecord::TMarcRecord(TUMApplication *Application)
 TMarcRecord::TMarcRecord(const TMarcRecord &aRecord)
 {
     strcpy(itsLeader, aRecord.GetLeader());
+
+    strcpy(m_recordId, aRecord.m_recordId);
 
     TMarcField* In = aRecord.GetFirstField();
     TMarcField* Out = NULL;
@@ -226,6 +229,12 @@ int TMarcRecord::FromString(char* MarcString)
 
     champ->SetLib1(&MarcString[dd],(unsigned int)lngchamp-1);
 
+    if (strcmp(champ->GetTag(), "001") == 0)
+    {
+        strncpy(m_recordId, champ->GetLib1(), 50);
+        m_recordId[50] = '\0';
+    }
+
     while (MarcString[pos] != '\x1E')  // end of directory
     {
         champ->SetNextField(new TMarcField());
@@ -270,6 +279,12 @@ int TMarcRecord::FromString(char* MarcString)
         }
 
         champ->SetLib1(&MarcString[dd],(unsigned int)lngchamp-1);
+
+        if (strcmp(champ->GetTag(), "001") == 0)
+        {
+            strncpy(m_recordId, champ->GetLib1(), 50);
+            m_recordId[50] = '\0';
+        }
     }
 
     champ->SetNextField(NULL);
@@ -353,7 +368,14 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
                         field->SetLib1(field_data.str());
                     }
                     else
+                    {
                         field->SetLib1(unescape_xml(content).str());
+                        if (strcmp(field->GetTag(), "001") == 0)
+                        {
+                            strncpy(m_recordId, field->GetLib1(), 50);
+                            m_recordId[50] = '\0';
+                        }
+                    }
 
                 }
             }

@@ -96,11 +96,6 @@ void TEvaluateRule::yyerror( char *m )
     typestr errorstr; 
     if (*m=='s' || *m=='l')
     {
-        errorstr = "(record ";
-        char recno[30];
-        sprintf(recno, "%lu", mErrorHandler->GetRecordNumber());
-        errorstr += recno;
-        errorstr += ") ";
         errorstr += m;
         errorstr += " near ";
         errorstr += mScanner.YYText();
@@ -1459,7 +1454,7 @@ TypeInst* TEvaluateRule::Next_( TypeCD* cd1, TypeCD* cd2, int strict )
     FreeCD(cd2);
     if (!temps.str()) 
     {
-        return NULL;
+        return AllocTypeInst();
     }
 
     TypeInst* rc = AllocTypeInst();
@@ -1481,7 +1476,7 @@ TypeInst* TEvaluateRule::Last_( TypeCD* cd1, TypeCD* cd2, int strict )
     FreeCD(cd2);
     if (!temps.str())
     {
-        return NULL;
+        return AllocTypeInst();
     }
 
     TypeInst* rc = AllocTypeInst();
@@ -1644,7 +1639,7 @@ TypeInst* TEvaluateRule::Subtract( TypeInst* t1, TypeInst* t2 )
         yyerror("Subtraction can not be done between strings");
         FreeTypeInst(t1);
         FreeTypeInst(t2);
-        return NULL;
+        return AllocTypeInst();
     }
     else
     {
@@ -1666,7 +1661,7 @@ TypeInst* TEvaluateRule::Multiply( TypeInst* t1, TypeInst* t2 )
         yyerror("Multiplication can not be done between strings");
         FreeTypeInst(t1);
         FreeTypeInst(t2);
-        return NULL;
+        return AllocTypeInst();
     }
     else
     {
@@ -1688,7 +1683,7 @@ TypeInst* TEvaluateRule::Divide( TypeInst* t1, TypeInst* t2 )
         yyerror("Division can not be done between strings");
         FreeTypeInst(t1);
         FreeTypeInst(t2);
-        return NULL;
+        return AllocTypeInst();
     }
     else
         if (t2->val == 0)
@@ -1696,7 +1691,7 @@ TypeInst* TEvaluateRule::Divide( TypeInst* t1, TypeInst* t2 )
             yyerror("Division by 0 error");
             FreeTypeInst(t1);
             FreeTypeInst(t2);
-            return NULL;
+            return AllocTypeInst();
         }
         else
         {
@@ -1717,15 +1712,16 @@ TypeInst* TEvaluateRule::Value(TypeInst* t)
         return t;
 
     char* p = t->str.str();
-    while (p)
+    while (*p)
     {
-        if (!isdigit(*p))
+        if (!isdigit(*p) && *p != ' ')
         {
             typestr msg = t->str;
             msg += " cannot be converted to integer";
             yyerror(msg.str());
-            return NULL;
+            return AllocTypeInst();
         }
+        ++p;
     }
     t->val = atoi(t->str.str());
     t->str.freestr();
@@ -1771,7 +1767,7 @@ TypeInst* TEvaluateRule::MemMem( TypeInst* n )
     {
         yyerror("Mem(<string>) Index must be numeric");
         FreeTypeInst(n);
-        return NULL;
+        return AllocTypeInst();
     }
     int i=n->val;
     FreeTypeInst(n);
@@ -1780,7 +1776,7 @@ TypeInst* TEvaluateRule::MemMem( TypeInst* n )
         char tmp[100];
         sprintf(tmp,"Mem(%d) Index out of bounds", i);
         yyerror(tmp);
-        return NULL;
+        return AllocTypeInst();
     }
     if (Memoire[i])
     {
@@ -1791,7 +1787,7 @@ TypeInst* TEvaluateRule::MemMem( TypeInst* n )
     char tmp[100];
     sprintf(tmp,"Mem(%d) is empty",i);
     yyerror(tmp);
-    return NULL;
+    return AllocTypeInst();
 }
 
 /*
@@ -1826,7 +1822,7 @@ TypeInst* TEvaluateRule::MemExc( TypeInst* n )
     if (n->str.str())
     {
         yyerror("Exc(<string>) Index must be numeric");
-        return NULL;
+        return AllocTypeInst();
     }
     int i = n->val;
     FreeTypeInst(n);
@@ -1835,7 +1831,7 @@ TypeInst* TEvaluateRule::MemExc( TypeInst* n )
         char tmp[100];
         sprintf(tmp,"Exc(%d) Index out of bounds", i);
         yyerror(tmp);
-        return NULL;
+        return AllocTypeInst();
     }
     if (Memoire[i])
     {
@@ -1848,7 +1844,7 @@ TypeInst* TEvaluateRule::MemExc( TypeInst* n )
         char tmp[100];
         sprintf(tmp,"Exc(%d) is empty", i);
         yyerror(tmp);
-        return NULL;
+        return AllocTypeInst();
     }
 }
 
@@ -1986,7 +1982,7 @@ Conversion de numerique en char* si necessaire pour une Instruction
 */
 char* TEvaluateRule::ToString(TypeInst* t)
 {
-    if (!t) 
+    if (!t)
         return NULL;
 
     if (!t->str.str())
@@ -2085,8 +2081,10 @@ FROM( translation [, STRICT] )
 TypeInst* TEvaluateRule::From(TypeInst* t, bool a_strict)
 {
     Value(t);
-    unsigned int i = (unsigned int)(t->val-1);
+    unsigned int i = (unsigned int)t->val;
     FreeTypeInst(t);
+    if (i > 0)
+        --i;
     TypeInst* rc = AllocTypeInst();
     ToString(S);
     rc->str.str(from(S->str, i, a_strict).str());
@@ -2135,8 +2133,16 @@ TO( translation [, STRICT] )
 TypeInst* TEvaluateRule::To(TypeInst* t, bool a_strict)
 {
     Value(t);
-    unsigned int i = (unsigned int)(t->val-1);
+    unsigned int i = (unsigned int)t->val;
     FreeTypeInst(t);
+    if (i > 0)
+        --i;
+    else
+    {
+        TypeInst* rc = AllocTypeInst();
+        rc->str.str("");
+        return rc;
+    }
     TypeInst* rc = AllocTypeInst();
     ToString(S);
     rc->str.str(to(S->str, i, a_strict).str());
@@ -2183,10 +2189,20 @@ TypeInst* TEvaluateRule::Between(TypeInst* t1, TypeInst* t2, bool a_strict)
 {
     Value(t1);
     Value(t2);
-    unsigned int i1=(unsigned int)(t1->val-1);
-    unsigned int i2=(unsigned int)(t2->val-1);
+    unsigned int i1=(unsigned int)t1->val;
+    unsigned int i2=(unsigned int)t2->val;
     FreeTypeInst(t1);
     FreeTypeInst(t2);
+    if (i1 > 0)
+        --i1;
+    if (i2 > 0)
+        --i2;
+    else
+    {
+        TypeInst* rc = AllocTypeInst();
+        rc->str.str("");
+        return rc;
+    }
 
     TypeInst* rc = AllocTypeInst();
     ToString(S);
@@ -2749,7 +2765,7 @@ TypeInst* TEvaluateRule::RegMatch( TypeInst* t1 )
     {
         yyerror("RegMatch() requires a numeric index");
         FreeTypeInst(t1);
-        return NULL;
+        return AllocTypeInst();
     }
     int index = t1->val;
     FreeTypeInst(t1);
@@ -2836,7 +2852,7 @@ TypeInst* TEvaluateRule::RegReplace(TypeInst* a_regexp, TypeInst* a_replacement,
     {
         FreeTypeInst(a_regexp);
         FreeTypeInst(a_replacement);
-        return NULL;
+        return AllocTypeInst();
     }
 
     if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, a_regexp->str.str(), a_replacement->str.str(), global, 
@@ -2844,7 +2860,7 @@ TypeInst* TEvaluateRule::RegReplace(TypeInst* a_regexp, TypeInst* a_replacement,
     {
         FreeTypeInst(a_regexp);
         FreeTypeInst(a_replacement);
-        return NULL;
+        return AllocTypeInst();
     }
     rc->str.set_script(S->str.script);
 
@@ -2878,7 +2894,7 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
         yyerror(error.str());
         FreeTypeInst(a_table);
         FreeTypeInst(rc);
-        return NULL;
+        return AllocTypeInst();
     }
     FreeTypeInst(a_table);
     StringTableItem* item = table->GetFirstItem();
@@ -2892,13 +2908,13 @@ TypeInst* TEvaluateRule::RegReplaceTable(TypeInst* a_table, TypeInst* a_options)
         if (!RegReplaceInternal(rc->str, src.str(), dst.str(), global, replaced))
         {
             FreeTypeInst(rc);
-            return NULL;
+            return AllocTypeInst();
         }
         bool replaced2 = false;
         if (!rc->str.s2.is_empty() && !RegReplaceInternal(rc->str.s2, src.str(), dst.str(), global, replaced2))
         {
             FreeTypeInst(rc);
-            return NULL;
+            return AllocTypeInst();
         }
         if (first_only && (replaced || replaced2)) 
             break;

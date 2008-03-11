@@ -96,6 +96,8 @@ public:
     void  SetOutputXMLRecordType(const char *a_value) { itsOutputXMLRecordType = a_value; }
     unsigned long GetRecordNumber() { return mRecordNumber; }
     void SetRecordNumber(unsigned long aNumber) { mRecordNumber = aNumber; }
+    const char* GetRecordId() const { return mRecordId; }
+    void SetRecordId(const char* aRecordId) { strncpy(mRecordId, aRecordId ? aRecordId : "", 50); mRecordId[50] = '\0'; }
     bool GetHandleLinkedFields() { return mHandleLinkedFields; }
     void SetHandleLinkedFields(bool a_value) { mHandleLinkedFields = a_value; }
 
@@ -118,6 +120,7 @@ protected:
     int             itsVerboseMode;
     int             itsDebugMode;
     unsigned long   mRecordNumber;
+    char            mRecordId[50];
     bool            mHandleLinkedFields;
 };
 

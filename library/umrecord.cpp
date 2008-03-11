@@ -239,9 +239,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
     TCDLib* Search=(TCDLib*)itsFirstCDLib;
     if (!NextCD(&Search,&CD))
     {
-        char tmp[50];
-        sprintf(tmp, "(record %ld)", itsErrorHandler->GetRecordNumber());
-        itsErrorHandler->SetErrorD(7109, ERROR, tmp);
+        itsErrorHandler->SetError(7109, ERROR);
     }
     else
         SetLeader(Search->GetContent().str());
@@ -283,18 +281,16 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             // regle vraisemblablement. Dans ce cas l'indicateur manquant est mis a ' '
             if (NewField->GetI1() && !NewField->GetI2())
             {
-                char tmp[80];
-                NewField->SetI2(' ');
-                sprintf(tmp,"(record %ld) I2 is missing in field %s", itsErrorHandler->GetRecordNumber(), NewField->GetTag());
-                itsErrorHandler->SetErrorD( 5004, WARNING, tmp );
+                typestr tmp = "I2 is missing in field ";
+                tmp += NewField->GetTag();
+                itsErrorHandler->SetErrorD(5004, WARNING, tmp.str());
             }
 
             if (NewField->GetI2() && !NewField->GetI1())
             {
-                char tmp[80];
-                NewField->SetI1(' ');
-                sprintf(tmp,"(record %ld) I1 is missing in field %s", itsErrorHandler->GetRecordNumber(), NewField->GetTag());
-                itsErrorHandler->SetErrorD( 5004, WARNING, tmp );
+                typestr tmp = "I1 is missing in field ";
+                tmp += NewField->GetTag();
+                itsErrorHandler->SetErrorD(5004, WARNING, tmp.str());
             }
 
             // Remplissage du libelle : on ne specifie pas de sous-champ dans CD,
@@ -808,9 +804,7 @@ void TUMRecord::MergeLinkedFields()
             }
             if (!match_found)
             {
-                char rec[50];
-                sprintf(rec, "(record %ld) ", itsErrorHandler->GetRecordNumber());
-                typestr tmp = typestr(rec) + typestr("Field ") + field->GetTag() + ": '" + field->GetLib1() + "'";
+                typestr tmp = typestr("Field ") + field->GetTag() + ": '" + field->GetLib1() + "'";
                 itsErrorHandler->SetErrorD(2602, WARNING, tmp.str());
             }
         }

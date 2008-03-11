@@ -59,6 +59,7 @@ public:
     void          SetFirstOutputTNI   (TTagNoInd *aTNI)   { itsFirstOutputTNI=aTNI; };
     void          SetIndSeparatorsID  (int IO,long ID);
     long          GetIndSeparatorsID  (int IO) const;
+    const char*   GetRecordId() const { return m_recordId; }
     int           ProcessDuplicateFields(DUPLICATE_PROCESSING_MODE a_subfields, DUPLICATE_PROCESSING_MODE a_fields);
 
 private:
@@ -79,6 +80,7 @@ protected:
     TTagNoInd             *itsFirstOutputTNI;
     long                  itsInputIndSeparatorsID;
     long                  itsOutputIndSeparatorsID;
+    char                  m_recordId[50];
 
     TError                *itsErrorHandler;
 
