@@ -180,6 +180,8 @@ int TMarcRecord::FromString(char* MarcString)
     // Delete existing tree
     DelTree();
 
+    *m_recordId = '\0';
+
     // Leader
     memcpy(itsLeader, MarcString, 24);
     itsLeader[24]=0;

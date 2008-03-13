@@ -87,7 +87,7 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
     if (*description == '*')
     {
         ++description;
-        sprintf(rec_info, "(record %ld%s%s) ", mRecordNumber, *mRecordId ? ", " : "", mRecordId);
+        sprintf(rec_info, "(record %ld%s%s) ", mRecordNumber, *mRecordId ? ", ID " : "", mRecordId);
     }
     else
     {

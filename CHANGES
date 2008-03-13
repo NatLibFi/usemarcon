@@ -9,12 +9,14 @@ Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Fixed a couple of possible crashes when rule processing encounters an 
-  error.
+- Fixed a couple of possible crashes when rule processing encounters 
+  an error.
 - Fixed a possible crash in MoveBefore/MoveAfter.
 - Added 001 field (if any) of the input record to the warning and
   error messages. 
 - Added writing of version number to the error log.
+- Fixed a possible memory leak in case insensitive utf8 string 
+  comparison.
 
 
 **************************

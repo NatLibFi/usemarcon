@@ -559,10 +559,10 @@ int utf8_stricmp(const char *str1, const char *str2)
         if (utf8proc_map((unsigned char *) str2, 0, (unsigned char **) &str2_utf8, UTF8PROC_NULLTERM | UTF8PROC_CASEFOLD) > 0)
         {
             result = strcmp(str1_utf8, str2_utf8);
-            free(str2_utf8);
         }
-        free(str1_utf8);
+        free(str2_utf8);
     }
+    free(str1_utf8);
     return result;
 }
 
