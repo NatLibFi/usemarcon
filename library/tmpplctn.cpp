@@ -569,7 +569,6 @@ int TUMApplication::Convert(void)
 
     if (m_interactive)
     {
-        printf("Size of input file: %ld bytes\n", (long)itsSize);
         printf("Conversion progress:\n");
     }
 
@@ -598,8 +597,15 @@ int TUMApplication::Convert(void)
 
         if (m_interactive)
         {
-            int readcentile = (int)(itsMarcDoc->GetInputFile()->GetPos() / itsSize * 100);
-            printf("%d%%   %d input records\r",(int)readcentile, itsRecordsOk + itsRecordsFailed);
+            if (itsSize < 0)
+            {
+                printf("%d input records\r", itsRecordsOk + itsRecordsFailed);
+            }
+            else
+            {
+                int readcentile = (int)(itsMarcDoc->GetInputFile()->GetPos() / itsSize * 100);
+                printf("%d%%   %d input records\r", readcentile, itsRecordsOk + itsRecordsFailed);
+            }
         }
 
         // Controle du fichier de sortie si un fichier de controle a ete charge

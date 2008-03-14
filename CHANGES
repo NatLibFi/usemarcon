@@ -2,7 +2,7 @@
 **************************
 version 3.06
 
-March 11 2008
+March 14 2008
 
 The National Library of Finland
 Ere Maijala
@@ -17,6 +17,8 @@ ere.maijala at helsinki.fi
 - Added writing of version number to the error log.
 - Fixed a possible memory leak in case insensitive utf8 string 
   comparison.
+- Try to avoid showing (wrong) progress percentage for files larger 
+  than 2GB. 
 
 
 **************************
