@@ -121,8 +121,8 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
 
     if (itsLogError)
     {
-        fprintf(itsLogError, "%s (%d) - %s%s%s%s\n", category, ErrorCode,
-            description, rec_info, *UserData ? " : " : "", UserData);
+        fprintf(itsLogError, "%s (%d) - %s %s%s%s\n", category, ErrorCode,
+            description, rec_info, *UserData ? ": " : "", UserData);
         if (ErrorCode >= 9000 || itsDebugMode)
             fprintf(itsLogError, " in %s:%d\n", FileName, LineNumber);
         else 
