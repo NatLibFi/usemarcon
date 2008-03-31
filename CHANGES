@@ -1,5 +1,20 @@
 **************************
 **************************
+version 3.07
+
+March 18 2008
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed a possible crash when conversion was done in UTF-8 mode and 
+  a record contained invalid characters.
+
+
+**************************
+**************************
 version 3.06
 
 March 14 2008

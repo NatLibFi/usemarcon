@@ -488,16 +488,18 @@ void show_message(const char *message)
 
 unsigned int utf8_glypheme_length(const char *p)
 {
-    //unsigned int len = utf8_charlen(*p);
-
     int32_t cp;
-    unsigned int len = utf8proc_iterate((uint8_t *) p, -1, &cp);
+    int len = utf8proc_iterate((uint8_t *) p, -1, &cp);
+    if (len == UTF8PROC_ERROR_INVALIDUTF8)
+        return 1;
 
     // Check for combining characters
     const char *p2 = p + len;
     while (*p2)
     {
-        unsigned int comb_len = utf8proc_iterate((uint8_t *) p2, -1, &cp);
+        int comb_len = utf8proc_iterate((uint8_t *) p2, -1, &cp);
+        if (comb_len == UTF8PROC_ERROR_INVALIDUTF8)
+            return 1;
         const utf8proc_property_t* prop = utf8proc_get_property(cp);
         if (!prop->combining_class)
             break;
