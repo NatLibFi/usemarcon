@@ -2081,10 +2081,8 @@ FROM( translation [, STRICT] )
 TypeInst* TEvaluateRule::From(TypeInst* t, bool a_strict)
 {
     Value(t);
-    unsigned int i = (unsigned int)t->val;
+    int i = t->val - 1; // It can become -1, which is ok
     FreeTypeInst(t);
-    if (i > 0)
-        --i;
     TypeInst* rc = AllocTypeInst();
     ToString(S);
     rc->str.str(from(S->str, i, a_strict).str());
@@ -2133,16 +2131,8 @@ TO( translation [, STRICT] )
 TypeInst* TEvaluateRule::To(TypeInst* t, bool a_strict)
 {
     Value(t);
-    unsigned int i = (unsigned int)t->val;
+    int i = t->val - 1; // It can become -1, which is ok
     FreeTypeInst(t);
-    if (i > 0)
-        --i;
-    else
-    {
-        TypeInst* rc = AllocTypeInst();
-        rc->str.str("");
-        return rc;
-    }
     TypeInst* rc = AllocTypeInst();
     ToString(S);
     rc->str.str(to(S->str, i, a_strict).str());
