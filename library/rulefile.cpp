@@ -108,7 +108,7 @@ int TRuleFile::OpenRuleFile()
     int condition_group = 0;
     int condition_line = 0;
     bool reset_condition = false;
-    while (!NextLine(&RuleLine,&IncludedFileSpec,&Line)) // Read a Line from the Rule File
+    while (!NextLine(&RuleLine, true, &IncludedFileSpec, &Line))
     {
         char *p = RuleLine.str();
         while (*p == ' ' || *p == '\t')

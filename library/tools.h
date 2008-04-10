@@ -108,4 +108,6 @@ int caps_count(const char *str);
 void trim_string(typestr &a_dst, typestr &a_src);
 void trim_string2(typestr2 &a_dst, typestr2 &a_src);
 
+char* strstr_unquoted(char* aStr, char* aIn);
+
 #endif // _TOOLS_H

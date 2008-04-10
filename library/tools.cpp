@@ -647,3 +647,21 @@ void trim_string2(typestr2 &a_dst, typestr2 &a_src)
     trim_string(a_dst.s2, a_src.s2);
     a_dst.set_script(a_src.script);
 }
+
+char* strstr_unquoted(char* aStr, char* aIn)
+{
+    char* p = aStr;
+    bool in_quotes = false;
+    while (*p)
+    {
+        if (*p == '\'')
+            in_quotes = !in_quotes;
+        else if (!in_quotes && *p == *aIn)
+        {
+            if (strncmp(p, aIn, strlen(aIn)) == 0)
+                return p;
+        }
+        ++p;
+    }
+    return NULL;
+}

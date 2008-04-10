@@ -72,7 +72,7 @@ int TCheckFile::Open(int IO)
         return mStateManager->GetErrorCode();
 
     // Lecture de chaque ligne du fichier
-    while (NextLine(&aLine, &aSpec, &Line) == 0)
+    while (NextLine(&aLine, false, &aSpec, &Line) == 0)
     {
         // Si la ligne n'est pas vide, la traiter
         if (RemoveSpace(aLine.str()))

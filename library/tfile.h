@@ -53,7 +53,7 @@ public:
     virtual int          Close(void);
 
     bool         Exists(void);
-    int          NextLine(typestr *aLine, typestr *Spec=NULL, int *LineNumber=NULL);
+    int          NextLine(typestr *aLine, bool aStringFile, typestr *Spec=NULL, int *LineNumber=NULL);
     typestr      GetName(void);
     void         SetName(typestr &aName);
     char         GetMode(void);

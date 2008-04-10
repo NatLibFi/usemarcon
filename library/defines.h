@@ -24,15 +24,12 @@ AUTHOR
 #define USEMARCON_VERSION "3.08"
 #define RULE_VERSION 308
 
-#define UNKNOWN 0
 #define INPUT 1
 #define OUTPUT 2
 
 #define FL_OK 1
 #define FL_BAD 2
 #define FL_CANCEL 3
-
-#define EMPTY_ITEM		"\"\""
 
 #define START_OF_FIELD '\x1f'
 #define START_OF_FIELD_STR "\x1f"

@@ -59,7 +59,7 @@ int TTransFile::Open()
         return 1;
 
     // Lecture de chaque ligne du fichier
-    while( NextLine( &aLine, &aSpec, &Line )==0)
+    while (NextLine(&aLine, false, &aSpec, &Line) == 0)
     {
         // Si la ligne n'est pas vide, la traiter
         if (*aLine.str())

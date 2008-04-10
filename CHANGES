@@ -1,8 +1,8 @@
 **************************
 **************************
-version 3.07
+version 3.08
 
-April 4 2008
+April 10 2008
 
 The National Library of Finland
 Ere Maijala
@@ -13,6 +13,10 @@ ere.maijala at helsinki.fi
   its function.
 - Fixed setting of record id in state manager overriding the flag of
   handling of linked fields.
+- Weakened comment designator // so that it won't take effect inside
+   a string.
+- Type and format attributes are written to XML record only if they are
+  not empty. 
 
 
 **************************

@@ -463,13 +463,13 @@ int TMarcRecord::ToString(typestr & a_marcstr)
 int TMarcRecord::ToXMLString(typestr &a_xml)
 {
     a_xml = "<record";
-    if (mStateManager->GetOutputXMLRecordFormat().str())
+    if (!mStateManager->GetOutputXMLRecordFormat().is_empty())
     {
         a_xml.append(" format=\"");
         a_xml.append(mStateManager->GetOutputXMLRecordFormat());
         a_xml.append_char('\"');
     }
-    if (mStateManager->GetOutputXMLRecordType().str())
+    if (!mStateManager->GetOutputXMLRecordType().is_empty())
     {
         a_xml.append(" type=\"");
         a_xml.append(mStateManager->GetOutputXMLRecordType());

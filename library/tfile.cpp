@@ -137,7 +137,7 @@ bool TFile::Exists()
 // NextLine
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
+int TFile::NextLine(typestr *aLine, bool aStringFile, typestr *Spec, int *LineNumber)
 {
     // NextLine() can't operate on binary files
     if (itsKind == FILE_BINARY)
@@ -147,7 +147,7 @@ int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
         // current line is an #include line
     {
         int rc;
-        if ((rc = Included->NextLine(aLine, Spec, LineNumber)) <= 0)
+        if ((rc = Included->NextLine(aLine, aStringFile, Spec, LineNumber)) <= 0)
             return rc;
         else
         {
@@ -203,7 +203,7 @@ int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
             int rc=Included->Open();
             if (rc<0)
                 return rc;
-            rc=Included->NextLine(aLine, Spec, LineNumber);
+            rc=Included->NextLine(aLine, aStringFile, Spec, LineNumber);
             if (rc<=0)
                 return rc;
             else
@@ -217,7 +217,7 @@ int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
     if (line.str()[strlen(line.str())-1] == '\n')
         line.str()[strlen(line.str())-1] = '\0';
 
-    char *comment_pos = strstr(line.str(), "//");
+    char* comment_pos = aStringFile ? strstr_unquoted(line.str(), "//") : strstr(line.str(), "//");
     if (comment_pos)
         *comment_pos = '\0';
 
@@ -339,9 +339,9 @@ int TFile::SkipBeginning()
     typestr line;
     typestr aSpec;
     // Au debut de chaque fichier, il faut sauter deux lignes de commentaires
-    if (NextLine(&line, &aSpec))
+    if (NextLine(&line, false, &aSpec))
         mStateManager->SetErrorD(9506, ERROR, aSpec.str());
-    if(NextLine(&line, &aSpec))
+    if(NextLine(&line, false, &aSpec))
         mStateManager->SetErrorD(9506, ERROR, aSpec.str());
     return mStateManager->GetErrorCode();
 }

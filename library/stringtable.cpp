@@ -57,12 +57,8 @@ bool StringTable::Load(const typestr a_filename)
     typestr line;
     typestr include_file;
     int lineno;
-    while (!file.NextLine(&line, &include_file, &lineno))
+    while (!file.NextLine(&line, true, &include_file, &lineno))
     {
-        char *p = strstr(line.str(), "//");
-        if (p) 
-            *p = '\0';
-
         typestr src;
         typestr dst;
         if (!parse_line(line.str(), src, dst))
