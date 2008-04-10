@@ -38,14 +38,9 @@ AUTHOR
 #define FORCER            4
 #define NOTICE            5
 #define NONERROR          6
-#define STOP              0
-#define CONTINUE          1
 #define NONINTERACTIVE    0
 #define INTERACTIVE       1
-#define DEFAULT_ERR_FILE_NAME        "errcodes.txt"
 #define DEFAULT_LOG_FILE_NAME        "errlog.txt"
-#define EMPTY_STRING                 ""
-#define DEFAULT_TOO_MANY_ERRORS      100
 #define SetError(ErrCode,Severity)   SetErrorCode((ErrCode),(Severity),__FILE__,__LINE__)
 #define SetErrorD(ErrCode,Severity,Data) SetErrorCode((ErrCode),(Severity),__FILE__,__LINE__,(Data))
 
@@ -58,8 +53,7 @@ private:
     // hide the default constructor
     TError();
 public:
-    TError(TUMApplication* theApplication, const char *LogFileName=DEFAULT_LOG_FILE_NAME,
-        const char *ErrorCodeFileName=DEFAULT_ERR_FILE_NAME);
+    TError(TUMApplication* theApplication, const char *LogFileName=DEFAULT_LOG_FILE_NAME);
     ~TError(void);
 
     void  Reset                 (void) { itsErrorCode=0; };
@@ -67,7 +61,7 @@ public:
     int   OpenErrorLogFile      (const char *Name);
 
     int   SetErrorCode          (int ErrorCode, short Severity, const char *FileName,
-        int LineNumber, const char *UserData=EMPTY_STRING);
+        int LineNumber, const char *UserData="");
 
     void  SetMode               (int Mode);
     void  WriteError            (char *Message);
@@ -97,7 +91,7 @@ public:
     unsigned long GetRecordNumber() { return mRecordNumber; }
     void SetRecordNumber(unsigned long aNumber) { mRecordNumber = aNumber; }
     const char* GetRecordId() const { return mRecordId; }
-    void SetRecordId(const char* aRecordId) { strncpy(mRecordId, aRecordId ? aRecordId : "", 50); mRecordId[50] = '\0'; }
+    void SetRecordId(const char* aRecordId) { strncpy(mRecordId, aRecordId ? aRecordId : "", 49); mRecordId[49] = '\0'; }
     bool GetHandleLinkedFields() { return mHandleLinkedFields; }
     void SetHandleLinkedFields(bool a_value) { mHandleLinkedFields = a_value; }
 

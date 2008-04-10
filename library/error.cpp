@@ -25,7 +25,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-TError::TError(TUMApplication* theApplication, const char *LogFileName, const char *ErrorCodeFileName)
+TError::TError(TUMApplication* theApplication, const char *LogFileName)
 {
     itsApplication=theApplication;
 
