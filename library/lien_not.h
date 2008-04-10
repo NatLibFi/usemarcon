@@ -91,7 +91,7 @@ public:
     {
     }
 
-    int   Init_Evaluate_Rule(void *Doc,TRuleDoc *RDoc,TError *ErrorHandler,
+    int   Init_Evaluate_Rule(void *Doc,TRuleDoc *RDoc,TStateManager *StateManager,
             bool dbg_rule, unsigned long ord, bool UTF8Mode);
     int   Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealOut, TRule* Rule, TCDLib* ProcessCDL = NULL);
     int   CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLIn, TRule* aRule, bool & aPassed);
@@ -113,7 +113,7 @@ private:
     TRuleDoc*  mRuleDoc;
     SortElem*  mListSort;
     SortElem*  mLastSort;
-    TError*    mErrorHandler;
+    TStateManager*    mStateManager;
     bool       mUTF8Mode;
 
     RegExp     mParserInnerRegExp;

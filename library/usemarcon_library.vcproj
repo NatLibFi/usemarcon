@@ -240,7 +240,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="error.cpp"
+				RelativePath="statemanager.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -790,7 +790,7 @@
 				>
 			</File>
 			<File
-				RelativePath="error.h"
+				RelativePath="statemanager.h"
 				>
 			</File>
 			<File

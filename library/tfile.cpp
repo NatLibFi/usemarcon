@@ -36,7 +36,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TFile::TFile(const typestr & FileInfo, TError *ErrorHandler, char Mode, char Kind)
+TFile::TFile(const typestr & FileInfo, TStateManager *StateManager, char Mode, char Kind)
 {
     itsFileInfo = FileInfo;
     itsMode     = Mode;
@@ -47,7 +47,7 @@ TFile::TFile(const typestr & FileInfo, TError *ErrorHandler, char Mode, char Kin
     File            = NULL;
     iFile           = -1;
 
-    itsErrorHandler = ErrorHandler;
+    mStateManager = StateManager;
 }
 
 
@@ -78,7 +78,7 @@ int TFile::Open()
         sprintf(mode,"%c",itsMode);
         if ((File=fopen(itsFileInfo.str(), mode))==NULL)
         {
-            return itsErrorHandler->SetErrorD(9501, WARNING, itsFileInfo.str());
+            return mStateManager->SetErrorD(9501, WARNING, itsFileInfo.str());
         }
     }
     else
@@ -89,7 +89,7 @@ int TFile::Open()
             iFile=::l_open(itsFileInfo.str(),O_CREAT|O_WRONLY|O_TRUNC|O_BINARY,0640);
 
         if (iFile == -1)
-            return itsErrorHandler->SetErrorD(9502, WARNING, itsFileInfo.str());
+            return mStateManager->SetErrorD(9502, WARNING, itsFileInfo.str());
     }
 
     Included=NULL;
@@ -141,7 +141,7 @@ int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
 {
     // NextLine() can't operate on binary files
     if (itsKind == FILE_BINARY)
-        return itsErrorHandler->SetErrorD(9504, ERROR, itsFileInfo.str());
+        return mStateManager->SetErrorD(9504, ERROR, itsFileInfo.str());
 
     if (Included)
         // current line is an #include line
@@ -180,7 +180,7 @@ int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
             typestr tmp; 
             tmp.allocstr(strlen(Spec->str()) + 50);
             sprintf(tmp.str(), "%s : %d", Spec, itsLineNumber);
-            itsErrorHandler->SetErrorD(9505, WARNING, tmp.str());
+            mStateManager->SetErrorD(9505, WARNING, tmp.str());
         }
         else
         {
@@ -199,7 +199,7 @@ int TFile::NextLine(typestr *aLine, typestr *Spec, int *LineNumber)
             else
                 copy_path_from_filename(IncludedFile, itsFileInfo.str());
             append_filename(IncludedFile, &line.str()[i]);
-            Included=new TFile(IncludedFile, itsErrorHandler, FILE_READ,FILE_ASCII);
+            Included=new TFile(IncludedFile, mStateManager, FILE_READ,FILE_ASCII);
             int rc=Included->Open();
             if (rc<0)
                 return rc;
@@ -334,15 +334,15 @@ long TFile::GetPos(void)
 ///////////////////////////////////////////////////////////////////////////////
 int TFile::SkipBeginning()
 {
-    itsErrorHandler->Reset();
+    mStateManager->Reset();
 
     typestr line;
     typestr aSpec;
     // Au debut de chaque fichier, il faut sauter deux lignes de commentaires
     if (NextLine(&line, &aSpec))
-        itsErrorHandler->SetErrorD(9506, ERROR, aSpec.str());
+        mStateManager->SetErrorD(9506, ERROR, aSpec.str());
     if(NextLine(&line, &aSpec))
-        itsErrorHandler->SetErrorD(9506, ERROR, aSpec.str());
-    return itsErrorHandler->GetErrorCode();
+        mStateManager->SetErrorD(9506, ERROR, aSpec.str());
+    return mStateManager->GetErrorCode();
 }
 

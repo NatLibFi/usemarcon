@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "tcd.h"
-#include "error.h"
+#include "statemanager.h"
 #include "tools.h"
 
 
@@ -24,9 +24,9 @@
 // TCD
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCD::TCD(TError *ErrorHandler)
+TCD::TCD(TStateManager *StateManager)
 {
-    itsErrorHandler     = ErrorHandler;
+    mStateManager     = StateManager;
     _IN                     = 0;
     *itsTag                 = '\0';
     itsSubfield[0]          = '\0';
@@ -48,9 +48,9 @@ TCD::TCD(TError *ErrorHandler)
 // TCD : Copie constructeur a partir d'un TypeCD
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCD::TCD(TypeCD* atcd, TError *ErrorHandler)
+TCD::TCD(TypeCD* atcd, TStateManager *StateManager)
 {
-    itsErrorHandler = ErrorHandler;
+    mStateManager = StateManager;
     SetTag(atcd->Field);
     SetSubfield(atcd->SubField);
     itsOccurrenceNumber  = 0;
@@ -69,7 +69,7 @@ TCD::TCD(TypeCD* atcd, TError *ErrorHandler)
 ///////////////////////////////////////////////////////////////////////////////
 TCD::TCD(TCD *aCD)
 {
-    itsErrorHandler = aCD->itsErrorHandler;
+    mStateManager = aCD->mStateManager;
     _IN=aCD->GetIN();
     SetTag(aCD->GetTag());
     SetSubfield(aCD->GetSubfield());
@@ -521,7 +521,7 @@ void TCD::SetSubfield(const char *aSubfield)
 { 
     memcpy(itsSubfield, aSubfield, 2); 
     itsSubfield[2]=0;
-    if (itsSubfield[1] && itsErrorHandler->GetConvertSubfieldCodesToLowercase())
+    if (itsSubfield[1] && mStateManager->GetConvertSubfieldCodesToLowercase())
     {
         itsSubfield[1] = tolower(itsSubfield[1]);
     }

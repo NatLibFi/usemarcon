@@ -13,7 +13,7 @@
  */
 
 #include "trule.h"
-#include "error.h"
+#include "statemanager.h"
 #include "tools.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -21,13 +21,13 @@
 // TRule
 //
 ///////////////////////////////////////////////////////////////////////////////
-TRule::TRule(TError *ErrorHandler)
+TRule::TRule(TStateManager *StateManager)
 {
     mInputCD      = NULL;
     mOutputCD     = NULL;
     mNextRule     = NULL;
     mPreviousRule = NULL;
-    mErrorHandler = ErrorHandler;
+    mStateManager = StateManager;
     mLine = 0;
     mConditionGroup = 0;
 }
@@ -44,7 +44,7 @@ TRule::TRule(TRule *aRule)
     SetLib(aRule->GetLib());
     mNextRule     = aRule->GetNextRule();
     mPreviousRule = aRule->GetPreviousRule();
-    mErrorHandler = aRule->mErrorHandler;
+    mStateManager = aRule->mStateManager;
     mLine = aRule->mLine;
     mCondition = aRule->mCondition;
     mConditionGroup = aRule->mConditionGroup;
@@ -57,7 +57,7 @@ TRule::TRule(TRule *aRule, const char* aRuleStr)
     SetLib(aRuleStr);
     mNextRule     = aRule->GetNextRule();
     mPreviousRule = aRule->GetPreviousRule();
-    mErrorHandler = aRule->mErrorHandler;
+    mStateManager = aRule->mStateManager;
     mLine = aRule->mLine;
     mCondition = aRule->mCondition;
     mConditionGroup = aRule->mConditionGroup;
@@ -104,7 +104,7 @@ int TRule::SetLib(const char *aLib)
         mLib = lib;
     }
     if (!mLib.str())
-        return mErrorHandler->SetError(5502,ERROR);
+        return mStateManager->SetError(5502,ERROR);
     return 0;
 }
 
@@ -156,7 +156,7 @@ int TRule::FromString(char *aString, int aLine, const TCD* aDefaultInputCD, cons
         if (!cdin.is_empty())
         {
             // CDIn is specified
-            mInputCD = new TCD(mErrorHandler);
+            mInputCD = new TCD(mStateManager);
             if (!mInputCD)
                 return -5504;
             if ((ReturnCode = mInputCD->FromString(cdin.str(), aDefaultInputCD, INPUT)) != 0)
@@ -168,7 +168,7 @@ int TRule::FromString(char *aString, int aLine, const TCD* aDefaultInputCD, cons
         if (!mInputCD)
         {
             // No input CD
-            mInputCD = new TCD(mErrorHandler);
+            mInputCD = new TCD(mStateManager);
             if (!mInputCD)
                 return -5504;
             if ((ReturnCode = mInputCD->FromString("", aDefaultInputCD, INPUT)) != 0)
@@ -189,7 +189,7 @@ int TRule::FromString(char *aString, int aLine, const TCD* aDefaultInputCD, cons
         cdout.str(p, p_end - p);
         cdout.replace(" ", "");
 
-        mOutputCD = new TCD(mErrorHandler);
+        mOutputCD = new TCD(mStateManager);
         if (!mOutputCD)
             return -5504;
         if ((ReturnCode = mOutputCD->FromString(cdout.str(), aDefaultOutputCD, OUTPUT)) != 0)

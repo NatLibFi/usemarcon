@@ -12,7 +12,7 @@
  *
  */
 
-#include "error.h"
+#include "statemanager.h"
 #include "defines.h"
 #include "ttrnsdoc.h"
 #include "tmpplctn.h"
@@ -25,11 +25,11 @@
 // Create and initialize the internal data objects for this class
 //
 ///////////////////////////////////////////////////////////////////////////////
-TTransDoc::TTransDoc(TError *ErrorHandler)
+TTransDoc::TTransDoc(TStateManager *StateManager)
 {
     itsFile         = NULL;
     itsTransSpec    = NULL;
-    itsErrorHandler = ErrorHandler;
+    mStateManager = StateManager;
     itsCharset = CHARSET_DEFAULT;
 }
 
@@ -61,9 +61,9 @@ bool TTransDoc::Open(void)
 {
     // Add code here to set internal data members of the class based
     // on information read from some data source
-    if ((itsFile=new TTransFile(itsFilePointer, itsErrorHandler))==NULL)
+    if ((itsFile=new TTransFile(itsFilePointer, mStateManager))==NULL)
     {
-        itsErrorHandler->SetError(9013,ERROR);
+        mStateManager->SetError(9013,ERROR);
         return false;
     }
     if (itsFile->Open())
@@ -126,10 +126,10 @@ int TTransDoc::Convert(TMarcRecord* In, TMarcRecord* Out)
 {
     if (itsCharset != CHARSET_DEFAULT && itsFile)
     {
-        TMarcRecord *record = new TUMRecord(itsErrorHandler->GetApplication());
+        TMarcRecord *record = new TUMRecord(mStateManager->GetApplication());
         if (!record)
         {
-            itsErrorHandler->SetErrorD( 3000, ERROR, "When creating a new Trans record" );
+            mStateManager->SetErrorD( 3000, ERROR, "When creating a new Trans record" );
         }
         ConvertToUTF8(In, record);
         return itsFile->Convert(record, Out);
@@ -168,7 +168,7 @@ int TTransDoc::ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut)
         tmp += "' : leader '";
         tmp += MarcIn->GetLeader();
         tmp += '\'';
-        itsErrorHandler->SetErrorD(3000, ERROR, tmp.str());
+        mStateManager->SetErrorD(3000, ERROR, tmp.str());
     }
 
     // On transcode ensuite chaque champ
@@ -204,14 +204,14 @@ int TTransDoc::ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut)
             tmp += "' : field '";
             tmp += In->GetTag();
             tmp += '\'';
-            itsErrorHandler->SetErrorD(5006, ERROR, tmp.str());
+            mStateManager->SetErrorD(5006, ERROR, tmp.str());
         }
 
         // On passe au champ suivant
         In=In->GetNextField();
     }
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

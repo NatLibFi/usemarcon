@@ -13,7 +13,7 @@
  */
 
 #include "umrecord.h"
-#include "error.h"
+#include "statemanager.h"
 #include "rulefile.h"
 
 #define NO_SUBFIELD         ""
@@ -90,7 +90,7 @@ int TUMRecord::SortCD(TCD* aCD, char* liste)
     int i;
     char sub[5];
 
-    if (!NextCD(&Debut,aCD)) return itsErrorHandler->GetErrorCode();
+    if (!NextCD(&Debut,aCD)) return mStateManager->GetErrorCode();
 
     for (i=0;liste[i];++i)
     {
@@ -155,7 +155,7 @@ int TUMRecord::SortCD(TCD* aCD, char* liste)
         Debut->SetPrevious(New);
     }
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -212,7 +212,7 @@ int TUMRecord::PartialSort(TCDLib *aFirst)
             currentCDLib = (TCDLib *) currentCDLib->GetNext();
     }
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -226,7 +226,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
 {
     TMarcField      *Field;
     TCDLib          *CDLib;
-    TCD             CD(itsErrorHandler);
+    TCD             CD(mStateManager);
 
     // On supprime l'arbre des champs
     DelTree();
@@ -239,7 +239,7 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
     TCDLib* Search=(TCDLib*)itsFirstCDLib;
     if (!NextCD(&Search,&CD))
     {
-        itsErrorHandler->SetError(7109, ERROR);
+        mStateManager->SetError(7109, ERROR);
     }
     else
         SetLeader(Search->GetContent().str());
@@ -283,14 +283,14 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
             {
                 typestr tmp = "I2 is missing in field ";
                 tmp += NewField->GetTag();
-                itsErrorHandler->SetErrorD(5004, WARNING, tmp.str());
+                mStateManager->SetErrorD(5004, WARNING, tmp.str());
             }
 
             if (NewField->GetI2() && !NewField->GetI1())
             {
                 typestr tmp = "I1 is missing in field ";
                 tmp += NewField->GetTag();
-                itsErrorHandler->SetErrorD(5004, WARNING, tmp.str());
+                mStateManager->SetErrorD(5004, WARNING, tmp.str());
             }
 
             // Remplissage du libelle : on ne specifie pas de sous-champ dans CD,
@@ -329,10 +329,10 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
         }
     }
 
-    if (itsErrorHandler->GetHandleLinkedFields())
+    if (mStateManager->GetHandleLinkedFields())
         SeparateLinkedFields();
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -345,9 +345,9 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
 int TUMRecord::ToCD(void)
 {
     TMarcField      *Field=itsFirstField;
-    TCDLib          CDLib(itsErrorHandler);
+    TCDLib          CDLib(mStateManager);
 
-    if (itsErrorHandler->GetHandleLinkedFields())
+    if (mStateManager->GetHandleLinkedFields())
         MergeLinkedFields();
 
     // On supprime l'ancien arbre de CDLib
@@ -407,7 +407,7 @@ int TUMRecord::ToCD(void)
         Field = Field->GetNextField();
     }
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -512,7 +512,7 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
     {
         // On cree un CD dans lequel on va juste renseigne le Tag
 
-        TCD aCD(itsErrorHandler);
+        TCD aCD(mStateManager);
         aCD.SetTag(aCDLib->GetTag());
 
         // On se positionne sur le dernier CDLib de la notice et on cherche le dernier
@@ -678,7 +678,7 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
             // Add the first CDLib
             itsFirstCDLib=itsLastCDLib=new TCDLib(aCDLib,CDIn);
             if (!itsFirstCDLib)
-                itsErrorHandler->SetErrorD(5000,ERROR,"When creating the first new CDLib");
+                mStateManager->SetErrorD(5000,ERROR,"When creating the first new CDLib");
             itsFirstCDLib->SetPrevious(NULL);
             itsFirstCDLib->SetNext(NULL);
             itsLastCDLib->SetOccurrenceNumber(1);
@@ -697,7 +697,7 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
             
             itsLastCDLib->SetNext((TCD*)(new TCDLib(aCDLib,CDIn)));
             if (!itsLastCDLib->GetNext())
-                itsErrorHandler->SetErrorD(5000,ERROR,"When adding a new CDLib");
+                mStateManager->SetErrorD(5000,ERROR,"When adding a new CDLib");
             itsLastCDLib->GetNext()->SetPrevious(itsLastCDLib);
             itsLastCDLib=(TCDLib*)itsLastCDLib->GetNext();
 
@@ -712,7 +712,7 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
 void TUMRecord::GetOccurrenceNumbersForNew(const char *a_tag, int a_tag_occurrence, const char *a_subfield, 
                                            int &a_occurrence, int &a_sub_occurrence)
 {
-    TCD aCD(itsErrorHandler);
+    TCD aCD(mStateManager);
     aCD.SetTag(a_tag);
     aCD.SetSubfield(a_subfield);
 
@@ -769,7 +769,7 @@ void TUMRecord::MergeLinkedFields()
             tmp += "' : field '";
             tmp += field->GetTag();
             tmp += "'";
-            itsErrorHandler->SetErrorD(2601, WARNING, tmp.str());
+            mStateManager->SetErrorD(2601, WARNING, tmp.str());
         }
         else
         {
@@ -805,7 +805,7 @@ void TUMRecord::MergeLinkedFields()
             if (!match_found)
             {
                 typestr tmp = typestr("Field ") + field->GetTag() + ": '" + field->GetLib1() + "'";
-                itsErrorHandler->SetErrorD(2602, WARNING, tmp.str());
+                mStateManager->SetErrorD(2602, WARNING, tmp.str());
             }
         }
         // Delete the 880 field
@@ -839,12 +839,12 @@ void TUMRecord::SeparateLinkedFields()
             typestr fielddata = field->GetLib2();
             int res = re_replace.replace(fielddata, link_880, false);
             if (res < 0)
-                itsErrorHandler->SetError(5601, WARNING);
+                mStateManager->SetError(5601, WARNING);
             if (res == 0)
             {
                 res = re_add_rep.replace(fielddata, link_880, false);
                 if (res < 0)
-                    itsErrorHandler->SetError(5601, WARNING);
+                    mStateManager->SetError(5601, WARNING);
             }
 
             TMarcField* field880 = new TMarcField();
@@ -883,12 +883,12 @@ void TUMRecord::SeparateLinkedFields()
             fielddata = field->GetLib1();
             res = re_replace.replace(fielddata, link_normal, false);
             if (res < 0)
-                itsErrorHandler->SetError(5601, WARNING);
+                mStateManager->SetError(5601, WARNING);
             if (res == 0)
             {
                 res = re_add_rep.replace(fielddata, link_normal, false);
                 if (res < 0)
-                    itsErrorHandler->SetError(5601, WARNING);
+                    mStateManager->SetError(5601, WARNING);
             }
             field->SetLib1(fielddata.str());
         }

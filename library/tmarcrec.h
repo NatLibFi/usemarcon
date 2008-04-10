@@ -29,7 +29,7 @@ AUTHOR
 
 #include "mrcfield.h"
 #include "tagnoind.h"
-#include "error.h"
+#include "statemanager.h"
 
 // forward declaration
 class CDetails;
@@ -82,7 +82,7 @@ protected:
     long                  itsOutputIndSeparatorsID;
     char                  m_recordId[50];
 
-    TError                *itsErrorHandler;
+    TStateManager                *mStateManager;
 
     CDetails              *itsDetails;
 };

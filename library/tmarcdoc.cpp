@@ -12,7 +12,7 @@
  *
  */
 
-#include "error.h"
+#include "statemanager.h"
 #include "defines.h"
 #include "tools.h"
 #include "tmarcdoc.h"
@@ -55,7 +55,7 @@ TMarcDoc::TMarcDoc(TUMApplication *Application)
   itsMarcOutputFile.LastBlock  = false;
 
   itsApplication = Application;
-  itsErrorHandler = Application->GetErrorHandler();
+  mStateManager = Application->GetStateManager();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ bool TMarcDoc::Open(int IO)
         GetMarcInputFileMinDataFree(), GetMarcInputFilePaddingChar(), 
         GetMarcInputFileLastBlock()))==NULL)
       {
-        itsErrorHandler->SetError(9021,ERROR);
+        mStateManager->SetError(9021,ERROR);
         return false;       
       }
     }   
@@ -119,7 +119,7 @@ bool TMarcDoc::Open(int IO)
       delete itsInputRecord;
     if ((itsInputRecord = new TUMRecord(itsApplication))==NULL)
     {
-      itsErrorHandler->SetError(9031,ERROR);
+      mStateManager->SetError(9031,ERROR);
       return false;
     }
     
@@ -150,7 +150,7 @@ bool TMarcDoc::Open(int IO)
         GetMarcOutputFileMinDataFree(), GetMarcOutputFilePaddingChar(), 
         GetMarcOutputFileLastBlock()))==NULL)
       {
-        itsErrorHandler->SetError(9022,ERROR);
+        mStateManager->SetError(9022,ERROR);
         return false;
       }
     }
@@ -165,7 +165,7 @@ bool TMarcDoc::Open(int IO)
       delete itsOutputRecord;
     if ((itsOutputRecord = new TUMRecord(itsApplication))==NULL)
     {
-      itsErrorHandler->SetError(9032,ERROR);
+      mStateManager->SetError(9032,ERROR);
       return false;
     }
     itsMarcOutputSpec = itsMarcOutputFile.Spec; 
@@ -236,7 +236,7 @@ bool TMarcDoc::Close(int IO)
 int TMarcDoc::Convert(TRuleDoc *RuleDoc)
 {   
   // On reset le EH
-  itsErrorHandler->Reset();
+  mStateManager->Reset();
   
   // On commence par convertir itsTransRecord sous la forme utilisable par la 
   // conversion de regles, a savoir une suite de CDLib. 
@@ -260,14 +260,14 @@ int TMarcDoc::Convert(TRuleDoc *RuleDoc)
     if (itsOutputRecord) { delete itsOutputRecord; itsOutputRecord=NULL; }
     itsOutputRecord = new TUMRecord(*itsTransRecord);  
     if (!itsOutputRecord)
-      itsErrorHandler->SetErrorD(3000,ERROR,"When copying Input record to Output record" );
+      mStateManager->SetErrorD(3000,ERROR,"When copying Input record to Output record" );
   }
   
   // On reconstruit alors la notice de sortie sous la forme d'une liste de champs,
   // a partir de la liste des CDLib.
   itsOutputRecord->FromCD(RuleDoc->GetFile());
   
-  return itsErrorHandler->GetErrorCode();
+  return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -280,7 +280,7 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
   TCheckDoc             *aCheckDoc;
   
   // On reset le EH
-  itsErrorHandler->Reset();      
+  mStateManager->Reset();      
   
   // Check input
   aCheckDoc= itsApplication->GetCheckDoc();
@@ -291,7 +291,7 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
   }
     
   // On reset le EH
-  itsErrorHandler->Reset();
+  mStateManager->Reset();
   
   // Si itsTransRecord existe, on la supprime
   if (itsTransRecord) delete itsTransRecord;
@@ -304,17 +304,17 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
   {
     itsTransRecord = new TUMRecord(*itsInputRecord);
     if (!itsTransRecord)
-      itsErrorHandler->SetErrorD( 3000, ERROR, "When copying Input record to Trans record" );
+      mStateManager->SetErrorD( 3000, ERROR, "When copying Input record to Trans record" );
   }
   else
   {
     itsTransRecord=new TUMRecord(itsApplication);
     if (!itsTransRecord)
-      itsErrorHandler->SetErrorD( 3000, ERROR, "When creating a new Trans record" );
+      mStateManager->SetErrorD( 3000, ERROR, "When creating a new Trans record" );
     aTransDoc->Convert(itsInputRecord, itsTransRecord);
   }
   
-  return itsErrorHandler->GetErrorCode();
+  return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

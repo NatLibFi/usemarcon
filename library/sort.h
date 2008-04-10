@@ -31,7 +31,7 @@ class SortElem
 public:
     SortElem(TCD* aCD, char* alist)
     {
-        itsCD = new TCD(aCD->GetErrorHandler());
+        itsCD = new TCD(aCD->GetStateManager());
         itsCD->SetTag(aCD->GetTag());
         itsCD->SetTagOccurrenceNumber(aCD->GetTagOccurrenceNumber());
         itsLSubField=l_strdup(alist);

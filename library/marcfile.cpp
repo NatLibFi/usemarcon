@@ -14,7 +14,7 @@
 
 #include <ctype.h>
 #include "marcfile.h"
-#include "error.h"
+#include "statemanager.h"
 #include "tmpplctn.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,11 +24,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 TMarcFile::TMarcFile(typestr & FileSpec, TUMApplication *Application, char Mode, char Kind,
     MARC_FILE_FORMAT Format, short BlockSize, short MinFree, char PaddingChar, bool LastBlock)
-: TFile(FileSpec, Application->GetErrorHandler(), Mode, Kind)
+: TFile(FileSpec, Application->GetStateManager(), Mode, Kind)
 {
     itsDocument= new TMarcDoc(Application);
     itsApplication = Application;
-    itsErrorHandler = Application->GetErrorHandler();
+    mStateManager = Application->GetStateManager();
 
 
     SetMarcInfoFormat(Format);
@@ -147,7 +147,7 @@ int TMarcFile::read_marc_scw(bool a_first)
 
     if (read_marc(5, scw))                    // Lecture du SCW
         if (!a_first)
-            return itsErrorHandler->SetError(1003, DISPLAY);
+            return mStateManager->SetError(1003, DISPLAY);
         else
             return 1;
 
@@ -162,7 +162,7 @@ int TMarcFile::read_marc_scw(bool a_first)
 
     unsigned short vscw;
     if (val(scw, &vscw))             // Verification de sa valeur
-        return itsErrorHandler->SetErrorD(1002, ERROR, (char *)scw);
+        return mStateManager->SetErrorD(1002, ERROR, (char *)scw);
 
     return 0;
 }
@@ -226,7 +226,7 @@ int TMarcFile::read_marc(unsigned long a_length, char * a_buffer)
             }
 
             if (lng == -1)
-                return itsErrorHandler->SetError(1502, ERROR);
+                return mStateManager->SetError(1502, ERROR);
             else if (lng < TB)
                 itsEof = true;
             BufSize = lng;
@@ -335,11 +335,11 @@ int TMarcFile::Read(TUMRecord *Record)
             if (EndOfFile)
                 return 1;
             else
-                return itsErrorHandler->SetError(1003,ERROR);
+                return mStateManager->SetError(1003,ERROR);
 
         // Read until end of the record
         if (!xml_read_until_end("record", xml))
-            return itsErrorHandler->SetError(1003,ERROR);
+            return mStateManager->SetError(1003,ERROR);
 
         Record->FromXMLString(xml);
         return 0;
@@ -355,7 +355,7 @@ int TMarcFile::Read(TUMRecord *Record)
             if (EndOfFile)
                 return 1;
             else
-                return itsErrorHandler->SetError(1003,ERROR);
+                return mStateManager->SetError(1003,ERROR);
 
         ++NumBloc;
         PosCour = NumBloc * GetMarcInfoBlockSize();
@@ -380,7 +380,7 @@ int TMarcFile::Read(TUMRecord *Record)
         
         Buffer.promise(read_len + read_remaining + 1);
         if (read_marc(read_len, Buffer.str()))
-            return itsErrorHandler->SetError(1003,ERROR);
+            return mStateManager->SetError(1003,ERROR);
 
         ++NumBloc;
         PosCour = NumBloc * GetMarcInfoBlockSize();
@@ -393,7 +393,7 @@ int TMarcFile::Read(TUMRecord *Record)
         // y a forcement erreur, puisqu'on se trouve dans les 5 premiers caracteres du guide
 
         if (read_marc(read_remaining, &Buffer.str()[read_len]))
-            return itsErrorHandler->SetError(1003,ERROR);
+            return mStateManager->SetError(1003,ERROR);
 
         PosCour += read_remaining;
         // Buffer contient maintenant les 5 premiers caracteres du guide
@@ -403,7 +403,7 @@ int TMarcFile::Read(TUMRecord *Record)
         // donc de les lire
     {
         if (read_marc(5, Buffer.str()))
-            return itsErrorHandler->SetError(1003,NONERROR);
+            return mStateManager->SetError(1003,NONERROR);
 
         PosCour += 5;
     }
@@ -413,13 +413,13 @@ int TMarcFile::Read(TUMRecord *Record)
     {
         memmove(Buffer.str(), &Buffer.str()[1], 5);
         if (read_marc(1, &Buffer.str()[4]))
-            return itsErrorHandler->SetError(1003,ERROR);
+            return mStateManager->SetError(1003,ERROR);
     }
 
     unsigned long RecordLen;
     if (longval(Buffer.str(), &RecordLen))
         // On verifie que la longueur est numerique, et on affecte sa valeur a E_LNG_NOTICE
-        return itsErrorHandler->SetErrorD(1004, ERROR, Buffer.str());
+        return mStateManager->SetErrorD(1004, ERROR, Buffer.str());
 
     unsigned long lbuf = 5;
     unsigned long read_remaining = RecordLen - 5;
@@ -444,7 +444,7 @@ int TMarcFile::Read(TUMRecord *Record)
 
         Buffer.promise(read_len + lbuf + 1);
         if (read_marc(read_len, &Buffer.str()[lbuf]))
-            return itsErrorHandler->SetError(1003,ERROR);
+            return mStateManager->SetError(1003,ERROR);
 
         lbuf += read_len;
         read_remaining -= read_len;
@@ -483,7 +483,7 @@ int TMarcFile::Write(TUMRecord *Record)
         }
 
         if (write_marc(strlen(xml.str()), xml.str()))
-            return itsErrorHandler->SetError(1005,ERROR);
+            return mStateManager->SetError(1005,ERROR);
         return 0;
     }
 
@@ -513,7 +513,7 @@ int TMarcFile::Write(TUMRecord *Record)
         memset(temps.str(), GetMarcInfoPaddingChar(), GetMarcInfoMinDataFree());
         temps.str()[GetMarcInfoMinDataFree()] = '\0';
         if (write_marc(block_end - PosCour, temps.str()))
-            return itsErrorHandler->SetError(1005,ERROR);
+            return mStateManager->SetError(1005,ERROR);
 
         ++NumBloc;
         PosCour = NumBloc * GetMarcInfoBlockSize();
@@ -559,7 +559,7 @@ int TMarcFile::Write(TUMRecord *Record)
         }
 
         if (write_marc(write_len, &Buffer.str()[pos]))
-            return itsErrorHandler->SetError(1005,ERROR);
+            return mStateManager->SetError(1005,ERROR);
 
         // On ecrit ce bout de notice dans le bloc
         PosCour += write_len;
@@ -588,7 +588,7 @@ int TMarcFile::write_marc_scw(short typ,unsigned long longueur)
     sprintf(scw, "%1d%04d", typ, longueur + 5);
     scw[5] = '\0';
     if (write_marc(5, scw))
-        return itsErrorHandler->SetError(1005, ERROR);
+        return mStateManager->SetError(1005, ERROR);
 
     PosCour += 5;
     NumBloc = PosCour / GetMarcInfoBlockSize();
@@ -646,7 +646,7 @@ int TMarcFile::Close()
             BufPos = TB;
         }
         if ((unsigned long)l_write(iFile, m_filebuffer.str(), BufPos) != BufPos)
-            return itsErrorHandler->SetError(1006,ERROR);
+            return mStateManager->SetError(1006,ERROR);
 
         m_filebuffer = "";
         BufPos = 0;
@@ -658,7 +658,7 @@ int TMarcFile::Close()
 
             unsigned long len = strlen(xml.str());
             if (l_write(iFile, xml.str(), len) != len)
-                return itsErrorHandler->SetError(1006,ERROR);
+                return mStateManager->SetError(1006,ERROR);
         }
     }
 

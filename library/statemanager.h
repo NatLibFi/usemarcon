@@ -1,14 +1,14 @@
 /*
  *  USEMARCON Software - Command Line version
  *
- *  File:  error.h
+ *  File:  statemanager.h
  *
  *
  
 CLASS
-    Terror
+    TStateManager
 
-    implements a class to error reporting and state storage
+    implements a class for managing program state and errors 
 
 OVERVIEW TEXT
     USEMARCON Software - Command Line version
@@ -24,8 +24,8 @@ AUTHOR
 
 */
 
-#ifndef TError_H
-#define TError_H
+#ifndef TStateManager_H
+#define TStateManager_H
 
 #include <stdio.h>
 #include "defines.h"
@@ -41,20 +41,21 @@ AUTHOR
 #define NONINTERACTIVE    0
 #define INTERACTIVE       1
 #define DEFAULT_LOG_FILE_NAME        "errlog.txt"
+
 #define SetError(ErrCode,Severity)   SetErrorCode((ErrCode),(Severity),__FILE__,__LINE__)
 #define SetErrorD(ErrCode,Severity,Data) SetErrorCode((ErrCode),(Severity),__FILE__,__LINE__,(Data))
 
 // forward declaration
 class TUMApplication;
 
-class TError
+class TStateManager
 {
 private:
     // hide the default constructor
-    TError();
+    TStateManager();
 public:
-    TError(TUMApplication* theApplication, const char *LogFileName=DEFAULT_LOG_FILE_NAME);
-    ~TError(void);
+    TStateManager(TUMApplication* theApplication, const char *LogFileName=DEFAULT_LOG_FILE_NAME);
+    ~TStateManager(void);
 
     void  Reset                 (void) { itsErrorCode=0; };
     void  CloseErrorLogFile     (void) { fclose(itsLogError); };
@@ -118,5 +119,5 @@ protected:
     bool            mHandleLinkedFields;
 };
 
-#endif // TError_H
+#endif // TStateManager_H
 

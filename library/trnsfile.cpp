@@ -14,7 +14,7 @@
 
 #include <malloc.h>
 #include "trnsfile.h"
-#include "error.h"
+#include "statemanager.h"
 #include "tmarcrec.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,8 +22,8 @@
 // TTransFile
 //
 ///////////////////////////////////////////////////////////////////////////////
-TTransFile::TTransFile(typestr & FileSpec, TError *ErrorHandler)
-: TFile(FileSpec, ErrorHandler), semi()
+TTransFile::TTransFile(typestr & FileSpec, TStateManager *StateManager)
+: TFile(FileSpec, StateManager), semi()
 {
     itsFileInfo = FileSpec;
     itsDefaultValueValid = false;
@@ -124,7 +124,7 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
         typestr tmp = "Leader '";
         tmp += MarcIn->GetLeader();
         tmp += '\'';
-        itsErrorHandler->SetErrorD(3000, ERROR, tmp.str());
+        mStateManager->SetErrorD(3000, ERROR, tmp.str());
     }
 
     // On transcode ensuite chaque champ
@@ -162,14 +162,14 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
             tmp += ": '";
             tmp += In->GetLib1();
             tmp += '\'';
-            itsErrorHandler->SetErrorD(5006, ERROR, tmp.str());
+            mStateManager->SetErrorD(5006, ERROR, tmp.str());
         }
 
         // On passe au champ suivant
         In=In->GetNextField();
     }
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 
@@ -240,7 +240,7 @@ bool TTransFile::Transcode(char* In, typestr &Out, char *Notice, char *Field)
                 tmp += itsFileInfo;
                 tmp += '\'';
             }
-            itsErrorHandler->SetErrorD(3001, ERROR, tmp.str());
+            mStateManager->SetErrorD(3001, ERROR, tmp.str());
             Out.append_char(*c);
             c++;
             res = false;

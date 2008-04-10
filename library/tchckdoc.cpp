@@ -12,7 +12,7 @@
  *
  */
 
-#include "error.h"
+#include "statemanager.h"
 #include "defines.h"
 #include "tchckdoc.h"
 #include "tmpplctn.h"
@@ -25,13 +25,13 @@
 // Create and initialize the internal data objects for this class
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCheckDoc::TCheckDoc(TError *ErrorHandler)
+TCheckDoc::TCheckDoc(TStateManager *StateManager)
 {
     itsInputFile        = NULL;
     itsOutputFile       = NULL;
     itsCheckInputSpec   = NULL;
     itsCheckOutputSpec  = NULL;
-    itsErrorHandler = ErrorHandler;
+    mStateManager = StateManager;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,9 +64,9 @@ bool TCheckDoc::Open(int IO)
     case INPUT:
         if (!itsInputFile)      // there is no Input Check File
         {
-            if ((itsInputFile = new TCheckFile(itsFilePointer, itsErrorHandler))==NULL)
+            if ((itsInputFile = new TCheckFile(itsFilePointer, mStateManager))==NULL)
             {
-                itsErrorHandler->SetError(9011,ERROR);
+                mStateManager->SetError(9011,ERROR);
                 return false;
             }
         }
@@ -81,9 +81,9 @@ bool TCheckDoc::Open(int IO)
     case OUTPUT:
         if (!itsOutputFile)     // there is no Output Check File
         {
-            if ((itsOutputFile = new TCheckFile(itsFilePointer, itsErrorHandler))==NULL)
+            if ((itsOutputFile = new TCheckFile(itsFilePointer, mStateManager))==NULL)
             {
-                itsErrorHandler->SetError(9012,ERROR);
+                mStateManager->SetError(9012,ERROR);
                 return false;
             }
         }

@@ -35,7 +35,7 @@ AUTHOR
 #else
   #include <unistd.h>
 #endif
-#include "error.h"
+#include "statemanager.h"
 #include "typedef.h"
 
 #define FILE_READ   'r'
@@ -47,7 +47,7 @@ AUTHOR
 class TFile
 {
 public:
-    TFile(const typestr & FileInfo, TError *ErrorHandler, char Mode=FILE_READ, char Kind=FILE_ASCII);
+    TFile(const typestr & FileInfo, TStateManager *StateManager, char Mode=FILE_READ, char Kind=FILE_ASCII);
     virtual ~TFile();
     virtual int          Open(void);
     virtual int          Close(void);
@@ -71,7 +71,7 @@ protected:
     FILE         *File;
     int          iFile;
     TFile        *Included;
-    TError       *itsErrorHandler;
+    TStateManager       *mStateManager;
 
     int          SkipBeginning();
 };

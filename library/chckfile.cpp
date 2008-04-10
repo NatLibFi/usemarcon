@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "error.h"
+#include "statemanager.h"
 #include "tools.h"
 #include "chckfile.h"
 
@@ -25,8 +25,8 @@
 // TCheckFile
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCheckFile::TCheckFile(typestr & FileSpec, TError *ErrorHandler)
- : TFile(FileSpec, ErrorHandler)
+TCheckFile::TCheckFile(typestr & FileSpec, TStateManager *aStateManager)
+ : TFile(FileSpec, aStateManager)
 {
     itsFirstCheckField  = itsLastCheckField = NULL;
 }
@@ -69,7 +69,7 @@ int TCheckFile::Open(int IO)
 
     // Ouverture du fichier
     if (TFile::Open())
-        return itsErrorHandler->GetErrorCode();
+        return mStateManager->GetErrorCode();
 
     // Lecture de chaque ligne du fichier
     while (NextLine(&aLine, &aSpec, &Line) == 0)
@@ -82,13 +82,13 @@ int TCheckFile::Open(int IO)
             if ((Pointer=strtok(aLine.str(),"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
+                mStateManager->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 continue;
             }
             if ((RemoveSpace(Pointer)!=4) || ((Pointer[3]!='_') && (Pointer[3]!='+') && (Pointer[3]!='?') && (Pointer[3]!='*')))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2002 : 7002, WARNING, get_error(aSpec, Line, aLineCopy).str());
+                mStateManager->SetErrorD(IO==INPUT ? 2002 : 7002, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 continue;
             }
 
@@ -100,11 +100,11 @@ int TCheckFile::Open(int IO)
                     // Aucune regle de controle n'a encore ete chargee
                 {
                     OldControl = NULL;
-                    itsFirstCheckField = itsLastCheckField = new TControlField(itsErrorHandler);
+                    itsFirstCheckField = itsLastCheckField = new TControlField(mStateManager);
                     if (!itsLastCheckField)
                     {
                         // Echec de la cr权ation d'un TControlField ==> Arret et fermeture du fichier
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, get_error(aSpec, Line, aLineCopy).str());
+                        mStateManager->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, get_error(aSpec, Line, aLineCopy).str());
                         break;
                     }
                 }
@@ -113,11 +113,11 @@ int TCheckFile::Open(int IO)
                     if (!FindControlField(Pointer))
                         // regle de controle non encore rencontree ==> ajout en fin de liste
                     {
-                        itsLastCheckField->SetNextTag(new TControlField(itsErrorHandler));
+                        itsLastCheckField->SetNextTag(new TControlField(mStateManager));
                         if (!itsLastCheckField->GetNextTag())
                         {
                             // Echec de la cr权ation d'un TControlField ==> Arret et fermeture du fichier
-                            itsErrorHandler->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, get_error(aSpec, Line, aLineCopy).str());
+                            mStateManager->SetErrorD(IO==INPUT ? 2501 : 7501, ERROR, get_error(aSpec, Line, aLineCopy).str());
                             break;
                         }
                         OldControl = itsLastCheckField;
@@ -126,7 +126,7 @@ int TCheckFile::Open(int IO)
                     else
                         // regle ignor权e car d权j柔 existante ==> passage a la regle suivante
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2003 : 7003, WARNING, get_error(aSpec, Line, aLineCopy).str());
+                        mStateManager->SetErrorD(IO==INPUT ? 2003 : 7003, WARNING, get_error(aSpec, Line, aLineCopy).str());
                         continue;
                     }
             }
@@ -160,14 +160,14 @@ int TCheckFile::Open(int IO)
             if ((Pointer=strtok(NULL,"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
+                mStateManager->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
             if ((!RemoveSpace(Pointer)) || (memcmp(Pointer,"I1=",3)))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2004 : 7004, WARNING, get_error(aSpec, Line, aLineCopy).str());
+                mStateManager->SetErrorD(IO==INPUT ? 2004 : 7004, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
@@ -182,14 +182,14 @@ int TCheckFile::Open(int IO)
             if ((Pointer=strtok(NULL,"|"))==NULL)
                 // Regle de controle invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
+                mStateManager->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
             if ((!RemoveSpace(Pointer)) || (memcmp(Pointer,"I2=",3)))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2005 : 7005, WARNING, get_error(aSpec, Line, aLineCopy).str());
+                mStateManager->SetErrorD(IO==INPUT ? 2005 : 7005, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
@@ -207,18 +207,18 @@ int TCheckFile::Open(int IO)
                     (Pointer[2]!='_') && (Pointer[2]!='+') && (Pointer[2]!='?') && (Pointer[2]!='*')))
                     // Le Sub de la Regle de controle est invalide ==> passage a la regle suivante
                 {
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2006 : 7006, WARNING, get_error(aSpec, Line, aLineCopy).str());
+                    mStateManager->SetErrorD(IO==INPUT ? 2006 : 7006, WARNING, get_error(aSpec, Line, aLineCopy).str());
                     AnalysedControl=0;
                     continue;
                 }
                 if (!itsLastCheckField->GetFirstSubfield())
                     // aucun sous-champ n'est encore present
                 {
-                    itsLastCheckField->SetFirstSubfield(new TCtrlSubfield(itsErrorHandler));
+                    itsLastCheckField->SetFirstSubfield(new TCtrlSubfield(mStateManager));
                     if (!itsLastCheckField->GetFirstSubfield())
                         // Echec de la creation d'un nouveau TCtrlSubfield
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, get_error(aSpec, Line, aLineCopy).str());
+                        mStateManager->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, get_error(aSpec, Line, aLineCopy).str());
                         AnalysedControl=0;
                         continue;
                     }
@@ -227,11 +227,11 @@ int TCheckFile::Open(int IO)
                 else
                     // il existe d权j柔 une liste de sous-champs
                 {
-                    itsLastCheckField->GetLastSubfield()->SetNextSub(new TCtrlSubfield(itsErrorHandler));
+                    itsLastCheckField->GetLastSubfield()->SetNextSub(new TCtrlSubfield(mStateManager));
                     if (!itsLastCheckField->GetLastSubfield()->GetNextSub())
                         // Echec de la creation d'un nouveau TCtrlSubfield
                     {
-                        itsErrorHandler->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, get_error(aSpec, Line, aLineCopy).str());
+                        mStateManager->SetErrorD(IO==INPUT ? 2502 : 7502, ERROR, get_error(aSpec, Line, aLineCopy).str());
                         AnalysedControl=0;
                         continue;
                     }
@@ -303,7 +303,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             {
                 // Non-repeatable field repeated
                 typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2101 : 7101, WARNING, tmp.str());
+                mStateManager->SetErrorD(IO==INPUT ? 2101 : 7101, WARNING, tmp.str());
             }
             else
             {
@@ -322,7 +322,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                     tmp += " (ind '";
                     tmp += CurrentField->GetI1();
                     tmp += "')";
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2102 : 7102, WARNING, tmp.str());
+                    mStateManager->SetErrorD(IO==INPUT ? 2102 : 7102, WARNING, tmp.str());
                 }
             }
 
@@ -337,7 +337,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                     tmp += " (ind '";
                     tmp += CurrentField->GetI2();
                     tmp += "')";
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2103 : 7103, WARNING, tmp.str());
+                    mStateManager->SetErrorD(IO==INPUT ? 2103 : 7103, WARNING, tmp.str());
                 }
             }
 
@@ -353,7 +353,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                     tmp += " (subfield '$";
                     tmp += Balise;
                     tmp += "')";
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2104 : 7104, WARNING, tmp.str());
+                    mStateManager->SetErrorD(IO==INPUT ? 2104 : 7104, WARNING, tmp.str());
                 }
                 else
                     AtLeastOneSub = true;
@@ -363,7 +363,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             if ((!AtLeastOneSub) && (CurrentControl->GetFirstSubfield()))
             {
                 typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
-                itsErrorHandler->SetErrorD(IO==INPUT ? 2108 : 7108, WARNING, tmp.str());
+                mStateManager->SetErrorD(IO==INPUT ? 2108 : 7108, WARNING, tmp.str());
             }
             CurrentCtrlSub=CurrentControl->GetFirstSubfield();
             while(CurrentCtrlSub)
@@ -375,7 +375,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
                     tmp += " (subfield '$";
                     tmp += CurrentCtrlSub->GetSub();
                     tmp += "')";
-                    itsErrorHandler->SetErrorD(IO==INPUT ? 2107 : 7107, WARNING, tmp.str());
+                    mStateManager->SetErrorD(IO==INPUT ? 2107 : 7107, WARNING, tmp.str());
                 }
                 CurrentCtrlSub->SetSubOccurency(0);
                 CurrentCtrlSub=CurrentCtrlSub->GetNextSub();
@@ -386,7 +386,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
         {
             // Unexpected field 
             typestr tmp = typestr("Field ") + CurrentField->GetTag() + ": '" + CurrentField->GetLib1() + "'";
-            itsErrorHandler->SetErrorD(IO==INPUT ? 2105 : 7105, WARNING, tmp.str());
+            mStateManager->SetErrorD(IO==INPUT ? 2105 : 7105, WARNING, tmp.str());
         }
         CurrentField = CurrentField->GetNextField();
     }
@@ -400,13 +400,13 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
             // Missing mandatory field
             typestr tmp = "Field ";
             tmp += CurrentControl->GetTag();
-            itsErrorHandler->SetErrorD(IO==INPUT ? 2106 : 7106, WARNING, tmp.str());
+            mStateManager->SetErrorD(IO==INPUT ? 2106 : 7106, WARNING, tmp.str());
         }
         CurrentControl->SetTagOccurrency(0);
         CurrentControl=CurrentControl->GetNextTag();
     }
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

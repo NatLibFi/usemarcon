@@ -47,7 +47,7 @@ private:
     typestr           itsRuleSpec;
     typestr           itsFilePointer;
 
-    TError            *itsErrorHandler;
+    TStateManager            *mStateManager;
 
     TUMApplication    *itsApplication;
 };

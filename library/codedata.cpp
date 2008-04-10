@@ -13,7 +13,7 @@
  */
 
 #include <memory.h>
-#include "error.h"
+#include "statemanager.h"
 #include "codedata.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -21,8 +21,8 @@
 // TCodedData
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCodedData::TCodedData(typestr & FileSpec, TError *ErrorHandler)
-: TTransFile(FileSpec, ErrorHandler)
+TCodedData::TCodedData(typestr & FileSpec, TStateManager *StateManager)
+: TTransFile(FileSpec, StateManager)
 {
     itsCodedDataName = FileSpec;
     itsNextCodedData = NULL;

@@ -29,7 +29,7 @@ AUTHOR
 
 #include "typedef.h"
 #include "defines.h"
-#include "error.h"
+#include "statemanager.h"
 
 #define CD_N        -1
 #define CD_NT       -2
@@ -43,9 +43,9 @@ AUTHOR
 class TCD
 {
 public:
-    TCD             (TError *ErrorHandler);
+    TCD             (TStateManager *StateManager);
     TCD             (TCD *aCD);
-    TCD             (TypeCD*, TError *ErrorHandler);
+    TCD             (TypeCD*, TStateManager *StateManager);
     virtual ~TCD    ();
 
     int   FromString      (char *aString, const TCD *Last, int InputOrOutput);
@@ -80,7 +80,7 @@ public:
     bool TagIsWildcard() { return itsTagIsWildcard; } // Tag is three question marks
     bool SubfieldContainsWildcard() { return itsSubfieldContainsWildcard; } // There is at least one question mark in the subfield
 
-    TError    *GetErrorHandler() { return itsErrorHandler; };
+    TStateManager    *GetStateManager() { return mStateManager; };
 
 private:
     int           itsBeginning;
@@ -95,7 +95,7 @@ protected:
     int           itsSubOccurrenceNumber;
     TCD           *itsPrevious;
     TCD           *itsNext;
-    TError        *itsErrorHandler;
+    TStateManager        *mStateManager;
     bool          itsTagContainsWildcard;
     bool          itsTagIsWildcard;
     bool          itsSubfieldContainsWildcard;

@@ -33,7 +33,7 @@ AUTHOR
 #include "tmarcdoc.h"
 #include "tchckdoc.h"
 #include "ttrnsdoc.h"
-#include "error.h"
+#include "statemanager.h"
 
 // forward declaration
 class TCheckDoc;
@@ -60,7 +60,7 @@ public:
     virtual TRuleDoc      *GetRuleDoc(void) { return itsRuleDoc; };
     virtual TTransDoc     *GetTransDoc(void) { return itsTransDoc; };
     TRuleDoc              *itsRuleDoc;
-    TError                *GetErrorHandler(void);
+    TStateManager                *GetStateManager(void);
     bool                  GetDebugRule(void) { return itsDebugRule; }
     unsigned long         GetOrdinal(void) { return itsOrdinal; }
     bool                  GetUTF8Mode(void) { return itsUTF8Mode; }
@@ -79,7 +79,7 @@ private:
     TMarcDoc              *itsMarcDoc;
     TCheckDoc             *itsCheckDoc;
     TTransDoc             *itsTransDoc;
-    TError                *itsErrorHandler;
+    TStateManager                *mStateManager;
     double                itsSize;
     long                  itsRecordsProcessed;
     bool                  itsDebugRule;

@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "error.h"
+#include "statemanager.h"
 #include "tcdlib.h"
 #include "sort.h"
 #include "umrecord.h"
@@ -119,7 +119,7 @@ void TEvaluateRule::yyerror( char *m )
         sprintf(lineno, "%d", mScanner.getCurrentLineNo());
         errorstr += lineno;
     }
-    mErrorHandler->SetErrorD(5100, ERROR, errorstr.str());
+    mStateManager->SetErrorD(5100, ERROR, errorstr.str());
 }
 
 // Cette fonction permet de savoir si une regle commence par un +
@@ -258,7 +258,7 @@ const char* TEvaluateRule::find_statement_end(const char *a_str)
     }
     if (paren != 0)
     {
-        mErrorHandler->SetErrorD(5100, ERROR, a_str);
+        mStateManager->SetErrorD(5100, ERROR, a_str);
         return NULL;
     }
     return p;
@@ -406,7 +406,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     }
                     if (++loop_counter >= 1000)
                     {
-                        mErrorHandler->SetError(5002, WARNING);
+                        mStateManager->SetError(5002, WARNING);
                         break;
                     }
                 }
@@ -474,7 +474,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                 }
                 else
                 {
-                    mErrorHandler->SetErrorD(5100, ERROR, statement.str());
+                    mStateManager->SetErrorD(5100, ERROR, statement.str());
                     rc = 2;
                 }
                 statement = "";
@@ -517,7 +517,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                 }
                 else
                 {
-                    mErrorHandler->SetErrorD(5100, ERROR, statement.str());
+                    mStateManager->SetErrorD(5100, ERROR, statement.str());
                     rc = 2;
                 }
                 statement = "";
@@ -570,7 +570,7 @@ int TEvaluateRule::Parse(TRule* a_rule)
     return rc;
 }
 
-int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHandler,
+int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TStateManager *StateManager,
                                       bool dbg_rule, unsigned long ord, bool UTF8Mode)
 {
     m_debug_rule = dbg_rule;
@@ -579,7 +579,7 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
 #endif
     m_ordinal = ord;
     mRuleDoc = RDoc;
-    mErrorHandler = ErrorHandler;
+    mStateManager = StateManager;
     mUTF8Mode = UTF8Mode;
     int i;
     S=AllocTypeInst();
@@ -596,7 +596,7 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
     V_SUB=AllocTypeInst();
     CDIn=AllocCD();
     if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !NEW || !NEWEST || !CDIn || !V_TAG || !V_SUB)
-        mErrorHandler->SetErrorD(5000,ERROR,"When initialising variables");
+        mStateManager->SetErrorD(5000,ERROR,"When initialising variables");
 
     NEW->val = C_NEW;
     NEWEST->val = C_NEWEST;
@@ -614,7 +614,7 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TError *ErrorHa
     {
         Memoire[i]=AllocTypeInst();
         if (!Memoire[i])
-            mErrorHandler->SetErrorD(5000,ERROR,"When initialising memories");
+            mStateManager->SetErrorD(5000,ERROR,"When initialising memories");
     }
 
     return 0;
@@ -663,7 +663,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
             S=AllocTypeInst();
         }
         if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW || !V_TAG || !V_SUB)
-            return mErrorHandler->SetErrorD(5000, ERROR, "When initialising variables");
+            return mStateManager->SetErrorD(5000, ERROR, "When initialising variables");
 
         // Initialisation de S,N,NT,NS : valeurs de l'entree
         N->str.freestr();
@@ -738,7 +738,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
             if (aCDOut->GetTagOccurrenceNumber() == CD_NEWEST)
             {
                 // Find the correct occurrence number for the newest tag
-                TCD findCD(mErrorHandler);
+                TCD findCD(mStateManager);
                 findCD.SetTag(aCDOut->GetTag());
                 if (Out->PreviousCD(&aCDLOut, &findCD))
                     aCDOut->SetTagOccurrenceNumber(aCDLOut->GetTagOccurrenceNumber());
@@ -769,7 +769,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
 
                     // Position at the beginning of the CDLib representing a complete field
                     TCDLib* Courant=(TCDLib*)aCDLOut->GetPrevious();
-                    TCD ToSearch(mErrorHandler);
+                    TCD ToSearch(mStateManager);
                     ToSearch.SetTag(aCDLOut->GetTag());
                     ToSearch.SetTagOccurrenceNumber(aCDLOut->GetTagOccurrenceNumber());
                     while( Courant )
@@ -795,7 +795,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                         {
                             typestr tmp;
                             Rule->ToString(tmp);
-                            mErrorHandler->SetErrorD(5101, ERROR, tmp.str());
+                            mStateManager->SetErrorD(5101, ERROR, tmp.str());
                         }
                         NTO->val=++NO->val;
 
@@ -807,7 +807,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                         {
                             typestr tmp;
                             Rule->ToString(tmp);
-                            mErrorHandler->SetErrorD(5102, ERROR, tmp.str());
+                            mStateManager->SetErrorD(5102, ERROR, tmp.str());
                         }
                         NSO->val=++NO->val;
                         D->str.str("");
@@ -818,7 +818,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                         {
                             typestr tmp;
                             Rule->ToString(tmp);
-                            mErrorHandler->SetErrorD(5103, ERROR, tmp.str());
+                            mStateManager->SetErrorD(5103, ERROR, tmp.str());
                         }
                         ++NTO->val; ++NO->val;
 
@@ -830,7 +830,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                         {
                             typestr tmp;
                             Rule->ToString(tmp);
-                            mErrorHandler->SetErrorD(5104, ERROR, tmp.str());
+                            mStateManager->SetErrorD(5104, ERROR, tmp.str());
                         }
                         ++NSO->val; ++NO->val;
                         D->str.str("");
@@ -866,7 +866,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                     {
                         typestr tmp;
                         Rule->ToString(tmp);
-                        mErrorHandler->SetErrorD(5101, ERROR, tmp.str());
+                        mStateManager->SetErrorD(5101, ERROR, tmp.str());
                     }
                     NTO->val=NO->val=1;
                 }
@@ -879,7 +879,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                         {
                             typestr tmp;
                             Rule->ToString(tmp);
-                            mErrorHandler->SetErrorD(5102, ERROR, tmp.str());
+                            mStateManager->SetErrorD(5102, ERROR, tmp.str());
                         }
                         NSO->val=NO->val=1;
                     }
@@ -892,7 +892,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                             {
                                 typestr tmp;
                                 Rule->ToString(tmp);
-                                mErrorHandler->SetErrorD(5103, ERROR, tmp.str());
+                                mStateManager->SetErrorD(5103, ERROR, tmp.str());
                             }
                             NTO->val=1;
                         }
@@ -905,7 +905,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                                 {
                                     typestr tmp;
                                     Rule->ToString(tmp);
-                                    mErrorHandler->SetErrorD(5104, ERROR, tmp.str());
+                                    mStateManager->SetErrorD(5104, ERROR, tmp.str());
                                 }
                                 NSO->val=1;
                             }
@@ -998,7 +998,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
         }
     }
 
-    return mErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 int TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLIn, TRule* aRule, bool & aPassed)
@@ -1022,7 +1022,7 @@ int TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLI
         S=AllocTypeInst();
     }
     if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW || !V_TAG || !V_SUB)
-        return mErrorHandler->SetErrorD(5000, ERROR, "When initialising variables");
+        return mStateManager->SetErrorD(5000, ERROR, "When initialising variables");
 
     // Initialize S, N, NT, NS
     N->str.freestr();
@@ -1066,7 +1066,7 @@ int TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLI
 
     aPassed = (rc == 4);
 
-    return mErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 int TEvaluateRule::End_Evaluate_Rule()
@@ -1156,7 +1156,7 @@ typestr2 TEvaluateRule::ReadCD(TypeCD *CD)
 
     TUMRecord *rec = CD->Output ? mRealOutputRecord : mInputRecord;
     TCDLib *aCDL=rec->GetFirstCDLib();
-    TCD     aCD(CD, mErrorHandler);
+    TCD     aCD(CD, mStateManager);
     typestr2 ptr;
 
     if (rec->NextCD(&aCDL,&aCD))
@@ -1170,7 +1170,7 @@ int TEvaluateRule::Exists( TypeCD* CD )
 
     TUMRecord *rec = CD->Output ? mRealOutputRecord : mInputRecord;
     TCDLib *aCDL = rec->GetFirstCDLib();
-    TCD     aCD(CD, mErrorHandler);
+    TCD     aCD(CD, mStateManager);
 
     return rec->NextCD(&aCDL,&aCD);
 }
@@ -1206,8 +1206,8 @@ int TEvaluateRule::Precedes( TypeCD* CD1, TypeCD* CD2 )
 
     TUMRecord *rec = CD1->Output ? mRealOutputRecord : mInputRecord;
     TCDLib* aCDL = rec->GetFirstCDLib();
-    TCD aCD1(CD1, mErrorHandler);
-    TCD aCD2(CD2, mErrorHandler);
+    TCD aCD1(CD1, mStateManager);
+    TCD aCD2(CD2, mStateManager);
 
     if (!rec->NextCD(&aCDL,&aCD1)) 
         return 0;
@@ -1224,7 +1224,7 @@ typestr2 TEvaluateRule::NextSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
     FinishCD(CD2);
 
     TCDLib* aCDL = mInputCDL;
-    TCD     aCD1(CD1, mErrorHandler);
+    TCD     aCD1(CD1, mStateManager);
     typestr2 temps;
     temps.str("");
 
@@ -1236,7 +1236,7 @@ typestr2 TEvaluateRule::NextSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
     }
     else
     {
-        TCD aCD2(CD2, mErrorHandler);
+        TCD aCD2(CD2, mStateManager);
         while (aCDL)
         {
             if (*aCDL == aCD1) 
@@ -1261,7 +1261,7 @@ typestr2 TEvaluateRule::PreviousSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
     FinishCD(CD2);
 
     TCDLib* aCDL = mInputCDL;
-    TCD     aCD1(CD1, mErrorHandler);
+    TCD     aCD1(CD1, mStateManager);
     typestr2 temps;
     temps.str("");
 
@@ -1273,7 +1273,7 @@ typestr2 TEvaluateRule::PreviousSubField( TypeCD* CD1, TypeCD* CD2 ) // Idem
     }
     else
     {
-        TCD   aCD2(CD2, mErrorHandler);
+        TCD   aCD2(CD2, mStateManager);
         while(aCDL)
         {
             if (*aCDL==aCD1) 
@@ -1503,7 +1503,7 @@ TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 
         TUMRecord* record = aFindCD->Output ? mRealOutputRecord : mInputRecord;
         TCDLib* CDL = record->GetFirstCDLib();
-        TCD findCD(aFindCD, mErrorHandler);
+        TCD findCD(aFindCD, mStateManager);
         ToString(aOccurrence);
 
         while (record->NextCD(&CDL, &findCD))
@@ -1573,7 +1573,7 @@ TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 
         TUMRecord* record = aFindCD->Output ? mRealOutputRecord : mInputRecord;
         TCDLib *CDL = record->GetFirstCDLib();
-        TCD     findCD(aFindCD, mErrorHandler);
+        TCD     findCD(aFindCD, mStateManager);
         ToString(aOccurrence);
 
         while (record->NextCD(&CDL, &findCD))
@@ -2633,7 +2633,7 @@ bool TEvaluateRule::RegFindInternal(const char *a_str, const char *a_regexp)
         typestr error = "Could not compile regular expression '";
         error += a_regexp;
         error += "': ";
-        error += mErrorHandler->GetPCRECompileErrorDesc(error_code);
+        error += mStateManager->GetPCRECompileErrorDesc(error_code);
         if (error_ptr)
         {
             error += " at ";
@@ -2662,10 +2662,10 @@ bool TEvaluateRule::RegFindInternal(const char *a_str, const char *a_regexp)
         error += a_regexp;
         error += "', error code ";
         error += ret_str;
-        if (mErrorHandler->GetPCREExecErrorDesc(mRegExpResult))
+        if (mStateManager->GetPCREExecErrorDesc(mRegExpResult))
         {
             error += " (";
-            error += mErrorHandler->GetPCREExecErrorDesc(mRegExpResult);
+            error += mStateManager->GetPCREExecErrorDesc(mRegExpResult);
             error += ")";
         }
         yyerror(error.str());

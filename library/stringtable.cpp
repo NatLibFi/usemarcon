@@ -19,7 +19,7 @@ StringTableItem::StringTableItem() : m_next(NULL)
 {
 }
 
-StringTable::StringTable(TError* a_errorhandler) : m_first(NULL), m_last(NULL), m_next_table(NULL),
+StringTable::StringTable(TStateManager* a_errorhandler) : m_first(NULL), m_last(NULL), m_next_table(NULL),
   m_errorhandler(a_errorhandler) 
 {
 }
@@ -115,7 +115,7 @@ bool StringTable::parse_line(const char *a_line, typestr &a_src, typestr &a_dst)
     return true;
 }
 
-StringTableList::StringTableList(TError *a_errorhandler) : m_first(NULL), m_last(NULL), m_errorhandler(a_errorhandler)
+StringTableList::StringTableList(TStateManager *a_errorhandler) : m_first(NULL), m_last(NULL), m_errorhandler(a_errorhandler)
 {
 }
 

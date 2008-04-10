@@ -12,7 +12,7 @@
  *
  */
 
-#include "error.h"
+#include "statemanager.h"
 #include "defines.h"
 #include "truledoc.h"
 #include "tmpplctn.h"
@@ -30,7 +30,7 @@ TRuleDoc::TRuleDoc(TUMApplication *Application)
     itsFile         = NULL;
     itsRuleSpec     = NULL;
     itsApplication  = Application;
-    itsErrorHandler = Application->GetErrorHandler();
+    mStateManager = Application->GetStateManager();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ bool TRuleDoc::Open(void)
     // on information read from some data source
     if ((itsFile=new TRuleFile(itsFilePointer, itsApplication))==NULL)
     {
-        itsErrorHandler->SetError(9001,ERROR);
+        mStateManager->SetError(9001,ERROR);
         return false;
     }
 

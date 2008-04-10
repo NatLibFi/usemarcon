@@ -95,7 +95,7 @@ SOURCE=.\ctrlfld.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\error.cpp
+SOURCE=.\statemanager.cpp
 # End Source File
 # Begin Source File
 
@@ -215,7 +215,7 @@ SOURCE=.\errcodes.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\error.h
+SOURCE=.\statemanager.h
 # End Source File
 # Begin Source File
 

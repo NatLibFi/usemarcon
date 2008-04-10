@@ -27,13 +27,13 @@ AUTHOR
 #define _TCDLIB_H_
 
 #include "tcd.h"
-#include "error.h"
+#include "statemanager.h"
 #include "typedef.h"
 
 class TCDLib : public TCD
 {
 public:
-    TCDLib          (TError *ErrorHandler);
+    TCDLib          (TStateManager *StateManager);
     TCDLib          (TCDLib *aCDLib,TCD *aCD=NULL);
     TCDLib          (TCD* aCD);
     ~TCDLib         (void);

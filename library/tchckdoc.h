@@ -28,7 +28,7 @@ AUTHOR
 
 #include "chckfile.h"
 #include "defines.h"
-#include "error.h"
+#include "statemanager.h"
 
 // forward declaration
 class TCheckFile;
@@ -36,7 +36,7 @@ class TCheckFile;
 class TCheckDoc
 {
 public:
-    TCheckDoc           (TError *ErrorHandler);
+    TCheckDoc           (TStateManager *StateManager);
     virtual ~TCheckDoc   ();
 
     virtual bool          Open                (int IO);
@@ -52,7 +52,7 @@ private:
     typestr               itsCheckInputSpec;
     typestr               itsCheckOutputSpec;
     typestr               itsFilePointer;
-    TError                *itsErrorHandler;
+    TStateManager                *mStateManager;
 };
 
 #endif // TCheckDoc_H

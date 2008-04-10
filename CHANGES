@@ -9,6 +9,23 @@ Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
+- Changed error handler to state manager to more appropriately describe
+  its function.
+- Fixed setting of record id in state manager overriding the flag of
+  handling of linked fields.
+
+
+**************************
+**************************
+version 3.07
+
+April 4 2008
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
 - Fixed a possible crash when conversion was done in UTF-8 mode and 
   a record contained invalid characters.
 - Fixed a problem introduced in version 3.06 where e.g. 

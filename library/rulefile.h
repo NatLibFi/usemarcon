@@ -68,6 +68,6 @@ protected:
 private:
     TUMApplication        *itsApplication;
 
-    TError                *ErrorHandler;
+    TStateManager                *StateManager;
 };
 #endif

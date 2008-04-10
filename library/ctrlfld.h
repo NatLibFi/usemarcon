@@ -27,13 +27,13 @@ AUTHOR
 #ifndef _TCONTROLFIELD_H_
 #define _TCONTROLFIELD_H_
 
-#include "error.h"
+#include "statemanager.h"
 #include "typedef.h"
 
 class TCtrlSubfield
 {
 public:
-    TCtrlSubfield       (TError *ErrorHandler);
+    TCtrlSubfield       (TStateManager *StateManager);
     ~TCtrlSubfield      (void);
     
     char          GetSub              (void)              { return itsSub; };
@@ -55,7 +55,7 @@ private:
     int           itsSubOccurency;
     TCtrlSubfield *itsNextSub;
     
-    TError        *itsErrorHandler;
+    TStateManager        *mStateManager;
 };
 
 
@@ -84,7 +84,7 @@ class TControlField
 {
     
 public:
-    TControlField       (TError *ErrorHandler);
+    TControlField       (TStateManager *StateManager);
     ~TControlField      (void);
     
     void          DelTreeCheckSub     (void);
@@ -122,7 +122,7 @@ private:
     TCtrlSubfield *itsLastSubfield;
     TControlField *itsNextTag;
     
-    TError        *itsErrorHandler;
+    TStateManager        *mStateManager;
 };
 
 #endif

@@ -28,7 +28,7 @@ AUTHOR
 #define TTransDoc_H
 
 #include "trnsfile.h"
-#include "error.h"
+#include "statemanager.h"
 
 enum CHARSET 
 {
@@ -39,7 +39,7 @@ enum CHARSET
 class TTransDoc
 {
 public:
-    TTransDoc      (TError *ErrorHandler) ;
+    TTransDoc      (TStateManager *StateManager) ;
     virtual ~TTransDoc    ();
 
     virtual bool          Open            (void);
@@ -56,7 +56,7 @@ private:
     typestr               itsFilePointer;
     CHARSET               itsCharset;
 
-    TError                *itsErrorHandler;
+    TStateManager                *mStateManager;
 
     int ConvertToUTF8(TMarcRecord* MarcIn, TMarcRecord* MarcOut);
     const char* Transcode(char* In, typestr *Out, char *Notice, char *Field);

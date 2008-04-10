@@ -35,7 +35,7 @@ AUTHOR
 class TRule
 {
 public:
-    TRule           (TError *ErrorHandler);
+    TRule           (TStateManager *StateManager);
     TRule           (TRule *aRule);
     TRule           (TRule *aRule, const char* aRuleStr);
     virtual ~TRule  ();
@@ -71,7 +71,7 @@ protected:
     typestr       mCondition;
     int           mConditionGroup;
     
-    TError        *mErrorHandler;
+    TStateManager        *mStateManager;
 };
 
 #endif

@@ -144,7 +144,7 @@ private:
     DUPLICATE_PROCESSING_MODE     m_duplicateFields;
 
     TUMApplication                *itsApplication;
-    TError                        *itsErrorHandler;
+    TStateManager                        *mStateManager;
 };
 
 #endif

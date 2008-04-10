@@ -31,7 +31,7 @@ AUTHOR
 class TCodedData : public TTransFile
 {
 public:
-    TCodedData          (typestr & FileSpec, TError *ErrorHandler);
+    TCodedData          (typestr & FileSpec, TStateManager *StateManager);
     ~TCodedData         (void);
     
     virtual typestr       GetCodedDataName   (void) { return itsCodedDataName; };

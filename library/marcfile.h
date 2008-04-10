@@ -28,7 +28,7 @@ AUTHOR
 
 #include "tfile.h"
 #include "defines.h"
-#include "error.h"
+#include "statemanager.h"
 
 //forward declaration
 class TUMApplication;
@@ -87,7 +87,7 @@ private:
     bool              xml_read_until_end(const char *tag, typestr & a_xml);
 
     TUMApplication    *itsApplication;
-    TError            *itsErrorHandler;
+    TStateManager            *mStateManager;
 
     unsigned long     itsCharsRead;
 

@@ -126,8 +126,8 @@ int Usemarcon::Convert()
         application->End();
     }
 
-    if (application->GetErrorHandler())
-        SetLastErrorMessage(application->GetErrorHandler()->GetLastErrorMessage());
+    if (application->GetStateManager())
+        SetLastErrorMessage(application->GetStateManager()->GetLastErrorMessage());
 
     if (m_interactive)
     {

@@ -15,17 +15,17 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
-#include "error.h"
+#include "statemanager.h"
 #include "tools.h"
 #include "errcodes.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// TError
+// TStateManager
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-TError::TError(TUMApplication* theApplication, const char *LogFileName)
+TStateManager::TStateManager(TUMApplication* theApplication, const char *LogFileName)
 {
     itsApplication=theApplication;
 
@@ -49,11 +49,11 @@ TError::TError(TUMApplication* theApplication, const char *LogFileName)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// ~TError
+// ~TStateManager
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-TError::~TError()
+TStateManager::~TStateManager()
 {
     if (itsLogError)
     {
@@ -68,7 +68,7 @@ TError::~TError()
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
+int TStateManager::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
                          int LineNumber, const char *UserData)
 {
     bool bFoundCode = false;
@@ -174,7 +174,7 @@ int TError::SetErrorCode(int ErrorCode, short Severity, const char *FileName,
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-int TError::GetErrorCode(void)
+int TStateManager::GetErrorCode(void)
 {
     return itsErrorCode;
 }
@@ -185,7 +185,7 @@ int TError::GetErrorCode(void)
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-void TError::SetMode(int Mode)
+void TStateManager::SetMode(int Mode)
 {
     itsMode=Mode;
 }
@@ -196,7 +196,7 @@ void TError::SetMode(int Mode)
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-int TError::GetMode(void)
+int TStateManager::GetMode(void)
 {
     return itsMode;
 }
@@ -207,7 +207,7 @@ int TError::GetMode(void)
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-int TError::OpenErrorLogFile(const char *Name)
+int TStateManager::OpenErrorLogFile(const char *Name)
 {
     time_t ns;
     time(&ns);
@@ -225,7 +225,7 @@ int TError::OpenErrorLogFile(const char *Name)
     return 0;
 }
 
-void TError::WriteError(char *message)
+void TStateManager::WriteError(char *message)
 {
     if (itsLogError)
     {
@@ -242,14 +242,14 @@ void TError::WriteError(char *message)
         printf("%s", message);
 }
 
-const char* TError::GetPCRECompileErrorDesc(int a_index)
+const char* TStateManager::GetPCRECompileErrorDesc(int a_index)
 {
     if (a_index >= 0 && a_index <= sizeof(PCRECompileErrorDesc) / sizeof(char *))
         return PCRECompileErrorDesc[a_index];
     return "";
 }
 
-const char* TError::GetPCREExecErrorDesc(int a_errorcode)
+const char* TStateManager::GetPCREExecErrorDesc(int a_errorcode)
 {
     for (int i = 0; i < PCREExecErrorDescCount; i++)
     {

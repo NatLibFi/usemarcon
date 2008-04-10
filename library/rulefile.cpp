@@ -14,7 +14,7 @@
 
 #include "trule.h"
 #include "rulefile.h"
-#include "error.h"
+#include "statemanager.h"
 #include "tools.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -23,7 +23,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
-: TFile(FileSpec, Application->GetErrorHandler()), mStringTables(Application->GetErrorHandler())
+: TFile(FileSpec, Application->GetStateManager()), mStringTables(Application->GetStateManager())
 {
     itsFirstRule        = NULL;
     itsFirstCodedData   = NULL;
@@ -31,7 +31,7 @@ TRuleFile::TRuleFile(typestr & FileSpec, TUMApplication *Application)
     itsMacros           = NULL;
     itsDocument         = NULL;
     itsApplication      = Application;
-    itsErrorHandler     = Application->GetErrorHandler();
+    mStateManager     = Application->GetStateManager();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ int TRuleFile::OpenRuleFile()
 
     // Verify that the Rule File exists
     if (Exists()==false)
-        return itsErrorHandler->SetErrorD(5001, WARNING, itsFileInfo.str());
+        return mStateManager->SetErrorD(5001, WARNING, itsFileInfo.str());
 
     if (itsMacros)
     {
@@ -95,9 +95,9 @@ int TRuleFile::OpenRuleFile()
     itsDocument = new TRuleDoc(itsApplication);
 
     // Load the rule on into a Rule memory tree
-    CurrentRule = new TRule(itsErrorHandler);
+    CurrentRule = new TRule(mStateManager);
     if (!CurrentRule)
-        return itsErrorHandler->SetError(5501,ERROR);
+        return mStateManager->SetError(5501,ERROR);
     CurrentRule->SetPreviousRule(NULL);
     itsFirstRule = CurrentRule;
     IsRuleAnalysed = false;
@@ -125,11 +125,11 @@ int TRuleFile::OpenRuleFile()
                 typestr error;
                 error.allocstr(strlen(IncludedFileSpec.str()) + strlen(RuleLine.str()) + 100);
                 sprintf(error.str(), "in file '%s' at line %d:\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
-                return itsErrorHandler->SetErrorD(5100, ERROR, error.str());
+                return mStateManager->SetErrorD(5100, ERROR, error.str());
             }
             if (!itsMacros)
             {
-                itsMacros = new StringTable(itsErrorHandler);
+                itsMacros = new StringTable(mStateManager);
             }
             StringTableItem* macro = itsMacros->AddItem();
             macro->m_src = src;
@@ -161,7 +161,7 @@ int TRuleFile::OpenRuleFile()
                 }
                 error += ". ";
 
-                return itsErrorHandler->SetErrorD(version == 0 ? 5050 : 5051, ERROR, error.str());
+                return mStateManager->SetErrorD(version == 0 ? 5050 : 5051, ERROR, error.str());
             }
             continue;
         }
@@ -176,7 +176,7 @@ int TRuleFile::OpenRuleFile()
                 error += ", line ";
                 sprintf(tmp, "%ld", Line);
                 error += tmp;
-                return itsErrorHandler->SetErrorD(5603, ERROR, error.str());
+                return mStateManager->SetErrorD(5603, ERROR, error.str());
             }
             p += 4;
             while (*p == ' ' || *p == '\t') 
@@ -198,7 +198,7 @@ int TRuleFile::OpenRuleFile()
                 error += ", line ";
                 sprintf(tmp, "%ld", Line);
                 error += tmp;
-                return itsErrorHandler->SetErrorD(5604, ERROR, error.str());
+                return mStateManager->SetErrorD(5604, ERROR, error.str());
             }
             reset_condition = true;
             continue;
@@ -223,13 +223,13 @@ int TRuleFile::OpenRuleFile()
             }
             lastInputCD = CurrentRule->GetInputCD();
             lastOutputCD = CurrentRule->GetOutputCD();
-            CurrentRule->SetNextRule(new TRule(itsErrorHandler)); 
+            CurrentRule->SetNextRule(new TRule(mStateManager)); 
             if (!CurrentRule->GetNextRule())
             {
                 typestr Illustration;
                 Illustration.allocstr(strlen(IncludedFileSpec.str()) + strlen(RuleLine.str()) + 100);
                 sprintf(Illustration.str(), "in file '%s' at line %d:\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
-                return  itsErrorHandler->SetErrorD(5501,ERROR,Illustration.str());
+                return  mStateManager->SetErrorD(5501,ERROR,Illustration.str());
             }
             CurrentRule->GetNextRule()->SetPreviousRule(CurrentRule);
             CurrentRule = CurrentRule->GetNextRule();
@@ -241,7 +241,7 @@ int TRuleFile::OpenRuleFile()
             typestr Illustration;
             Illustration.allocstr(strlen(IncludedFileSpec.str()) + strlen(RuleLine.str()) + 100);
             sprintf(Illustration.str(), "in file '%s' at line %d :\n%s", IncludedFileSpec.str(), Line, RuleLine.str());
-            itsErrorHandler->SetErrorD(-Result,ERROR,Illustration.str());
+            mStateManager->SetErrorD(-Result,ERROR,Illustration.str());
             // Delete the erroneous rule
             // No we don't. We should unwind the rule from the list too...
             //if (CurrentRule->GetInputCD())  { delete(CurrentRule->GetInputCD());    CurrentRule->SetInputCD(NULL);  }
@@ -266,7 +266,7 @@ int TRuleFile::OpenRuleFile()
         error += ", line ";
         sprintf(tmp, "%ld", condition_line);
         error += tmp;
-        return itsErrorHandler->SetErrorD(5605, ERROR, error.str());
+        return mStateManager->SetErrorD(5605, ERROR, error.str());
     }
 
 
@@ -288,10 +288,10 @@ int TRuleFile::OpenRuleFile()
 
 int TRuleFile::ConvertInRuleOrder(TUMRecord* In, TUMRecord* Out)
 {
-    itsErrorHandler->Reset();
+    mStateManager->Reset();
 
     itsEvaluateRule.Init_Evaluate_Rule(itsDocument, itsApplication->GetRuleDoc(),
-        itsApplication->GetErrorHandler(), itsApplication->GetDebugRule(),
+        itsApplication->GetStateManager(), itsApplication->GetDebugRule(),
         itsApplication->GetOrdinal(), itsApplication->GetUTF8Mode());
 
     // Evaluate all rules
@@ -301,7 +301,7 @@ int TRuleFile::ConvertInRuleOrder(TUMRecord* In, TUMRecord* Out)
         const char* condition = aRule->GetCondition();
         if (condition && *condition)
         {
-            itsErrorHandler->SetErrorD(5602, ERROR, "#if condition");
+            mStateManager->SetErrorD(5602, ERROR, "#if condition");
             break;
         }
         TCD *OutputCD = aRule->GetOutputCD();
@@ -322,17 +322,17 @@ int TRuleFile::ConvertInRuleOrder(TUMRecord* In, TUMRecord* Out)
 
     itsEvaluateRule.End_Evaluate_Rule();
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 int TRuleFile::ConvertInFieldOrder(TUMRecord* In, TUMRecord* Out)
 {
-    itsErrorHandler->Reset();
+    mStateManager->Reset();
 
     bool debug_rule = itsApplication->GetDebugRule();
 
     itsEvaluateRule.Init_Evaluate_Rule(itsDocument, itsApplication->GetRuleDoc(),
-        itsApplication->GetErrorHandler(), debug_rule,
+        itsApplication->GetStateManager(), debug_rule,
         itsApplication->GetOrdinal(), itsApplication->GetUTF8Mode());
 
     TCDLib* CDLIn=In->GetFirstCDLib();
@@ -437,7 +437,7 @@ int TRuleFile::ConvertInFieldOrder(TUMRecord* In, TUMRecord* Out)
 
     itsEvaluateRule.End_Evaluate_Rule();
 
-    return itsErrorHandler->GetErrorCode();
+    return mStateManager->GetErrorCode();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -492,7 +492,7 @@ TCodedData  *TRuleFile::GetCodedData(char *theName)
     TCodedData      *aCodedData,
                     *anOldCodedData;
 
-    itsErrorHandler->Reset();
+    mStateManager->Reset();
     testspec = ((TRuleDoc *) itsApplication->itsRuleDoc)->GetRuleSpec();
 
     if (strchr(theName, SLASH))
@@ -514,7 +514,7 @@ TCodedData  *TRuleFile::GetCodedData(char *theName)
     }
     // this coded data table doesn't exist
 
-    aCodedData = new TCodedData(CodedDataSpec, itsErrorHandler);
+    aCodedData = new TCodedData(CodedDataSpec, mStateManager);
     anOldCodedData = itsLastCodedData;
 
     if (aCodedData)
@@ -547,7 +547,7 @@ TCodedData  *TRuleFile::GetCodedData(char *theName)
 ///////////////////////////////////////////////////////////////////////////////
 StringTable* TRuleFile::GetStringTable(const char *a_tablename)
 {
-    itsErrorHandler->Reset();
+    mStateManager->Reset();
 
     typestr filename;
     if (!strchr(a_tablename, SLASH))

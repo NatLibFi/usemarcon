@@ -16,21 +16,21 @@
 #include <stdlib.h>
 
 #include "ctrlfld.h"
-#include "error.h"
+#include "statemanager.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 // TCtrlSubfield
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCtrlSubfield::TCtrlSubfield(TError *itsErrorHandler)
+TCtrlSubfield::TCtrlSubfield(TStateManager *mStateManager)
 {
     itsSub              = '?';
     itsSubMandatory = false;
     itsSubRepeatable    = false;
     itsSubOccurency = 0;
     itsNextSub          = NULL;
-    itsErrorHandler = itsErrorHandler;
+    mStateManager = mStateManager;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ TCtrlSubfield::~TCtrlSubfield(void)
 // TControlField
 //
 ///////////////////////////////////////////////////////////////////////////////
-TControlField::TControlField(TError *ErrorHandler)
+TControlField::TControlField(TStateManager *StateManager)
 {
     *itsTag         = 0;
     itsTagMandatory = false;
@@ -57,7 +57,7 @@ TControlField::TControlField(TError *ErrorHandler)
     itsFirstSubfield    = NULL;
     itsLastSubfield = NULL;
     itsNextTag          = NULL;
-    itsErrorHandler    = ErrorHandler;
+    mStateManager    = StateManager;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ int TControlField::SetFirstIndicators(char *Indicators)
     itsFirstIndicators.freestr();
     if (*Indicators)
         if (itsFirstIndicators.str(Indicators)==NULL)
-            return itsErrorHandler->SetError(2503,ERROR);
+            return mStateManager->SetError(2503,ERROR);
         return 0;
 }
 
@@ -94,7 +94,7 @@ int TControlField::SetSecondIndicators(char *Indicators)
     itsSecondIndicators.freestr();
     if (*Indicators)
         if (itsSecondIndicators.str(Indicators)==NULL)
-            return itsErrorHandler->SetError(2504,ERROR);
+            return mStateManager->SetError(2504,ERROR);
         return 0;
 }
 

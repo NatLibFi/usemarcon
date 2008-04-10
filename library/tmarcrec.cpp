@@ -14,7 +14,7 @@
 
 #include <ctype.h>
 #include "tmarcrec.h"
-#include "error.h"
+#include "statemanager.h"
 #include "tmpplctn.h"
 #include "tools.h"
 
@@ -31,7 +31,7 @@ TMarcRecord::TMarcRecord(TUMApplication *Application)
     itsFirstOutputTNI   = NULL;
     itsInputIndSeparatorsID = 0;
     itsOutputIndSeparatorsID = 0;
-    itsErrorHandler     = Application->GetErrorHandler();
+    mStateManager     = Application->GetStateManager();
     *m_recordId = '\0';
 }
 
@@ -76,7 +76,7 @@ TMarcRecord::TMarcRecord(const TMarcRecord &aRecord)
     itsFirstOutputTNI = aRecord.GetFirstOutputTNI();
     itsInputIndSeparatorsID = aRecord.itsInputIndSeparatorsID;
     itsOutputIndSeparatorsID = aRecord.itsOutputIndSeparatorsID;
-    itsErrorHandler = aRecord.itsErrorHandler;
+    mStateManager = aRecord.mStateManager;
     itsDetails = aRecord.itsDetails;
 }
 
@@ -134,7 +134,7 @@ TMarcRecord & TMarcRecord::operator=(const TMarcRecord &aRecord)
     itsFirstOutputTNI = aRecord.GetFirstOutputTNI();
     itsInputIndSeparatorsID = aRecord.itsInputIndSeparatorsID;
     itsOutputIndSeparatorsID = aRecord.itsOutputIndSeparatorsID;
-    itsErrorHandler = aRecord.itsErrorHandler;
+    mStateManager = aRecord.mStateManager;
     itsDetails = aRecord.itsDetails;
 
     return *this;
@@ -190,33 +190,33 @@ int TMarcRecord::FromString(char* MarcString)
     memcpy(cdebutdata,&itsLeader[12],5);
     cdebutdata[5]=0;
     if (Val(cdebutdata,&debutdata))
-        return itsErrorHandler->SetErrorD(1007,FATAL,cdebutdata);
+        return mStateManager->SetErrorD(1007,FATAL,cdebutdata);
     pos=24;
 
     // On va maintenant renseigner les differents champs
     if ((itsFirstField = new TMarcField()) == NULL)
-        return itsErrorHandler->SetError(9041,FATAL);
+        return mStateManager->SetError(9041,FATAL);
     champ=itsFirstField;
 
     // Lecture du tag du champs
     memcpy(temp,&MarcString[pos],3);
     temp[3]=0;
     if (champ->SetTag(temp))
-        return itsErrorHandler->SetErrorD(1101,ERROR,temp);
+        return mStateManager->SetErrorD(1101,ERROR,temp);
     pos+=3;
 
     // Lecture de sa longueur
     memcpy(temp,&MarcString[pos],4);
     temp[4]=0;
     if (Val(temp,&lngchamp))
-        return itsErrorHandler->SetErrorD(1004,ERROR,temp);
+        return mStateManager->SetErrorD(1004,ERROR,temp);
     pos += 4;
 
     // Lecture de sa position
     memcpy(temp,&MarcString[pos],5);
     temp[5]=0;
     if (LongVal(temp,&posdata))
-        return itsErrorHandler->SetErrorD(1007,ERROR,temp);
+        return mStateManager->SetErrorD(1007,ERROR,temp);
     pos += 5;
 
     // on remplit le premier champ
@@ -241,28 +241,28 @@ int TMarcRecord::FromString(char* MarcString)
     {
         champ->SetNextField(new TMarcField());
         if (champ->GetNextField()==NULL)
-            return itsErrorHandler->SetError(9041,ERROR);
+            return mStateManager->SetError(9041,ERROR);
         champ = champ->GetNextField();
 
         // Lecture du tag du champs
         memcpy(temp,&MarcString[pos],3);
         temp[3]=0;
         if (champ->SetTag(temp))
-            return itsErrorHandler->SetErrorD(1101,ERROR,temp);
+            return mStateManager->SetErrorD(1101,ERROR,temp);
         pos+=3;
 
         // Lecture de sa longueur
         memcpy(temp,&MarcString[pos],4);
         temp[4]=0;
         if (Val(temp,&lngchamp))
-            return itsErrorHandler->SetErrorD(1004,ERROR,temp);
+            return mStateManager->SetErrorD(1004,ERROR,temp);
         pos += 4;
 
         // Lecture de sa position
         memcpy(temp,&MarcString[pos],5);
         temp[5]=0;
         if (LongVal(temp,&posdata))
-            return itsErrorHandler->SetErrorD(1007,ERROR,temp);
+            return mStateManager->SetErrorD(1007,ERROR,temp);
         pos += 5;
 
         // on remplit le champ
@@ -311,7 +311,7 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
     {
         typestr tag, attribs, content, remainder;
         if (!get_tag(xml, tag, attribs, content, remainder))
-            return itsErrorHandler->SetErrorD(1050, ERROR, xml.str());
+            return mStateManager->SetErrorD(1050, ERROR, xml.str());
         if (tag == "record")
         {
             xml = content;
@@ -320,7 +320,7 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
                 if (!get_tag(xml, tag, attribs, content, remainder))
                 {
                     if (!itsFirstField)
-                        return itsErrorHandler->SetErrorD(1050, ERROR, xml.str());
+                        return mStateManager->SetErrorD(1050, ERROR, xml.str());
                     break;
                 }
 
@@ -337,7 +337,7 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
                 else if (tag == "controlfield" || tag == "datafield")
                 {
                     if ((field = new TMarcField()) == NULL)
-                        return itsErrorHandler->SetError(9041,FATAL);
+                        return mStateManager->SetError(9041,FATAL);
                     if (!itsFirstField)
                     {
                         itsFirstField = field;
@@ -463,16 +463,16 @@ int TMarcRecord::ToString(typestr & a_marcstr)
 int TMarcRecord::ToXMLString(typestr &a_xml)
 {
     a_xml = "<record";
-    if (itsErrorHandler->GetOutputXMLRecordFormat().str())
+    if (mStateManager->GetOutputXMLRecordFormat().str())
     {
         a_xml.append(" format=\"");
-        a_xml.append(itsErrorHandler->GetOutputXMLRecordFormat());
+        a_xml.append(mStateManager->GetOutputXMLRecordFormat());
         a_xml.append_char('\"');
     }
-    if (itsErrorHandler->GetOutputXMLRecordType().str())
+    if (mStateManager->GetOutputXMLRecordType().str())
     {
         a_xml.append(" type=\"");
-        a_xml.append(itsErrorHandler->GetOutputXMLRecordType());
+        a_xml.append(mStateManager->GetOutputXMLRecordType());
         a_xml.append_char('\"');
     }
     a_xml.append(">\n");

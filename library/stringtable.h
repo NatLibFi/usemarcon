@@ -26,7 +26,7 @@ AUTHOR
 #define _STRING_TABLE_H_
 
 #include "typedef.h"
-#include "error.h"
+#include "statemanager.h"
 
 class StringTableItem
 {
@@ -47,7 +47,7 @@ private:
 class StringTable
 {
 public:
-    StringTable(TError *a_errorhandler); 
+    StringTable(TStateManager *a_errorhandler); 
     ~StringTable();
     
     typestr GetName() { return m_name; }
@@ -70,13 +70,13 @@ private:
     StringTableItem* m_last;
     StringTable* m_next_table;
     typestr m_name;
-    TError *m_errorhandler;
+    TStateManager *m_errorhandler;
 };
 
 class StringTableList
 {
 public:
-    StringTableList(TError *a_errorhandler); 
+    StringTableList(TStateManager *a_errorhandler); 
     ~StringTableList();
     
     StringTable* AddTable();
@@ -89,7 +89,7 @@ private:
 
     StringTable* m_first;
     StringTable* m_last;
-    TError *m_errorhandler;
+    TStateManager *m_errorhandler;
 };
 
 #endif

@@ -34,7 +34,7 @@ AUTHOR
 class TCheckFile : public TFile
 {
 public:
-    TCheckFile          (typestr & FileSpec, TError *ErrorHandler);
+    TCheckFile          (typestr & FileSpec, TStateManager *aStateManager);
     ~TCheckFile         (void);
     
     virtual int           Open                (int IO);

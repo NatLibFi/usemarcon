@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 #include "tcdlib.h"
-#include "error.h"
+#include "statemanager.h"
 #include "tools.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@
 // TCDLib
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCDLib::TCDLib(TError *ErrorHandler):TCD(ErrorHandler)
+TCDLib::TCDLib(TStateManager *StateManager):TCD(StateManager)
 {
 }
 
@@ -31,7 +31,7 @@ TCDLib::TCDLib(TError *ErrorHandler):TCD(ErrorHandler)
 // TCDLib : copie constructeur
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCDLib::TCDLib(TCDLib *aCDLib, TCD*aCD):TCD(aCDLib->itsErrorHandler)
+TCDLib::TCDLib(TCDLib *aCDLib, TCD*aCD):TCD(aCDLib->mStateManager)
 {
     _IN=aCDLib->GetIN();
     strcpy(itsTag,aCDLib->GetTag());
@@ -54,7 +54,7 @@ TCDLib::TCDLib(TCDLib *aCDLib, TCD*aCD):TCD(aCDLib->itsErrorHandler)
         itsNext = NULL;
     itsPrevious = NULL;
     SetContent(aCDLib->GetContent(), aCD);
-    itsErrorHandler=aCDLib->itsErrorHandler;
+    mStateManager=aCDLib->mStateManager;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ TCDLib::TCDLib(TCDLib *aCDLib, TCD*aCD):TCD(aCDLib->itsErrorHandler)
 // TCDLib : copie constructeur
 //
 ///////////////////////////////////////////////////////////////////////////////
-TCDLib::TCDLib(TCD *aCD):TCD(aCD->GetErrorHandler())
+TCDLib::TCDLib(TCD *aCD):TCD(aCD->GetStateManager())
 {
     _IN=aCD->GetIN();
     strcpy(itsTag,aCD->GetTag());
@@ -84,7 +84,7 @@ TCDLib::TCDLib(TCD *aCD):TCD(aCD->GetErrorHandler())
     else
         itsNext = NULL;
     itsPrevious = NULL;
-    itsErrorHandler=aCD->GetErrorHandler();
+    mStateManager=aCD->GetStateManager();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -176,7 +176,7 @@ typestr2 TCDLib::GetContent(TCD* theCD)
 
     --aBeginning;
 
-    if (itsErrorHandler->GetUTF8Mode())
+    if (mStateManager->GetUTF8Mode())
     {
         if (aBeginning >= 0) 
             aBeginning = utf8_charindex(content.str(), aBeginning);
@@ -246,7 +246,7 @@ int TCDLib::SetContent(const char *aContent, const char *aContent2, const char *
     if (aCD==NULL)
     {
         if (*itsSubfield=='I' && aContent && aContent[0] != '\0' && aContent[1] != '\0')
-            itsErrorHandler->SetErrorD(5005, ERROR, aContent);
+            mStateManager->SetErrorD(5005, ERROR, aContent);
         itsContent.str(aContent);
         itsContent.s2.str(aContent2);
         return 0;
@@ -275,7 +275,7 @@ int TCDLib::SetContent(const char *aContent, const char *aContent2, const char *
 
         typestr tmpstr = itsContent.str() ? itsContent.str() : "";
 
-        if (itsErrorHandler->GetUTF8Mode() && aContent)
+        if (mStateManager->GetUTF8Mode() && aContent)
         {
             int oldBegining = aBeginning;
             aBeginning = utf8_charindex(tmpstr.str(), aBeginning);
@@ -444,7 +444,7 @@ int TCDLib::NextSubCDLib(TCDLib** pCDLib, int* _pos, int* _pos2, char* defst)
             }
 
             // Create a new CDLib for the subfield
-            aCDLib=new TCDLib(itsErrorHandler);
+            aCDLib=new TCDLib(mStateManager);
             aCDLib->SetTag(itsTag);
             aCDLib->SetTagOccurrenceNumber(itsTagOccurrenceNumber);
             aCDLib->SetSubfield(sub);
