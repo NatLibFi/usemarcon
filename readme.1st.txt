@@ -14,7 +14,8 @@ win - Windows build files
 
 Files:
 
-CHANGES - recent changes
+CHANGES - change history
 
 BUILDING - instructions for building the package
 
+LICENSE - the license
