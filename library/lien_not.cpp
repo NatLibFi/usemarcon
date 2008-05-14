@@ -351,7 +351,6 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                 typestr check_stmt = "Condition";
                 check_stmt.append(stmt + (while_loop ? 5 : 2), p_if - stmt - (while_loop ? 5 : 2));
 
-
                 TRule rule(a_rule, check_stmt.str());
                 mScanner.SetRule(&rule);
                 rc = yyparse();
@@ -395,14 +394,16 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                 if (InnerParse(a_rule, inner_statement.str()) == 2)
                     rc = 2;
                 int loop_counter = 0;
-                while (while_loop && rc == 4)
+                while (while_loop)
                 {
-                    mScanner.RewindBuffer();
-                    rc = yyparse();
-                    if (rc == 4)
+                    mScanner.SetRule(&rule);
+                    if (yyparse() == 4)
                     {
                         if (InnerParse(a_rule, inner_statement.str()) == 2)
+                        {
                             rc = 2; 
+                            break;
+                        }
                     }
                     if (++loop_counter >= 1000)
                     {
