@@ -160,7 +160,7 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
             typestr tmp = "Field ";
             tmp += In->GetTag();
             tmp += ": '";
-            tmp += In->GetLib1();
+            tmp += In->GetLib1() ? In->GetLib1() : "";
             tmp += '\'';
             mStateManager->SetErrorD(5006, ERROR, tmp.str());
         }
