@@ -10,15 +10,29 @@ endif
 set usemarcon=$argv[1]
 
 echo "** Preparing the package"
-if (! -e {$usemarcon}d.zip) then
-  echo "{$usemarcon}d.zip does not exist"
+if (! -e ${usemarcon}d.zip) then
+  echo "${usemarcon}d.zip does not exist"
   exit 1
 endif
 
-unzip {$usemarcon}d.zip
+if (-e $usemarcon) then
+  echo "$usemarcon already exists"
+  exit 1
+endif
 
-if (! -d {$usemarcon}) then
-  echo "{$usemarcon} directory does not exist"
+if (-e ${usemarcon}.zip) then
+  echo "${usemarcon}.zip already exists"
+  exit 1
+endif
+if (-e ${usemarcon}.tar.gz) then
+  echo "${usemarcon}.tar.gz already exists"
+  exit 1
+endif
+
+unzip ${usemarcon}d.zip
+
+if (! -d ${usemarcon}) then
+  echo "${usemarcon} directory does not exist"
   exit 1
 endif
 
