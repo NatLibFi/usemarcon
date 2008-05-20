@@ -146,7 +146,7 @@ void typestr::replace(const char *src, const char *dst)
             promise(existing_len + needed);
             p = strstr(m_str, src);
             while (strlen(p) > p_pos)
-                p = strstr(p, src);
+                p = strstr(p + 1, src);
         }
         *p = '\0';
         typestr tmpstr = m_str;

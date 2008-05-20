@@ -2,7 +2,7 @@
 **************************
 version 3.09
 
-May 14 2008
+May 20 2008
 
 The National Library of Finland
 Ere Maijala
@@ -12,6 +12,7 @@ ere.maijala at helsinki.fi
 - Fixed while loops. They may not have run all expected iterations and
   could lose the field contents.
 - Fixed a crash when trying to report an empty field. 
+- Fixed a possible endless loop when outputting MARCXML.
 
 
 **************************
