@@ -2,7 +2,7 @@
 **************************
 version 3.09
 
-May 20 2008
+May 21 2008
 
 The National Library of Finland
 Ere Maijala
@@ -13,6 +13,8 @@ ere.maijala at helsinki.fi
   could lose the field contents.
 - Fixed a crash when trying to report an empty field. 
 - Fixed a possible endless loop when outputting MARCXML.
+- Moved applying of macros before any other processing of a rule line
+  making it possible to use macros in macros or global conditions.
 
 
 **************************

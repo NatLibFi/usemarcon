@@ -110,6 +110,14 @@ int TRuleFile::OpenRuleFile()
     bool reset_condition = false;
     while (!NextLine(&RuleLine, true, &IncludedFileSpec, &Line))
     {
+        // Apply macros
+        StringTableItem* macro = itsMacros ? itsMacros->GetFirstItem() : NULL;
+        while (macro)
+        {
+            RuleLine.replace(macro->m_src.str(), macro->m_dst.str());
+            macro = macro->GetNext();
+        }
+
         char *p = RuleLine.str();
         while (*p == ' ' || *p == '\t')
             ++p;
@@ -202,14 +210,6 @@ int TRuleFile::OpenRuleFile()
             }
             reset_condition = true;
             continue;
-        }
-
-        // Apply macros
-        StringTableItem* macro = itsMacros ? itsMacros->GetFirstItem() : NULL;
-        while (macro)
-        {
-            RuleLine.replace(macro->m_src.str(), macro->m_dst.str());
-            macro = macro->GetNext();
         }
 
         if (IsRuleAnalysed && HasPipes(RuleLine.str()))

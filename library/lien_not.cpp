@@ -405,9 +405,19 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                             break;
                         }
                     }
+                    else
+                        break;
                     if (++loop_counter >= 1000)
                     {
-                        mStateManager->SetError(5002, WARNING);
+                        typestr errorstr = " in rule \"";
+                        typestr rulestr;
+                        rule.ToString(rulestr);
+                        errorstr += rulestr;
+                        errorstr += "\" at line ";
+                        char lineno[30];
+                        sprintf(lineno, "%d", rule.GetLineNo());
+                        errorstr += lineno;
+                        mStateManager->SetErrorD(5002, WARNING, errorstr.str());
                         break;
                     }
                 }
