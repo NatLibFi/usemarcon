@@ -2671,7 +2671,7 @@ bool TEvaluateRule::RegFindInternal(const char *a_str, const char *a_regexp)
         sprintf(ret_str, "%d", mRegExpResult);
         typestr error = "Evaluation of regular expression '";
         error += a_regexp;
-        error += "', error code ";
+        error += "' failed, error code ";
         error += ret_str;
         if (mStateManager->GetPCREExecErrorDesc(mRegExpResult))
         {
@@ -2821,7 +2821,7 @@ bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, con
             tmp.str(mRegExpSearchString.str(), replace_start);
         tmp.append(replacement);
         int prev_start_pos = start_pos;
-        start_pos = strlen(tmp.str());
+        start_pos = start_pos + strlen(tmp.str());
         tmp.append(mRegExpSearchString.str() + replace_end);
         *(a_str.str() + prev_start_pos) = '\0';
         a_str.append(tmp);
