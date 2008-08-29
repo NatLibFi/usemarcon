@@ -149,7 +149,6 @@ private:
     typestr2 PreviousSubField(TypeCD *, TypeCD *);
     bool CompareOccurrence(typestr& aCondition, int aOccurrence);
 
-    int   IsConcat(char *lib);
     int   Replace_N_NT_NS(int val,int N,int NT,int NS);
     void  ResetRedo();
 

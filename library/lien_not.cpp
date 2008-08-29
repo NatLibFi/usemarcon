@@ -122,17 +122,6 @@ void TEvaluateRule::yyerror( char *m )
     mStateManager->SetErrorD(5100, ERROR, errorstr.str());
 }
 
-// Cette fonction permet de savoir si une regle commence par un +
-
-int TEvaluateRule::IsConcat(char* lib)
-{
-    if (lib==NULL) return 0;
-    char*ptr=lib;
-    while(*ptr && *ptr==' ') ++ ptr;
-    if (*ptr=='+') return 1; else return 0;
-}
-
-
 // Cette fonction remplace les valeurs symboliques de n,ns et nt par leur
 // valeur reelle
 
