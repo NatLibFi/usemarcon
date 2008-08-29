@@ -98,7 +98,6 @@ int TStateManager::SetErrorCode(int ErrorCode, short Severity, const char *FileN
     const char *category = NULL;
     switch(Severity)
     {
-        case FORCER:
         case DISPLAY:
             message.allocstr(50);
             sprintf(message.str(), "WARNING (%d) - ", ErrorCode);
@@ -109,16 +108,13 @@ int TStateManager::SetErrorCode(int ErrorCode, short Severity, const char *FileN
             show_warning(message.str());
             return 0-ErrorCode;
         case WARNING: category = "WARNING"; break;
-        case ERROR: category = "ERROR"; break;
+        case ERROR: category = "ERROR"; itsHowManyErrors++; break;
         case NOTICE: category = "NOTICE"; break;
         case NONERROR: category = "INFO"; break;
-        default: category = "FATAL"; break;
+        default: category = "FATAL"; itsHowManyErrors++; break;
     }
-
-    // Error Code setting
     itsErrorCode = ErrorCode;
-    itsHowManyErrors++;
-
+    
     if (itsLogError)
     {
         fprintf(itsLogError, "%s (%d) - %s %s%s%s\n", category, ErrorCode,

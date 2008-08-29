@@ -51,6 +51,7 @@ public:
     inline TRule *GetPreviousRule(void)         { return mPreviousRule; }
     inline char  *GetCondition   (void)         { return mCondition.str(); }
     inline int   GetConditionGroup(void)        { return mConditionGroup; }
+    inline bool  GetConcatenation()             { return mConcatenation; }
 
     void  SetInputCD      (TCD* aCD)            { mInputCD=aCD; }
     void  SetOutputCD     (TCD *aCD)            { mOutputCD=aCD; }
@@ -70,6 +71,7 @@ protected:
     int           mLine;
     typestr       mCondition;
     int           mConditionGroup;
+    bool          mConcatenation;
     
     TStateManager        *mStateManager;
 };

@@ -30,6 +30,7 @@ TRule::TRule(TStateManager *StateManager)
     mStateManager = StateManager;
     mLine = 0;
     mConditionGroup = 0;
+    mConcatenation = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,6 +49,7 @@ TRule::TRule(TRule *aRule)
     mLine = aRule->mLine;
     mCondition = aRule->mCondition;
     mConditionGroup = aRule->mConditionGroup;
+    mConcatenation = aRule->mConcatenation;
 }
 
 TRule::TRule(TRule *aRule, const char* aRuleStr)
@@ -61,6 +63,7 @@ TRule::TRule(TRule *aRule, const char* aRuleStr)
     mLine = aRule->mLine;
     mCondition = aRule->mCondition;
     mConditionGroup = aRule->mConditionGroup;
+    mConcatenation = aRule->mConcatenation;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,9 +210,21 @@ int TRule::FromString(char *aString, int aLine, const TCD* aDefaultInputCD, cons
     typestr rule;
     trim_string(rule, tmp);
 
-    if (!rule.is_empty() && SetLib(rule.str()))
-        return -5502;
-
+    if (!rule.is_empty())
+    {
+        if (*rule.str() == '+')
+        {
+            mConcatenation = true;
+            if (SetLib(rule.str() + 1))
+                return -5502;
+        }
+        else
+        {
+            mConcatenation = false;
+            if (SetLib(rule.str()))
+                return -5502;
+        }
+    }
     return secondPipe ? 2 : firstPipe ? 1 : 0;
 }
 

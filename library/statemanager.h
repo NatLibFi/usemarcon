@@ -35,7 +35,6 @@ AUTHOR
 #define WARNING           1
 #define FATAL             2
 #define DISPLAY           3
-#define FORCER            4
 #define NOTICE            5
 #define NONERROR          6
 #define NONINTERACTIVE    0

@@ -794,9 +794,9 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                         aCDLOut=Out->GetFirstCDLib();
                 }
 
-                // If the rule does not contain + at the beginning, we need to check
+                // If the rule is not a concatenating one, we need to check
                 // if NO, NTO or NSO should be incremented
-                if (!IsConcat(Rule->GetLib()))
+                if (!Rule->GetConcatenation())
                 {
                     // Different cases:
                     // TTT(no)SS
@@ -958,6 +958,11 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
             mRedoFlag = false;
             mCDOut = aCDOut;
             rc = Parse(Rule);
+            if (Rule->GetConcatenation())
+            {
+                S = Add(D, S);
+                D = NULL;
+            }
 
             if (rc != 2)
             {
