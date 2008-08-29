@@ -2,7 +2,7 @@
 **************************
 version 3.10
 
-June 13 2008
+August 29 2008
 
 The National Library of Finland
 Ere Maijala
@@ -11,6 +11,9 @@ ere.maijala at helsinki.fi
 
 - Fixed RegReplace with the global flag. It misbehaved after the second
   iteration.
+- Fixed concatenation (rule starting with +) for multipart rules. 
+- Only real errors are now counted when checking the maximum number of 
+  errors.
 
 
 **************************
