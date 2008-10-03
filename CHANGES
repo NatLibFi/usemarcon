@@ -1,5 +1,19 @@
 **************************
 **************************
+version 3.11
+
+October 3 2008
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed a crash trying to report an invalid field code while reading
+  in records. 
+
+**************************
+**************************
 version 3.10
 
 August 29 2008

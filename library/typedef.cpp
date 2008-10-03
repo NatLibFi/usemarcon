@@ -98,6 +98,8 @@ char *typestr::append(const char *a_str, unsigned long a_len /*= 0*/)
 {
     if (!m_str) 
         return str(a_str, a_len);
+    if (!a_str)
+        return m_str;
     unsigned long existing_len = strlen(m_str);
     unsigned long append_len = a_len == 0 ? strlen(a_str) : a_len;
 

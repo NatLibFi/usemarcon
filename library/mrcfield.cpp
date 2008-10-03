@@ -126,12 +126,18 @@ int TMarcField::SetTag(const char *aTagString)
     if (strlen(aTagString)>3)
         return 1;
 
+    int retval = 0;
     for (CurrentPos=0; CurrentPos<3; CurrentPos++)
+    {
         if (!isalnum(aTagString[CurrentPos]))
-            return 1;
+        {
+            retval = 1;
+            break;
+        }
+    }
 
     strcpy(itsTag,aTagString);
-    return 0;
+    return retval;
 }
 
 int TMarcField::SetTag(int aTagNumber)
