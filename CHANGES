@@ -1,8 +1,8 @@
 **************************
 **************************
-version 3.11
+version 3.12
 
-October 3 2008
+October 14 2008
 
 The National Library of Finland
 Ere Maijala
@@ -11,6 +11,9 @@ ere.maijala at helsinki.fi
 
 - Fixed a crash trying to report an invalid field code while reading
   in records. 
+- Fixed parsing of Then and Else statements with blocks on multiple 
+  lines.
+- Fixed concatenation in multiline rules.
 
 **************************
 **************************

@@ -40,7 +40,7 @@ TRule::TRule(TStateManager *StateManager)
 ///////////////////////////////////////////////////////////////////////////////
 TRule::TRule(TRule *aRule)
 {
-    mInputCD          = new TCD(aRule->GetInputCD());
+    mInputCD      = new TCD(aRule->GetInputCD());
     mOutputCD     = new TCD(aRule->GetOutputCD());
     SetLib(aRule->GetLib());
     mNextRule     = aRule->GetNextRule();
@@ -54,7 +54,7 @@ TRule::TRule(TRule *aRule)
 
 TRule::TRule(TRule *aRule, const char* aRuleStr)
 {
-    mInputCD          = new TCD(aRule->GetInputCD());
+    mInputCD      = new TCD(aRule->GetInputCD());
     mOutputCD     = new TCD(aRule->GetOutputCD());
     SetLib(aRuleStr);
     mNextRule     = aRule->GetNextRule();
@@ -124,8 +124,6 @@ int TRule::FromString(char *aString, int aLine, const TCD* aDefaultInputCD, cons
         // empty lines are ignored
         return 0;
 
-    mLine = aLine;
-
     char* firstPipe = NULL;
     char* secondPipe = NULL;
 
@@ -148,6 +146,9 @@ int TRule::FromString(char *aString, int aLine, const TCD* aDefaultInputCD, cons
         }
         ++p;
     }
+
+    if (firstPipe || mLine == 0)
+        mLine = aLine;
 
     if (secondPipe)
     {
@@ -214,13 +215,15 @@ int TRule::FromString(char *aString, int aLine, const TCD* aDefaultInputCD, cons
     {
         if (*rule.str() == '+')
         {
-            mConcatenation = true;
+            if (firstPipe)
+                mConcatenation = true;
             if (SetLib(rule.str() + 1))
                 return -5502;
         }
         else
         {
-            mConcatenation = false;
+            if (firstPipe)
+                mConcatenation = false;
             if (SetLib(rule.str()))
                 return -5502;
         }

@@ -139,6 +139,8 @@ private:
     const char* find_statement_start(const char *a_str);
     const char* find_statement_end(const char *a_str);
     const char* find_else_or_sep(const char *a_str);
+    bool is_then(const char *a_str);
+    bool is_else(const char *a_str);
     bool check_balance(const char* a_str);
     int   InnerParse(TRule* a_rule, const char *a_rulestr);
     int   Parse(TRule* a_rule);
@@ -151,7 +153,6 @@ private:
 
     int   Replace_N_NT_NS(int val,int N,int NT,int NS);
     void  ResetRedo();
-
 
     void  FinishCD(TypeCD* aCD);
     void  FinishTCD(TypeCD* aCD);

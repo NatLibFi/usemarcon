@@ -233,12 +233,12 @@ const char* TEvaluateRule::find_statement_end(const char *a_str)
                 break;
             case 't':
             case 'T':
-                if (block == 0 && paren == 0 && strncmp(p + 1, "hen ", 4) == 0)
+                if (block == 0 && paren == 0 && is_then(p))
                     return p;
                 break;
             case 'e':
             case 'E':
-                if (block == 0 && paren == 0 && strncmp(p + 1, "lse ", 4) == 0)
+                if (block == 0 && paren == 0 && is_else(p))
                     return p;
                 break;
             }
@@ -251,6 +251,16 @@ const char* TEvaluateRule::find_statement_end(const char *a_str)
         return NULL;
     }
     return p;
+}
+
+bool TEvaluateRule::is_then(const char *a_str)
+{
+  return ((*a_str == 'T' || *a_str == 't') && *(a_str + 1) == 'h' && *(a_str + 2) == 'e' && *(a_str + 3) == 'n' && (*(a_str + 4) == ' ' || *(a_str + 4) == '\n' || *(a_str + 4) == '{'));
+}
+
+bool TEvaluateRule::is_else(const char *a_str)
+{
+  return ((*a_str == 'E' || *a_str == 'e') && *(a_str + 1) == 'l' && *(a_str + 2) == 's' && *(a_str + 3) == 'e' && (*(a_str + 4) == ' ' || *(a_str + 4) == '\n' || *(a_str + 4) == '{'));
 }
 
 const char* TEvaluateRule::find_else_or_sep(const char *a_str)
@@ -287,7 +297,7 @@ const char* TEvaluateRule::find_else_or_sep(const char *a_str)
                 break;
             case 'e':
             case 'E':
-                if (block == 0 && paren == 0 && strncmp(p + 1, "lse ", 4) == 0)
+                if (block == 0 && paren == 0 && is_else(p))
                     return p;
                 break;
             }
@@ -345,7 +355,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                 rc = yyparse();
                 bool then_found;
                 p_if = find_statement_start(p_if);
-                if ((*p_if == 'T' || *p_if == 't') && strncmp(p_if + 1, "hen ", 4) == 0)
+                if (is_then(p_if))
                 {
                     then_found = true;
                     p_if += 5;
