@@ -185,8 +185,7 @@ typestr2 TCDLib::GetContent(TCD* theCD)
     }
     int MaxPos = strlen(content.str());
 
-    // Si les positions sont definies, on extrait les donnees correspondantes
-
+    // Extract the data if the positions are defined
     typestr2 result;
     result.set_script(content.script);
     if (aBeginning > MaxPos || aEnd > MaxPos || (aEnd > 0 && aBeginning > aEnd))
@@ -287,24 +286,20 @@ int TCDLib::SetContent(const char *aContent, const char *aContent2, const char *
         tmpstr.promise(aBeginning + aContentLen + 1);
         for (int i = MaxPos; i < aBeginning; tmpstr.str()[i++] = ' ');
 
-        if (aContent && *aContent)
+        if (aEnd == -1)
         {
-            if (aEnd == -1)
-            {
-                memcpy(&tmpstr.str()[aBeginning], aContent, aContentLen);
-                aEnd = aBeginning + aContentLen - 1;
-            }
-            else
-            {
-                --aEnd;
-                // Avoid copying more than we have
-                int contentsize = aContentLen + 1;
-                int copysize = aEnd - aBeginning + 1;
-                if (contentsize < copysize)
-                    copysize = contentsize;
-                memcpy(&tmpstr.str()[aBeginning], aContent, copysize);
-            }
+            tmpstr.append(aContent);
         }
+        else
+        {
+            --aEnd;
+            // Avoid copying more than we have
+            int contentsize = aContentLen + 1;
+            int copysize = aEnd - aBeginning + 1;
+            memcpy(&tmpstr.str()[aBeginning], aContent, contentsize >= copysize ? copysize : contentsize);
+            for (int i = contentsize - 1; i < copysize; tmpstr.str()[aBeginning + i++] = ' ');
+        }
+
         if (MaxPos <= aEnd) 
             tmpstr.str()[aEnd + 1] = '\0';
         SetContent(tmpstr.str(), "", "");
