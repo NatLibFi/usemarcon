@@ -1,5 +1,18 @@
 **************************
 **************************
+version 3.13
+
+November 10 2008
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Added autodetection of XML input format.
+
+**************************
+**************************
 version 3.12
 
 October 14 2008
