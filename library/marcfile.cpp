@@ -418,8 +418,18 @@ int TMarcFile::Read(TUMRecord *Record)
 
     unsigned long RecordLen;
     if (longval(Buffer.str(), &RecordLen))
-        // On verifie que la longueur est numerique, et on affecte sa valeur a E_LNG_NOTICE
+    {
+        // Length is not numeric
+        if (strncmp(Buffer.str(), "<xml", 4))
+        {
+            // Oh, it must be XML. Let's assume that and try again
+            SetMarcInfoFormat(MFF_MARCXML);
+            int res = Read(Record);
+            if (res == 0)
+                return 0;
+        }
         return mStateManager->SetErrorD(1004, ERROR, Buffer.str());
+    }
 
     unsigned long lbuf = 5;
     unsigned long read_remaining = RecordLen - 5;
