@@ -2,7 +2,7 @@
 **************************
 version 3.13
 
-November 10 2008
+November 21 2008
 
 The National Library of Finland
 Ere Maijala
@@ -10,6 +10,8 @@ http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
 - Added autodetection of XML input format.
+- Fixed a possible crash when a subfield was moved first with 
+  MoveFirst or MoveBefore command.
 
 **************************
 **************************
