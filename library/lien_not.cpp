@@ -3084,8 +3084,8 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
             if (ns == 0 || ns == occurrence)
             {
                 // Found
-                typestr before;
-                typestr after;
+                typestr before = "";
+                typestr after = "";
                 if (a_after)
                 {
                     p = strchr(p + 1, START_OF_FIELD);
