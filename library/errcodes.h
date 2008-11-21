@@ -7,7 +7,7 @@ typedef struct
     const char *description;
 } ERRORDESC;
 
-const int ErrorDescCount = 94;
+const int ErrorDescCount = 95;
 
 const ERRORDESC ErrorDesc[ErrorDescCount] = {
     // Messages during reading of the input file
@@ -66,6 +66,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {5103, "*A CDOut like TTT(nto)... has an invalid subfield occurrence number (no, nso or nto)"},
     {5104, "*A CDOut like ...SS(nso) has an invalid field occurrence number (no, nso or nto)"},
     {5200, "*Expected CD tag"},
+    {5212, "Invalid character in CD"},
     {5501, "TRule allocation failure when attempting to analyse the rule"},
     {5502, "Unable to allocate space for setting text of analysed rule"},
     {5503, "Unable to allocate space for setting comment of analysed rule"},
