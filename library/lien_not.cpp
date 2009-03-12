@@ -1357,7 +1357,7 @@ typestr TEvaluateRule::Table( char* Nom, char* str )
     }
 
     typestr s;
-    aCodedData->Transcode(str, s, mInputRecord ? mInputRecord->GetFirstField()->GetLib1() : NULL, "???");
+    aCodedData->Transcode(str, s, (mInputRecord && mInputRecord->GetFirstField()) ? mInputRecord->GetFirstField()->GetLib1() : NULL, "???");
     return s;
 }
 
