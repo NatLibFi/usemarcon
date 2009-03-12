@@ -2,7 +2,7 @@
 **************************
 version 3.13
 
-November 21 2008
+March 12 2009
 
 The National Library of Finland
 Ere Maijala
@@ -10,8 +10,10 @@ http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
 - Added autodetection of XML input format.
-- Fixed a possible crash when a subfield was moved first with 
+- Fixed a possible crash when a subfield was moved first with
   MoveFirst or MoveBefore command.
+- Fixed a possible crash when no fields were found in the input
+  record.
 
 **************************
 **************************
@@ -25,8 +27,8 @@ http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
 - Fixed a crash trying to report an invalid field code while reading
-  in records. 
-- Fixed parsing of Then and Else statements with blocks on multiple 
+  in records.
+- Fixed parsing of Then and Else statements with blocks on multiple
   lines.
 - Fixed concatenation in multiline rules.
 
@@ -43,8 +45,8 @@ ere.maijala at helsinki.fi
 
 - Fixed RegReplace with the global flag. It misbehaved after the second
   iteration.
-- Fixed concatenation (rule starting with +) for multipart rules. 
-- Only real errors are now counted when checking the maximum number of 
+- Fixed concatenation (rule starting with +) for multipart rules.
+- Only real errors are now counted when checking the maximum number of
   errors.
 
 
@@ -61,7 +63,7 @@ ere.maijala at helsinki.fi
 
 - Fixed while loops. They may not have run all expected iterations and
   could lose the field contents.
-- Fixed a crash when trying to report an empty field. 
+- Fixed a crash when trying to report an empty field.
 - Fixed a possible endless loop when outputting MARCXML.
 - Moved applying of macros before any other processing of a rule line
   making it possible to use macros in macros or global conditions.
@@ -85,7 +87,7 @@ ere.maijala at helsinki.fi
 - Weakened comment designator // so that it won't take effect inside
   a string.
 - Type and format attributes are written to XML record only if they are
-  not empty. 
+  not empty.
 
 
 **************************
@@ -99,9 +101,9 @@ Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Fixed a possible crash when conversion was done in UTF-8 mode and 
+- Fixed a possible crash when conversion was done in UTF-8 mode and
   a record contained invalid characters.
-- Fixed a problem introduced in version 3.06 where e.g. 
+- Fixed a problem introduced in version 3.06 where e.g.
   From(ELast('nonexisting string')) would return the whole string.
 
 
@@ -116,16 +118,16 @@ Ere Maijala
 http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
-- Fixed a couple of possible crashes when rule processing encounters 
+- Fixed a couple of possible crashes when rule processing encounters
   an error.
 - Fixed a possible crash in MoveBefore/MoveAfter.
 - Added 001 field (if any) of the input record to the warning and
-  error messages. 
+  error messages.
 - Added writing of version number to the error log.
-- Fixed a possible memory leak in case insensitive utf8 string 
+- Fixed a possible memory leak in case insensitive utf8 string
   comparison.
-- Try to avoid showing (wrong) progress percentage for files larger 
-  than 2GB. 
+- Try to avoid showing (wrong) progress percentage for files larger
+  than 2GB.
 
 
 **************************
