@@ -2,7 +2,7 @@
 **************************
 version 3.13
 
-March 12 2009
+April 29 2009
 
 The National Library of Finland
 Ere Maijala
@@ -14,6 +14,10 @@ ere.maijala at helsinki.fi
   MoveFirst or MoveBefore command.
 - Fixed a possible crash when no fields were found in the input
   record.
+- Changed the command line executable to return values >= 0
+  (0 is still success) so that error checking would be easier.
+- Fixed a crash when a rule had double concatenation (+ in the
+  beginning and after a condition).
 
 **************************
 **************************

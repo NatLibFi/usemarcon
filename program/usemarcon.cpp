@@ -66,7 +66,8 @@ int main( int argc, char** argv )
         return -1;
     }
 
-    return usemarcon.Convert();   // do the conversion
+    int rv = usemarcon.Convert();   // do the conversion
+    return rv >= 0 ? rv : -rv;
 
 #else // api based run example
 

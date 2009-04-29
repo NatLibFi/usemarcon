@@ -957,7 +957,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
             mRedoFlag = false;
             mCDOut = aCDOut;
             rc = Parse(Rule);
-            if (Rule->GetConcatenation())
+            if (D && Rule->GetConcatenation()) // If D is NULL, concatenation already happened in the rule 
             {
                 S = Add(D, S);
                 D = NULL;
