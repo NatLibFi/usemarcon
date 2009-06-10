@@ -70,7 +70,7 @@ int TMarcField::NextSubField(int *_Position, char* _SubField)
 {
     short       iIndice=0;
 
-    if (itsLib.str()[*_Position]==0)
+    if (!itsLib.str() || itsLib.str()[*_Position] == '\0')
         return 0;
 
     if (*_SubField!='*')

@@ -2,7 +2,7 @@
 **************************
 version 3.13
 
-April 29 2009
+June 10 2009
 
 The National Library of Finland
 Ere Maijala
@@ -18,6 +18,8 @@ ere.maijala at helsinki.fi
   (0 is still success) so that error checking would be easier.
 - Fixed a crash when a rule had double concatenation (+ in the
   beginning and after a condition).
+- Fixed a possible crash when an empty field was found in the input
+  record.
 
 **************************
 **************************
