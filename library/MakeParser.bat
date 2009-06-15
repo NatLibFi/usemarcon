@@ -2,7 +2,6 @@
 
 rem Parser creation requires e.g. cygwin shell with perl, flex and bison
 rem Note that FlexLexer.h needs to correspond to the flex version (copy the used version into library if necessary)
-rem FlexLexer.h needs the defines for YY_DECL and YY_SKIP_YYWRAP at the end, and the change to yylex definition
 
 echo Creating Parser..
 perl ../bison+.pl --input analyse.y --class MarcParser --cpp ytab.cpp --hdr ytab.h --no-lines
