@@ -19,7 +19,7 @@
      * We will address this in a future release of flex, or omit the C++ scanner
      * altogether.
      */
-    #define yyFlexLexer yyFlexLexer
+    //#define yyFlexLexer yyFlexLexer
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
@@ -770,6 +770,20 @@ goto find_rule; \
 #include "typedef.h"
 #include "mempool.h"
 #include "ytab.h"
+#include "umflexlexer.h"
+
+#define YY_DECL int umFlexLexer::yylex(MarcParser::YYSTYPE &yylval, void *allocator)
+#define YY_SKIP_YYWRAP
+
+int yyFlexLexer::yylex()
+{
+    return 0;
+}
+
+int yyFlexLexer::yywrap()
+{
+    return 1;
+}
 
 #define INITIAL 0
 

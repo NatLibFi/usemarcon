@@ -11,6 +11,20 @@
 #include "ytab.h"
 #include "umflexlexer.h"
 
+#define YY_DECL int umFlexLexer::yylex(MarcParser::YYSTYPE &yylval, void *allocator)
+#define YY_SKIP_YYWRAP
+
+int yyFlexLexer::yylex()
+{
+    return 0;
+}
+
+int yyFlexLexer::yywrap()
+{
+    return 1;
+}
+
+
 %}
 
 blancs          [ \t\n{}]*

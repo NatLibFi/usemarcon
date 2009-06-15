@@ -12,8 +12,6 @@ OVERVIEW TEXT
     Adapted by The National Library of Finland, 2004-2008
 
 AUTHOR
-    Crossnet Systems Limited
-    ATP Library Systems Limited
     The National Library of Finland
 
 */

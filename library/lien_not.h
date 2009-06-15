@@ -33,7 +33,7 @@ AUTHOR
 #define _TEVALUATERULE_FILE_H_
 
 #include "typedef.h"
-#include "FlexLexer.h"
+#include "umflexlexer.h"
 #include "mempool.h"
 #include "regexp.h"
 #include "ytab.h"
@@ -47,7 +47,7 @@ class TEvaluateRule;
 class TCD;
 class TCDLib;
 
-class TMarcScannerImpl : public yyFlexLexer
+class TMarcScannerImpl : public umFlexLexer
 {
 private:
     long mBufferLen;

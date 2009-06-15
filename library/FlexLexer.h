@@ -53,8 +53,6 @@
 #    define FLEX_STD std::
 #  endif
 
-#include "ytab.h"
-
 extern "C++" {
 
 struct yy_buffer_state;
@@ -74,7 +72,14 @@ public:
 	virtual void yy_delete_buffer( struct yy_buffer_state* b ) = 0;
 	virtual void yyrestart( FLEX_STD istream* s ) = 0;
 
-	virtual int yylex(MarcParser::YYSTYPE &yylval, void *allocator) = 0;
+	virtual int yylex() = 0;
+
+	// Call yylex with new input/output sources.
+	int yylex( FLEX_STD istream* new_in, FLEX_STD ostream* new_out = 0 )
+		{
+		switch_streams( new_in, new_out );
+		return yylex();
+		}
 
 	// Switch to new input/output streams.  A nil stream pointer
 	// indicates "keep the current one".
@@ -120,9 +125,9 @@ public:
 	void yypush_buffer_state( struct yy_buffer_state* new_buffer );
 	void yypop_buffer_state();
 
-	virtual int yylex(MarcParser::YYSTYPE &yylval, void *allocator);
+	virtual int yylex();
 	virtual void switch_streams( FLEX_STD istream* new_in, FLEX_STD ostream* new_out = 0 );
-    virtual int yywrap() { return 1; }
+	virtual int yywrap();
 
 protected:
 	virtual int LexerInput( char* buf, int max_size );
@@ -196,8 +201,6 @@ protected:
 };
 
 }
-#define YY_DECL int yyFlexLexer::yylex(MarcParser::YYSTYPE &yylval, void *allocator)
-#define YY_SKIP_YYWRAP
 
 #endif // yyFlexLexer || ! yyFlexLexerOnce
 

@@ -12,6 +12,9 @@ flex -L -olex.yy.cpp --nounistd Analyse.l
 echo Fixing Scanner Destructor (problem in older flex versions)..
 perl -pi -e 's/delete yy_state_buf;/delete []yy_state_buf;/' lex.yy.cpp 
 if errorlevel 1 goto flexerr
+echo Removing "#define yyFlexLexer"..
+perl -pi -e 's/#define yyFlexLexer/\/\/#define yyFlexLexer/' lex.yy.cpp
+if errorlevel 1 goto flexerr
 echo All done.
 goto end
 :bisonerr

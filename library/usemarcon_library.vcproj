@@ -894,6 +894,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\umflexlexer.h"
+				>
+			</File>
+			<File
 				RelativePath="umrecord.h"
 				>
 			</File>
