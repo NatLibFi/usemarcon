@@ -36,6 +36,7 @@ AUTHOR
 #include "FlexLexer.h"
 #include "mempool.h"
 #include "regexp.h"
+#include "ytab.h"
 
 // forward declarations
 class SortElem;

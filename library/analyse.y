@@ -26,6 +26,7 @@ protected:
   
   TypeInst* V_TAG;
   TypeInst* V_SUB;
+  TypeInst* V_UTF8;
   TypeInst* N;
   TypeInst* NT;
   TypeInst* NS;
@@ -125,7 +126,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <code> BY _STRICT AT BEGINING BEGINNING END BOTH 
 
 %token <inst> VARS VARD STRING NUMERIC
-%token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW VAR_NEWEST VAR_TAG VAR_SUB
+%token <inst> VAR_N VAR_NT VAR_NS VAR_NO VAR_NTO VAR_NSO VAR_NEW VAR_NEWEST VAR_TAG VAR_SUB VAR_UTF8
 %token <inst> TAG DTAG STAG FIX I1 I2
 %token <inst> STR VAL LEN STO MEM EXC CLR LOWER UPPER
 %token <inst> FROM TO BETWEEN _DELETE REPLACE REPLACEOCC
@@ -511,7 +512,8 @@ Translation :
 |       VARS                            { PrintDebug("S");CopyInst(&$$,S); }
 |       VARD                            { PrintDebug("D");CopyInst(&$$,D); }
 |       VAR_TAG                         { PrintDebug("TAG");CopyInst(&$$, V_TAG); }
-|       VAR_SUB                         { PrintDebug("TAG");CopyInst(&$$, V_SUB); }
+|       VAR_SUB                         { PrintDebug("SUB");CopyInst(&$$, V_SUB); }
+|       VAR_UTF8                        { PrintDebug("UTF8");CopyInst(&$$, V_UTF8); }
 |       CD                              { PrintDebug("CD");
                                           typestr2 ptr = ReadCD($1);
                                           FreeCD($1);

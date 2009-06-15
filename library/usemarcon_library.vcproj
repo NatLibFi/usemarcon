@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;../pcre"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC;_CRT_SECURE_NO_DEPRECATE;YY_NO_UNISTD_H"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="true"
@@ -118,7 +118,7 @@
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="2"
 				AdditionalIncludeDirectories=".;../pcre"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;HAVE_STDLIB_H;HAVE_FCNTL_H;HAVE_IO_H;HAVE_STRING_H;PCRE_STATIC;_CRT_SECURE_NO_DEPRECATE;YY_NO_UNISTD_H"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -218,29 +218,6 @@
 			</File>
 			<File
 				RelativePath="ctrlfld.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						PreprocessorDefinitions=""
-						BrowseInformation="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="statemanager.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -383,6 +360,29 @@
 			</File>
 			<File
 				RelativePath="semi.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BrowseInformation="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="statemanager.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -790,10 +790,6 @@
 				>
 			</File>
 			<File
-				RelativePath="statemanager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\FlexLexer.h"
 				>
 			</File>
@@ -831,6 +827,10 @@
 			</File>
 			<File
 				RelativePath="sort.h"
+				>
+			</File>
+			<File
+				RelativePath="statemanager.h"
 				>
 			</File>
 			<File

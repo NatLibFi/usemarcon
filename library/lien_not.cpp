@@ -83,12 +83,7 @@ void TMarcScannerImpl::RewindBuffer()
 
 int TEvaluateRule::yylex()
 {
-    bool ok = true;
-    int token=mScanner.yylex(yylval, ok, &m_allocator);
-    if (!ok)
-        yyerror("lex error");
-
-    return token;
+    return mScanner.yylex(yylval, &m_allocator);
 }
 
 void TEvaluateRule::yyerror( char *m )
@@ -604,8 +599,9 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TStateManager *
     NEWEST=AllocTypeInst();
     V_TAG=AllocTypeInst();
     V_SUB=AllocTypeInst();
+    V_UTF8=AllocTypeInst();
     CDIn=AllocCD();
-    if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !NEW || !NEWEST || !CDIn || !V_TAG || !V_SUB)
+    if (!S ||!D ||!N || !NT || !NS || !NO || !NSO || !NTO || !NEW || !NEWEST || !CDIn || !V_TAG || !V_SUB || !V_UTF8)
         mStateManager->SetErrorD(5000,ERROR,"When initialising variables");
 
     NEW->val = C_NEW;
@@ -672,7 +668,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
         {
             S=AllocTypeInst();
         }
-        if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW || !V_TAG || !V_SUB)
+        if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW || !V_TAG || !V_SUB || !V_UTF8)
             return mStateManager->SetErrorD(5000, ERROR, "When initialising variables");
 
         // Initialisation de S,N,NT,NS : valeurs de l'entree
@@ -695,6 +691,8 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
         if (sub && *sub == '$')
             ++sub;
         V_SUB->str.str(sub);
+        V_UTF8->str.freestr();
+        V_UTF8->val = mStateManager->GetUTF8Mode();
 
         if (m_debug_rule)
         {
