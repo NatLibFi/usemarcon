@@ -143,6 +143,7 @@ D                       return MarcParser::VARD;
 [F|f]ollows             return MarcParser::FOLLOWS;
 [R|r]edo                return MarcParser::REDO;
 [S|s]ort                return MarcParser::SORT;
+[S|s]ort[F|f]ield       return MarcParser::SORTFIELD;
 [N|n]ext                return MarcParser::NEXT;
 [L|l]ast                return MarcParser::LAST;
 [T|t]able               return MarcParser::TABLE;

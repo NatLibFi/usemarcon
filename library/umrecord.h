@@ -15,7 +15,7 @@ OVERVIEW TEXT
     Copyright The British Library, The USEMarcon Consortium, 1995-2000
     Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
     Adapted by ATP Library Systems Ltd, Finland, 2002-2003
-    Adapted by The National Library of Finland, 2004-2008
+    Adapted by The National Library of Finland, 2004-2009
 
 AUTHOR
     Crossnet Systems Limited
@@ -42,14 +42,18 @@ public:
     virtual int       SortCD          (void);
     virtual int       SortCD          (TCD*,char*);
     virtual int       PartialSort     (TCDLib *aFirst);
+    virtual int       SortField       (TCD*);
     virtual int       FromCD          (TRuleFile *RuleFile);
     virtual int       ToCD            (void);
     virtual bool      NextCD          (TCDLib **CDLib, TCD *CD);
     virtual bool      PreviousCD      (TCDLib **CDLib, TCD *CD);
     virtual TCDLib    *InsertCDLib    (TCDLib *aCDLib, TCD *CD=NULL, bool aReplace = false);
-    virtual TCDLib    *GetFirstCDLib (void) const           { return itsFirstCDLib; };
-    virtual TCDLib    *GetLastCDLib  (void) const           { return itsLastCDLib; };
-    virtual int       DelTreeCDLib        (void);
+    virtual TCDLib    *GetFirstCDLib  (void) const { return itsFirstCDLib; };
+    virtual TCDLib    *GetLastCDLib   (void) const { return itsLastCDLib; };
+    virtual int       DelTreeCDLib    (void);
+    virtual void      RemoveCDLib     (TCDLib* aField);
+    virtual void      InsertCDLibAfter(TCDLib* aField, TCDLib* aAfter);
+    virtual void      InsertCDLibBefore(TCDLib* aField, TCDLib* aBefore);
 
 protected:
     TCDLib            *itsFirstCDLib;

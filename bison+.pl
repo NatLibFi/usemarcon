@@ -257,7 +257,7 @@ protected:
 $class_protected
 |;
 
-  print HFILE "public:\n  ${class_name}() : $constructor_init {}\n" if ($constructor_init);
+  print HFILE "public:\n  ${class_name}() : $constructor_init {};\n" if ($constructor_init);
 
   print HFILE qq|\
 };

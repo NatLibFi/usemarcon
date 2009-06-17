@@ -66,7 +66,8 @@ protected:
   virtual TypeInst* MemExc( TypeInst* n ) = 0;
 
   virtual typestr Table( char*, char* ) = 0;
-  virtual int MustSort( char* ) = 0;
+  virtual void MustSort( char* ) = 0;
+  virtual void MustSortField( TypeInst* t1 ) = 0;
 
   virtual TypeInst* AllocTypeInst() = 0;
   virtual void FreeTypeInst( TypeInst* t ) = 0;
@@ -131,7 +132,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <inst> STR VAL LEN STO MEM EXC CLR LOWER UPPER
 %token <inst> FROM TO BETWEEN _DELETE REPLACE REPLACEOCC
 %token <inst> BFIRST EFIRST BLAST ELAST
-%token <inst> REDO SORT NEXT LAST TABLE ORDINAL
+%token <inst> REDO SORT SORTFIELD NEXT LAST TABLE ORDINAL
 %token <inst> YEAR MONTH DAY HOUR MINUTE SECOND
 %token <inst> NEXTSUB NEXTSUBIN PREVIOUSSUB PREVIOUSSUBIN 
 %token <inst> REGFINDNUM REGFINDPOS REGFIND REGMATCH REGREPLACE REGREPLACETABLE
@@ -629,10 +630,14 @@ Translation :
                                           $$=Last_($3,$5,1);
                                           if (!$$) return 2;
                                           $3=$5=NULL; }
-|       SORT '(' STRING ')'     { PrintDebug("Sort");
+|       SORT '(' STRING ')'     { PrintDebug("Sort(...)");
                                   MustSort($3->str.str());
                                   FreeTypeInst($3);
                                   $3=NULL;
+                                  return 2;
+                                }
+|       SORTFIELD '(' ')'       { PrintDebug("SortField()");
+                                  MustSortField(NULL);
                                   return 2;
                                 }
 |       TABLE '(' STRING ')'            { PrintDebug("Table(...)");$$=Table_($3); $3=NULL; }

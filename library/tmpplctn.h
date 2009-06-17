@@ -15,7 +15,7 @@ OVERVIEW TEXT
     Copyright The British Library, The USEMarcon Consortium, 1995-2000
     Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
     Adapted by ATP Library Systems Ltd, Finland, 2002-2004
-    Adapted by The National Library of Finland, 2004-2008
+    Adapted by The National Library of Finland, 2004-2009
 
 AUTHOR
     Crossnet Systems Limited
@@ -94,7 +94,7 @@ private:
     typestr               m_inputMarcFileName;
     typestr               m_outputMarcFileName;
     bool                  m_disableCharacterConversion;
-
+    
     int                   ToHexa(const char* str);
 };
 

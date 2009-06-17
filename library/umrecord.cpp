@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2004
- *  Adapted by The National Library of Finland, 2004-2008
+ *  Adapted by The National Library of Finland, 2004-2009
  *
  *  File:  umrecord.cpp
  *
@@ -84,75 +84,78 @@ int TUMRecord::SortCD()
 // SortCD
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TUMRecord::SortCD(TCD* aCD, char* liste)
+int TUMRecord::SortCD(TCD* aCD, char* sublist)
 {
-    TCDLib* Debut=itsFirstCDLib,*NewDebut=NULL,*New=NULL,*aCDLib;
-    int i;
-    char sub[5];
+    TCDLib* CurrentField = itsFirstCDLib;
+    if (!NextCD(&CurrentField, aCD)) 
+        return mStateManager->GetErrorCode();
 
-    if (!NextCD(&Debut,aCD)) return mStateManager->GetErrorCode();
-
-    for (i=0;liste[i];++i)
+    TCDLib* NewField = NULL;
+    TCDLib* New = NULL;
+    char* c = sublist;
+    for (c; *c; c++)
     {
-        aCDLib=Debut;
-        while( aCDLib && *aCDLib==*aCD )
+        TCDLib* CDLib = CurrentField;
+        while (CDLib && *CDLib == *aCD)
         {
-            strcpy(sub,aCDLib->GetSubfield());
-            if (*sub=='$')
+            char sub[5];
+            strcpy(sub, CDLib->GetSubfield());
+            if (*sub == '$')
             {
-                if (sub[1]==liste[i])
+                if (sub[1] == *c)
                 {
-                    TCDLib* Previous=(TCDLib*)aCDLib->GetPrevious();
-                    if (aCDLib==Debut) Debut=(TCDLib*)aCDLib->GetNext();
+                    if (CDLib == CurrentField) 
+                        CurrentField = (TCDLib*) CDLib->GetNext();
+                    TCDLib* Previous = (TCDLib*) CDLib->GetPrevious();
                     if (Previous)
                     {
-                        Previous->SetNext(aCDLib->GetNext());
+                        Previous->SetNext(CDLib->GetNext());
                         if (Previous->GetNext())
                             Previous->GetNext()->SetPrevious(Previous);
                     }
                     else
                     {
-                        itsFirstCDLib=(TCDLib*)aCDLib->GetNext();
+                        itsFirstCDLib = (TCDLib*) CDLib->GetNext();
                         itsFirstCDLib->SetPrevious(NULL);
                     }
 
                     if (New)
                     {
-                        New->SetNext((TCD*)aCDLib);
-                        aCDLib->SetPrevious((TCD*)New);
-                        aCDLib->SetNext(NULL);
-                        New=aCDLib;
+                        New->SetNext((TCD*) CDLib);
+                        CDLib->SetPrevious((TCD*) New);
+                        CDLib->SetNext(NULL);
+                        New = CDLib;
                     }
                     else
                     {
-                        New=NewDebut=aCDLib;
-                        aCDLib->SetPrevious(NULL);
-                        aCDLib->SetNext(NULL);
+                        New = NewField = CDLib;
+                        CDLib->SetPrevious(NULL);
+                        CDLib->SetNext(NULL);
                     }
-                    aCDLib=Debut;
+                    CDLib = CurrentField;
                 }
                 else
-                    aCDLib=(TCDLib*)aCDLib->GetNext();
+                    CDLib = (TCDLib*) CDLib->GetNext();
             }
             else
-                aCDLib=(TCDLib*)aCDLib->GetNext();
+                CDLib = (TCDLib*) CDLib->GetNext();
         }
     }
 
-    if (NewDebut)
+    if (NewField)
     {
-        New->SetNext(Debut);
-        if (Debut->GetPrevious())
+        New->SetNext(CurrentField);
+        if (CurrentField->GetPrevious())
         {
-            Debut->GetPrevious()->SetNext(NewDebut);
-            NewDebut->SetPrevious(Debut->GetPrevious());
+            CurrentField->GetPrevious()->SetNext(NewField);
+            NewField->SetPrevious(CurrentField->GetPrevious());
         }
         else
         {
-            itsFirstCDLib=NewDebut;
-            NewDebut->SetPrevious(NULL);
+            itsFirstCDLib = NewField;
+            NewField->SetPrevious(NULL);
         }
-        Debut->SetPrevious(New);
+        CurrentField->SetPrevious(New);
     }
 
     return mStateManager->GetErrorCode();
@@ -182,31 +185,44 @@ int TUMRecord::PartialSort(TCDLib *aFirst)
 
         if (*Smallest < *currentCDLib)
         {
-            // Move Smallest before currentCDLib
-            // Change linkings:
-            // 1. (current-1).next = Smallest
-            // 2. current.previous = Smallest
-            // 3. (smallest-1).next = (Smallest+1)
-            // 4. (smallest+1).previous = (Smallest-1)
-            // 5. itsLastCDLib = (Smallest-1) if Smallest was last
-            // 6. Smallest.next = current
-            // 7. Smallest.previous = (current-1)
-            TCDLib *previous = (TCDLib *) currentCDLib->GetPrevious();
-            if (previous)
-                previous->SetNext(Smallest);
-            else
-                itsFirstCDLib = Smallest;
-            currentCDLib->SetPrevious(Smallest);
-            if (Smallest->GetPrevious())
-                Smallest->GetPrevious()->SetNext(Smallest->GetNext());
-            if (Smallest->GetNext())
-                Smallest->GetNext()->SetPrevious(Smallest->GetPrevious());
-            if (itsLastCDLib == Smallest)
-                itsLastCDLib = (TCDLib *) Smallest->GetPrevious();
-            Smallest->SetNext(currentCDLib);
-            Smallest->SetPrevious(previous);
-             
+            RemoveCDLib(Smallest);
+            InsertCDLibBefore(Smallest, currentCDLib);
             currentCDLib = Smallest;
+        }
+        else
+            currentCDLib = (TCDLib *) currentCDLib->GetNext();
+    }
+
+    return mStateManager->GetErrorCode();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// SortField
+//
+///////////////////////////////////////////////////////////////////////////////
+int TUMRecord::SortField(TCD* aCD)
+{
+    TCDLib* Field = itsFirstCDLib;
+    if (!NextCD(&Field, aCD)) 
+        return mStateManager->GetErrorCode();
+
+    TCDLib* currentCDLib = itsFirstCDLib;
+    while (currentCDLib)
+    {
+        if (*Field < *currentCDLib)
+        {
+            TCDLib* Next = (TCDLib*) Field->GetNext();
+            RemoveCDLib(Field);
+            InsertCDLibBefore(Field, currentCDLib);
+            while (strcmp(Next->GetTag(), aCD->GetTag()) == 0 && Next->GetTagOccurrenceNumber() == aCD->GetTagOccurrenceNumber())
+            {
+                Field = Next;
+                Next = (TCDLib*) Field->GetNext();
+                RemoveCDLib(Field);
+                InsertCDLibBefore(Field, currentCDLib);
+            }
+            break;
         }
         else
             currentCDLib = (TCDLib *) currentCDLib->GetNext();
@@ -230,7 +246,8 @@ int TUMRecord::FromCD(TRuleFile *RuleFile)
 
     // On supprime l'arbre des champs
     DelTree();
-    SortCD();
+    if (mStateManager->GetSortRecord())
+        SortCD();
     if (RuleFile)
         RuleFile->GetEvaluateRule()->SortRecord(this);
 
@@ -485,7 +502,7 @@ int TUMRecord::DelTreeCDLib()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// InsereCDLib
+// InsertCDLib
 //
 // Cette methode insere un nouveau CDLib dans l'arbre des CDLibs :
 // - Si le CDLib a inserer est unitaire (sont contenu ne possede pas de sous-champ),
@@ -707,6 +724,48 @@ TCDLib *TUMRecord::InsertCDLib(TCDLib* aCDLib, TCD* CDIn, bool aReplace)
         }
         return itsLastCDLib;
     }
+}
+
+void TUMRecord::RemoveCDLib(TCDLib* aField)
+{
+    TCDLib *Prev = (TCDLib*) aField->GetPrevious();
+    TCDLib *Next = (TCDLib*) aField->GetNext();
+    if (Prev)
+        Prev->SetNext(Next);
+    else
+        itsFirstCDLib = Next;
+    if (Next)
+        Next->SetPrevious(Prev);
+    else
+        itsLastCDLib = Prev;
+}
+
+void TUMRecord::InsertCDLibBefore(TCDLib* aField, TCDLib* aBefore)
+{
+    TCDLib *OldPrevious = (TCDLib*) aBefore->GetPrevious();
+
+    aField->SetPrevious(OldPrevious);
+    aField->SetNext(aBefore);
+
+    aBefore->SetPrevious(aField);
+    if (OldPrevious)
+        OldPrevious->SetNext(aField);
+    else
+        itsFirstCDLib = aField;
+}
+
+void TUMRecord::InsertCDLibAfter(TCDLib* aField, TCDLib* aAfter)
+{
+    TCDLib *OldNext = (TCDLib*) aAfter->GetNext();
+
+    aField->SetPrevious(aAfter);
+    aField->SetNext(OldNext);
+
+    aAfter->SetNext(aField);
+    if (OldNext)
+        OldNext->SetPrevious(aField);
+    else
+        itsLastCDLib = aField;
 }
 
 void TUMRecord::GetOccurrenceNumbersForNew(const char *a_tag, int a_tag_occurrence, const char *a_subfield, 

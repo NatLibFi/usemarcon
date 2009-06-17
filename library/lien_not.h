@@ -20,7 +20,7 @@ OVERVIEW TEXT
     Copyright The British Library, The USEMarcon Consortium, 1995-2000
     Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
     Adapted by ATP Library Systems Ltd, Finland, 2002-2003
-    Adapted by The National Library of Finland, 2004-2008
+    Adapted by The National Library of Finland, 2004-2009
 
 AUTHOR
     Crossnet Systems Limited
@@ -79,7 +79,7 @@ public:
 class TEvaluateRule : public MarcParser
 {
 public:
-    TEvaluateRule       () : mListSort(NULL), mRedoStr(NULL), mMainInput(NULL), mAfterRedo(0), 
+    TEvaluateRule       () : mListSort(NULL), mListSortFields(NULL), mRedoStr(NULL), mMainInput(NULL), mAfterRedo(0), 
         mRegExpResult(0)
     {
         m_debug_rule = false;
@@ -114,6 +114,8 @@ private:
     TRuleDoc*  mRuleDoc;
     SortElem*  mListSort;
     SortElem*  mLastSort;
+    SortElem*  mListSortFields;
+    SortElem*  mLastSortFields;
     TStateManager*    mStateManager;
     bool       mUTF8Mode;
 
@@ -159,7 +161,8 @@ private:
     void  FinishTCD(TypeCD* aCD);
     void  PrCD(TypeCD* CD);
     void  ResetSort();
-    virtual int   MustSort(char* n);
+    virtual void MustSort(char* n);
+    virtual void MustSortField(TypeInst* t1);
 
     virtual TypeCD* AllocCD();
     virtual void FreeCD( TypeCD* CD );

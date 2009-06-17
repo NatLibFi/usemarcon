@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2003
- *  Adapted by The National Library of Finland, 2004-2008
+ *  Adapted by The National Library of Finland, 2004-2009
  *
  *  File:  lien_not.cpp
  *
@@ -1364,9 +1364,11 @@ void TEvaluateRule::ResetSort()
 {
     if (mListSort) delete mListSort;
     mListSort = NULL;
+    if (mListSortFields) delete mListSortFields;
+    mListSortFields = NULL;
 }
 
-int TEvaluateRule::MustSort( char* n )
+void TEvaluateRule::MustSort( char* n )
 {
     if (mListSort)
     {
@@ -1374,10 +1376,23 @@ int TEvaluateRule::MustSort( char* n )
         mLastSort = mLastSort->GetNext();
     }
     else
+    {
         mListSort = mLastSort = new SortElem(mCDOut, n);
-    return 0;
+    }
 }
 
+void TEvaluateRule::MustSortField(TypeInst* t1)
+{
+    if (mListSortFields)
+    {
+        mLastSortFields->SetNext(new SortElem(mCDOut, ""));
+        mLastSortFields = mLastSortFields->GetNext();
+    }
+    else
+    {
+        mListSortFields = mLastSortFields = new SortElem(mCDOut, "");
+    }
+}
 
 int TEvaluateRule::SortRecord(TUMRecord* aRecord)
 {
@@ -1387,6 +1402,14 @@ int TEvaluateRule::SortRecord(TUMRecord* aRecord)
         aRecord->SortCD(aElem->GetCD(), aElem->GetSubFieldList());
         aElem = aElem->GetNext();
     }
+
+    aElem = mListSortFields;
+    while (aElem)
+    {
+        aRecord->SortField(aElem->GetCD());
+        aElem = aElem->GetNext();
+    }
+
     ResetSort();
     return 0;
 }

@@ -74,14 +74,14 @@ YYID (i)
   return i;
 }
 #endif
-#define YYFINAL  129
-#define YYLAST   1410
-#define YYNTOKENS  103
+#define YYFINAL  131
+#define YYLAST   1525
+#define YYNTOKENS  104
 #define YYNNTS  12
-#define YYNRULES  170
-#define YYNSTATES  463
+#define YYNRULES  171
+#define YYNSTATES  466
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   354
+#define YYMAXUTOK   355
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 
@@ -135,7 +135,8 @@ protected:
   virtual TypeInst* MemExc( TypeInst* n ) = 0;
 
   virtual typestr Table( char*, char* ) = 0;
-  virtual int MustSort( char* ) = 0;
+  virtual void MustSort( char* ) = 0;
+  virtual void MustSortField( TypeInst* t1 ) = 0;
 
   virtual TypeInst* AllocTypeInst() = 0;
   virtual void FreeTypeInst( TypeInst* t ) = 0;
@@ -249,30 +250,31 @@ public:
      ELAST = 328,
      REDO = 329,
      SORT = 330,
-     NEXT = 331,
-     LAST = 332,
-     TABLE = 333,
-     ORDINAL = 334,
-     YEAR = 335,
-     MONTH = 336,
-     DAY = 337,
-     HOUR = 338,
-     MINUTE = 339,
-     SECOND = 340,
-     NEXTSUB = 341,
-     NEXTSUBIN = 342,
-     PREVIOUSSUB = 343,
-     PREVIOUSSUBIN = 344,
-     REGFINDNUM = 345,
-     REGFINDPOS = 346,
-     REGFIND = 347,
-     REGMATCH = 348,
-     REGREPLACE = 349,
-     REGREPLACETABLE = 350,
-     MOVEBEFORE = 351,
-     MOVEAFTER = 352,
-     MOVEFIRST = 353,
-     MOVELAST = 354
+     SORTFIELD = 331,
+     NEXT = 332,
+     LAST = 333,
+     TABLE = 334,
+     ORDINAL = 335,
+     YEAR = 336,
+     MONTH = 337,
+     DAY = 338,
+     HOUR = 339,
+     MINUTE = 340,
+     SECOND = 341,
+     NEXTSUB = 342,
+     NEXTSUBIN = 343,
+     PREVIOUSSUB = 344,
+     PREVIOUSSUBIN = 345,
+     REGFINDNUM = 346,
+     REGFINDPOS = 347,
+     REGFIND = 348,
+     REGMATCH = 349,
+     REGREPLACE = 350,
+     REGREPLACETABLE = 351,
+     MOVEBEFORE = 352,
+     MOVEAFTER = 353,
+     MOVEFIRST = 354,
+     MOVELAST = 355
    };
 #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

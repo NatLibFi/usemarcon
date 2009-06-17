@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2004
- *  Adapted by The National Library of Finland, 2004-2008
+ *  Adapted by The National Library of Finland, 2004-2009
  *
  *  File:  error.cpp
  *
@@ -39,6 +39,7 @@ TStateManager::TStateManager(TUMApplication* theApplication, const char *LogFile
     mRecordNumber = 0;
     *mRecordId = '\0';
     mHandleLinkedFields = false;
+    mSortRecord = true;
 
     // Logfile opening
     if (*LogFileName)
@@ -162,39 +163,6 @@ int TStateManager::SetErrorCode(int ErrorCode, short Severity, const char *FileN
     show_message(message.str());
 
     return 0-ErrorCode;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// GetErrorCode
-//
-////////////////////////////////////////////////////////////////////////////////
-
-int TStateManager::GetErrorCode(void)
-{
-    return itsErrorCode;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// SetMode
-//
-////////////////////////////////////////////////////////////////////////////////
-
-void TStateManager::SetMode(int Mode)
-{
-    itsMode=Mode;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// GetMode
-//
-////////////////////////////////////////////////////////////////////////////////
-
-int TStateManager::GetMode(void)
-{
-    return itsMode;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

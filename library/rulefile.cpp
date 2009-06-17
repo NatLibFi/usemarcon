@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2003
- *  Adapted by The National Library of Finland, 2004-2008
+ *  Adapted by The National Library of Finland, 2004-2009
  *
  *  File:  rulefile.cpp
  *
@@ -296,6 +296,7 @@ int TRuleFile::ConvertInRuleOrder(TUMRecord* In, TUMRecord* Out)
 
     // Evaluate all rules
     TRule* aRule = itsFirstRule;
+    TCDLib* Last = In->GetLastCDLib();
     while (aRule)
     {
         const char* condition = aRule->GetCondition();
@@ -310,7 +311,10 @@ int TRuleFile::ConvertInRuleOrder(TUMRecord* In, TUMRecord* Out)
             if (OutputCD->GetIN())
             {
                 itsEvaluateRule.Evaluate_Rule(In, In, Out, aRule);
-                In->SortCD();
+                if (mStateManager->GetSortRecord())
+                    In->SortCD();
+                else
+                    In->PartialSort((TCDLib *) Last->GetNext());
             }
             else
             {

@@ -15,7 +15,7 @@ OVERVIEW TEXT
     Copyright The British Library, The USEMarcon Consortium, 1995-2000
     Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
     Adapted by ATP Library Systems Ltd, Finland, 2002-2004
-    Adapted by The National Library of Finland, 2004-2008
+    Adapted by The National Library of Finland, 2004-2009
 
 AUTHOR
     Crossnet Systems Limited
@@ -63,14 +63,11 @@ public:
     int   SetErrorCode          (int ErrorCode, short Severity, const char *FileName,
         int LineNumber, const char *UserData="");
 
-    void  SetMode               (int Mode);
     void  WriteError            (char *Message);
     void  SetTooManyErrors      (int max) { itsTooManyErrors = max; };
     void  SetVerboseMode        (int Mode) { itsVerboseMode=Mode; };
     void  SetDebugMode          (int Mode) { itsDebugMode=Mode; };
 
-    int   GetErrorCode          (void);
-    int   GetMode               (void);
     int   GetTooManyErrors      (void) { return itsTooManyErrors; };
     int   GetHowManyErrors      (void) { return itsHowManyErrors; };
 
@@ -94,6 +91,11 @@ public:
     void SetRecordId(const char* aRecordId) { strncpy(mRecordId, aRecordId ? aRecordId : "", 49); mRecordId[49] = '\0'; }
     bool GetHandleLinkedFields() { return mHandleLinkedFields; }
     void SetHandleLinkedFields(bool a_value) { mHandleLinkedFields = a_value; }
+    bool GetSortRecord() { return mSortRecord; }
+    void SetSortRecord(bool a_value) { mSortRecord = a_value; }
+    void SetMode(int Mode) { itsMode = Mode; }
+    int GetMode(void) { return itsMode; }
+    int GetErrorCode(void) { return itsErrorCode; }
 
     TUMApplication *GetApplication      (void) { return itsApplication; }
 
@@ -116,6 +118,7 @@ protected:
     unsigned long   mRecordNumber;
     char            mRecordId[50];
     bool            mHandleLinkedFields;
+    bool            mSortRecord;
 };
 
 #endif // TStateManager_H

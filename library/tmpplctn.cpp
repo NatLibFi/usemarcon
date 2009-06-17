@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2004
- *  Adapted by The National Library of Finland, 2004-2008
+ *  Adapted by The National Library of Finland, 2004-2009
  *
  *  File:  tmpplctn.cpp
  *
@@ -369,6 +369,14 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         convertSubfieldCodes = true;
     }
     mStateManager->SetConvertSubfieldCodesToLowercase(convertSubfieldCodes);
+
+    bool sortRecord = true;
+    get_ini_string("DEFAULT_STATES", "SortOutputRecord", "", inistr, itsIniFile.str());
+    if (*inistr.str() && strcasecmp(inistr.str(), "true"))
+    {
+        sortRecord = false;
+    }
+    mStateManager->SetSortRecord(sortRecord);
 
     filespec = "";
     if (!m_record)
