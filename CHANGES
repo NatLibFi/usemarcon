@@ -2,7 +2,7 @@
 **************************
 version 3.13
 
-June 10 2009
+June 18 2009
 
 The National Library of Finland
 Ere Maijala
@@ -20,6 +20,10 @@ ere.maijala at helsinki.fi
   beginning and after a condition).
 - Fixed a possible crash when an empty field was found in the input
   record.
+- Added option ([DEFAULT_STATES] SortRecord=false) to disable 
+  sorting of fields.
+- Added SortField command to enable sorting of selected fields when
+  SortRecord=false.
 
 **************************
 **************************
