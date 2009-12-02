@@ -56,7 +56,8 @@ public:
     TStateManager(TUMApplication* theApplication, const char *LogFileName=DEFAULT_LOG_FILE_NAME);
     ~TStateManager(void);
 
-    void  Reset                 (void) { itsErrorCode=0; };
+    void  ResetErrorCode        (void) { itsErrorCode = 0; };
+    void  ResetCounters         (void) { itsErrorCount = 0; itsWarningCount = 0; };
     void  CloseErrorLogFile     (void) { fclose(itsLogError); };
     int   OpenErrorLogFile      (const char *Name);
 
@@ -64,14 +65,17 @@ public:
         int LineNumber, const char *UserData="");
 
     void  WriteError            (char *Message);
-    void  SetTooManyErrors      (int max) { itsTooManyErrors = max; };
+    void  WriteMessage          (char *Message);
+    void  SetMaximumErrors      (int max) { itsMaximumErrors = max; };
     void  SetVerboseMode        (int Mode) { itsVerboseMode=Mode; };
     void  SetDebugMode          (int Mode) { itsDebugMode=Mode; };
 
-    int   GetTooManyErrors      (void) { return itsTooManyErrors; };
-    int   GetHowManyErrors      (void) { return itsHowManyErrors; };
+    int   GetMaximumErrors      (void) { return itsMaximumErrors; };
+    int   GetErrorCount         (void) { return itsErrorCount; };
+    int   GetWarningCount       (void) { return itsWarningCount; };
 
-    char  *GetLastErrorMessage  (void) { return itsLastErrorMessage; };
+    const char *GetLastErrorMessage  (void) const { return itsLastErrorMessage.cstr(); };
+    const char *GetLastWarningMessage(void) const { return itsLastWarningMessage.cstr(); };
 
     const char* GetPCRECompileErrorDesc(int a_index);
     const char* GetPCREExecErrorDesc(int a_errorcode);
@@ -104,15 +108,17 @@ private:
     FILE            *itsLogError;
     int             itsMode;
     int             itsErrorCode;
-    char            itsLastErrorMessage[255];
+    typestr         itsLastErrorMessage;
+    typestr         itsLastWarningMessage;
     bool            itsUTF8Mode;
     bool            itsConvertSubfieldCodesToLowercase;
     typestr         itsOutputXMLRecordFormat;
     typestr         itsOutputXMLRecordType;
 
 protected:
-    unsigned int    itsTooManyErrors;
-    unsigned int    itsHowManyErrors;
+    unsigned int    itsMaximumErrors;
+    unsigned int    itsErrorCount;
+    unsigned int    itsWarningCount;
     int             itsVerboseMode;
     int             itsDebugMode;
     unsigned long   mRecordNumber;

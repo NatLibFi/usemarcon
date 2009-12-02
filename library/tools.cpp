@@ -209,8 +209,45 @@ void get_ini_string(const char *section_name,
                     const char *key_name,
                     const char *default_value,
                     typestr &return_buffer,
-                    const char *ini_name)
+                    const char *ini_name,
+                    const char *a_config_overrides)
 {
+    // First check the configuration overrides
+    char* overrides = _strdup(a_config_overrides);
+    char* entry = overrides;
+    while (entry && *entry)
+    {
+        char* p = strstr(entry, "\t\t");
+        char* next = p ? p + 2 : NULL;
+        if (p) 
+            *p = '\0';
+        
+        char* section = entry;
+        p = strchr(entry, '\t');
+        if (p)
+        {
+            *p = '\0';
+            char* key = p + 1;
+            p = strchr(key, '\t');
+            if (p)
+            {
+                *p = '\0';
+                char* value = p + 1;
+
+                if (strcasecmp(section, section_name) == 0 && strcasecmp(key, key_name) == 0)
+                {
+                    return_buffer = value;
+                    free(overrides);
+                    trim_string(return_buffer.str());
+                    trim_string_quotes(return_buffer.str());
+                    return;
+                }
+            }
+        }
+        entry = next;
+    }
+    free(overrides);
+
     FILE *ini_file;
     bool found = false;
 
@@ -270,9 +307,10 @@ void get_ini_filename(const char *section_name,
                       const char *key_name,
                       const char *default_value,
                       typestr & return_buffer,
-                      const char *ini_name)
+                      const char *ini_name,
+                      const char *a_config_overrides)
 {
-    get_ini_string(section_name, key_name, default_value, return_buffer, ini_name);
+    get_ini_string(section_name, key_name, default_value, return_buffer, ini_name, a_config_overrides);
     if (*return_buffer.str() && !strchr(return_buffer.str(), SLASH))
     {
         typestr full_path;
@@ -476,14 +514,9 @@ bool file_exists(typestr & fspec)
     return true;
 }
 
-void show_warning(const char *message)
-{
-    printf("%s\n", message);
-}
-
 void show_message(const char *message)
 {
-    printf("Message: %s\n", message);
+    printf("%s\n", message);
 }
 
 unsigned int utf8_glypheme_length(const char *p)

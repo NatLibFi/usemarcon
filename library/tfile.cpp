@@ -78,7 +78,7 @@ int TFile::Open()
         sprintf(mode,"%c",itsMode);
         if ((File=fopen(itsFileInfo.str(), mode))==NULL)
         {
-            return mStateManager->SetErrorD(9501, WARNING, itsFileInfo.str());
+            return mStateManager->SetErrorD(9501, ERROR, itsFileInfo.str());
         }
     }
     else
@@ -89,7 +89,7 @@ int TFile::Open()
             iFile=::l_open(itsFileInfo.str(),O_CREAT|O_WRONLY|O_TRUNC|O_BINARY,0640);
 
         if (iFile == -1)
-            return mStateManager->SetErrorD(9502, WARNING, itsFileInfo.str());
+            return mStateManager->SetErrorD(9502, ERROR, itsFileInfo.str());
     }
 
     Included=NULL;
@@ -334,7 +334,7 @@ long TFile::GetPos(void)
 ///////////////////////////////////////////////////////////////////////////////
 int TFile::SkipBeginning()
 {
-    mStateManager->Reset();
+    mStateManager->ResetErrorCode();
 
     typestr line;
     typestr aSpec;

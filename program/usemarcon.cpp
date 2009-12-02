@@ -74,8 +74,14 @@ int main( int argc, char** argv )
     usemarcon.SetInteractive(false);
     usemarcon.SetIniFileName("c:\\usemarcon\\mafi2ma\\mafi2ma.ini"); // could use argv[1]
 
-    // Load and convert 2 marc records - the first conversion will be slower than others because .ini file details are loaded
-    for (int iLoop = 0; iLoop < 1; iLoop++)
+    // Example: add a couple of configuration overrides, remove them and add one more
+    usemarcon.AddConfigOverride("DEFAULT_FILES", "ErrorLogFile", "c:\\usemarcon\\test.log");
+    usemarcon.AddConfigOverride("DEFAULT_FILES", "TranscodingCharacterTable", "");
+    usemarcon.ClearConfigOverrides();
+    usemarcon.AddConfigOverride("DEFAULT_FILES", "ErrorLogFile", "c:\\usemarcon\\test.log");
+
+    // Load and convert a marc record twice - the first conversion will be slower than others because .ini file details are loaded
+    for (int iLoop = 0; iLoop < 2; iLoop++)
     {
         // Load a marc record to convert
         FILE *fp;
@@ -90,6 +96,7 @@ int main( int argc, char** argv )
         }
         printf("++++ input marc record ++++\n");
         printf(acInRecord);
+        printf("\n\n");
         usemarcon.SetMarcRecord(acInRecord, iInLength);
         int res;
         res = usemarcon.Convert();          // do the conversion
@@ -98,6 +105,9 @@ int main( int argc, char** argv )
             printf("Conversion failed. Last error: %s\n", usemarcon.GetLastErrorMessage());
             return res;
         }
+        printf("Warnings: %ld\nErrors: %ld\nLast warning: %s\nLast error: %s\n\n",
+            usemarcon.GetWarningCount(), usemarcon.GetErrorCount(), 
+            usemarcon.GetLastWarningMessage(), usemarcon.GetLastErrorMessage());
 
         // Get marc record produced by the conversion
         char *pcOutRecord;
@@ -106,10 +116,10 @@ int main( int argc, char** argv )
 
         printf("++++ output marc record ++++\n");
         printf(pcOutRecord);
+        printf("\n\n");
 
         free(pcOutRecord);
 
-        printf("\n\n");
     }
     return 0;
 #endif

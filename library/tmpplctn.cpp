@@ -87,15 +87,15 @@ TUMApplication::~TUMApplication( void )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Startup
+// Initialize
 //
 // Initialize everything
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive, 
-                            const char *a_record, int a_recordLen, bool a_forceVerbose,
-                            const char *a_inputMarcFileName, const char *a_outputMarcFileName,
-                            bool a_disableCharacterConversion)
+int TUMApplication::Initialize(const char *a_iniFileName, bool a_interactive, 
+                               const char *a_record, int a_recordLen, bool a_forceVerbose,
+                               const char *a_inputMarcFileName, const char *a_outputMarcFileName,
+                               bool a_disableCharacterConversion, const char *a_configOverrides)
 {
     m_interactive = a_interactive;
 
@@ -132,7 +132,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
 
     // Create an instance of TStateManager
     typestr inistr;
-    get_ini_filename("DEFAULT_FILES", "ErrorLogFile", "", inistr, itsIniFile.str());
+    get_ini_filename("DEFAULT_FILES", "ErrorLogFile", "", inistr, itsIniFile.str(), a_configOverrides);
     mStateManager  = new TStateManager(this, inistr.str());
 
     // Set mStateManager mode according to run mode
@@ -152,7 +152,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
 
     itsDebugRule = false;
 
-    get_ini_string("DEFAULT_STATES","IsVerboseExecutionModeChecked","",inistr,itsIniFile.str());
+    get_ini_string("DEFAULT_STATES","IsVerboseExecutionModeChecked","",inistr,itsIniFile.str(), a_configOverrides);
     if (!strcasecmp(inistr.str(),"true") || m_forceVerbose) 
     {
         mStateManager->SetVerboseMode(1);
@@ -163,15 +163,15 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     }
 
     // Set the maximum number of errors to be encountered before stop
-    get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncountered","",inistr,itsIniFile.str());
+    get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncountered","",inistr,itsIniFile.str(), a_configOverrides);
     if (!*inistr.str())
-        get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncoutered","",inistr,itsIniFile.str());
+        get_ini_string("DEFAULT_VALUES","MaxErrorsToBeEncoutered","",inistr,itsIniFile.str(), a_configOverrides);
     if (*inistr.str()) 
     {
-        mStateManager->SetTooManyErrors(atoi(inistr.str()));
+        mStateManager->SetMaximumErrors(atoi(inistr.str()));
     }
 
-    get_ini_string("DEBUG","IsDebugExecutionModeChecked","",inistr,itsIniFile.str());
+    get_ini_string("DEBUG","IsDebugExecutionModeChecked","",inistr,itsIniFile.str(), a_configOverrides);
     if (!strcasecmp(inistr.str(),"true")) {
         itsDebugRule = true;
     } else {
@@ -188,12 +188,8 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         return -1;
     }
 
-    get_ini_filename("DEFAULT_FILES", "RuleFile", "", inistr, itsIniFile.str());
-    if (!*inistr.str())
-    {
-        mStateManager->WriteError("No RuleFile specified\n");
-    }
-    else if (itsRuleDoc->OpenRuleFile(inistr.str()) == false)
+    get_ini_filename("DEFAULT_FILES", "RuleFile", "", inistr, itsIniFile.str(), a_configOverrides);
+    if (*inistr.str() && itsRuleDoc->OpenRuleFile(inistr.str()) == false)
     {
         mStateManager->WriteError("Unable to open rule file\n");
         return -1;
@@ -208,14 +204,14 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         mStateManager->WriteError("Failed to create transcoding structure\n");
         return -1;
     }
-    get_ini_filename("DEFAULT_FILES", "TranscodingCharacterTable", "", inistr, itsIniFile.str());
+    get_ini_filename("DEFAULT_FILES", "TranscodingCharacterTable", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && itsTransDoc->OpenTransFile(inistr.str()) == false)
     {
         mStateManager->WriteError("Unable to open transcoding file\n");
         return -1;
     }
 
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputFileCharacterSet", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputFileCharacterSet", "", inistr, itsIniFile.str(), a_configOverrides);
     if (itsTransDoc->SetInputFileCharacterSet(inistr.str()) == false)
     {
         mStateManager->WriteError("Specified input file character set not supported\n");
@@ -233,22 +229,14 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         return -1;
     }
 
-    get_ini_filename("DEFAULT_FILES", "InputFormatCheckingTable", "", inistr, itsIniFile.str());
-    if (!*inistr.str())
-    {
-        mStateManager->WriteError("No InputFormatCheckingTable specified\n");
-    }
-    else if (itsCheckDoc->OpenCheckFile(INPUT, inistr.str()) == false)
+    get_ini_filename("DEFAULT_FILES", "InputFormatCheckingTable", "", inistr, itsIniFile.str(), a_configOverrides);
+    if (*inistr.str() && itsCheckDoc->OpenCheckFile(INPUT, inistr.str()) == false)
     {
         mStateManager->WriteError("Unable to open input format checking file\n");
     }
 
-    get_ini_filename("DEFAULT_FILES", "OutputFormatCheckingTable", "", inistr, itsIniFile.str());
-    if (!*inistr.str())
-    {
-        mStateManager->WriteError("No OutputFormatCheckingTable specified\n");
-    }
-    else if (itsCheckDoc->OpenCheckFile(OUTPUT,inistr.str()) == false)
+    get_ini_filename("DEFAULT_FILES", "OutputFormatCheckingTable", "", inistr, itsIniFile.str(), a_configOverrides);
+    if (*inistr.str() && itsCheckDoc->OpenCheckFile(OUTPUT,inistr.str()) == false)
     {
         mStateManager->WriteError("Unable to open output format checking file\n");
     }
@@ -263,11 +251,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         return -1;
     }
 
-    get_ini_filename("DEFAULT_FILES", "InputMarcEditConfigurationFile", "", inistr, itsIniFile.str());
-    if (!*inistr.str())
-    {
-        mStateManager->WriteError("No Input MARC edit configuration file specified\n");
-    }
+    get_ini_filename("DEFAULT_FILES", "InputMarcEditConfigurationFile", "", inistr, itsIniFile.str(), a_configOverrides);
     itsMarcDoc->SetConfInputFileSpec(inistr);
 
     typestr filespec = "";
@@ -279,7 +263,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
         else
         {
-            get_ini_filename("DEFAULT_FILES", "MarcInputFile", "", inistr, itsIniFile.str());
+            get_ini_filename("DEFAULT_FILES", "MarcInputFile", "", inistr, itsIniFile.str(), a_configOverrides);
             if (!*inistr.str())
             {
                 mStateManager->WriteError("Input MARC file not specified\n");
@@ -291,13 +275,13 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     itsMarcDoc->SetMarcInputFileSpec(filespec);
 
     itsMarcDoc->SetMarcInputFileFormat(MFF_NONSEGMENTED); // nonsegmented by default
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsInputBlockSegmentedChecked", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsInputBlockSegmentedChecked", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
         itsMarcDoc->SetMarcInputFileFormat(MFF_SEGMENTED);
     }
 
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputFileFormat", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputFileFormat", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str())
     {
         if (!strcasecmp(inistr.str(),"iso2709"))
@@ -320,35 +304,35 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     }
 
     itsMarcDoc->SetMarcInputFileBlockSize(2048);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcSizeBlock", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcSizeBlock", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcmp(inistr.str(), "2048"))
     {
         itsMarcDoc->SetMarcInputFileBlockSize((short)atoi(inistr.str()));
     }
 
     itsMarcDoc->SetMarcInputFileMinDataFree(5);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcMinDataFree", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcMinDataFree", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcmp(inistr.str(), "5"))
     {
         itsMarcDoc->SetMarcInputFileMinDataFree((short)atoi(inistr.str()));
     }
 
     itsMarcDoc->SetMarcInputFilePaddingChar(0x5E);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcPaddingChar", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcPaddingChar", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcasecmp(inistr.str(), "5E"))
     {
         itsMarcDoc->SetMarcInputFilePaddingChar((char)ToHexa(inistr.str()));
     }
 
     itsMarcDoc->SetMarcInputFileLastBlock(false);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsInputLastBlockPaddedChecked", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsInputLastBlockPaddedChecked", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
         itsMarcDoc->SetMarcInputFileLastBlock(true);
     }
 
     itsUTF8Mode = false;
-    get_ini_string("DEFAULT_STATES", "UTF8Mode", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_STATES", "UTF8Mode", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
         itsUTF8Mode = true;
@@ -356,14 +340,14 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     mStateManager->SetUTF8Mode(itsUTF8Mode);
 
     itsConvertInFieldOrder = false;
-    get_ini_string("DEFAULT_STATES", "ConvertInFieldOrder", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_STATES", "ConvertInFieldOrder", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
         itsConvertInFieldOrder = true;
     }
 
     bool convertSubfieldCodes = false;
-    get_ini_string("DEFAULT_STATES", "ConvertSubfieldCodesToLowercase", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_STATES", "ConvertSubfieldCodesToLowercase", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
         convertSubfieldCodes = true;
@@ -371,7 +355,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     mStateManager->SetConvertSubfieldCodesToLowercase(convertSubfieldCodes);
 
     bool sortRecord = true;
-    get_ini_string("DEFAULT_STATES", "SortOutputRecord", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_STATES", "SortOutputRecord", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcasecmp(inistr.str(), "true"))
     {
         sortRecord = false;
@@ -387,7 +371,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
         else
         {
-            get_ini_filename("DEFAULT_FILES", "MarcOutputFile", "", inistr, itsIniFile.str());
+            get_ini_filename("DEFAULT_FILES", "MarcOutputFile", "", inistr, itsIniFile.str(), a_configOverrides);
             if (!*inistr.str())
             {
                 mStateManager->WriteError("Output MARC file not specified\n");
@@ -398,21 +382,17 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     }
     itsMarcDoc->SetMarcOutputFileSpec(filespec);
 
-    get_ini_filename("DEFAULT_FILES", "OutputMarcEditConfigurationFile", "", inistr, itsIniFile.str());
-    if (!*inistr.str())
-    {
-        mStateManager->WriteError("No Output MARC edit configuration file specified\n");
-    }
+    get_ini_filename("DEFAULT_FILES", "OutputMarcEditConfigurationFile", "", inistr, itsIniFile.str(), a_configOverrides);
     itsMarcDoc->SetConfOutputFileSpec(inistr);
 
     itsMarcDoc->SetMarcOutputFileFormat(MFF_NONSEGMENTED); // nonsegmented by default
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsOutputBlockSegmentedChecked", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsOutputBlockSegmentedChecked", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
         itsMarcDoc->SetMarcOutputFileFormat(MFF_SEGMENTED);
     }
 
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputFileFormat", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputFileFormat", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str())
     {
         if (!strcasecmp(inistr.str(), "iso2709"))
@@ -434,58 +414,58 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
     }
 
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputXMLRecordFormat", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputXMLRecordFormat", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str())
         mStateManager->SetOutputXMLRecordFormat(inistr.str());
     else
         mStateManager->SetOutputXMLRecordFormat(NULL);
 
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputXMLRecordType", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputXMLRecordType", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str())
         mStateManager->SetOutputXMLRecordType(inistr.str());
     else
         mStateManager->SetOutputXMLRecordType(NULL);
 
     itsMarcDoc->SetMarcOutputFileBlockSize(2048);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcSizeBlock", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcSizeBlock", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcmp(inistr.str(),"2048"))
     {
         itsMarcDoc->SetMarcOutputFileBlockSize((short)atoi(inistr.str()));
     }
 
     itsMarcDoc->SetMarcOutputFileMinDataFree(5);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcMinDataFree", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcMinDataFree", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcmp(inistr.str(), "5"))
     {
         itsMarcDoc->SetMarcOutputFileMinDataFree((short)atoi(inistr.str()));
     }
 
     itsMarcDoc->SetMarcOutputFilePaddingChar(0x5E);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcPaddingChar", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcPaddingChar", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcasecmp(inistr.str(), "5E"))
     {
         itsMarcDoc->SetMarcOutputFilePaddingChar((char)ToHexa(inistr.str()));
     }
 
     itsMarcDoc->SetMarcOutputFileLastBlock(false);
-    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsOutputLastBlockPaddedChecked", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_MARC_ATTRIBUTES", "IsOutputLastBlockPaddedChecked", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(),"true"))
     {
         itsMarcDoc->SetMarcOutputFileLastBlock(true);
     }
 
-    get_ini_string("DEFAULT_VALUES", "OrdinalNumber", "1", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_VALUES", "OrdinalNumber", "1", inistr, itsIniFile.str(), a_configOverrides);
     itsOrdinal = atol(inistr.str());
 
     itsUpdateOrdinal = false;
-    get_ini_string("DEFAULT_VALUES", "UpdateOrdinalNumber", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_VALUES", "UpdateOrdinalNumber", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
         itsUpdateOrdinal = true;
     }
 
     itsMarcDoc->SetDuplicateSubfields(DP_LEAVE);
-    get_ini_string("DEFAULT_VALUES", "DuplicateSubfields", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_VALUES", "DuplicateSubfields", "", inistr, itsIniFile.str(), a_configOverrides);
     if (!inistr.is_empty())
     {
         if (!strcasecmp(inistr.str(), "leave"))
@@ -512,7 +492,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
     }
 
     itsMarcDoc->SetDuplicateFields(DP_LEAVE);
-    get_ini_string("DEFAULT_VALUES", "DuplicateFields", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_VALUES", "DuplicateFields", "", inistr, itsIniFile.str(), a_configOverrides);
     if (!inistr.is_empty())
     {
         if (!strcasecmp(inistr.str(), "leave"))
@@ -538,7 +518,7 @@ int TUMApplication::StartUp(const char *a_iniFileName, bool a_interactive,
         }
     }
 
-    get_ini_string("DEFAULT_STATES", "HandleLinkedFields", "", inistr, itsIniFile.str());
+    get_ini_string("DEFAULT_STATES", "HandleLinkedFields", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && !strcasecmp(inistr.str(), "true"))
     {
         mStateManager->SetHandleLinkedFields(true);
@@ -585,7 +565,8 @@ int TUMApplication::Convert(void)
         if (itsMarcDoc->Read())
             break;
 
-        ConvOk=true;
+        ConvOk = true;
+        mStateManager->ResetCounters();
         mStateManager->SetRecordNumber(itsRecordsProcessed + 1);
         mStateManager->SetRecordId(itsMarcDoc->GetInputRecord()->GetRecordId());
         if (itsMarcDoc->Transcode(itsTransDoc)) ConvOk = false;
@@ -593,8 +574,7 @@ int TUMApplication::Convert(void)
         if (itsMarcDoc->ProcessDuplicateFields()) ConvOk = false;
         itsOrdinal++;
 
-        // Mise a jour des compteurs
-        if (ConvOk)
+        if (mStateManager->GetErrorCount() == 0)
         {
             ++itsRecordsOk;
         }
@@ -624,7 +604,7 @@ int TUMApplication::Convert(void)
 
         DoConvertWrite();
 
-        if ((mStateManager->GetTooManyErrors()) && (mStateManager->GetHowManyErrors()>mStateManager->GetTooManyErrors()))
+        if ((mStateManager->GetMaximumErrors()) && (mStateManager->GetErrorCount() > mStateManager->GetMaximumErrors()))
         {
             // Maximum number of errors exceeded
             mStateManager->WriteError("Maximum errors to be encountered has been reached\n");
@@ -654,11 +634,11 @@ int TUMApplication::Convert(void)
     if (m_interactive)
     {
         printf("100%\n");
-        char msg[1000];
-        sprintf(msg, "%ld Converted Records: %ld without error and %ld with error(s)\n",
-            itsRecordsProcessed, itsRecordsOk, itsRecordsFailed);
-        mStateManager->WriteError(msg);
     }
+    char msg[1000];
+    sprintf(msg, "%ld Converted Records: %ld without error and %ld with error(s)\n",
+        itsRecordsProcessed, itsRecordsOk, itsRecordsFailed);
+    mStateManager->WriteMessage(msg);
 
     return 0;
 }

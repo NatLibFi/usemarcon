@@ -29,8 +29,9 @@ TStateManager::TStateManager(TUMApplication* theApplication, const char *LogFile
 {
     itsApplication=theApplication;
 
-    itsTooManyErrors       = 0;
-    itsHowManyErrors       = 0;
+    itsMaximumErrors       = 0;
+    itsErrorCount          = 0;
+    itsWarningCount        = 0;
     itsErrorCode           = 0;
     itsDebugMode           = 0;
     itsLogError            = NULL;
@@ -41,11 +42,12 @@ TStateManager::TStateManager(TUMApplication* theApplication, const char *LogFile
     mHandleLinkedFields = false;
     mSortRecord = true;
 
+    itsLastErrorMessage = "";
+    itsLastWarningMessage = "";
+
     // Logfile opening
     if (*LogFileName)
         OpenErrorLogFile(LogFileName);
-
-    itsLastErrorMessage[0] = '\0';
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,71 +99,78 @@ int TStateManager::SetErrorCode(int ErrorCode, short Severity, const char *FileN
 
     typestr message;
     const char *category = NULL;
-    switch(Severity)
+    switch (Severity)
     {
-        case DISPLAY:
-            message.allocstr(50);
-            sprintf(message.str(), "WARNING (%d) - ", ErrorCode);
-            message += description;
-            message += "\n";
-            message += rec_info;
-            message += UserData;
-            show_warning(message.str());
-            return 0-ErrorCode;
-        case WARNING: category = "WARNING"; break;
-        case ERROR: category = "ERROR"; itsHowManyErrors++; break;
-        case NOTICE: category = "NOTICE"; break;
-        case NONERROR: category = "INFO"; break;
-        default: category = "FATAL"; itsHowManyErrors++; break;
+        case NONERROR: 
+            category = "INFO"; 
+            break;
+        case NOTICE: 
+            category = "NOTICE"; 
+            break;
+        case DISPLAY: 
+        case WARNING: 
+            category = "WARNING"; 
+            itsWarningCount++; 
+            break;
+        case ERROR: 
+            category = "ERROR"; 
+            itsErrorCount++; 
+            itsErrorCode = ErrorCode; 
+            break;
+        default: 
+            category = "FATAL"; 
+            itsErrorCount++; 
+            itsErrorCode = ErrorCode; 
+            break;
     }
-    itsErrorCode = ErrorCode;
     
-    if (itsLogError)
+    message.allocstr(50);
+    sprintf(message.str(), "%s (%d) - ", category, ErrorCode);
+    message += description;
+    message += " ";
+    message += rec_info;
+    if (*UserData)
     {
-        fprintf(itsLogError, "%s (%d) - %s %s%s%s\n", category, ErrorCode,
-            description, rec_info, *UserData ? ": " : "", UserData);
-        if (ErrorCode >= 9000 || itsDebugMode)
-            fprintf(itsLogError, " in %s:%d\n", FileName, LineNumber);
-        else 
-            fprintf(itsLogError, "\n");
+        if (*rec_info)
+            message += ": ";
+        message += UserData;
+    }
+
+    if (itsLogError && Severity != DISPLAY)
+    {
+        fprintf(itsLogError, "%s\n", message.str());
         fflush(itsLogError);
     }
 
-    switch(Severity)
+    switch (Severity)
     {
+    case DISPLAY:
+        show_message(message.str());
+        itsLastWarningMessage = message;
+        break;
     case ERROR:
+        itsLastErrorMessage = message;
+        if (itsMode == INTERACTIVE && itsVerboseMode)
+            show_message(message.str());
+        break;
     case WARNING:
+        itsLastWarningMessage = message;
+        if (itsMode == INTERACTIVE && itsVerboseMode)
+            show_message(message.str());
+        break;
     case NOTICE:
-        if (itsMode != INTERACTIVE || !itsVerboseMode)
-            return 0-ErrorCode;
+        if (itsMode == INTERACTIVE && itsVerboseMode)
+            show_message(message.str());
         break;
     case NONERROR:
         // Don't show non-errors
-        return 0-ErrorCode;
+        break;
     default:
-        if (itsMode != INTERACTIVE)
-            return 0-ErrorCode;
+        itsLastErrorMessage = message;
+        if (itsMode == INTERACTIVE)
+            show_message(message.str());
         break;
     }
-    
-    // Write message to screen
-    message.allocstr(100);
-    sprintf(message.str(), "%s (%d) - ", category, ErrorCode);
-    message += description;
-    message += "\n";
-    message += rec_info;
-    message += UserData;
-    if (ErrorCode >= 9000 || itsDebugMode)
-    {
-        message += " in ";
-        message += FileName;
-        message += ":";
-        char tmp[30];
-        sprintf(tmp, "%d", LineNumber);
-        message += tmp;
-    }
-    show_message(message.str());
-
     return 0-ErrorCode;
 }
 
@@ -191,18 +200,31 @@ int TStateManager::OpenErrorLogFile(const char *Name)
 
 void TStateManager::WriteError(char *message)
 {
+    itsErrorCount++;
     if (itsLogError)
     {
-        fprintf(itsLogError,"%s",message);
+        fprintf(itsLogError, "%s", message);
         fflush(itsLogError);
     }
 
     if (message[0] == '\n')
-        strncpy(itsLastErrorMessage, &message[1], 255);
+        itsLastErrorMessage = &message[1];
     else
-        strncpy(itsLastErrorMessage, message, 255);
-    itsLastErrorMessage[254] = '\0';
-    if (itsMode==INTERACTIVE)
+        itsLastErrorMessage = message;
+
+    if (itsMode == INTERACTIVE)
+        printf("%s", message);
+}
+
+void TStateManager::WriteMessage(char *message)
+{
+    if (itsLogError)
+    {
+        fprintf(itsLogError, "%s", message);
+        fflush(itsLogError);
+    }
+
+    if (itsMode == INTERACTIVE)
         printf("%s", message);
 }
 

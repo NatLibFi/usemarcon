@@ -288,7 +288,7 @@ int TRuleFile::OpenRuleFile()
 
 int TRuleFile::ConvertInRuleOrder(TUMRecord* In, TUMRecord* Out)
 {
-    mStateManager->Reset();
+    mStateManager->ResetErrorCode();
 
     itsEvaluateRule.Init_Evaluate_Rule(itsDocument, itsApplication->GetRuleDoc(),
         itsApplication->GetStateManager(), itsApplication->GetDebugRule(),
@@ -331,7 +331,7 @@ int TRuleFile::ConvertInRuleOrder(TUMRecord* In, TUMRecord* Out)
 
 int TRuleFile::ConvertInFieldOrder(TUMRecord* In, TUMRecord* Out)
 {
-    mStateManager->Reset();
+    mStateManager->ResetErrorCode();
 
     bool debug_rule = itsApplication->GetDebugRule();
 
@@ -496,7 +496,6 @@ TCodedData  *TRuleFile::GetCodedData(char *theName)
     TCodedData      *aCodedData,
                     *anOldCodedData;
 
-    mStateManager->Reset();
     testspec = ((TRuleDoc *) itsApplication->itsRuleDoc)->GetRuleSpec();
 
     if (strchr(theName, SLASH))
@@ -551,8 +550,6 @@ TCodedData  *TRuleFile::GetCodedData(char *theName)
 ///////////////////////////////////////////////////////////////////////////////
 StringTable* TRuleFile::GetStringTable(const char *a_tablename)
 {
-    mStateManager->Reset();
-
     typestr filename;
     if (!strchr(a_tablename, SLASH))
         copy_path_from_filename(filename, ((TRuleDoc *) itsApplication->itsRuleDoc)->GetRuleSpec().str());

@@ -44,10 +44,10 @@ public:
     TUMApplication(void);
     virtual ~TUMApplication();
 
-    virtual int           StartUp(const char *a_iniFileName, bool a_interactive, 
-                                  const char *a_record, int a_recordLen, bool a_forceVerbose,
-                                  const char *a_inputMarcFileName, const char *a_outputMarcFileName,
-                                  bool a_disableCharacterConversion);
+    virtual int           Initialize(const char *a_iniFileName, bool a_interactive, 
+                                     const char *a_record, int a_recordLen, bool a_forceVerbose,
+                                     const char *a_inputMarcFileName, const char *a_outputMarcFileName,
+                                     bool a_disableCharacterConversion, const char *a_configOverrides);
     virtual int           Convert(void);
     virtual void          End(void);
     virtual int           DoConvertWrite(void);

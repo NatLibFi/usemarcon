@@ -32,13 +32,20 @@ private:
     char *m_record;
     int m_length;
     char m_lastErrorMessage[255];
+    char m_lastWarningMessage[255];
     bool m_initialized;
     bool m_force_verbose;
     bool m_disable_character_conversion;
     char *m_iniFileName;
     char *m_inputMarcFileName;
     char *m_outputMarcFileName;
-    
+    int m_errorCount;
+    int m_warningCount;
+    char *m_configOverrides;
+
+    void SetLastErrorMessage(const char *a_msg);
+    void SetLastWarningMessage(const char *a_msg);
+
 public:
     Usemarcon(); 
 
@@ -70,8 +77,14 @@ public:
     void SetOutputMarcFileName(const char *a_filename);
     const char *GetOutputMarcFileName() { return m_outputMarcFileName; }
     
-    void SetLastErrorMessage(const char *a_msg);
-    char *GetLastErrorMessage() { return m_lastErrorMessage; }
+    const char *GetLastErrorMessage() const { return m_lastErrorMessage; }
+    const char *GetLastWarningMessage() const { return m_lastWarningMessage; }
+
+    int GetErrorCount() { return m_errorCount; }
+    int GetWarningCount() { return m_warningCount; }
+
+    void AddConfigOverride(const char *a_section, const char *a_setting, const char *a_value);
+    void ClearConfigOverrides();
 
     int Convert();
 };

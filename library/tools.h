@@ -54,7 +54,8 @@ void get_ini_string(const char *section_name,
                     const char *key_name,
                     const char *default_value,
                     typestr & return_buffer,
-                    const char *ini_name);
+                    const char *ini_name,
+                    const char *a_config_overrides);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -70,7 +71,8 @@ void get_ini_filename(const char *section_name,
                       const char *key_name,
                       const char *default_value,
                       typestr & return_buffer,
-                      const char *ini_name);
+                      const char *ini_name,
+                      const char *a_config_overrides);
 
 // write a string to the specified ini file (the file must exist already)
 bool put_ini_string(const char *section_name,
@@ -86,9 +88,6 @@ void append_filename(typestr & path, const char *filename);
 
 // get a file attribute
 bool file_exists(typestr & fspec);
-
-// show a warning to the user
-void show_warning(const char *message);
 
 // show a message to the user
 void show_message(const char *message);

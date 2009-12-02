@@ -20,15 +20,18 @@
 Usemarcon::Usemarcon() : m_record(NULL), m_length(0), m_iniFileName(NULL),
     m_inputMarcFileName(NULL), m_outputMarcFileName(NULL),
     m_initialized(false), m_interactive(false), m_force_verbose(false), 
-    m_disable_character_conversion(false)
+    m_disable_character_conversion(false), m_errorCount(0), m_warningCount(0),
+    m_configOverrides(NULL)
 {
     m_lastErrorMessage[0] = '\0';
+    m_lastWarningMessage[0] = '\0';
 
     m_application = new TUMApplication();
 }
 
 Usemarcon::~Usemarcon()
 {
+    free(m_configOverrides);
     free(m_record);
 
     if (m_iniFileName)
@@ -98,6 +101,12 @@ void Usemarcon::SetLastErrorMessage(const char *a_msg)
     m_lastErrorMessage[254] = '\0';
 }
 
+void Usemarcon::SetLastWarningMessage(const char *a_msg)
+{
+    strncpy(m_lastWarningMessage, a_msg, 255);
+    m_lastWarningMessage[254] = '\0';
+}
+
 int Usemarcon::Convert()
 {
     int res = 0;
@@ -105,9 +114,9 @@ int Usemarcon::Convert()
     TUMApplication *application = reinterpret_cast<TUMApplication*>(m_application);
     if (!m_initialized)
     {
-        res = application->StartUp(m_iniFileName, m_interactive,
+        res = application->Initialize(m_iniFileName, m_interactive,
             m_record, m_length, m_force_verbose, m_inputMarcFileName,
-            m_outputMarcFileName, m_disable_character_conversion);
+            m_outputMarcFileName, m_disable_character_conversion, m_configOverrides);
         if (!res)
             m_initialized = true;
     }
@@ -127,7 +136,19 @@ int Usemarcon::Convert()
     }
 
     if (application->GetStateManager())
+    {
         SetLastErrorMessage(application->GetStateManager()->GetLastErrorMessage());
+        SetLastWarningMessage(application->GetStateManager()->GetLastWarningMessage());
+        m_errorCount = application->GetStateManager()->GetErrorCount();
+        m_warningCount = application->GetStateManager()->GetWarningCount();
+    }
+    else
+    {
+        SetLastErrorMessage("");
+        SetLastWarningMessage("");
+        m_errorCount = 0;
+        m_warningCount = 0;
+    }
 
     if (m_interactive)
     {
@@ -135,4 +156,34 @@ int Usemarcon::Convert()
     }
         
     return res;
+}
+
+void Usemarcon::AddConfigOverride(const char *a_section, const char *a_setting, const char *a_value)
+{
+    int needed = (m_configOverrides ? strlen(m_configOverrides) : 0) + 
+        strlen(a_section) + strlen(a_setting) + strlen(a_value) + 6;
+
+    char* newstr = (char*) malloc(needed);
+    if (m_configOverrides)
+    {
+        strcpy(newstr, m_configOverrides);
+        free(m_configOverrides);
+        strcat(newstr, "\t\t");
+    }
+    else
+        *newstr = '\0';
+    strcat(newstr, a_section);
+    strcat(newstr, "\t");
+    strcat(newstr, a_setting);
+    strcat(newstr, "\t");
+    strcat(newstr, a_value);
+    m_configOverrides = newstr;
+    m_initialized = false;
+}
+
+void Usemarcon::ClearConfigOverrides()
+{
+    free(m_configOverrides);
+    m_configOverrides = NULL;
+    m_initialized = false;
 }

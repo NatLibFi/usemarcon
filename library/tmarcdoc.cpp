@@ -235,8 +235,7 @@ bool TMarcDoc::Close(int IO)
 ///////////////////////////////////////////////////////////////////////////////
 int TMarcDoc::Convert(TRuleDoc *RuleDoc)
 {   
-  // On reset le EH
-  mStateManager->Reset();
+  mStateManager->ResetErrorCode();
   
   // On commence par convertir itsTransRecord sous la forme utilisable par la 
   // conversion de regles, a savoir une suite de CDLib. 
@@ -279,8 +278,7 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
 {
   TCheckDoc             *aCheckDoc;
   
-  // On reset le EH
-  mStateManager->Reset();      
+  mStateManager->ResetErrorCode();      
   
   // Check input
   aCheckDoc= itsApplication->GetCheckDoc();
@@ -290,8 +288,7 @@ int TMarcDoc::Transcode(TTransDoc *aTransDoc)
       aCheckDoc->GetInputFile()->Verify(INPUT,itsInputRecord);
   }
     
-  // On reset le EH
-  mStateManager->Reset();
+  mStateManager->ResetErrorCode();
   
   // Si itsTransRecord existe, on la supprime
   if (itsTransRecord) delete itsTransRecord;
