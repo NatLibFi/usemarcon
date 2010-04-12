@@ -64,8 +64,8 @@ public:
     int   SetErrorCode          (int ErrorCode, short Severity, const char *FileName,
         int LineNumber, const char *UserData="");
 
-    void  WriteError            (char *Message);
-    void  WriteMessage          (char *Message);
+    void  WriteError            (const char *Message);
+    void  WriteMessage          (const char *Message);
     void  SetMaximumErrors      (int max) { itsMaximumErrors = max; };
     void  SetVerboseMode        (int Mode) { itsVerboseMode=Mode; };
     void  SetDebugMode          (int Mode) { itsDebugMode=Mode; };

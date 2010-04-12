@@ -55,7 +55,7 @@ const ERRORDESC ErrorDesc[ErrorDescCount] = {
     {5000, "Memory allocation error"},
     {5001, "The rule file does not exist"},
     {5002, "*While loop maximum count exceeded - check condition validity"},
-    {5004, "*Only one indicator has been found"},
+    {5004, "*Only one indicator has been found in the output record"},
     {5005, "*Content of indicator is too long (>1)"},
     {5006, "*Found a field with no content (possibly a control field treated as a data field)"},
     {5050, "Unable to parse version number (expected a number)"},

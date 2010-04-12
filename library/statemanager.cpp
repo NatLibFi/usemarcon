@@ -198,7 +198,7 @@ int TStateManager::OpenErrorLogFile(const char *Name)
     return 0;
 }
 
-void TStateManager::WriteError(char *message)
+void TStateManager::WriteError(const char *message)
 {
     itsErrorCount++;
     if (itsLogError)
@@ -216,7 +216,7 @@ void TStateManager::WriteError(char *message)
         printf("%s", message);
 }
 
-void TStateManager::WriteMessage(char *message)
+void TStateManager::WriteMessage(const char *message)
 {
     if (itsLogError)
     {

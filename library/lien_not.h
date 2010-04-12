@@ -148,8 +148,6 @@ private:
     int   InnerParse(TRule* a_rule, const char *a_rulestr);
     int   Parse(TRule* a_rule);
 
-    const char* NextBalise();
-    const char* PreviousBalise();
     typestr2 NextSubField(TypeCD *, TypeCD *);
     typestr2 PreviousSubField(TypeCD *, TypeCD *);
     bool CompareOccurrence(typestr& aCondition, int aOccurrence);
@@ -182,10 +180,7 @@ private:
     typestr replace(typestr& a_str, typestr& a_source, typestr& a_replacement, IN_STR_POSITION a_at, bool a_strict);
     typestr replaceocc(typestr& a_str, typestr& a_source, typestr& a_replacement, typestr& a_condition, bool a_strict);
 
-    /*
-    Affichage d'une valeur d' Instruction
-    */
-    char* PrintT( TypeInst* t, char* buf );
+    const char* InstToStr(TypeInst* t, typestr &buffer);
 
     /*
     NEXT ( subfield [,subfield] [,STRICT] )

@@ -79,8 +79,6 @@ void TMarcScannerImpl::RewindBuffer()
     yyrestart(NULL);
 }
 
-// Cette fonction est appellee par l'analyseur grammatical en cas d'erreur
-
 int TEvaluateRule::yylex()
 {
     return mScanner.yylex(yylval, &m_allocator);
@@ -117,8 +115,7 @@ void TEvaluateRule::yyerror( char *m )
     mStateManager->SetErrorD(5100, ERROR, errorstr.str());
 }
 
-// Cette fonction remplace les valeurs symboliques de n,ns et nt par leur
-// valeur reelle
+// This function replaces the symbols n, ns and nt with their actual values
 
 int TEvaluateRule::Replace_N_NT_NS( int val, int N, int NT, int NS )
 {
@@ -586,7 +583,6 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TStateManager *
     mRuleDoc = RDoc;
     mStateManager = StateManager;
     mUTF8Mode = UTF8Mode;
-    int i;
     S=AllocTypeInst();
     D=AllocTypeInst();
     N=AllocTypeInst();
@@ -607,18 +603,11 @@ int TEvaluateRule::Init_Evaluate_Rule(void *Doc, TRuleDoc *RDoc, TStateManager *
     NEW->val = C_NEW;
     NEWEST->val = C_NEWEST;
 
-    // -------------------------------------------------
-    // Initialisation du fichier de communication des regles :
-    // pour evaluer les regles par lex&yacc, il faut les ecrire dans
-    // un fichier. Le fichier suivant est ouvert avec une taille de bloc
-    // normalement suffisante pour que la regle ne soit jamais physiquement
-    // flushe sur disque
-
-    // On initialise les memoires. Elles ne sont pas remises a zero entre chaque
-    // notice, ce qui permet de recuperer des infos des notices precedantes par exemple.
-    for (i=0;i<100;++i)
+    // Initialize memory positions. They are not reset between records, so that
+    // information can be carried over from record to record.
+    for (int i = 0; i < 100; ++i)
     {
-        Memoire[i]=AllocTypeInst();
+        Memoire[i] = AllocTypeInst();
         if (!Memoire[i])
             mStateManager->SetErrorD(5000,ERROR,"When initialising memories");
     }
@@ -633,8 +622,6 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
     mRealOutputRecord = RealOut;
     mCurrentRule = Rule;
 
-    // -------------------------------------------------
-    // On parcourt tous les CDLib qui correspondent au CD en entree de la regle
     TCDLib* aCDLIn;
     if (ProcessCDL) 
         aCDLIn = NULL;
@@ -663,7 +650,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                 break;
         }
 
-        // Initialisation de la memoire pour les variables de l'analyse de regles
+        // Initialize variables
         if (!S)
         {
             S=AllocTypeInst();
@@ -671,7 +658,7 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
         if (!S ||!N || !NT || !NS || !NO || !NSO || !NTO || !CDIn || !NEW || !V_TAG || !V_SUB || !V_UTF8)
             return mStateManager->SetErrorD(5000, ERROR, "When initialising variables");
 
-        // Initialisation de S,N,NT,NS : valeurs de l'entree
+        // Initial values for S,N,NT,NS
         N->str.freestr();
         NT->str.freestr();
         NS->str.freestr();
@@ -700,32 +687,29 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
                 aCDLIn->GetOccurrenceNumber(), aCDLIn->GetTagOccurrenceNumber(), aCDLIn->GetSubOccurrenceNumber(), S->str.str());
         }
 
-        // Initialisation des parametres du CDIn
+        // Initialize CDIn
         strcpy(CDIn->Field, aCDLIn->GetTag());
         strcpy(CDIn->SubField, aCDLIn->GetSubfield());
         CDIn->nt=aCDLIn->GetTagOccurrenceNumber();
         CDIn->ns=aCDLIn->GetSubOccurrenceNumber();
 
         // -------------------------------------------------
-        // Boucle d'evaluation de la regle
+        // Rule evaluation loop
         int rc;
         do
         {
-            // On cree une copie du CDOut (on va peut-etre le modifier)
+            // Create a modifiable copy of CDOut
             TCD* aCDOut=new TCD(Rule->GetOutputCD());
 
             aCDOut->ReplaceWildcards(CDIn->Field, CDIn->SubField);
 
-            // Si n, ns ou nt apparaissent dans CDOut, on les remplace par leur valeur
-            aCDOut->SetOccurrenceNumber(
-                Replace_N_NT_NS(aCDOut->GetOccurrenceNumber(), N->val, NT->val, NS->val) );
-            aCDOut->SetTagOccurrenceNumber(
-                Replace_N_NT_NS(aCDOut->GetTagOccurrenceNumber(), N->val, NT->val, NS->val) );
+            // Replace n, ns or nt in CDOut with the actual value
+            aCDOut->SetOccurrenceNumber(Replace_N_NT_NS(aCDOut->GetOccurrenceNumber(), N->val, NT->val, NS->val));
+            aCDOut->SetTagOccurrenceNumber(Replace_N_NT_NS(aCDOut->GetTagOccurrenceNumber(), N->val, NT->val, NS->val));
             if (*(aCDOut->GetSubfield())=='I')
                 aCDOut->SetSubOccurrenceNumber(1);
             else
-                aCDOut->SetSubOccurrenceNumber(
-                    Replace_N_NT_NS(aCDOut->GetSubOccurrenceNumber(), N->val, NT->val, NS->val) );
+                aCDOut->SetSubOccurrenceNumber(Replace_N_NT_NS(aCDOut->GetSubOccurrenceNumber(), N->val, NT->val, NS->val));
 
             NO->str.freestr();
             NTO->str.freestr();
@@ -963,6 +947,11 @@ int TEvaluateRule::Evaluate_Rule(TUMRecord* In, TUMRecord* Out, TUMRecord* RealO
 
             if (rc != 2)
             {
+                if (m_debug_rule && rc != 2 && !D->str.is_empty() && strcmp(S->str.str(), D->str.str()))
+                {
+                    printf("Debug: WARNING: %s%s o:%d t-o:%d s-o:%d: '%s' overwritten with '%s'\n", aCDOut->GetTag(), aCDOut->GetSubfield() ? aCDOut->GetSubfield() : "", aCDOut->GetOccurrenceNumber(), aCDOut->GetTagOccurrenceNumber(), aCDOut->GetSubOccurrenceNumber(), D->str.str(), S->str.str());
+                }
+
                 TCDLib aCDLOut(aCDOut);
                 aCDLOut.SetBeginning(0);
                 aCDLOut.SetEnd(0);
@@ -1064,7 +1053,7 @@ int TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLI
             aCDLIn->GetOccurrenceNumber(), aCDLIn->GetTagOccurrenceNumber(), aCDLIn->GetSubOccurrenceNumber(), S->str.str());
     }
 
-    // Initialisation des parametres du CDIn
+    // Initialize CDIn
     strcpy(CDIn->Field, aCDLIn->GetTag());
     strcpy(CDIn->SubField, aCDLIn->GetSubfield());
     CDIn->nt = aCDLIn->GetTagOccurrenceNumber();
@@ -1084,14 +1073,12 @@ int TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLI
 
 int TEvaluateRule::End_Evaluate_Rule()
 {
-    int i;
-    // Liberation de la memoire
-    for (i=0;i<100;++i)
+    for (int i = 0; i < 100; ++i)
     {
         if (Memoire[i])
         {
             FreeTypeInst(Memoire[i]);
-            Memoire[i]=NULL;
+            Memoire[i] = NULL;
         }
     }
 
@@ -1414,45 +1401,6 @@ int TEvaluateRule::SortRecord(TUMRecord* aRecord)
     return 0;
 }
 
-//
-// Renvoie la balise du CDLib suivant le CDLib courant, dans le champ courant
-//
-const char* TEvaluateRule::NextBalise()
-{
-    TCDLib* aCDL = mInputCDL;
-    TCDLib* Next;
-
-    Next=(TCDLib*)aCDL->GetNext();
-    if (Next)
-    {
-        if (strcmp(aCDL->GetTag(), Next->GetTag()) == 0)
-        {
-            return &Next->GetSubfield()[1];
-        }
-    }
-    return NULL;
-}
-
-//
-// Renvoie la balise du CDLib pr‰c‰dant le CDLib courant, dans le champ courant
-//
-const char* TEvaluateRule::PreviousBalise()
-{
-    TCDLib* aCDL = mInputCDL;
-    TCDLib* Previous;
-
-    Previous = (TCDLib*)aCDL->GetPrevious();
-    if (Previous)
-    {
-        if (strcmp(aCDL->GetTag(), Previous->GetTag()) == 0)
-        {
-            return &Previous->GetSubfield()[1];
-        }
-    }
-    return NULL;
-}
-
-
 TypeCD* TEvaluateRule::AllocCD()
 {
     return m_allocator.AllocTypeCD();
@@ -1470,15 +1418,22 @@ void TEvaluateRule::PrintDebug(const char *s)
 };
 
 
-/*
-Affichage d'une valeur d' Instruction
-*/
-char* TEvaluateRule::PrintT( TypeInst* t, char* buf )
+const char* TEvaluateRule::InstToStr(TypeInst* t, typestr &buffer)
 {
-    if (t->str.str()) sprintf(buf,"<%s>",t->str.str());
-    else        sprintf(buf,"(%d)",t->val);
-    return buf;
-};
+    if (t->str.str())
+    {
+        buffer = "'";
+        buffer += t->str.str();
+        buffer += "'";
+    }
+    else 
+    {
+        char tmp[30];
+        sprintf(tmp, "(%d)", t->val);
+        buffer = tmp;
+    }
+    return buffer.cstr();
+}
 
 /*
 NEXT ( subfield [,subfield] [,STRICT] )
@@ -1531,7 +1486,17 @@ TypeInst* TEvaluateRule::NextSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 
     if (!aFindCD)
     {
-        ptr = NextBalise();
+        TCDLib* aCDL = mInputCDL;
+        TCDLib* Next;
+
+        Next=(TCDLib*)aCDL->GetNext();
+        if (Next)
+        {
+            if (strcmp(aCDL->GetTag(), Next->GetTag()) == 0)
+            {
+                ptr = &Next->GetSubfield()[1];
+            }
+        }
     }
     else
     {
@@ -1601,7 +1566,17 @@ TypeInst* TEvaluateRule::PreviousSub(TypeCD* aFindCD, TypeInst *aOccurrence)
 
     if (!aFindCD)
     {
-        ptr = PreviousBalise();
+        TCDLib* aCDL = mInputCDL;
+        TCDLib* Previous;
+
+        Previous = (TCDLib*)aCDL->GetPrevious();
+        if (Previous)
+        {
+            if (strcmp(aCDL->GetTag(), Previous->GetTag()) == 0)
+            {
+                ptr = &Previous->GetSubfield()[1];
+            }
+        }
     }
     else
     {
@@ -1897,12 +1872,10 @@ void TEvaluateRule::FreeTypeInst( TypeInst* t )
 int TEvaluateRule::CopyInst( TypeInst** In, TypeInst* From )
 {
     *In=AllocTypeInst();
-    if (From && From->str.str())
-    {
-        (*In)->str = From->str;
-    }
     if (From)
     {
+        if (From->str.str())
+            (*In)->str = From->str;
         (*In)->val = From->val;
     }
     return 0;
@@ -1910,19 +1883,21 @@ int TEvaluateRule::CopyInst( TypeInst** In, TypeInst* From )
 
 
 /*
-Comparaison de deux instructions
+Compare equality of two instructions
 */
 int TEvaluateRule::BoolEQ( TypeInst* t1, TypeInst* t2 )
 {
     int rc;
-    char b1[200], b2[200];
 
-    if (t1->str.str()==NULL && t2->str.str()==NULL) rc=t1->val==t2->val;
-    else rc=!strcmp(ToString(t1),ToString(t2));
-    if (rc) rc=TRUE;
-    else    rc=FALSE;
+    if (t1->str.str() == NULL && t2->str.str() == NULL)
+        rc = t1->val == t2->val ? 1 : 0;
+    else 
+        rc = strcmp(ToString(t1), ToString(t2)) ? 0 : 1;
     if (m_debug_rule) 
-        printf("Debug:    %s = %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
+    {
+        typestr b1, b2;
+        printf("Debug:    %s = %s => %d\n", InstToStr(t1, b1), InstToStr(t2, b2), rc);
+    }
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
@@ -1930,17 +1905,21 @@ int TEvaluateRule::BoolEQ( TypeInst* t1, TypeInst* t2 )
 
 
 /*
-Comparaison de contenance de deux instructions
+Check for contents of t1 in t2
 */
 int TEvaluateRule::BoolIn( TypeInst* t1, TypeInst* t2 )
 {
     int rc;
-    char b1[200], b2[200];
 
-    if (strstr(ToString(t2),ToString(t1))) rc=TRUE;
-    else                       rc=FALSE;
+    if (strstr(ToString(t2), ToString(t1))) 
+        rc = 1;
+    else
+        rc = 0;
     if (m_debug_rule) 
-        printf("Debug:    %s IN %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
+    {
+        typestr b1, b2;
+        printf("Debug:    %s IN %s => %d\n", InstToStr(t1, b1), InstToStr(t2, b2), rc);
+    }
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
@@ -1948,19 +1927,21 @@ int TEvaluateRule::BoolIn( TypeInst* t1, TypeInst* t2 )
 
 
 /*
-Comparaison de deux instructions
+Check if t1 is greater than t2
 */
 int TEvaluateRule::BoolGT( TypeInst* t1, TypeInst* t2 )
 {
     int rc;
-    char b1[200], b2[200];
 
-    if (t1->str.str()==NULL && t2->str.str()==NULL) rc=t1->val-t2->val;
-    else rc=strcmp(ToString(t1),ToString(t2));
-    if (rc>0) rc=TRUE;
-    else    rc=FALSE;
+    if (t1->str.str() == NULL && t2->str.str() == NULL) 
+        rc = t1->val > t2->val ? 1 : 0;
+    else 
+        rc = strcmp(ToString(t1), ToString(t2)) ? 1 : 0;
     if (m_debug_rule) 
-        printf("Debug:    %s > %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
+    {
+        typestr b1, b2;
+        printf("Debug:    %s > %s => %d\n", InstToStr(t1, b1), InstToStr(t2, b2), rc);
+    }
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
@@ -1968,19 +1949,21 @@ int TEvaluateRule::BoolGT( TypeInst* t1, TypeInst* t2 )
 
 
 /*
-Comparaison de deux instructions
+Check if t1 is greater than or equal to t2
 */
 int TEvaluateRule::BoolGE( TypeInst* t1, TypeInst* t2 )
 {
     int rc;
-    char b1[200], b2[200];
 
-    if (t1->str.str()==NULL && t2->str.str()==NULL) rc=t1->val-t2->val;
-    else rc=strcmp(ToString(t1),ToString(t2));
-    if (rc>=0) rc=TRUE;
-    else    rc=FALSE;
+    if (t1->str.str() == NULL && t2->str.str() == NULL)
+        rc = t1->val >= t2->val ? 1 : 0;
+    else 
+        rc = strcmp(ToString(t1), ToString(t2)) ? 1 : 0;
     if (m_debug_rule) 
-        printf("Debug:    %s >= %s => %d\n",PrintT(t1,b1), PrintT(t2,b2),rc);
+    {
+        typestr b1, b2;
+        printf("Debug:    %s >= %s => %d\n", InstToStr(t1, b1), InstToStr(t2, b2), rc);
+    }
     FreeTypeInst(t1);
     FreeTypeInst(t2);
     return rc;
@@ -2014,7 +1997,7 @@ TypeInst* TEvaluateRule::Add( TypeInst* t1, TypeInst* t2 )
 }
 
 /*
-Conversion de numerique en char* si necessaire pour une Instruction
+Convert numeric value of an instruction to string if necessary
 */
 char* TEvaluateRule::ToString(TypeInst* t)
 {
