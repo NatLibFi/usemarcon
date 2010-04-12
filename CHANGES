@@ -2,7 +2,7 @@
 **************************
 version 3.14
 
-December 2 2009
+April 12 2010
 
 The National Library of Finland
 Ere Maijala
@@ -11,6 +11,8 @@ ere.maijala at helsinki.fi
 
 - Cleaned up error handling and improved the API for errors and warnings.
 - Added API command to add and remove configuration overrides.
+- Added a warning in rule debug mode when a field is overwritten.
+- Const-correctness
 
 
 **************************
