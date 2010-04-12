@@ -29,7 +29,7 @@ AUTHOR
 class SortElem
 {
 public:
-    SortElem(TCD* aCD, char* alist)
+    SortElem(TCD* aCD, const char* alist)
     {
         itsCD = new TCD(aCD->GetStateManager());
         itsCD->SetTag(aCD->GetTag());
@@ -48,7 +48,7 @@ public:
     void         SetNext(SortElem* aElem) { itsNext=aElem; };
     SortElem*    GetNext()           { return itsNext; };
     TCD*         GetCD()             { return itsCD; };
-    char*        GetSubFieldList()   { return itsLSubField; };
+    const char*  GetSubFieldList()   { return itsLSubField; };
 
 protected:
     SortElem*    itsNext;

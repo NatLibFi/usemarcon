@@ -101,7 +101,7 @@ public:
     int   SortRecord(TUMRecord* aRecord);
 
     virtual int yylex();
-    virtual void yyerror(char *m);
+    virtual void yyerror(const char *m);
 
 private:
     TMarcScannerImpl mScanner;

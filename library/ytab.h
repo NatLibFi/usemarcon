@@ -44,7 +44,7 @@ typedef short int yytype_int16;
 #endif
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 #ifndef YY_
-# if YYENABLE_NLS
+# if defined YYENABLE_NLS && YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -64,22 +64,22 @@ typedef short int yytype_int16;
 #else
 #if (defined __STDC__ || defined __C99__FUNC__       || defined __cplusplus || defined _MSC_VER)
 static int
-YYID (int i)
+YYID (int yyi)
 #else
 static int
-YYID (i)
-    int i;
+YYID (yyi)
+    int yyi;
 #endif
 {
-  return i;
+  return yyi;
 }
 #endif
 #define YYFINAL  131
-#define YYLAST   1525
+#define YYLAST   1524
 #define YYNTOKENS  104
 #define YYNNTS  12
 #define YYNRULES  171
-#define YYNSTATES  466
+#define YYNSTATES  465
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   355
 #define YYTRANSLATE(YYX)    ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -174,125 +174,127 @@ protected:
 
 public:
 
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   enum yytokentype {
-     SEP = 258,
-     FIN = 259,
-     WNUMBER = 260,
-     WSTRING = 261,
-     PLUS = 262,
-     MINUS = 263,
-     MULTIPLY = 264,
-     DIVIDE = 265,
-     EQ = 266,
-     NE = 267,
-     _IN = 268,
-     GT = 269,
-     LT = 270,
-     GE = 271,
-     LE = 272,
-     EXISTS = 273,
-     EXISTSIN = 274,
-     PRECEDES = 275,
-     FOLLOWS = 276,
-     INTABLE = 277,
-     CHECK = 278,
-     AND = 279,
-     OR = 280,
-     NOT = 281,
-     BY = 282,
-     _STRICT = 283,
-     AT = 284,
-     BEGINING = 285,
-     BEGINNING = 286,
-     END = 287,
-     BOTH = 288,
-     VARS = 289,
-     VARD = 290,
-     STRING = 291,
-     NUMERIC = 292,
-     VAR_N = 293,
-     VAR_NT = 294,
-     VAR_NS = 295,
-     VAR_NO = 296,
-     VAR_NTO = 297,
-     VAR_NSO = 298,
-     VAR_NEW = 299,
-     VAR_NEWEST = 300,
-     VAR_TAG = 301,
-     VAR_SUB = 302,
-     VAR_UTF8 = 303,
-     TAG = 304,
-     DTAG = 305,
-     STAG = 306,
-     FIX = 307,
-     I1 = 308,
-     I2 = 309,
-     STR = 310,
-     VAL = 311,
-     LEN = 312,
-     STO = 313,
-     MEM = 314,
-     EXC = 315,
-     CLR = 316,
-     LOWER = 317,
-     UPPER = 318,
-     FROM = 319,
-     TO = 320,
-     BETWEEN = 321,
-     _DELETE = 322,
-     REPLACE = 323,
-     REPLACEOCC = 324,
-     BFIRST = 325,
-     EFIRST = 326,
-     BLAST = 327,
-     ELAST = 328,
-     REDO = 329,
-     SORT = 330,
-     SORTFIELD = 331,
-     NEXT = 332,
-     LAST = 333,
-     TABLE = 334,
-     ORDINAL = 335,
-     YEAR = 336,
-     MONTH = 337,
-     DAY = 338,
-     HOUR = 339,
-     MINUTE = 340,
-     SECOND = 341,
-     NEXTSUB = 342,
-     NEXTSUBIN = 343,
-     PREVIOUSSUB = 344,
-     PREVIOUSSUBIN = 345,
-     REGFINDNUM = 346,
-     REGFINDPOS = 347,
-     REGFIND = 348,
-     REGMATCH = 349,
-     REGREPLACE = 350,
-     REGREPLACETABLE = 351,
-     MOVEBEFORE = 352,
-     MOVEAFTER = 353,
-     MOVEFIRST = 354,
-     MOVELAST = 355
-   };
-#endif
+  #ifndef YYTOKENTYPE
+  # define YYTOKENTYPE
+     enum yytokentype {
+       SEP = 258,
+       FIN = 259,
+       WNUMBER = 260,
+       WSTRING = 261,
+       PLUS = 262,
+       MINUS = 263,
+       MULTIPLY = 264,
+       DIVIDE = 265,
+       EQ = 266,
+       NE = 267,
+       _IN = 268,
+       GT = 269,
+       LT = 270,
+       GE = 271,
+       LE = 272,
+       EXISTS = 273,
+       EXISTSIN = 274,
+       PRECEDES = 275,
+       FOLLOWS = 276,
+       INTABLE = 277,
+       CHECK = 278,
+       AND = 279,
+       OR = 280,
+       NOT = 281,
+       BY = 282,
+       _STRICT = 283,
+       AT = 284,
+       BEGINING = 285,
+       BEGINNING = 286,
+       END = 287,
+       BOTH = 288,
+       VARS = 289,
+       VARD = 290,
+       STRING = 291,
+       NUMERIC = 292,
+       VAR_N = 293,
+       VAR_NT = 294,
+       VAR_NS = 295,
+       VAR_NO = 296,
+       VAR_NTO = 297,
+       VAR_NSO = 298,
+       VAR_NEW = 299,
+       VAR_NEWEST = 300,
+       VAR_TAG = 301,
+       VAR_SUB = 302,
+       VAR_UTF8 = 303,
+       TAG = 304,
+       DTAG = 305,
+       STAG = 306,
+       FIX = 307,
+       I1 = 308,
+       I2 = 309,
+       STR = 310,
+       VAL = 311,
+       LEN = 312,
+       STO = 313,
+       MEM = 314,
+       EXC = 315,
+       CLR = 316,
+       LOWER = 317,
+       UPPER = 318,
+       FROM = 319,
+       TO = 320,
+       BETWEEN = 321,
+       _DELETE = 322,
+       REPLACE = 323,
+       REPLACEOCC = 324,
+       BFIRST = 325,
+       EFIRST = 326,
+       BLAST = 327,
+       ELAST = 328,
+       REDO = 329,
+       SORT = 330,
+       SORTFIELD = 331,
+       NEXT = 332,
+       LAST = 333,
+       TABLE = 334,
+       ORDINAL = 335,
+       YEAR = 336,
+       MONTH = 337,
+       DAY = 338,
+       HOUR = 339,
+       MINUTE = 340,
+       SECOND = 341,
+       NEXTSUB = 342,
+       NEXTSUBIN = 343,
+       PREVIOUSSUB = 344,
+       PREVIOUSSUBIN = 345,
+       REGFINDNUM = 346,
+       REGFINDPOS = 347,
+       REGFIND = 348,
+       REGMATCH = 349,
+       REGREPLACE = 350,
+       REGREPLACETABLE = 351,
+       MOVEBEFORE = 352,
+       MOVEAFTER = 353,
+       MOVEFIRST = 354,
+       MOVELAST = 355
+     };
+  #endif
   #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
   typedef union YYSTYPE
-  
   {
+  
+  
           int   code;
           TypeInst* inst;
           TypeCD*   tcd;
-  }
   
-  	YYSTYPE;
+  
+  
+  } YYSTYPE;
+  # define YYSTYPE_IS_TRIVIAL 1
   # define yystype YYSTYPE
   # define YYSTYPE_IS_DECLARED 1
-  # define YYSTYPE_IS_TRIVIAL 1
   #endif
   virtual int yylex() = 0;
-  virtual void yyerror(char *) = 0;
+  virtual void yyerror(const char *) = 0;
 
 protected:
 
@@ -358,9 +360,9 @@ protected:
   #if (! defined yyoverflow       && (! defined __cplusplus  	 || (defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
   union yyalloc
   {
-    yytype_int16 yyss;
-    YYSTYPE yyvs;
-    };
+    yytype_int16 yyss_alloc;
+    YYSTYPE yyvs_alloc;
+  };
   # define YYSTACK_GAP_MAXIMUM (sizeof (union yyalloc) - 1)
   # define YYSTACK_BYTES(N)       ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE))        + YYSTACK_GAP_MAXIMUM)
   # ifndef YYCOPY
@@ -370,7 +372,7 @@ protected:
   #   define YYCOPY(To, From, Count)        do  	{  	  YYSIZE_T yyi;  	  for (yyi = 0; yyi < (Count); yyi++)  	    (To)[yyi] = (From)[yyi];  	}        while (YYID (0))
   #  endif
   # endif
-  # define YYSTACK_RELOCATE(Stack)      do        {  	YYSIZE_T yynewbytes;  	YYCOPY (&yyptr->Stack, Stack, yysize);  	Stack = &yyptr->Stack;  	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM;  	yyptr += yynewbytes / sizeof (*yyptr);        }      while (YYID (0))
+  # define YYSTACK_RELOCATE(Stack_alloc, Stack)      do        {  	YYSIZE_T yynewbytes;  	YYCOPY (&yyptr->Stack_alloc, Stack, yysize);  	Stack = &yyptr->Stack_alloc;  	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM;  	yyptr += yynewbytes / sizeof (*yyptr);        }      while (YYID (0))
   
   #endif
 #if (defined __STDC__ || defined __C99__FUNC__       || defined __cplusplus || defined _MSC_VER)
@@ -394,12 +396,12 @@ protected:
 ;
 #endif
 #if (defined __STDC__ || defined __C99__FUNC__       || defined __cplusplus || defined _MSC_VER)
-  void yy_stack_print (yytype_int16 *bottom, yytype_int16 *top)
+  void yy_stack_print (yytype_int16 *yybottom, yytype_int16 *yytop)
 ;
 #else
-  void yy_stack_print (bottom, top)
-    yytype_int16 *bottom;
-    yytype_int16 *top;
+  void yy_stack_print (yybottom, yytop)
+    yytype_int16 *yybottom;
+    yytype_int16 *yytop;
 ;
 #endif
 #if (defined __STDC__ || defined __C99__FUNC__       || defined __cplusplus || defined _MSC_VER)
@@ -441,9 +443,10 @@ protected:
 #endif
 #endif
   int yystate;
+  int yyerrstatus;
   int yyn;
   int yyresult;
-  int yyerrstatus;
+  int yytoken;
   YYSTYPE yyval;
 
 public:

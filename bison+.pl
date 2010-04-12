@@ -117,32 +117,53 @@ my $debug = 0;
         print CPPFILE "#include \"$h_file\"\n";
       }
 
-      if ($line =~ /\#if\s*!\s*defined\s*YYSTYPE/)
+      if ($line =~ /\#ifndef YYTOKENTYPE/)
       {
-        debugout("Found YYSTYPE...\n");
+        debugout("Found YYTOKENTYPE...\n");
         $state = 3;
         $class_public .= "  $line\n";
         next;
       }
       print CPPFILE "$line\n";
     }
+
     elsif ($state == 3)
     {
-      # writing YYSTYPE
+      # writing YYTOKENTYPE
       if ($line =~ /^\s*\#endif\s*$/)
       {
-        debugout("Found end of YYSTYPE...\n");
+        debugout("Found end of YYTOKENTYPE...\n");
         $state = 4;
       }
       $class_public .= "  $line\n";
     }
     elsif ($state == 4)
     {
+      if ($line =~ /\#if\s*!\s*defined\s*YYSTYPE/)
+      {
+        debugout("Found YYSTYPE...\n");
+        $class_public .= "  $line\n";
+        $state = 5;
+      }
+    }
+    elsif ($state == 5)
+    {
+      # writing YYSTYPE
+      if ($line =~ /^\s*\#endif\s*$/)
+      {
+        debugout("Found end of YYSTYPE...\n");
+        $state = 6;
+      }
+      $class_public .= "  $line\n";
+    }
+    
+    elsif ($state == 6)
+    {
       # various definitions into header file
       if ($line =~ /^\s*static\s+const\s+yytype_uint8\s+yytranslate/)
       {
         debugout("Found end of header defs...\n");
-        $state = 5;
+        $state = 7;
         $line_index = $curr_line;
         next;
       }
@@ -170,7 +191,7 @@ my $debug = 0;
         die ("#define underflow\n") if ($cond_level < 0);
       }
     }
-    elsif ($state == 5)
+    elsif ($state == 7)
     {
       #if ($line =~ s/^\s*static\s+const\s+yytype\_(.*?)\s+(.*?)\[\] =/static const yytype_$1 ${class_name}::$2\[\] =/)
       #{
@@ -231,7 +252,7 @@ my $debug = 0;
   }
 
   $class_public .= qq|  virtual int yylex() = 0;
-  virtual void yyerror(char *) = 0;
+  virtual void yyerror(const char *) = 0;
 |;
 
   # Write header file
@@ -266,7 +287,7 @@ $class_protected
 
   close(CFILE);
   close(HFILE);
-  unlink("y.tab.c");
+  #unlink("y.tab.c");
 }
 
 sub get_param_lines($$)

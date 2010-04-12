@@ -40,7 +40,7 @@ public:
     ~TUMRecord      (void);
 
     virtual int       SortCD          (void);
-    virtual int       SortCD          (TCD*,char*);
+    virtual int       SortCD          (TCD*, const char*);
     virtual int       PartialSort     (TCDLib *aFirst);
     virtual int       SortField       (TCD*);
     virtual int       FromCD          (TRuleFile *RuleFile);

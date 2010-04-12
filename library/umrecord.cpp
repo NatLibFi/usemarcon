@@ -84,7 +84,7 @@ int TUMRecord::SortCD()
 // SortCD
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TUMRecord::SortCD(TCD* aCD, char* sublist)
+int TUMRecord::SortCD(TCD* aCD, const char* sublist)
 {
     TCDLib* CurrentField = itsFirstCDLib;
     if (!NextCD(&CurrentField, aCD)) 
@@ -92,7 +92,7 @@ int TUMRecord::SortCD(TCD* aCD, char* sublist)
 
     TCDLib* NewField = NULL;
     TCDLib* New = NULL;
-    char* c = sublist;
+    const char* c = sublist;
     for (c; *c; c++)
     {
         TCDLib* CDLib = CurrentField;

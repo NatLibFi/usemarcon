@@ -60,7 +60,7 @@ semi::~semi()
 {
 }
 
-void *semi::cherche(unsigned char *ch, int *i)
+void *semi::cherche(const char *ch, int *i)
 {
     // recherche dans l'arborescence la chaine ch, retourne le nombre de caracteres
     // qui a pu etre trouve a la sortie, remp contient l'adresse du pointeur sur la
@@ -78,7 +78,7 @@ void *semi::cherche(unsigned char *ch, int *i)
         remp = d->remplacant;
     }
     quadruplet *r = d->bas;
-    unsigned char *c = ch+1;
+    const char *c = ch+1;
     while(*c != '\0'){
         while((r != NULL) && (r->valeur < *c))
             r = r->droite;
@@ -96,7 +96,7 @@ void *semi::cherche(unsigned char *ch, int *i)
     return(remp);
 }
 
-void semi::insere(unsigned char *ch, void *remp)
+void semi::insere(const char *ch, void *remp)
 {
     // Inserting a new entry into the tree. ch indicates the string to
     // replace and remp is the replacement
@@ -109,7 +109,7 @@ void semi::insere(unsigned char *ch, void *remp)
         doublet *d = racine + *ch;
         void **pavant = &(d->remplacant);
         quadruplet **pprec = &(d->bas);
-        unsigned char *c = ch+1;
+        const char *c = ch+1;
         quadruplet *r = d->bas;
         while(*c != '\0')
         {

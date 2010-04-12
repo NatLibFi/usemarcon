@@ -84,7 +84,7 @@ int TEvaluateRule::yylex()
     return mScanner.yylex(yylval, &m_allocator);
 }
 
-void TEvaluateRule::yyerror( char *m )
+void TEvaluateRule::yyerror(const char *m)
 {
     typestr errorstr; 
     if (*m=='s' || *m=='l')
@@ -442,7 +442,7 @@ int TEvaluateRule::InnerParse(TRule* a_rule, const char *a_rulestr)
                     for (int i = from; (step < 0 && i >= to) || (step > 0 && i <= to); i += step)
                     {
                         char i_str[30];
-                        sprintf(i_str, "%ld", i);
+                        sprintf(i_str, "%d", i);
                         if (!condition.is_empty())
                         {
                             typestr check_stmt = "Condition (";

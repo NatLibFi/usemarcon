@@ -75,7 +75,7 @@ TControlField::~TControlField(void)
 // SetFirstIndicators
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TControlField::SetFirstIndicators(char *Indicators)
+int TControlField::SetFirstIndicators(const char *Indicators)
 {
     itsFirstIndicators.freestr();
     if (*Indicators)
@@ -89,7 +89,7 @@ int TControlField::SetFirstIndicators(char *Indicators)
 // SetSecondIndicators
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TControlField::SetSecondIndicators(char *Indicators)
+int TControlField::SetSecondIndicators(const char *Indicators)
 {
     itsSecondIndicators.freestr();
     if (*Indicators)

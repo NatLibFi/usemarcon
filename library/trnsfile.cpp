@@ -91,7 +91,7 @@ int TTransFile::Open()
 
                 // Creation de l'arbre lexicographique
                 if (*InListe.str())
-                    insere((unsigned char*)InListe.str(), (unsigned char*)l_strdup(OutListe.str()));
+                    insere(InListe.str(), (unsigned char*)l_strdup(OutListe.str()));
 
             }
         }
@@ -181,10 +181,10 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
 // a la table chargee - inspire de ttrans.cc
 //
 ///////////////////////////////////////////////////////////////////////////////
-bool TTransFile::Transcode(char* In, typestr &Out, char *Notice, char *Field)
+bool TTransFile::Transcode(const char* In, typestr &Out, const char *Notice, const char *Field)
 {
-    char *c = In;
-    char *r = NULL;
+    const char *c = In;
+    const char *r = NULL;
 
     Out.str("");
 
@@ -195,7 +195,7 @@ bool TTransFile::Transcode(char* In, typestr &Out, char *Notice, char *Field)
     while(*c != '\0')
     {
         int iaux;
-        r  = (char *)cherche((unsigned char*)c,&iaux);
+        r = (const char*) cherche(c, &iaux);
         if((iaux == 0) || (r == NULL))
         {
             if (itsDefaultCopy)
@@ -318,7 +318,7 @@ bool TTransFile::Exists(char* In)
     while(*c != '\0')
     {
         int iaux;
-        char *r  = (char *)cherche((unsigned char*)c,&iaux);
+        const char *r = (const char*) cherche(c, &iaux);
         if((iaux == 0) || (r == NULL))
         {
             return false;
