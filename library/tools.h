@@ -27,18 +27,8 @@ AUTHOR
 #include "tfile.h"
 #include "typedef.h"
 
-#define APRES  0
-#define DESSUS 1
-
-#define AT_BEGINNING	0x01
-#define INSIDE	    	0x02
-#define AT_END		    0x04
-#define EVERYWHERE	AT_BEGINNING | INSIDE | AT_END
-
-int RemoveSpace		(char *String,int where = EVERYWHERE);
 int InsertChar		(char *entree,int *lg_entree,int position,char *caracteres,int code);
 int	ToUpperCase		(char *String);
-int CodeHexaToChar	(char *String);
 
 // trim whitespace from the beginning and the end of the string
 void trim_string(char *str);

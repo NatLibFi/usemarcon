@@ -102,42 +102,40 @@ TCD::~TCD()
 // SetFixedPos
 //
 ///////////////////////////////////////////////////////////////////////////////
-void TCD::SetFixedPos(char *String)
+void TCD::SetFixedPos(const char *a_str)
 {
-    int     MaxPos,
-        CurrentPos,
-        RealPos=0;
-    
-    if (!String)
+    if (!a_str)
     {
         SetBeginning(0);
         SetEnd(0);
         return;
     }
 
+    typestr str = a_str;
+    str.trim();
     // Remove all spaces
-    if ((MaxPos=RemoveSpace(String))==0)
+    if (str.is_empty())
     {
         SetBeginning(0);
         SetEnd(0);
         return;
     }
 
-    // Test if the String is a Fixed position and returns if not
-    if (*String!='/')
+    // Test if the string is a Fixed position and returns if not
+    const char *pt = str.cstr();
+    if (*pt != '/')
         return;
 
-    RealPos++;                  // skip the '/' character
-    for (CurrentPos=RealPos; CurrentPos<MaxPos && String[CurrentPos]!='/'; )
-        CurrentPos++;             // CurrentPos points to the last '/' or the end of string
+    ++pt; // skip the '/' character
+    const char *pt2 = pt;
+    while (*pt2 && *pt2 != '/')
+        pt2++;
 
-    if (CurrentPos-RealPos)
+    if (pt2 > pt)
     {
         // The Fixed position is not empty
         typestr tmp;
-        tmp.allocstr(CurrentPos - RealPos + 1);
-        memcpy(tmp.str(), &String[RealPos], CurrentPos-RealPos);
-        tmp.str()[CurrentPos-RealPos] = '\0';
+        tmp.str(pt, pt2 - pt);
         char *p = strchr(tmp.str(), '-');
         if (p)
         {
@@ -157,7 +155,7 @@ void TCD::SetFixedPos(char *String)
             }
             else
             {
-                SetEnd(atoi(++p));
+                SetEnd(atoi(p + 1));
                 *p = '\0';
                 SetBeginning(atoi(tmp.str()));
             }
@@ -175,18 +173,22 @@ void TCD::SetFixedPos(char *String)
 // FromString
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TCD::FromString(char *aString, const TCD *Last, int InputOrOutput)
+int TCD::FromString(const char *aString, const TCD *Last, int InputOrOutput)
 {
-    int MaxPos,
+    int StrLen,
         CurrentPos,
         IsOccTagPresent=0,
         IsOccSubPresent=0,
         RealPos=0;
-    char *String = aString;
+    typestr str = aString;
+
+    // TODO: make this function beautiful
 
     // All spaces are removed
-    MaxPos=RemoveSpace(String);
-
+    str.trim();
+    StrLen = str.length();
+    const char* String = str.cstr();
+    
     // Search for the "Send to Input" character for the output CD
     SetIN(0);
     if (InputOrOutput==OUTPUT)
@@ -195,12 +197,12 @@ int TCD::FromString(char *aString, const TCD *Last, int InputOrOutput)
         {
             SetIN(1);
             String++;
-            MaxPos--;
+            StrLen--;
         }
     }
 
     // Try to read a Tag
-    for (CurrentPos=RealPos; CurrentPos<MaxPos && CurrentPos<3 && (isalnum(String[CurrentPos]) || String[CurrentPos]=='?'); )
+    for (CurrentPos=RealPos; CurrentPos<StrLen && CurrentPos<3 && (isalnum(String[CurrentPos]) || String[CurrentPos]=='?'); )
         CurrentPos++;
     if (CurrentPos-RealPos==3)
         // This is the Tag
@@ -215,7 +217,7 @@ int TCD::FromString(char *aString, const TCD *Last, int InputOrOutput)
         {
             // Try to read the occurence Tag
             RealPos++;
-            for (CurrentPos=RealPos; CurrentPos<MaxPos && String[CurrentPos]!=')'; )
+            for (CurrentPos=RealPos; CurrentPos<StrLen && String[CurrentPos]!=')'; )
                 CurrentPos++;
             if (CurrentPos-RealPos)
                 // the occurence Tag is not empty
@@ -270,7 +272,7 @@ int TCD::FromString(char *aString, const TCD *Last, int InputOrOutput)
     case 'I' :
         // This is SS
         // Try to read SS
-        for (CurrentPos=RealPos+1; CurrentPos<MaxPos && String[CurrentPos]!='(' && String[CurrentPos]!='/'; )
+        for (CurrentPos=RealPos+1; CurrentPos<StrLen && String[CurrentPos]!='(' && String[CurrentPos]!='/'; )
             CurrentPos++;
         if (CurrentPos - RealPos == 2)
             // this is a SS
@@ -289,7 +291,7 @@ int TCD::FromString(char *aString, const TCD *Last, int InputOrOutput)
         {
             RealPos++;
             // Try to read the occurrence Sub
-            for (CurrentPos=RealPos; CurrentPos<MaxPos && String[CurrentPos]!=')'; )
+            for (CurrentPos=RealPos; CurrentPos<StrLen && String[CurrentPos]!=')'; )
                 CurrentPos++;
             if (CurrentPos-RealPos)
                 // the occurence Sub is no empty

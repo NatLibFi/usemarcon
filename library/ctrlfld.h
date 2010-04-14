@@ -100,7 +100,7 @@ public:
     char          *GetSecondIndicators(void)                          { return itsSecondIndicators.str(); };
     TControlField *GetNextTag         (void)                          { return itsNextTag; };
     
-    void          SetTag              (const char *aTag)              { strcpy(itsTag, aTag); itsTag[3]=0; };
+    void          SetTag              (const char *aTag)              { strncpy(itsTag, aTag, 3); itsTag[3]=0; };
     void          SetTagMandatory     (int IsIt)                      { itsTagMandatory=IsIt; };
     void          SetTagRepeatable    (int IsIt)                      { itsTagRepeatable=IsIt; };
     void          SetTagOccurrency    (void)                          { itsTagOccurrency++; };

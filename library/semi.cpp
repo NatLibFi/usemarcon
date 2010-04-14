@@ -71,7 +71,7 @@ void *semi::cherche(const char *ch, int *i)
     if(*ch == '\0')return(NULL);
     // A special optimization treatment for the first character. 
     // It's quickly found in a table.
-    doublet *d = racine + *ch;
+    doublet *d = racine + unsigned char(*ch);
     if(d->remplacant != NULL)
     {
         *i = ii;
@@ -106,7 +106,7 @@ void semi::insere(const char *ch, void *remp)
     if(*ch != '\0')
     {
         // The first character is put directly on the table
-        doublet *d = racine + *ch;
+        doublet *d = racine + unsigned char(*ch);
         void **pavant = &(d->remplacant);
         quadruplet **pprec = &(d->bas);
         const char *c = ch+1;

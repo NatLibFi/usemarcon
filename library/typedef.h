@@ -34,6 +34,8 @@ protected:
 
     char *m_str;
     unsigned long m_size;
+    char m_token;
+    unsigned long m_token_pos;
 
 public:
     typestr();
@@ -55,17 +57,25 @@ public:
     typestr & append(const typestr & a_str);
     // Promise space for given number of bytes without destroying original contents
     void promise(unsigned long size);
+    unsigned long length() { return m_str ? strlen(m_str) : 0; }
+    typestr & trim();
+    typestr find_token(const char a_token);
+    typestr next_token();
 
     typestr & operator=(const typestr & t)
     {
         allocstr(t.m_size);
         memcpy(m_str, t.m_str, t.m_size);
+        m_token = t.m_token;
+        m_token_pos = t.m_token_pos;
         return *this;
     }
     
     typestr & operator=(const char *t)
     {
         str(t);
+        m_token = '\0';
+        m_token_pos = 0;
         return *this;
     }
 

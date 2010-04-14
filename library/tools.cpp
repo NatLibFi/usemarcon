@@ -20,68 +20,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// RemoveSpace
-//
-///////////////////////////////////////////////////////////////////////////////
-int RemoveSpace(char *String,int where)
-{
-    int     CurrentPos=0,
-        LastPos,
-        MaxPos=strlen(String);
-    char * tmp_string = NULL;
-
-    if (!MaxPos) return 0;
-
-    LastPos=MaxPos-1;
-
-    if (where&AT_END)
-        // Remove all spaces at end
-    {
-        for (LastPos; LastPos>=0 && (isspace(String[LastPos]) || String[LastPos]=='\t'); --LastPos)
-        ;
-        if (LastPos<0)
-        {
-            *String=0;
-            return 0;
-        }
-
-        String[LastPos+1]=0;
-        MaxPos=LastPos+1;
-    }
-
-    if (where&AT_BEGINNING)
-        // Remove all spaces at begining
-    {
-        for (CurrentPos; CurrentPos<MaxPos && (isspace(String[CurrentPos]) || String[CurrentPos]=='\t'); CurrentPos++ )
-            ;
-        if (CurrentPos > 0)
-        {
-            if (MaxPos)  MaxPos-=CurrentPos;
-            if (LastPos) LastPos-=CurrentPos;
-            memmove(String, String+CurrentPos, MaxPos+1);
-        }
-    }
-
-    if (where&INSIDE)
-        // Remove all spaces inside the string
-    {
-        for (CurrentPos; CurrentPos && (isspace(String[CurrentPos]) || String[CurrentPos]=='\t'); CurrentPos++)
-            ;
-        for (CurrentPos; CurrentPos<LastPos; CurrentPos++)
-            if (isspace(String[CurrentPos]) || String[CurrentPos]=='\t')
-            {
-                if (LastPos) LastPos--;
-                if (MaxPos)  MaxPos--;
-                memmove(String+CurrentPos, String+CurrentPos+1, MaxPos+1-CurrentPos);
-                CurrentPos--;
-            }
-    }
-
-    return MaxPos;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // InsertChar
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,53 +50,6 @@ int ToUpperCase(char *String)
     for (CurrentPos=0; CurrentPos<MaxPos; CurrentPos++)
         String[CurrentPos]=(char)toupper((int)String[CurrentPos]);
 
-    return 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// CodeHexaToChar
-//
-///////////////////////////////////////////////////////////////////////////////
-int CodeHexaToChar(char *String)
-{
-    int iLongueur;
-    int iPosEntree;
-    int iPosSortie=0;
-    char    sSortie[100];
-    char    sCodeHexa[5];
-    long    lChar;
-
-    sSortie[iPosSortie]=0;
-    iLongueur=strlen(String);
-    // Recherche d'un code Hexa ( introduit par '0x' )
-    for (iPosEntree=0; iPosEntree<iLongueur; iPosEntree++)
-    {
-        if (!memcmp(&String[iPosEntree],"0x",2))
-        {
-            // chaine '0x' trouvee ==> il s'agit d'un code Hexa uniquement si
-            // deux caractères au moins suivent, sinon il s'agit simplement de
-            // '0' et de 'x' en tant que caracteres propres.
-            memcpy(sCodeHexa,&String[iPosEntree],4);
-            sCodeHexa[4]=0;
-            if (strlen(sCodeHexa)==4)
-                // '0x' introduit bien un code Hexa ==> conversion en caractere.
-            {
-                sscanf(&sCodeHexa[2],"%x",&lChar);
-                sprintf(&sSortie[iPosSortie++],"%c",lChar);
-                iPosEntree+=3;
-            }
-            else
-                // '0x' n'est a considerer que comme une chaine composee des deux
-                // carateres '0' et 'x' ==> rien a faire.
-                sSortie[iPosSortie++]=String[iPosEntree];
-        }
-        else
-            // carateres normal ==> rien a faire.
-            sSortie[iPosSortie++]=String[iPosEntree];
-    }
-    sSortie[iPosSortie]=0;
-    strcpy(String,sSortie);
     return 0;
 }
 
@@ -213,7 +104,7 @@ void get_ini_string(const char *section_name,
                     const char *a_config_overrides)
 {
     // First check the configuration overrides
-    char* overrides = _strdup(a_config_overrides);
+    char* overrides = l_strdup(a_config_overrides);
     char* entry = overrides;
     while (entry && *entry)
     {

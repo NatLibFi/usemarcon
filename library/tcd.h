@@ -48,7 +48,7 @@ public:
     TCD             (TypeCD*, TStateManager *StateManager);
     virtual ~TCD    ();
 
-    int   FromString      (char *aString, const TCD *Last, int InputOrOutput);
+    int   FromString      (const char *aString, const TCD *Last, int InputOrOutput);
     bool  ToString        (typestr & a_string, int InputOrOutput);
 
     TCD *GetPrevious              (void) const { return itsPrevious; };
@@ -71,7 +71,7 @@ public:
     void  SetSubOccurrenceNumber  (int aSubOccurrenceNumber)  { itsSubOccurrenceNumber=aSubOccurrenceNumber; };
     void  SetBeginning            (int aBeginning)            { itsBeginning=aBeginning; };
     void  SetEnd                  (int aEnd)                  { itsEnd=aEnd; };
-    void  SetFixedPos             (char *String);
+    void  SetFixedPos             (const char *a_str);
     void  SetIN                   (int aIN)   { _IN=aIN; };
 
     void ReplaceWildcards(const char *field, const char *subfield);

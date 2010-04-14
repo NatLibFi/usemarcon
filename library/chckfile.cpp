@@ -75,17 +75,20 @@ int TCheckFile::Open(int IO)
     while (NextLine(&aLine, false, &aSpec, &Line) == 0)
     {
         // Si la ligne n'est pas vide, la traiter
-        if (RemoveSpace(aLine.str()))
+        aLine.trim();
+        if (!aLine.is_empty())
         {
             aLineCopy = aLine;
+            typestr field = aLine.find_token('|');
+            field.trim();
             // Extraction du Tag de la regle de controle
-            if ((Pointer=strtok(aLine.str(),"|"))==NULL)
+            if (field.is_empty())
                 // Regle de controle invalide ==> passage a la regle suivante
             {
                 mStateManager->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 continue;
             }
-            if ((RemoveSpace(Pointer)!=4) || ((Pointer[3]!='_') && (Pointer[3]!='+') && (Pointer[3]!='?') && (Pointer[3]!='*')))
+            if (field.length() != 4 || (field.cstr()[3] != '_' && field.cstr()[3] != '+' && field.cstr()[3] != '?' && field.cstr()[3] != '*'))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
                 mStateManager->SetErrorD(IO==INPUT ? 2002 : 7002, WARNING, get_error(aSpec, Line, aLineCopy).str());
@@ -109,8 +112,9 @@ int TCheckFile::Open(int IO)
                     }
                 }
                 else
+                {
                     // une regle de controle existe deja ==> on verifie que cette nouvelle regle n'existe pas d权j柔
-                    if (!FindControlField(Pointer))
+                    if (!FindControlField(field.cstr()))
                         // regle de controle non encore rencontree ==> ajout en fin de liste
                     {
                         itsLastCheckField->SetNextTag(new TControlField(mStateManager));
@@ -129,14 +133,15 @@ int TCheckFile::Open(int IO)
                         mStateManager->SetErrorD(IO==INPUT ? 2003 : 7003, WARNING, get_error(aSpec, Line, aLineCopy).str());
                         continue;
                     }
+                }
             }
             else
                 // La regle precedente n'ayant pas ete enregistree ==> on effectue une RAZ du TControlField courant pour le r权utiliser
                 ResetControl(itsLastCheckField);
 
             // Memorisation du Tag et des caracteristiques du Tag de la regle de controle
-            itsLastCheckField->SetTag(Pointer);
-            switch (Pointer[3])
+            itsLastCheckField->SetTag(field.cstr());
+            switch (field.cstr()[3])
             {
             case '_': // Oblig / !Repet
                 itsLastCheckField->SetTagMandatory(1);
@@ -157,14 +162,16 @@ int TCheckFile::Open(int IO)
             }
 
             // Extraction de la liste des premiers indicateurs possibles
-            if ((Pointer=strtok(NULL,"|"))==NULL)
+            typestr indicator = aLine.next_token();
+            if (indicator.is_empty())
                 // Regle de controle invalide ==> passage a la regle suivante
             {
                 mStateManager->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
-            if ((!RemoveSpace(Pointer)) || (memcmp(Pointer,"I1=",3)))
+            indicator.trim();
+            if (indicator.is_empty() || memcmp(indicator.cstr(), "I1=", 3))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
                 mStateManager->SetErrorD(IO==INPUT ? 2004 : 7004, WARNING, get_error(aSpec, Line, aLineCopy).str());
@@ -172,21 +179,22 @@ int TCheckFile::Open(int IO)
                 continue;
             }
             // Memorisation des Indicateurs 1
-            if (Pointer[3])
+            if (indicator.cstr()[3])
             {
-                CodeHexaToChar(&Pointer[3]);
-                itsLastCheckField->SetFirstIndicators(&Pointer[3]);
+                itsLastCheckField->SetFirstIndicators(CodeHexaToChar(&indicator.cstr()[3]).cstr());
             }
 
             // Extraction de la liste des deuxiemes indicateurs possibles
-            if ((Pointer=strtok(NULL,"|"))==NULL)
+            indicator = aLine.next_token();
+            if (indicator.is_empty())
                 // Regle de controle invalide ==> passage a la regle suivante
             {
                 mStateManager->SetErrorD(IO==INPUT ? 2001 : 7001, WARNING, get_error(aSpec, Line, aLineCopy).str());
                 AnalysedControl=0;
                 continue;
             }
-            if ((!RemoveSpace(Pointer)) || (memcmp(Pointer,"I2=",3)))
+            indicator.trim();
+            if (indicator.is_empty() || memcmp(indicator.cstr(), "I2=", 3))
                 // Le Tag de la Regle de controle est invalide ==> passage a la regle suivante
             {
                 mStateManager->SetErrorD(IO==INPUT ? 2005 : 7005, WARNING, get_error(aSpec, Line, aLineCopy).str());
@@ -194,17 +202,21 @@ int TCheckFile::Open(int IO)
                 continue;
             }
             // Memorisation des Indicateurs 2
-            if (Pointer[3])
+            if (indicator.cstr()[3])
             {
-                CodeHexaToChar(&Pointer[3]);
-                itsLastCheckField->SetSecondIndicators(&Pointer[3]);
+                itsLastCheckField->SetSecondIndicators(CodeHexaToChar(&indicator.cstr()[3]).cstr());
             }
 
             // Extraction des differents sous-champs
-            while (((Pointer=strtok(NULL,"|"))!=NULL) && (AnalysedControl))
+            while (AnalysedControl)
             {
-                if ((RemoveSpace(Pointer)!=3) || ((Pointer[0]!='$') && ((!isalnum(Pointer[1])) && (Pointer[1]!='*')) &&
-                    (Pointer[2]!='_') && (Pointer[2]!='+') && (Pointer[2]!='?') && (Pointer[2]!='*')))
+                typestr subfield = aLine.next_token();
+                if (subfield.is_empty())
+                    break;
+           
+                subfield.trim();
+                if (subfield.length() != 3 || (subfield.cstr()[0] != '$' && !isalnum(subfield.cstr()[1]) && subfield.cstr()[1] != '*' &&
+                    subfield.cstr()[2] != '_' && subfield.cstr()[2] != '+' && subfield.cstr()[2] != '?' && subfield.cstr()[2] != '*'))
                     // Le Sub de la Regle de controle est invalide ==> passage a la regle suivante
                 {
                     mStateManager->SetErrorD(IO==INPUT ? 2006 : 7006, WARNING, get_error(aSpec, Line, aLineCopy).str());
@@ -238,8 +250,8 @@ int TCheckFile::Open(int IO)
                     itsLastCheckField->SetLastSubfield(itsLastCheckField->GetLastSubfield()->GetNextSub());
                 }
                 // Memorisation du Tag et des caracteristiques du Tag de la regle de controle
-                itsLastCheckField->GetLastSubfield()->SetSub(Pointer[1]);
-                switch (Pointer[2])
+                itsLastCheckField->GetLastSubfield()->SetSub(subfield.cstr()[1]);
+                switch (subfield.cstr()[2])
                 {
                 case '_': // Oblig / !Repet
                     itsLastCheckField->GetLastSubfield()->SetSubMandatory(1);
@@ -259,23 +271,23 @@ int TCheckFile::Open(int IO)
                     break;
                 }
             }
-     }
+        }
 
-     // Regle correctement analys权e
-     AnalysedControl = 1;
-  }
+        // Regle correctement analys权e
+        AnalysedControl = 1;
+    }
 
-  // supression du dernier TControlField s'il est incorrect
-  if (!AnalysedControl)
-  {
+    // supression du dernier TControlField s'il est incorrect
+    if (!AnalysedControl)
+    {
       delete itsLastCheckField;
       itsLastCheckField = OldControl;
-  }
+    }
 
-  // On referme le fichier
-  TFile::Close();
+    // On referme le fichier
+    TFile::Close();
 
-  return 0;
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -414,7 +426,7 @@ int TCheckFile::Verify(int IO,TUMRecord *aRecord)
 // TestIndicator
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TCheckFile::TestIndicator(char Ind,char *IndList)
+int TCheckFile::TestIndicator(char Ind, const char *IndList)
 {
     unsigned int    Indice;
 
@@ -485,7 +497,7 @@ int TCheckFile::TestSubfield(char Balise,TCtrlSubfield *SubList)
 // FindControlField
 //
 ///////////////////////////////////////////////////////////////////////////////
-TControlField *TCheckFile::FindControlField(char *aTag)
+TControlField *TCheckFile::FindControlField(const char *aTag)
 {
     TControlField   *CurrentControl;
 
@@ -540,4 +552,24 @@ typestr TCheckFile::get_error(typestr & a_filename, int a_lineNumber, typestr & 
         a_line.str());
 
     return errorstr;
+}
+
+typestr TCheckFile::CodeHexaToChar(const char *String)
+{
+    typestr result;
+    const char* p = String;
+    while (*p)
+    {
+        if (*p == '0' && *(p + 1) == 'x' && *(p + 2) && *(p + 3))
+        {
+            int i;
+            sscanf(p + 2, "%2x", &i);
+            result.append_char(char(i));
+            p += 3;
+        }
+        else
+            result.append_char(*p);
+        ++p;
+    }
+    return result;
 }

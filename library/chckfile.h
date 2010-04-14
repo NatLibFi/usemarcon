@@ -41,14 +41,15 @@ public:
     virtual int           Close               (void);
     virtual int           Verify              (int IO,TUMRecord *aRecord);
     
-    virtual TControlField *FindControlField   (char *aTag);
+    virtual TControlField *FindControlField   (const char *aTag);
     virtual TControlField *GetFirstCheckField (void) { return itsFirstCheckField; };
     virtual void          DelTreeCheckTag     (void);
     virtual void          ResetControl        (TControlField *Control);
     
 protected:
-    int                   TestIndicator       (char Ind,char *IndList);
-    int                   TestSubfield        (char Balise,TCtrlSubfield *SubList);
+    int     TestIndicator       (char Ind, const char *IndList);
+    int     TestSubfield        (char Balise,TCtrlSubfield *SubList);
+    typestr CodeHexaToChar      (const char *String);
     
 private:
     TControlField         *itsFirstCheckField;

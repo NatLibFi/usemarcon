@@ -12,9 +12,10 @@
  *
  */
 
+#include <limits.h>
 #include "typedef.h"
 
-typestr::typestr() : m_str(NULL), m_size(0)
+typestr::typestr() : m_str(NULL), m_size(0), m_token('\0'), m_token_pos(0)
 {
 }
 
@@ -24,12 +25,16 @@ typestr::typestr(const typestr & t)
     m_size = 0;
     allocstr(t.m_size);
     memcpy(m_str, t.m_str, t.m_size);
+    m_token = t.m_token;
+    m_token_pos = t.m_token_pos;
 }
 
 typestr::typestr(const char *t)
 {
     m_str = NULL;
     m_size = 0;
+    m_token = '\0';
+    m_token_pos = 0;
     str(t);
 }
 
@@ -174,6 +179,46 @@ void typestr::promise(unsigned long size)
     typestr tmpstr = *this;
     allocstr(size);
     memcpy(m_str, tmpstr.str(), tmpstr.m_size);
+}
+
+typestr & typestr::trim()
+{
+    replace(" ", "");
+    replace("\t", "");
+    return *this;
+}
+
+typestr typestr::find_token(const char a_token)
+{
+    m_token = a_token;
+    m_token_pos = ULONG_MAX;
+    return next_token();
+}
+
+typestr typestr::next_token()
+{
+    if (is_empty())
+        return typestr("");
+    unsigned long len = strlen(m_str);
+    if (m_token_pos != ULONG_MAX && m_token_pos >= len)
+        return typestr("");
+    const char* p;
+    if (m_token_pos == ULONG_MAX)
+        p = m_str;
+    else
+    {
+        p = m_str + m_token_pos + 1;
+    }
+    const char* p2 = strchr(p, m_token);
+    if (!p2)
+    {
+        m_token_pos = len;
+        return typestr(p);
+    }
+    m_token_pos = p2 - m_str;
+    typestr s;
+    s.str(p, p2 - p);
+    return s;
 }
 
 // Rule formatted string init
