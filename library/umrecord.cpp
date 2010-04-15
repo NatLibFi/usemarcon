@@ -893,7 +893,7 @@ void TUMRecord::SeparateLinkedFields()
             
             char link_normal[30], link_880[30];
             sprintf(link_normal, START_OF_FIELD_STR "6880-%02d" START_OF_FIELD_STR, field_num);
-            sprintf(link_880, START_OF_FIELD_STR "6%03s-%02d%s" START_OF_FIELD_STR, field->GetTag(), field_num, field->GetScript());
+            sprintf(link_880, START_OF_FIELD_STR "6%s-%02d%s" START_OF_FIELD_STR, field->GetTag(), field_num, field->GetScript());
 
             typestr fielddata = field->GetLib2();
             int res = re_replace.replace(fielddata, link_880, false);

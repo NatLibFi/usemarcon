@@ -136,7 +136,7 @@ int TMarcField::SetTag(const char *aTagString)
     }
 
     // Make sure tag is always three characters, prepend zeros as necessary
-    char* filler = "000";
+    char filler[4] = "000";
     filler[3 - len] = '\0';
     sprintf(itsTag, "%s%s", filler, aTagString);
     return retval;

@@ -410,9 +410,9 @@ int TMarcRecord::ToString(typestr & a_marcstr)
         unsigned long lng = strlen(marcdata);
         bool have_ind = IsFieldWithIndicators(OUTPUT, tag, marcdata, lng);
         if (!have_ind)
-            sprintf(temps, "%s%04d%05d", tag, lng+1, pos_data);
+            sprintf(temps, "%s%04d%05d", tag, lng+1 < 9999 ? int(lng+1) : 9999, pos_data < 99999 ? int(pos_data) : 99999);
         else
-            sprintf(temps, "%s%04d%05d", tag, lng+3, pos_data);
+            sprintf(temps, "%s%04d%05d", tag, lng+3 < 9999 ? int(lng+3) : 9999, pos_data < 99999 ? int(pos_data) : 99999);
 
         directory += temps;
 
