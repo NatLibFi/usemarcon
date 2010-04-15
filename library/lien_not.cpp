@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2003
- *  Adapted by The National Library of Finland, 2004-2009
+ *  Adapted by The National Library of Finland, 2004-2010
  *
  *  File:  lien_not.cpp
  *
@@ -1045,7 +1045,8 @@ int TEvaluateRule::CheckCondition(TUMRecord* aIn, TUMRecord* aOut, TCDLib* aCDLI
     const char* sub = inCD.GetSubfield();
     if (sub && *sub == '$')
         ++sub;
-    V_SUB->str.str(sub);
+    V_UTF8->str.freestr();
+    V_UTF8->val = mStateManager->GetUTF8Mode();
 
     if (m_debug_rule)
     {
