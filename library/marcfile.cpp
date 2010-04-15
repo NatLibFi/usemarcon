@@ -595,7 +595,8 @@ int TMarcFile::write_marc_scw(short typ,unsigned long longueur)
     if (GetMarcInfoFormat() == MFF_NONSEGMENTED)
         return 0;
 
-    sprintf(scw, "%1d%04d", typ, longueur + 5);
+    short len = longueur + 5 < 9999 ? short(longueur + 5) : 9999;
+    sprintf(scw, "%1d%04d", typ, len);
     scw[5] = '\0';
     if (write_marc(5, scw))
         return mStateManager->SetError(1005, ERROR);

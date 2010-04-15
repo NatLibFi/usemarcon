@@ -157,10 +157,10 @@ int TRuleFile::OpenRuleFile()
                 error = "File: ";
                 error += IncludedFileSpec.str();
                 error += ", line ";
-                sprintf(tmp, "%ld", Line);
+                sprintf(tmp, "%d", Line);
                 error += tmp;
                 error += ". Supported rule version: ";
-                sprintf(tmp, "%ld", RULE_VERSION);
+                sprintf(tmp, "%d", RULE_VERSION);
                 error += tmp;
                 if (version > 0)
                 {
@@ -182,7 +182,7 @@ int TRuleFile::OpenRuleFile()
                 error = "File: ";
                 error += IncludedFileSpec.str();
                 error += ", line ";
-                sprintf(tmp, "%ld", Line);
+                sprintf(tmp, "%d", Line);
                 error += tmp;
                 return mStateManager->SetErrorD(5603, ERROR, error.str());
             }
@@ -204,7 +204,7 @@ int TRuleFile::OpenRuleFile()
                 error = "File: ";
                 error += IncludedFileSpec.str();
                 error += ", line ";
-                sprintf(tmp, "%ld", Line);
+                sprintf(tmp, "%d", Line);
                 error += tmp;
                 return mStateManager->SetErrorD(5604, ERROR, error.str());
             }
@@ -264,7 +264,7 @@ int TRuleFile::OpenRuleFile()
         error = "File: ";
         error += IncludedFileSpec.str();
         error += ", line ";
-        sprintf(tmp, "%ld", condition_line);
+        sprintf(tmp, "%d", condition_line);
         error += tmp;
         return mStateManager->SetErrorD(5605, ERROR, error.str());
     }

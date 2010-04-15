@@ -179,7 +179,7 @@ int TFile::NextLine(typestr *aLine, bool aStringFile, typestr *Spec, int *LineNu
             // '#include' directive not followed by a file name
             typestr tmp; 
             tmp.allocstr(strlen(Spec->str()) + 50);
-            sprintf(tmp.str(), "%s : %d", Spec, itsLineNumber);
+            sprintf(tmp.str(), "%s : %d", Spec->str(), itsLineNumber);
             mStateManager->SetErrorD(9505, WARNING, tmp.str());
         }
         else

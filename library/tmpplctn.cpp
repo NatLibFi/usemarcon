@@ -587,12 +587,12 @@ int TUMApplication::Convert(void)
         {
             if (itsSize < 0)
             {
-                printf("%d input records\r", itsRecordsOk + itsRecordsFailed);
+                printf("%ld input records\r", itsRecordsOk + itsRecordsFailed);
             }
             else
             {
                 int readcentile = (int)(itsMarcDoc->GetInputFile()->GetPos() / itsSize * 100);
-                printf("%d%%   %d input records\r", readcentile, itsRecordsOk + itsRecordsFailed);
+                printf("%d%%   %ld input records\r", readcentile, itsRecordsOk + itsRecordsFailed);
             }
         }
 
@@ -633,7 +633,7 @@ int TUMApplication::Convert(void)
 
     if (m_interactive)
     {
-        printf("100%\n");
+        printf("100%%\n");
     }
     char msg[1000];
     sprintf(msg, "%ld Converted Records: %ld without error and %ld with error(s)\n",

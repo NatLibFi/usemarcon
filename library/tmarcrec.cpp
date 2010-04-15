@@ -410,9 +410,9 @@ int TMarcRecord::ToString(typestr & a_marcstr)
         unsigned long lng = strlen(marcdata);
         bool have_ind = IsFieldWithIndicators(OUTPUT, tag, marcdata, lng);
         if (!have_ind)
-            sprintf(temps, "%03s%04d%05d", tag, lng+1, pos_data);
+            sprintf(temps, "%s%04d%05d", tag, lng+1, pos_data);
         else
-            sprintf(temps, "%03s%04d%05d", tag, lng+3, pos_data);
+            sprintf(temps, "%s%04d%05d", tag, lng+3, pos_data);
 
         directory += temps;
 
@@ -443,11 +443,11 @@ int TMarcRecord::ToString(typestr & a_marcstr)
 
     // Set total length of the record to the leader
     char temps[20];
-    sprintf(temps, "%05lu", strlen(a_marcstr.str()));
+    sprintf(temps, "%05u", strlen(a_marcstr.str()));
     memcpy(a_marcstr.str(), temps, 5);
 
     // Set base address of data to the leader
-    sprintf(temps, "%05d", 24 + strlen(directory.str()));
+    sprintf(temps, "%05u", 24 + strlen(directory.str()));
     memcpy(&a_marcstr.str()[12], temps, 5);
 
     DelTree();

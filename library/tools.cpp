@@ -572,7 +572,7 @@ void trim_string2(typestr2 &a_dst, typestr2 &a_src)
     a_dst.set_script(a_src.script);
 }
 
-char* strstr_unquoted(char* aStr, char* aIn)
+char* strstr_unquoted(char* aStr, const char* aIn)
 {
     char* p = aStr;
     bool in_quotes = false;

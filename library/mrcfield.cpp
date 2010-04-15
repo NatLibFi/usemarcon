@@ -121,22 +121,24 @@ int TMarcField::NextSubField(int *_Position, char* _SubField)
 ///////////////////////////////////////////////////////////////////////////////
 int TMarcField::SetTag(const char *aTagString)
 {
-    int     CurrentPos;
-
-    if (strlen(aTagString)>3)
+    size_t len = strlen(aTagString);
+    if (len > 3)
         return 1;
 
     int retval = 0;
-    for (CurrentPos=0; CurrentPos<3; CurrentPos++)
+    for (int i = 0; i < 3; i++)
     {
-        if (!isalnum(aTagString[CurrentPos]))
+        if (!isalnum(aTagString[i]))
         {
             retval = 1;
             break;
         }
     }
 
-    strcpy(itsTag,aTagString);
+    // Make sure tag is always three characters, prepend zeros as necessary
+    char* filler = "000";
+    filler[3 - len] = '\0';
+    sprintf(itsTag, "%s%s", filler, aTagString);
     return retval;
 }
 

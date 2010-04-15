@@ -456,7 +456,7 @@ Translation :
 |       ORDINAL '(' Translation ')'     {
                                           $$=AllocTypeInst();
                                           char tmp1[20];
-                                          sprintf(tmp1, "%d", m_ordinal);
+                                          sprintf(tmp1, "%ld", m_ordinal);
                                           for (int i = strlen(tmp1); i < $3->val; ++i)
                                             $$->str.append_char('0');
                                           $$->str.append(tmp1);
