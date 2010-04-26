@@ -104,7 +104,7 @@ void get_ini_string(const char *section_name,
                     const char *a_config_overrides)
 {
     // First check the configuration overrides
-    char* overrides = l_strdup(a_config_overrides);
+    char* overrides = l_strdup(a_config_overrides ? a_config_overrides : "");
     char* entry = overrides;
     while (entry && *entry)
     {
