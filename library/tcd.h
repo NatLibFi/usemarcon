@@ -95,7 +95,7 @@ protected:
     int           itsSubOccurrenceNumber;
     TCD           *itsPrevious;
     TCD           *itsNext;
-    TStateManager        *mStateManager;
+    TStateManager *mStateManager;
     bool          itsTagContainsWildcard;
     bool          itsTagIsWildcard;
     bool          itsSubfieldContainsWildcard;

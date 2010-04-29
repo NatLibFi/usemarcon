@@ -107,20 +107,25 @@ int TRuleFile::OpenRuleFile()
     int condition_count = 0;
     int condition_group = 0;
     int condition_line = 0;
-    bool reset_condition = false;
+    bool in_condition = false;
     while (!NextLine(&RuleLine, true, &IncludedFileSpec, &Line))
     {
-        // Apply macros
-        StringTableItem* macro = itsMacros ? itsMacros->GetFirstItem() : NULL;
-        while (macro)
+        if (!RuleLine.is_empty())
         {
-            RuleLine.replace(macro->m_src.str(), macro->m_dst.str());
-            macro = macro->GetNext();
+            // Apply macros
+            StringTableItem* macro = itsMacros ? itsMacros->GetFirstItem() : NULL;
+            while (macro)
+            {
+                RuleLine.replace(macro->m_src.str(), macro->m_dst.str());
+                macro = macro->GetNext();
+            }
         }
 
         char *p = RuleLine.str();
         while (*p == ' ' || *p == '\t')
             ++p;
+        if (*p == '\0')
+            continue;
         if (strncmp(p, "#define macro ", 14) == 0)
         {
             p += 14;
@@ -175,7 +180,7 @@ int TRuleFile::OpenRuleFile()
         }
         else if (strncmp(p, "#if ", 4) == 0)
         {
-            if (condition_group != 0 && !reset_condition)
+            if (in_condition)
             {
                 typestr error;
                 char tmp[30];
@@ -192,12 +197,12 @@ int TRuleFile::OpenRuleFile()
             condition = p;
             condition_group = ++condition_count;
             condition_line = Line;
-            reset_condition = false;
+            in_condition = true;
             continue;
         }
         else if (strncmp(p, "#endif", 6) == 0)
         {
-            if (condition_group == 0)
+            if (!in_condition)
             {
                 typestr error;
                 char tmp[30];
@@ -208,19 +213,20 @@ int TRuleFile::OpenRuleFile()
                 error += tmp;
                 return mStateManager->SetErrorD(5604, ERROR, error.str());
             }
-            reset_condition = true;
+            in_condition = false;
             continue;
         }
 
         if (IsRuleAnalysed && HasPipes(RuleLine.str()))
         {
             // This is a new rule to process
-            if (reset_condition)
+            /*if (reset_condition)
             {
                 condition_group = 0;
                 condition.freestr();
                 reset_condition = false;
-            }
+            }*/
+
             lastInputCD = CurrentRule->GetInputCD();
             lastOutputCD = CurrentRule->GetOutputCD();
             CurrentRule->SetNextRule(new TRule(mStateManager)); 
@@ -233,6 +239,8 @@ int TRuleFile::OpenRuleFile()
             }
             CurrentRule->GetNextRule()->SetPreviousRule(CurrentRule);
             CurrentRule = CurrentRule->GetNextRule();
+            if (in_condition)
+                CurrentRule->SetCondition(condition.str(), condition_group);
         }
 
         if ((Result=CurrentRule->FromString(RuleLine.str(), Line, lastInputCD, lastOutputCD))<0) // Load Input and Output CDs in CDs
@@ -253,11 +261,9 @@ int TRuleFile::OpenRuleFile()
         {
           IsRuleAnalysed = true;
         }
-
-        CurrentRule->SetCondition(condition.str(), condition_group);
     }
     CurrentRule->SetNextRule(NULL);
-    if (condition_group != 0 && !reset_condition)
+    if (in_condition)
     {
         typestr error;
         char tmp[30];
