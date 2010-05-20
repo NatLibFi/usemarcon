@@ -1,0 +1,4 @@
+LIBRARY USEMARCON
+EXPORTS
+	ConvertFile @1
+     
