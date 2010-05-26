@@ -2,7 +2,7 @@
 **************************
 version 3.14
 
-April 29 2010
+May 26 2010
 
 The National Library of Finland
 Ere Maijala
@@ -16,6 +16,11 @@ ere.maijala at helsinki.fi
 - Optimized rule file parsing a bit.
 - Fixed a bug from global conditions where an empty or comment line after
   #if caused the condition to be applied to the previous rule too.
+- Added XML namespace declarations to XML output.
+- Improved XML entity handling. Now supports numeric entities and won't
+  mess up &apos;.
+- Added a simple optional Win32 DLL wrapper so that USEMARCON can be 
+  loaded as a DLL. The DLL is not built by default.
 
 
 **************************
