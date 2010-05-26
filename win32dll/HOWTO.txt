@@ -1,0 +1,49 @@
+Examples of usage
+
+Calling from a C++ program:
+---------------------------------------
+typedef int (__stdcall *ConvertFileFunc)(const char *inifile, const char *sourcefile, const char *targetfile, char *lasterror, int lasterrorsize);
+...
+    ConvertFileFunc ConvertFile;
+    HINSTANCE hInstLibrary = LoadLibrary("usemarcon.dll");
+
+    if (hInstLibrary)
+    {
+        ConvertFile = (ConvertFileFunc)GetProcAddress(hInstLibrary, "ConvertFile");
+        printf("Converting...\n");
+        char error[255];
+        int result = ConvertFile("c:\\usemarcon\\testconvs\\testconv.ini", "c:\\usemarcon\\034.bib", "c:\\usemarcon\\output3.bib", error, 255);
+        if (result == 0)
+            printf("Done!\n");
+        else
+            printf("Failed: %s\n", error);
+    }
+    else
+    {
+        printf("Failed to load usemarcon.dll");
+    }
+---------------------------------------
+
+Calling from a C# program:
+
+---------------------------------------
+    class Program
+    {
+        [DllImport("usemarcon.dll")]
+        public static extern int ConvertFile(String inifile, String inputfile, String outputfile, StringBuilder error, int errorlen);
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Converting...");
+            StringBuilder error = new StringBuilder(256);
+            int result = ConvertFile("c:\\usemarcon\\testconv\\testconv.ini", "c:\\usemarcon\\034.bib", "c:\\usemarcon\\output.bib", error, error.Capacity);
+            if (result == 0)
+            {
+                Console.WriteLine("Done!");
+            }
+            else
+            {
+                Console.WriteLine("Failed: " + error);
+            }
+        }
+    }
+---------------------------------------
