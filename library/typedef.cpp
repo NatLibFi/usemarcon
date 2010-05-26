@@ -133,7 +133,7 @@ char *typestr::append_char(char c)
     return m_str;
 }
 
-void typestr::replace(const char *src, const char *dst)
+void typestr::replace(const char *src, const char *dst, int position)
 {
     if (!m_str)
         return;
@@ -146,6 +146,11 @@ void typestr::replace(const char *src, const char *dst)
     char *p = m_str;
     while (p = strstr(p, src))
     {
+        if (position != -1 && p - m_str != position)
+        {
+            ++p;
+            continue;
+        }
         if (needed > 0 && m_size <= existing_len + needed)
         {
             unsigned long p_pos = strlen(p);
@@ -162,6 +167,8 @@ void typestr::replace(const char *src, const char *dst)
         strcpy(m_str, tmpstr.str());
         existing_len += needed;
         p += dstlen;
+        if (position != -1)
+            break;
     }
 }
 

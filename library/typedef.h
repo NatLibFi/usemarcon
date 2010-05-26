@@ -53,7 +53,7 @@ public:
     char *append(const char *a_str, unsigned long a_len = 0);
     // Optimized for repeating calls
     char *append_char(char c);
-    void replace(const char *src, const char *dst);
+    void replace(const char *src, const char *dst, int position = -1);
     typestr & append(const typestr & a_str);
     // Promise space for given number of bytes without destroying original contents
     void promise(unsigned long size);
