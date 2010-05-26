@@ -17,6 +17,7 @@
 #include "statemanager.h"
 #include "tmpplctn.h"
 #include "tools.h"
+#include "utf8proc.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -544,6 +545,8 @@ typestr TMarcRecord::escape_xml(const typestr & a_str)
     new_str.replace("&", "&amp;");
     new_str.replace("<", "&lt;");
     new_str.replace(">", "&gt;");
+    new_str.replace("'", "&apos;");
+    new_str.replace("\"", "&quot;");
 
     return new_str;
 }
@@ -552,13 +555,52 @@ typestr TMarcRecord::unescape_xml(const typestr & a_str)
 {
     typestr new_str = a_str;
 
+    // Convert numeric entities
+    char* p = new_str.str();
+    while (p = strchr(p, '&'))
+    {
+        char* p2 = p + 1;
+        if (*p2 == '#')
+        {
+            ++p2;
+            int value;
+            char* mask = "%u;";
+            if (*p2 == 'x')
+            {
+                ++p2;
+                mask = "%x;";
+            }
+            if (sscanf(p2, mask, &value) == 1)
+            {
+                p2 = p;
+                typestr source;
+                while (*p2 != ';')
+                {
+                    source.append_char(*p2);
+                    ++p2;
+                }
+                source.append_char(';');
+
+                char utf8[10];
+                int chars = utf8proc_encode_char(value, (uint8_t *)utf8);
+                utf8[chars] = '\0';
+
+                new_str.replace(source.cstr(), utf8, p - new_str.str());
+                p += chars;
+                continue;
+            }
+        }
+        ++p;
+    }
+
     new_str.replace("&lt;", "<");
     new_str.replace("&gt;", ">");
+    new_str.replace("&apos;", "'");
+    new_str.replace("&quot;", "\"");
     new_str.replace("&amp;", "&");
 
     return new_str;
 }
-
 bool TMarcRecord::get_tag(typestr & a_xml, typestr & a_tag, typestr & a_attribs, typestr & a_content, typestr & a_remainder)
 {
     const char *xml = a_xml.str();
