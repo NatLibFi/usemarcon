@@ -1,4 +1,4 @@
-// Copyright (c) 2005, Google Inc.
+// Copyright (c) 2010, Google Inc.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,22 @@ static const int kVecSize = (1 + kMaxArgs) * 3;  // results + PCRE workspace
 
 // Special object that stands-in for no argument
 Arg RE::no_arg((void*)NULL);
+
+// This is for ABI compatibility with old versions of pcre (pre-7.6),
+// which defined a global no_arg variable instead of putting it in the
+// RE class.  This works on GCC >= 3, at least.  It definitely works
+// for ELF, but may not for other object formats (Mach-O, for
+// instance, does not support aliases.)  We could probably have a more
+// inclusive test if we ever needed it.  (Note that not only the
+// __attribute__ syntax, but also __USER_LABEL_PREFIX__, are
+// gnu-specific.)
+#if defined(__GNUC__) && __GNUC__ >= 3 && defined(__ELF__)
+# define ULP_AS_STRING(x)            ULP_AS_STRING_INTERNAL(x)
+# define ULP_AS_STRING_INTERNAL(x)   #x
+# define USER_LABEL_PREFIX_STR       ULP_AS_STRING(__USER_LABEL_PREFIX__)
+extern Arg no_arg
+  __attribute__((alias(USER_LABEL_PREFIX_STR "_ZN7pcrecpp2RE6no_argE")));
+#endif
 
 // If a regular expression has no error, its error_ field points here
 static const string empty_string;
@@ -315,7 +331,7 @@ bool RE::FindAndConsume(StringPiece* input,
 bool RE::Replace(const StringPiece& rewrite,
                  string *str) const {
   int vec[kVecSize];
-  int matches = TryMatch(*str, 0, UNANCHORED, vec, kVecSize);
+  int matches = TryMatch(*str, 0, UNANCHORED, true, vec, kVecSize);
   if (matches == 0)
     return false;
 
@@ -356,7 +372,7 @@ static int NewlineMode(int pcre_options) {
     else if (newline == -2)
       newline_mode = PCRE_NEWLINE_ANYCRLF;
     else
-      assert("" == "Unexpected return value from pcre_config(NEWLINE)");
+      assert(NULL == "Unexpected return value from pcre_config(NEWLINE)");
   }
   return newline_mode;
 }
@@ -368,49 +384,64 @@ int RE::GlobalReplace(const StringPiece& rewrite,
   string out;
   int start = 0;
   int lastend = -1;
+  bool last_match_was_empty_string = false;
 
   while (start <= static_cast<int>(str->length())) {
-    int matches = TryMatch(*str, start, UNANCHORED, vec, kVecSize);
-    if (matches <= 0)
-      break;
+    // If the previous match was for the empty string, we shouldn't
+    // just match again: we'll match in the same way and get an
+    // infinite loop.  Instead, we do the match in a special way:
+    // anchored -- to force another try at the same position --
+    // and with a flag saying that this time, ignore empty matches.
+    // If this special match returns, that means there's a non-empty
+    // match at this position as well, and we can continue.  If not,
+    // we do what perl does, and just advance by one.
+    // Notice that perl prints '@@@' for this;
+    //    perl -le '$_ = "aa"; s/b*|aa/@/g; print'
+    int matches;
+    if (last_match_was_empty_string) {
+      matches = TryMatch(*str, start, ANCHOR_START, false, vec, kVecSize);
+      if (matches <= 0) {
+        int matchend = start + 1;     // advance one character.
+        // If the current char is CR and we're in CRLF mode, skip LF too.
+        // Note it's better to call pcre_fullinfo() than to examine
+        // all_options(), since options_ could have changed bewteen
+        // compile-time and now, but this is simpler and safe enough.
+        // Modified by PH to add ANY and ANYCRLF.
+        if (matchend < static_cast<int>(str->length()) &&
+            (*str)[start] == '\r' && (*str)[matchend] == '\n' &&
+            (NewlineMode(options_.all_options()) == PCRE_NEWLINE_CRLF ||
+             NewlineMode(options_.all_options()) == PCRE_NEWLINE_ANY ||
+             NewlineMode(options_.all_options()) == PCRE_NEWLINE_ANYCRLF)) {
+          matchend++;
+        }
+        // We also need to advance more than one char if we're in utf8 mode.
+#ifdef SUPPORT_UTF8
+        if (options_.utf8()) {
+          while (matchend < static_cast<int>(str->length()) &&
+                 ((*str)[matchend] & 0xc0) == 0x80)
+            matchend++;
+        }
+#endif
+        if (start < static_cast<int>(str->length()))
+          out.append(*str, start, matchend - start);
+        start = matchend;
+        last_match_was_empty_string = false;
+        continue;
+      }
+    } else {
+      matches = TryMatch(*str, start, UNANCHORED, true, vec, kVecSize);
+      if (matches <= 0)
+        break;
+    }
     int matchstart = vec[0], matchend = vec[1];
     assert(matchstart >= start);
     assert(matchend >= matchstart);
-    if (matchstart == matchend && matchstart == lastend) {
-      // advance one character if we matched an empty string at the same
-      // place as the last match occurred
-      matchend = start + 1;
-      // If the current char is CR and we're in CRLF mode, skip LF too.
-      // Note it's better to call pcre_fullinfo() than to examine
-      // all_options(), since options_ could have changed bewteen
-      // compile-time and now, but this is simpler and safe enough.
-      // Modified by PH to add ANY and ANYCRLF.
-      if (start+1 < static_cast<int>(str->length()) &&
-          (*str)[start] == '\r' && (*str)[start+1] == '\n' &&
-          (NewlineMode(options_.all_options()) == PCRE_NEWLINE_CRLF ||
-           NewlineMode(options_.all_options()) == PCRE_NEWLINE_ANY ||
-           NewlineMode(options_.all_options()) == PCRE_NEWLINE_ANYCRLF)
-          ) {
-        matchend++;
-      }
-      // We also need to advance more than one char if we're in utf8 mode.
-#ifdef SUPPORT_UTF8
-      if (options_.utf8()) {
-        while (matchend < static_cast<int>(str->length()) &&
-               ((*str)[matchend] & 0xc0) == 0x80)
-          matchend++;
-      }
-#endif
-      if (matchend <= static_cast<int>(str->length()))
-        out.append(*str, start, matchend - start);
-      start = matchend;
-    } else {
-      out.append(*str, start, matchstart - start);
-      Rewrite(&out, rewrite, *str, vec, matches);
-      start = matchend;
-      lastend = matchend;
-      count++;
-    }
+    out.append(*str, start, matchstart - start);
+    Rewrite(&out, rewrite, *str, vec, matches);
+    start = matchend;
+    lastend = matchend;
+    count++;
+    last_match_was_empty_string = (matchstart == matchend);
   }
 
   if (count == 0)
@@ -426,7 +457,7 @@ bool RE::Extract(const StringPiece& rewrite,
                  const StringPiece& text,
                  string *out) const {
   int vec[kVecSize];
-  int matches = TryMatch(text, 0, UNANCHORED, vec, kVecSize);
+  int matches = TryMatch(text, 0, UNANCHORED, true, vec, kVecSize);
   if (matches == 0)
     return false;
   out->erase();
@@ -441,21 +472,27 @@ bool RE::Extract(const StringPiece& rewrite,
   // Note that it's legal to escape a character even if it has no
   // special meaning in a regular expression -- so this function does
   // that.  (This also makes it identical to the perl function of the
-  // same name; see `perldoc -f quotemeta`.)
+  // same name; see `perldoc -f quotemeta`.)  The one exception is
+  // escaping NUL: rather than doing backslash + NUL, like perl does,
+  // we do '\0', because pcre itself doesn't take embedded NUL chars.
   for (int ii = 0; ii < unquoted.size(); ++ii) {
     // Note that using 'isalnum' here raises the benchmark time from
     // 32ns to 58ns:
-    if ((unquoted[ii] < 'a' || unquoted[ii] > 'z') &&
-        (unquoted[ii] < 'A' || unquoted[ii] > 'Z') &&
-        (unquoted[ii] < '0' || unquoted[ii] > '9') &&
-        unquoted[ii] != '_' &&
-        // If this is the part of a UTF8 or Latin1 character, we need
-        // to copy this byte without escaping.  Experimentally this is
-        // what works correctly with the regexp library.
-        !(unquoted[ii] & 128)) {
+    if (unquoted[ii] == '\0') {
+      result += "\\0";
+    } else if ((unquoted[ii] < 'a' || unquoted[ii] > 'z') &&
+               (unquoted[ii] < 'A' || unquoted[ii] > 'Z') &&
+               (unquoted[ii] < '0' || unquoted[ii] > '9') &&
+               unquoted[ii] != '_' &&
+               // If this is the part of a UTF8 or Latin1 character, we need
+               // to copy this byte without escaping.  Experimentally this is
+               // what works correctly with the regexp library.
+               !(unquoted[ii] & 128)) {
       result += '\\';
+      result += unquoted[ii];
+    } else {
+      result += unquoted[ii];
     }
-    result += unquoted[ii];
   }
 
   return result;
@@ -466,6 +503,7 @@ bool RE::Extract(const StringPiece& rewrite,
 int RE::TryMatch(const StringPiece& text,
                  int startpos,
                  Anchor anchor,
+                 bool empty_ok,
                  int *vec,
                  int vecsize) const {
   pcre* re = (anchor == ANCHOR_BOTH) ? re_full_ : re_partial_;
@@ -483,12 +521,19 @@ int RE::TryMatch(const StringPiece& text,
     extra.flags |= PCRE_EXTRA_MATCH_LIMIT_RECURSION;
     extra.match_limit_recursion = options_.match_limit_recursion();
   }
+
+  int options = 0;
+  if (anchor != UNANCHORED)
+    options |= PCRE_ANCHORED;
+  if (!empty_ok)
+    options |= PCRE_NOTEMPTY;
+
   int rc = pcre_exec(re,              // The regular expression object
                      &extra,
                      (text.data() == NULL) ? "" : text.data(),
                      text.size(),
                      startpos,
-                     (anchor == UNANCHORED) ? 0 : PCRE_ANCHORED,
+                     options,
                      vec,
                      vecsize);
 
@@ -518,7 +563,7 @@ bool RE::DoMatchImpl(const StringPiece& text,
                      int* vec,
                      int vecsize) const {
   assert((1 + n) * 3 <= vecsize);  // results + PCRE workspace
-  int matches = TryMatch(text, 0, anchor, vec, vecsize);
+  int matches = TryMatch(text, 0, anchor, true, vec, vecsize);
   assert(matches >= 0);  // TryMatch never returns negatives
   if (matches == 0)
     return false;
@@ -583,14 +628,14 @@ bool RE::Rewrite(string *out, const StringPiece &rewrite,
         if (start >= 0)
           out->append(text.data() + start, vec[2 * n + 1] - start);
       } else if (c == '\\') {
-        out->push_back('\\');
+        *out += '\\';
       } else {
         //fprintf(stderr, "invalid rewrite pattern: %.*s\n",
         //        rewrite.size(), rewrite.data());
         return false;
       }
     } else {
-      out->push_back(c);
+      *out += c;
     }
   }
   return true;
@@ -776,6 +821,8 @@ bool Arg::parse_longlong_radix(const char* str,
   long long r = strtoll(str, &end, radix);
 #elif defined HAVE__STRTOI64
   long long r = _strtoi64(str, &end, radix);
+#elif defined HAVE_STRTOIMAX
+  long long r = strtoimax(str, &end, radix);
 #else
 #error parse_longlong_radix: cannot convert input to a long-long
 #endif
@@ -806,6 +853,8 @@ bool Arg::parse_ulonglong_radix(const char* str,
   unsigned long long r = strtoull(str, &end, radix);
 #elif defined HAVE__STRTOI64
   unsigned long long r = _strtoui64(str, &end, radix);
+#elif defined HAVE_STRTOIMAX
+  unsigned long long r = strtoumax(str, &end, radix);
 #else
 #error parse_ulonglong_radix: cannot convert input to a long-long
 #endif

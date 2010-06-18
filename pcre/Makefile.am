@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in.
 
+ACLOCAL_AMFLAGS = -I m4
+
 dist_doc_DATA = \
   doc/pcre.txt \
   doc/pcre-config.txt \
@@ -40,6 +42,7 @@ dist_html_DATA = \
   doc/html/pcrebuild.html \
   doc/html/pcrecallout.html \
   doc/html/pcrecompat.html \
+  doc/html/pcredemo.html \
   doc/html/pcregrep.html \
   doc/html/pcrematching.html \
   doc/html/pcrepartial.html \
@@ -178,13 +181,11 @@ libpcre_la_SOURCES = \
   pcre_study.c \
   pcre_tables.c \
   pcre_try_flipped.c \
-  pcre_ucp_searchfuncs.c \
+  pcre_ucd.c \
   pcre_valid_utf8.c \
   pcre_version.c \
   pcre_xclass.c \
-  ucp.h \
-  ucpinternal.h \
-  ucptable.h
+  ucp.h
 
 ## This file is generated as part of the building process, so don't distribute.
 nodist_libpcre_la_SOURCES = \
@@ -245,13 +246,13 @@ dist_noinst_SCRIPTS += RunTest
 EXTRA_DIST += RunTest.bat
 bin_PROGRAMS += pcretest
 pcretest_SOURCES = pcretest.c
-pcretest_LDADD = libpcreposix.la
+pcretest_LDADD = libpcreposix.la $(LIBREADLINE)
 
 TESTS += RunGrepTest
 dist_noinst_SCRIPTS += RunGrepTest
 bin_PROGRAMS += pcregrep
 pcregrep_SOURCES = pcregrep.c
-pcregrep_LDADD = libpcreposix.la
+pcregrep_LDADD = libpcreposix.la $(LIBZ) $(LIBBZ2)
 
 EXTRA_DIST += \
   testdata/grepinput \
@@ -272,6 +273,8 @@ EXTRA_DIST += \
   testdata/testinput8 \
   testdata/testinput9 \
   testdata/testinput10 \
+  testdata/testinput11 \
+  testdata/testinput12 \
   testdata/testoutput1 \
   testdata/testoutput2 \
   testdata/testoutput3 \
@@ -282,6 +285,8 @@ EXTRA_DIST += \
   testdata/testoutput8 \
   testdata/testoutput9 \
   testdata/testoutput10 \
+  testdata/testoutput11 \
+  testdata/testoutput12 \
   testdata/wintestinput3 \
   testdata/wintestoutput3 \
   perltest.pl
@@ -316,7 +321,7 @@ DLL_OBJS= pcre_compile.o pcre_config.o \
 	pcre_globals.o pcre_info.o pcre_maketables.o \
 	pcre_newline.o pcre_ord2utf8.o pcre_refcount.o \
 	pcre_study.o pcre_tables.o pcre_try_flipped.o \
-	pcre_ucp_searchfuncs.o pcre_valid_utf8.o pcre_version.o \
+	pcre_ucd.o pcre_valid_utf8.o pcre_version.o \
 	pcre_chartables.o \
 	pcre_xclass.o
 
@@ -329,7 +334,7 @@ pcre.dll: $(DLL_OBJS)
 
 # We have .pc files for pkg-config users.
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libpcre.pc
+pkgconfig_DATA = libpcre.pc libpcreposix.pc
 if WITH_PCRE_CPP
 pkgconfig_DATA += libpcrecpp.pc
 endif
