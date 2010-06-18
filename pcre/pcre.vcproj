@@ -239,6 +239,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\pcre_ucd.c"
+				>
+			</File>
+			<File
 				RelativePath=".\pcre_ucp_searchfuncs.c"
 				>
 			</File>

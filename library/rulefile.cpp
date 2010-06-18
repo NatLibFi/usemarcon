@@ -239,8 +239,6 @@ int TRuleFile::OpenRuleFile()
             }
             CurrentRule->GetNextRule()->SetPreviousRule(CurrentRule);
             CurrentRule = CurrentRule->GetNextRule();
-            if (in_condition)
-                CurrentRule->SetCondition(condition.str(), condition_group);
         }
 
         if ((Result=CurrentRule->FromString(RuleLine.str(), Line, lastInputCD, lastOutputCD))<0) // Load Input and Output CDs in CDs
@@ -259,7 +257,9 @@ int TRuleFile::OpenRuleFile()
         }
         else if (Result > 0)
         {
-          IsRuleAnalysed = true;
+            IsRuleAnalysed = true;
+            if (in_condition)
+                CurrentRule->SetCondition(condition.str(), condition_group);
         }
     }
     CurrentRule->SetNextRule(NULL);

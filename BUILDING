@@ -1,10 +1,22 @@
 
-Building in Windows:
+Building in Windows command line:
 
-Run win\build_vc7.bat (VC++ .NET 2003), win\build_vc8.bat (VC++ 2005) or
-win\build_vct.bat (VC++ Toolkit 2003). Make sure the build environment
-is properly set up first (if not by default, run vcvars32.bat or such).
-There are also MS VC++ projects in library and program directories.
+Run win\build_vc8.bat (VC++ 2005). Make sure the build environment is 
+properly set up first (if not by default, run vcvars32.bat or such).
+There are also build files for VC++ 2003 (win\build_vc7.bat) and 
+VC++ Toolkit 2003 (win\build_vct.bat), but they are outdated and 
+don't handle PCRE.
+
+The build is based on MS VC++ 2005 projects in pcre, library and program 
+directories:
+
+pcre.vcproj
+usemarcon_library.vcproj
+usemarcon.vcproj
+
+If you add the projects to a solution, add pcre as a dependency of 
+usemarcon_library and usemarcon_library as a dependency of usemarcon 
+(or whatever project uses usemarcon_library).
 
 The build has been tested using MS Visual C++ 2005 under Windows XP.
 
