@@ -166,8 +166,8 @@ typestr2 TCDLib::GetContent(TCD* theCD)
     }
     else content = itsContent;
 
-    int    aBeginning=theCD->GetBeginning();
-    int    aEnd=theCD->GetEnd();
+    size_t    aBeginning=theCD->GetBeginning();
+    size_t    aEnd=theCD->GetEnd();
 
     // Si les positions de sont pas definies, on retourne tout le contenu
 
@@ -183,7 +183,7 @@ typestr2 TCDLib::GetContent(TCD* theCD)
         if (aEnd >= 0)
             aEnd = utf8_charindex(content.str(), aEnd);
     }
-    int MaxPos = strlen(content.str());
+    size_t MaxPos = strlen(content.str());
 
     // Extract the data if the positions are defined
     typestr2 result;
@@ -254,8 +254,8 @@ int TCDLib::SetContent(const char *aContent, const char *aContent2, const char *
 
     // Si aCD n'est pas NULL, il faut verifier l'intervalle qu'il definit
 
-    int    aBeginning=aCD->GetBeginning();
-    int    aEnd=aCD->GetEnd();
+    size_t aBeginning=aCD->GetBeginning();
+    size_t aEnd=aCD->GetEnd();
 
     // Si les positions de debut et fin sont indefinies, on remplit simplement
     // le CDLib en re-appelant cette meme methode sans aCD (NULL par defaut)
@@ -270,23 +270,24 @@ int TCDLib::SetContent(const char *aContent, const char *aContent2, const char *
 
     {
         // aBeginning et aEnd commencent a 1 quand ils sont definis
-        --aBeginning;
+        if (aBeginning > 0) 
+            --aBeginning;
 
         typestr tmpstr = itsContent.str() ? itsContent.str() : "";
 
         if (mStateManager->GetUTF8Mode() && aContent)
         {
-            int oldBegining = aBeginning;
+            size_t oldBeginning = aBeginning;
             aBeginning = utf8_charindex(tmpstr.str(), aBeginning);
-            aEnd = utf8_charindex(aContent, aEnd) + aBeginning - oldBegining;
+            aEnd = utf8_charindex(aContent, aEnd) + aBeginning - oldBeginning;
         }
-        int MaxPos = strlen(tmpstr.str());
-        unsigned long aContentLen = strlen(aContent);
+        size_t MaxPos = strlen(tmpstr.str());
+        size_t aContentLen = strlen(aContent);
 
         tmpstr.promise(aBeginning + aContentLen + 1);
-        for (int i = MaxPos; i < aBeginning; tmpstr.str()[i++] = ' ');
+        for (size_t i = MaxPos; i < aBeginning; tmpstr.str()[i++] = ' ');
 
-        if (aEnd == -1)
+        if (aEnd == 0)
         {
             tmpstr.append(aContent);
         }
@@ -294,10 +295,10 @@ int TCDLib::SetContent(const char *aContent, const char *aContent2, const char *
         {
             --aEnd;
             // Avoid copying more than we have
-            int contentsize = aContentLen + 1;
-            int copysize = aEnd - aBeginning + 1;
+            size_t contentsize = aContentLen + 1;
+            size_t copysize = aEnd - aBeginning + 1;
             memcpy(&tmpstr.str()[aBeginning], aContent, contentsize >= copysize ? copysize : contentsize);
-            for (int i = contentsize - 1; i < copysize; tmpstr.str()[aBeginning + i++] = ' ');
+            for (size_t i = contentsize - 1; i < copysize; tmpstr.str()[aBeginning + i++] = ' ');
         }
 
         if (MaxPos <= aEnd) 

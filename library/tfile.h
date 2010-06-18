@@ -60,8 +60,8 @@ public:
     void         SetMode(char aMode);
     char         GetKind(void);
     void         SetKind(char aKind);
-    virtual long GetSize(void);
-    virtual long GetPos(void);
+    virtual size_t GetSize(void);
+    virtual size_t GetPos(void);
 
 protected:
     int          itsLineNumber;

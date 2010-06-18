@@ -25,17 +25,18 @@ AUTHOR
 #include <string.h>
 #include <malloc.h>
 #include "defines.h"
+#include <limits>
 
 class typestr
 {
 protected:
-    static const unsigned int buffersize = 200;
+    static const size_t buffersize = 200;
     char m_buffer[buffersize];
 
     char *m_str;
-    unsigned long m_size;
+    size_t m_size;
     char m_token;
-    unsigned long m_token_pos;
+    size_t m_token_pos;
 
 public:
     typestr();
@@ -44,20 +45,20 @@ public:
 
     ~typestr();
 
-    void allocstr(unsigned long size);
+    void allocstr(size_t size);
     void freestr();
     bool is_empty();
-    char* str(const char *str, unsigned long maxlen = 0);
+    char* str(const char *str, size_t maxlen = 0);
     inline char *str() { return m_str; }
     inline const char *cstr() const { return m_str; }
-    char *append(const char *a_str, unsigned long a_len = 0);
+    char *append(const char *a_str, size_t a_len = 0);
     // Optimized for repeating calls
     char *append_char(char c);
-    void replace(const char *src, const char *dst, int position = -1);
+    void replace(const char *src, const char *dst, size_t position = SIZE_MAX);
     typestr & append(const typestr & a_str);
     // Promise space for given number of bytes without destroying original contents
-    void promise(unsigned long size);
-    unsigned long length() { return m_str ? strlen(m_str) : 0; }
+    void promise(size_t size);
+    size_t length() { return m_str ? strlen(m_str) : 0; }
     typestr & trim();
     typestr find_token(const char a_token);
     typestr next_token();

@@ -58,8 +58,8 @@ public:
     int   GetOccurrenceNumber     (void) const { return itsOccurrenceNumber; };
     int   GetTagOccurrenceNumber  (void) const { return itsTagOccurrenceNumber; };
     int   GetSubOccurrenceNumber  (void) const { return itsSubOccurrenceNumber; };
-    int   GetBeginning            (void) const { return itsBeginning; };
-    int   GetEnd                  (void) const { return itsEnd; };
+    size_t GetBeginning           (void) const { return itsBeginning; };
+    size_t GetEnd                 (void) const { return itsEnd; };
     int   GetIN                   (void) const { return _IN; };
 
     void  SetPrevious             (TCD *aCD)                  { itsPrevious=aCD; };
@@ -69,8 +69,8 @@ public:
     void  SetOccurrenceNumber     (int anOccurrenceNumber)    { itsOccurrenceNumber=anOccurrenceNumber; };
     void  SetTagOccurrenceNumber  (int aTagOccurrenceNumber)  { itsTagOccurrenceNumber=aTagOccurrenceNumber; };
     void  SetSubOccurrenceNumber  (int aSubOccurrenceNumber)  { itsSubOccurrenceNumber=aSubOccurrenceNumber; };
-    void  SetBeginning            (int aBeginning)            { itsBeginning=aBeginning; };
-    void  SetEnd                  (int aEnd)                  { itsEnd=aEnd; };
+    void  SetBeginning            (size_t aBeginning)         { itsBeginning=aBeginning; };
+    void  SetEnd                  (size_t aEnd)               { itsEnd=aEnd; };
     void  SetFixedPos             (const char *a_str);
     void  SetIN                   (int aIN)   { _IN=aIN; };
 
@@ -83,8 +83,8 @@ public:
     TStateManager    *GetStateManager() { return mStateManager; };
 
 private:
-    int           itsBeginning;
-    int           itsEnd;
+    size_t           itsBeginning;
+    size_t           itsEnd;
 
 protected:
     int           _IN;

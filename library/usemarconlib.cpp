@@ -55,7 +55,7 @@ void Usemarcon::SetInteractive(bool a_value)
     m_initialized = false;
 }
 
-void Usemarcon::SetMarcRecord(const char *a_record, int a_length)
+void Usemarcon::SetMarcRecord(const char *a_record, size_t a_length)
 {
     free(m_record);
 
@@ -65,7 +65,7 @@ void Usemarcon::SetMarcRecord(const char *a_record, int a_length)
     memcpy(m_record, a_record, m_length);
 }
 
-void Usemarcon::GetMarcRecord(char *&a_record, int &a_length)
+void Usemarcon::GetMarcRecord(char *&a_record, size_t &a_length)
 {
     a_record = m_record ? l_strdup(m_record) : NULL;
     a_length = m_length;
@@ -160,7 +160,7 @@ int Usemarcon::Convert()
 
 void Usemarcon::AddConfigOverride(const char *a_section, const char *a_setting, const char *a_value)
 {
-    int needed = (m_configOverrides ? strlen(m_configOverrides) : 0) + 
+    size_t needed = (m_configOverrides ? strlen(m_configOverrides) : 0) + 
         strlen(a_section) + strlen(a_setting) + strlen(a_value) + 6;
 
     char* newstr = (char*) malloc(needed);

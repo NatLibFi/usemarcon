@@ -153,8 +153,8 @@ int TMarcField::SetTag(int aTagNumber)
 
 int TMarcField::SetIndicators(const char *theIndicators)
 {
-    unsigned long len = strlen(theIndicators);
-    if (len!=2 && len != 0)
+    size_t len = strlen(theIndicators);
+    if (len != 2 && len != 0)
         return 1;
     strcpy(itsIndicators, theIndicators);
     return 0;

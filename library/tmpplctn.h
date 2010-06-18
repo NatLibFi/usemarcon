@@ -45,7 +45,7 @@ public:
     virtual ~TUMApplication();
 
     virtual int           Initialize(const char *a_iniFileName, bool a_interactive, 
-                                     const char *a_record, int a_recordLen, bool a_forceVerbose,
+                                     const char *a_record, size_t a_recordLen, bool a_forceVerbose,
                                      const char *a_inputMarcFileName, const char *a_outputMarcFileName,
                                      bool a_disableCharacterConversion, const char *a_configOverrides);
     virtual int           Convert(void);
@@ -67,9 +67,9 @@ public:
     bool                  GetConvertInFieldOrder(void) { return itsConvertInFieldOrder; }
     bool                  GetDisableCharacterConversion() { return m_disableCharacterConversion; }
     bool                  GetMarcRecordAvailable() { return m_record ? true : false; }
-    int                   GetMarcRecordLength() { return m_recordLen; }
-    void                  SetMarcRecord(const char *a_record, int a_length);
-    void                  GetMarcRecord(char *&a_record, int &a_length);
+    size_t                GetMarcRecordLength() { return m_recordLen; }
+    void                  SetMarcRecord(const char *a_record, size_t a_length);
+    void                  GetMarcRecord(char *&a_record, size_t &a_length);
 
 private:
     typestr               itsIniFile;
@@ -89,13 +89,11 @@ private:
     bool                  itsConvertInFieldOrder;
     bool                  m_interactive;
     char                  *m_record;
-    int                   m_recordLen;
+    size_t                m_recordLen;
     bool                  m_forceVerbose;
     typestr               m_inputMarcFileName;
     typestr               m_outputMarcFileName;
     bool                  m_disableCharacterConversion;
-    
-    int                   ToHexa(const char* str);
 };
 
 #endif

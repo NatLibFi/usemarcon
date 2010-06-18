@@ -2,7 +2,7 @@
 **************************
 version 3.14
 
-May 26 2010
+June 18 2010
 
 The National Library of Finland
 Ere Maijala
@@ -21,6 +21,7 @@ ere.maijala at helsinki.fi
   mess up &apos;.
 - Added a simple optional Win32 DLL wrapper so that USEMARCON can be 
   loaded as a DLL. The DLL is not built by default.
+- Fixed most (apart from PCRE) warnings regarding 32-bit vs. 64-bit types.
 
 
 **************************

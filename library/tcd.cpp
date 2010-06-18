@@ -149,7 +149,7 @@ void TCD::SetFixedPos(const char *a_str)
             }
             else if (*(p + 1) == '\0')
             {
-                SetEnd(-1);
+                SetEnd(0);
                 *p = '\0';
                 SetBeginning(atoi(tmp.str()));
             }
@@ -175,11 +175,8 @@ void TCD::SetFixedPos(const char *a_str)
 ///////////////////////////////////////////////////////////////////////////////
 int TCD::FromString(const char *aString, const TCD *Last, int InputOrOutput)
 {
-    int StrLen,
-        CurrentPos,
-        IsOccTagPresent=0,
-        IsOccSubPresent=0,
-        RealPos=0;
+    size_t StrLen, CurrentPos, RealPos=0;
+    bool IsOccTagPresent=false, IsOccSubPresent=false;
     typestr str = aString;
 
     // TODO: make this function beautiful
@@ -222,7 +219,7 @@ int TCD::FromString(const char *aString, const TCD *Last, int InputOrOutput)
             if (CurrentPos-RealPos)
                 // the occurence Tag is not empty
             {
-                IsOccTagPresent=1;
+                IsOccTagPresent=true;
                 tmp.str(&String[RealPos], CurrentPos - RealPos);
                 ToUpperCase(tmp.str());
                 if (!strcmp(tmp.str(), "N"))
@@ -257,7 +254,7 @@ int TCD::FromString(const char *aString, const TCD *Last, int InputOrOutput)
         // There is no Tag ==> set the current Tag with the last tag
         if (Last)
         {
-            IsOccTagPresent=1;
+            IsOccTagPresent=true;
             SetTag(Last->GetTag());
             SetSubfield(Last->GetSubfield());
             SetTagOccurrenceNumber(Last->GetTagOccurrenceNumber());
@@ -296,7 +293,7 @@ int TCD::FromString(const char *aString, const TCD *Last, int InputOrOutput)
             if (CurrentPos-RealPos)
                 // the occurence Sub is no empty
             {
-                IsOccSubPresent=1;
+                IsOccSubPresent=true;
                 typestr tmp;
                 tmp.str(&String[RealPos], CurrentPos - RealPos);
                 ToUpperCase(tmp.str());
@@ -352,9 +349,9 @@ int TCD::FromString(const char *aString, const TCD *Last, int InputOrOutput)
         }
         else
         {
-            if (IsOccTagPresent  && !IsOccSubPresent)
+            if (IsOccTagPresent && !IsOccSubPresent)
                 SetSubOccurrenceNumber(1);
-            if (!IsOccTagPresent  && IsOccSubPresent)
+            if (!IsOccTagPresent && IsOccSubPresent)
                 SetTagOccurrenceNumber(1);
         }
     }

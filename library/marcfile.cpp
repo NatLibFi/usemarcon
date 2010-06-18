@@ -71,15 +71,15 @@ int TMarcFile::Open()
 			else
 				xml += "xsi:schemaLocation=\"info:lc/xmlns/marcxchange-v1 http://www.loc.gov/iso25577/v1/marcxchange-1-1.xsd\" xmlns=\"info:lc/xmlns/marcxchange-v1\">\n";
 
-            unsigned long len = strlen(xml.str());
-            if (l_write(iFile, xml.str(), len) != len)
+            size_t len = strlen(xml.str());
+            if (l_write(iFile, xml.str(), (int)len) != len)
                 return 1;
         }
     }
 
     PosCour     = 0L;
     NumBloc     = 0L;
-    TB          = GetMarcInfoBlockSize();
+    itsBlockSize    = GetMarcInfoBlockSize();
     EndOfFile       = false;
     itsEof          = false;
     BufPos          = 0;
@@ -177,13 +177,13 @@ int TMarcFile::read_marc_scw(bool a_first)
 // read_marc
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcFile::read_marc(unsigned long a_length, char * a_buffer)
+int TMarcFile::read_marc(size_t a_length, char * a_buffer)
 {
-    unsigned long pbuf = 0;
-    unsigned long read_len = a_length;
+    size_t pbuf = 0;
+    size_t read_len = a_length;
     while (read_len > 0)
     {
-        unsigned long buffered = BufSize - BufPos;
+        size_t buffered = BufSize - BufPos;
         if (buffered >= read_len)
         {
             if (a_buffer)
@@ -206,13 +206,13 @@ int TMarcFile::read_marc(unsigned long a_length, char * a_buffer)
             pbuf = pbuf + buffered;
             read_len = read_len - buffered;
 
-            long lng;
+            size_t lng;
 
             // Use buffered data if available, otherwise use a file
             if (itsApplication->GetMarcRecordAvailable())
             {
                 char *pcRecord;
-                int iLength = 0;
+                size_t iLength = 0;
                 itsApplication->GetMarcRecord(pcRecord, iLength);
 
                 iLength -= itsCharsRead;
@@ -225,13 +225,14 @@ int TMarcFile::read_marc(unsigned long a_length, char * a_buffer)
             }
             else
             {
-                m_filebuffer.allocstr(TB + 1);
-                lng = l_read(iFile, m_filebuffer.str(), TB);
+                m_filebuffer.allocstr(itsBlockSize + 1);
+                int len_read = l_read(iFile, m_filebuffer.str(), (int) itsBlockSize);
+                if (len_read == -1)
+                    return mStateManager->SetError(1502, ERROR);
+                lng = (size_t)len_read;
             }
 
-            if (lng == -1)
-                return mStateManager->SetError(1502, ERROR);
-            else if (lng < TB)
+            if (lng < itsBlockSize)
                 itsEof = true;
             BufSize = lng;
             BufPos = 0;
@@ -349,7 +350,7 @@ int TMarcFile::Read(TUMRecord *Record)
         return 0;
     }
 
-    unsigned long block_end = (NumBloc + 1) * GetMarcInfoBlockSize();
+    size_t block_end = (NumBloc + 1) * GetMarcInfoBlockSize();
 
     if (block_end - PosCour <= GetMarcInfoMinDataFree() && GetMarcInfoFormat() == MFF_SEGMENTED)
     {
@@ -379,8 +380,8 @@ int TMarcFile::Read(TUMRecord *Record)
         // s'il reste moins de 5 caracteres dans le bloc. Un SCW sera donc present. Ce que
         // l'on traite ici
     {
-        unsigned long read_len = block_end - PosCour;
-        unsigned long read_remaining = 5 - read_len;
+        size_t read_len = block_end - PosCour;
+        size_t read_remaining = 5 - read_len;
         
         Buffer.promise(read_len + read_remaining + 1);
         if (read_marc(read_len, Buffer.str()))
@@ -435,8 +436,8 @@ int TMarcFile::Read(TUMRecord *Record)
         return mStateManager->SetErrorD(1004, ERROR, Buffer.str());
     }
 
-    unsigned long lbuf = 5;
-    unsigned long read_remaining = RecordLen - 5;
+    size_t lbuf = 5;
+    size_t read_remaining = RecordLen - 5;
     do
     // On lit maintenant le reste de la notice, que l'on concatene au BUFFER contenant
     // les 5 premiers caracteres du guide, pour avoir dans BUFFER la notice complete
@@ -446,7 +447,7 @@ int TMarcFile::Read(TUMRecord *Record)
             if (read_marc_scw(0))
                 return 1;
 
-        unsigned long read_len = read_remaining;
+        size_t read_len = read_remaining;
         // On lit une notice morceau par morceau, chaque morceau s'arretant soit a la fin
         // de la notice, soit a la fin du bloc courant.
         //     - lbuf est la longueur deja stockee dans Buffer
@@ -505,7 +506,7 @@ int TMarcFile::Write(TUMRecord *Record)
     // La notice contenue dans un enregistrement marc est regroup‰e dans une chaine
     Record->ToString(Buffer);
 
-    unsigned long RecordLen;
+    size_t RecordLen;
     RecordLen=strlen(Buffer.str());
 
     if (itsApplication->GetMarcRecordAvailable())
@@ -517,7 +518,7 @@ int TMarcFile::Write(TUMRecord *Record)
     if (RecordLen == 0)
         return 0;
 
-    unsigned long block_end = (NumBloc + 1) * GetMarcInfoBlockSize();
+    size_t block_end = (NumBloc + 1) * GetMarcInfoBlockSize();
 
     if (block_end - PosCour <= GetMarcInfoMinDataFree() && GetMarcInfoFormat() == MFF_SEGMENTED)
         // S'il ne reste pas assez de caracteres dans le bloc, on passe au bloc suivant
@@ -534,11 +535,11 @@ int TMarcFile::Write(TUMRecord *Record)
         block_end = PosCour + GetMarcInfoBlockSize();
     }
 
-    unsigned long pos=0;
-    unsigned long write_remaining = RecordLen;
+    size_t pos=0;
+    size_t write_remaining = RecordLen;
     do
     {
-        unsigned long write_len = write_remaining;
+        size_t write_len = write_remaining;
         if (GetMarcInfoFormat() == MFF_SEGMENTED)
         {
             if (write_len + PosCour + 5 > block_end)
@@ -592,7 +593,7 @@ int TMarcFile::Write(TUMRecord *Record)
 // write_marc_scw
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcFile::write_marc_scw(short typ,unsigned long longueur)
+int TMarcFile::write_marc_scw(short typ, size_t longueur)
 {
     char scw[6];
 
@@ -614,13 +615,13 @@ int TMarcFile::write_marc_scw(short typ,unsigned long longueur)
 // write_marc
 //
 ///////////////////////////////////////////////////////////////////////////////
-int TMarcFile::write_marc(unsigned long a_length, char *a_buffer)
+int TMarcFile::write_marc(size_t a_length, char *a_buffer)
 {
-    unsigned long length_remaining = a_length;
-    unsigned long pbuf = 0;
+    size_t length_remaining = a_length;
+    size_t pbuf = 0;
     while (length_remaining > 0)
     {
-        unsigned long remaining = TB - BufPos;
+        size_t remaining = itsBlockSize - BufPos;
         if (remaining >= length_remaining)
         {
             m_filebuffer.promise(BufPos + length_remaining + 1);
@@ -634,7 +635,7 @@ int TMarcFile::write_marc(unsigned long a_length, char *a_buffer)
             memcpy(&m_filebuffer.str()[BufPos], &a_buffer[pbuf], remaining);
             pbuf = pbuf + remaining;
             length_remaining -= remaining;
-            if (l_write(iFile, m_filebuffer.str(), TB) != TB)
+            if (l_write(iFile, m_filebuffer.str(), (int)itsBlockSize) != itsBlockSize)
                 return 1;
             BufPos = 0;
         }
@@ -653,13 +654,13 @@ int TMarcFile::Close()
     {
         if (GetMarcInfoLastBlock())
         {
-            m_filebuffer.promise(TB + 1);
-            for (int i = BufPos; i < TB; i++)
+            m_filebuffer.promise(itsBlockSize + 1);
+            for (size_t i = BufPos; i < itsBlockSize; i++)
                 m_filebuffer.str()[i] = GetMarcInfoPaddingChar();
-            m_filebuffer.str()[TB] = '\0';
-            BufPos = TB;
+            m_filebuffer.str()[itsBlockSize] = '\0';
+            BufPos = itsBlockSize;
         }
-        if ((unsigned long)l_write(iFile, m_filebuffer.str(), BufPos) != BufPos)
+        if (l_write(iFile, m_filebuffer.str(), (int)BufPos) != BufPos)
             return mStateManager->SetError(1006,ERROR);
 
         m_filebuffer = "";
@@ -670,8 +671,8 @@ int TMarcFile::Close()
             // Write XML footer
             typestr xml = "</collection>\n";
 
-            unsigned long len = strlen(xml.str());
-            if (l_write(iFile, xml.str(), len) != len)
+            size_t len = strlen(xml.str());
+            if (l_write(iFile, xml.str(), (int)len) != len)
                 return mStateManager->SetError(1006,ERROR);
         }
     }
@@ -680,7 +681,7 @@ int TMarcFile::Close()
     return 0;
 }
 
-long TMarcFile::GetSize(void)
+size_t TMarcFile::GetSize(void)
 {
     if (itsApplication->GetMarcRecordAvailable())
     {
@@ -692,7 +693,7 @@ long TMarcFile::GetSize(void)
     }
 }
 
-long TMarcFile::GetPos(void)
+size_t TMarcFile::GetPos(void)
 {
     if (itsApplication->GetMarcRecordAvailable())
     {

@@ -30,7 +30,7 @@ private:
     void *m_application;
     bool m_interactive;
     char *m_record;
-    int m_length;
+    size_t m_length;
     char m_lastErrorMessage[255];
     char m_lastWarningMessage[255];
     bool m_initialized;
@@ -62,10 +62,10 @@ public:
 
     bool GetMarcRecordAvailable() { return m_record ? true : false; }
 
-    long GetMarcRecordLength() { return m_length; }
+    size_t GetMarcRecordLength() { return m_length; }
 
-    void SetMarcRecord(const char *a_record, int a_length);
-    void GetMarcRecord(char *&a_record, int &a_length);
+    void SetMarcRecord(const char *a_record, size_t a_length);
+    void GetMarcRecord(char *&a_record, size_t &a_length);
 
     const char *GetIniFileName() { return m_iniFileName; }
 

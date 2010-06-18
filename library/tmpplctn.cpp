@@ -93,7 +93,7 @@ TUMApplication::~TUMApplication( void )
 //
 ///////////////////////////////////////////////////////////////////////////////
 int TUMApplication::Initialize(const char *a_iniFileName, bool a_interactive, 
-                               const char *a_record, int a_recordLen, bool a_forceVerbose,
+                               const char *a_record, size_t a_recordLen, bool a_forceVerbose,
                                const char *a_inputMarcFileName, const char *a_outputMarcFileName,
                                bool a_disableCharacterConversion, const char *a_configOverrides)
 {
@@ -321,7 +321,9 @@ int TUMApplication::Initialize(const char *a_iniFileName, bool a_interactive,
     get_ini_string("DEFAULT_MARC_ATTRIBUTES", "InputMarcPaddingChar", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcasecmp(inistr.str(), "5E"))
     {
-        itsMarcDoc->SetMarcInputFilePaddingChar((char)ToHexa(inistr.str()));
+        int c;
+        if (sscanf(inistr.cstr(), "%2x", &c) == 1)
+            itsMarcDoc->SetMarcInputFilePaddingChar((char)c);
     }
 
     itsMarcDoc->SetMarcInputFileLastBlock(false);
@@ -444,7 +446,9 @@ int TUMApplication::Initialize(const char *a_iniFileName, bool a_interactive,
     get_ini_string("DEFAULT_MARC_ATTRIBUTES", "OutputMarcPaddingChar", "", inistr, itsIniFile.str(), a_configOverrides);
     if (*inistr.str() && strcasecmp(inistr.str(), "5E"))
     {
-        itsMarcDoc->SetMarcOutputFilePaddingChar((char)ToHexa(inistr.str()));
+        int c;
+        if (sscanf(inistr.cstr(), "%2x", &c) == 1)
+            itsMarcDoc->SetMarcOutputFilePaddingChar((char) c);
     }
 
     itsMarcDoc->SetMarcOutputFileLastBlock(false);
@@ -665,34 +669,12 @@ int TUMApplication::DoConvertWrite(void)
     return 0;
 }
 
-int TUMApplication::ToHexa(const char* str)
-{
-    int     v=0,
-            i,
-            max=strlen(str)-1,
-            d;
-    char    *StrBis=l_strdup(str);
-
-    for (i=max,d=1;i>=0;--i)
-    {
-        StrBis[i]=(char)toupper((int)StrBis[i]);
-        if (StrBis[i]>='A')
-            v+=d*(StrBis[i]-'A'+10);
-        else
-            v+=d*(StrBis[i]-'0');
-        d*=16;
-    }
-    free (StrBis);
-    return v;
-}
-
-
 TStateManager *TUMApplication::GetStateManager(void)
 {
     return mStateManager;
 }
 
-void TUMApplication::SetMarcRecord(const char *a_record, int a_length)
+void TUMApplication::SetMarcRecord(const char *a_record, size_t a_length)
 {
     free(m_record);
 
@@ -702,7 +684,7 @@ void TUMApplication::SetMarcRecord(const char *a_record, int a_length)
     m_record[m_recordLen] = '\0';
 }
 
-void TUMApplication::GetMarcRecord(char *&a_record, int &a_length)
+void TUMApplication::GetMarcRecord(char *&a_record, size_t &a_length)
 {
     a_record = m_record ? l_strdup(m_record) : NULL;
     a_length = m_recordLen;

@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="usemarcon_library"
 	ProjectGUID="{2DF37370-8E90-4C21-ACEA-1345F3C26E24}"
+	RootNamespace="usemarcon_library"
 	>
 	<Platforms>
 		<Platform
@@ -54,6 +55,7 @@
 				WarningLevel="3"
 				WarnAsError="true"
 				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -130,6 +132,7 @@
 				WarningLevel="3"
 				WarnAsError="true"
 				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

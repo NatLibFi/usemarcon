@@ -399,7 +399,7 @@ int TMarcRecord::ToString(typestr & a_marcstr)
     typestr directory;
     typestr data;
 
-    unsigned long pos_data = 0;
+    size_t pos_data = 0;
 
     TMarcField *field = itsFirstField;
     while (field != NULL)
@@ -408,7 +408,7 @@ int TMarcRecord::ToString(typestr & a_marcstr)
         char *marcdata = field->GetLib1();
 
         char temps[20];
-        unsigned long lng = strlen(marcdata);
+        size_t lng = strlen(marcdata);
         bool have_ind = IsFieldWithIndicators(OUTPUT, tag, marcdata, lng);
         if (!have_ind)
             sprintf(temps, "%s%04d%05d", tag, lng+1 < 9999 ? int(lng+1) : 9999, pos_data < 99999 ? int(pos_data) : 99999);
@@ -487,7 +487,7 @@ int TMarcRecord::ToXMLString(typestr &a_xml)
     {
         const char *tag = field->GetTag();
         const char *marcdata = field->GetLib1();
-        unsigned long lng = strlen(marcdata);
+        size_t lng = strlen(marcdata);
         bool have_ind = IsFieldWithIndicators(OUTPUT, tag, marcdata, lng);
         if (!have_ind)
         {
@@ -564,7 +564,7 @@ typestr TMarcRecord::unescape_xml(const typestr & a_str)
         {
             ++p2;
             int value;
-            char* mask = "%u;";
+            const char* mask = "%u;";
             if (*p2 == 'x')
             {
                 ++p2;
@@ -837,7 +837,7 @@ int TMarcRecord::LongVal(char* buffer,unsigned long *valeur)
 // IsFieldWithIndicators
 //
 ///////////////////////////////////////////////////////////////////////////////
-bool TMarcRecord::IsFieldWithIndicators(int IO, const char *tag, const char *field, unsigned long fieldlen)
+bool TMarcRecord::IsFieldWithIndicators(int IO, const char *tag, const char *field, size_t fieldlen)
 {
     if ((IO == INPUT && itsFirstInputTNI) || (IO == OUTPUT && itsFirstOutputTNI))
         return IsItAFieldWithIndicators(tag, IO);

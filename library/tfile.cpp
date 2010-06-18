@@ -292,7 +292,7 @@ void TFile::SetKind(char aKind)
 // GetSize
 //
 ///////////////////////////////////////////////////////////////////////////////
-long TFile::GetSize(void)
+size_t TFile::GetSize(void)
 {
     long    OldPosition,
         EndPosition;
@@ -319,7 +319,7 @@ long TFile::GetSize(void)
 // GetPos
 //
 ///////////////////////////////////////////////////////////////////////////////
-long TFile::GetPos(void)
+size_t TFile::GetPos(void)
 {
  if (itsKind==FILE_BINARY)
      return l_lseek(iFile,0,SEEK_CUR);

@@ -43,7 +43,7 @@ typestr::~typestr()
     freestr();
 }
 
-void typestr::allocstr(unsigned long size)
+void typestr::allocstr(size_t size)
 {
     freestr();
     if (size <= buffersize)
@@ -77,14 +77,14 @@ bool typestr::is_empty()
     return true;
 }
 
-char* typestr::str(const char *str, unsigned long maxlen /*= 0*/)
+char* typestr::str(const char *str, size_t maxlen /*= 0*/)
 {
     if (!str)
     {
         freestr();
         return NULL;
     }
-    unsigned long needed = 1 + (maxlen > 0 ? maxlen : strlen(str));
+    size_t needed = 1 + (maxlen > 0 ? maxlen : strlen(str));
     if (m_size < needed)
     {
         allocstr(needed);
@@ -99,16 +99,16 @@ char* typestr::str(const char *str, unsigned long maxlen /*= 0*/)
     return m_str;
 }
 
-char *typestr::append(const char *a_str, unsigned long a_len /*= 0*/)
+char *typestr::append(const char *a_str, size_t a_len /*= 0*/)
 {
     if (!m_str) 
         return str(a_str, a_len);
     if (!a_str)
         return m_str;
-    unsigned long existing_len = strlen(m_str);
-    unsigned long append_len = a_len == 0 ? strlen(a_str) : a_len;
+    size_t existing_len = strlen(m_str);
+    size_t append_len = a_len == 0 ? strlen(a_str) : a_len;
 
-    unsigned long needed = existing_len + append_len + 1;
+    size_t needed = existing_len + append_len + 1;
     if (m_size < needed)
     {
         needed += 100;
@@ -121,8 +121,8 @@ char *typestr::append(const char *a_str, unsigned long a_len /*= 0*/)
 // Optimized for repeating calls
 char *typestr::append_char(char c)
 {
-    unsigned long existing_len = m_str ? strlen(m_str) : 0;
-    unsigned long needed = existing_len + 1 + 1;
+    size_t existing_len = m_str ? strlen(m_str) : 0;
+    size_t needed = existing_len + 1 + 1;
     if (m_size < needed)
     {
         needed += 100;
@@ -133,28 +133,27 @@ char *typestr::append_char(char c)
     return m_str;
 }
 
-void typestr::replace(const char *src, const char *dst, int position)
+void typestr::replace(const char *src, const char *dst, size_t position)
 {
     if (!m_str)
         return;
 
-    unsigned long existing_len = strlen(m_str);
-    unsigned long srclen = strlen(src);
-    unsigned long dstlen = strlen(dst);
-    long needed = dstlen - srclen;
-
+    size_t existing_len = strlen(m_str);
+    size_t srclen = strlen(src);
+    size_t dstlen = strlen(dst);
+    
     char *p = m_str;
     while (p = strstr(p, src))
     {
-        if (position != -1 && p - m_str != position)
+        if (position != SIZE_MAX && p - m_str != position)
         {
             ++p;
             continue;
         }
-        if (needed > 0 && m_size <= existing_len + needed)
+        if (dstlen > srclen && m_size <= existing_len + dstlen - srclen)
         {
-            unsigned long p_pos = strlen(p);
-            needed += 100;
+            size_t p_pos = strlen(p);
+            size_t needed = dstlen - srclen + 100;
             promise(existing_len + needed);
             p = strstr(m_str, src);
             while (strlen(p) > p_pos)
@@ -165,9 +164,9 @@ void typestr::replace(const char *src, const char *dst, int position)
         tmpstr.append(dst);
         tmpstr.append(p + srclen);
         strcpy(m_str, tmpstr.str());
-        existing_len += needed;
+        existing_len += dstlen - srclen;
         p += dstlen;
-        if (position != -1)
+        if (position != SIZE_MAX)
             break;
     }
 }
@@ -178,7 +177,7 @@ typestr & typestr::append(const typestr & a_str)
     return *this;
 }
 
-void typestr::promise(unsigned long size)
+void typestr::promise(size_t size)
 {
     if (m_size >= size)
         return;
@@ -206,7 +205,7 @@ typestr typestr::next_token()
 {
     if (is_empty())
         return typestr("");
-    unsigned long len = strlen(m_str);
+    size_t len = strlen(m_str);
     if (m_token_pos != ULONG_MAX && m_token_pos >= len)
         return typestr("");
     const char* p;

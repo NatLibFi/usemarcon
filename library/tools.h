@@ -83,8 +83,8 @@ bool file_exists(typestr & fspec);
 void show_message(const char *message);
 
 // UTF-8 aware functions (utf8proc wrappers)
-unsigned int utf8_strlen(const char *str);
-unsigned int utf8_charindex(const char *str, unsigned long idx);
+size_t utf8_strlen(const char *str);
+size_t utf8_charindex(const char *str, size_t idx);
 int utf8_stricmp(const char *str1, const char *str2);
 
 // File handling

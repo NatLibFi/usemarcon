@@ -457,7 +457,7 @@ Translation :
                                           $$=AllocTypeInst();
                                           char tmp1[20];
                                           sprintf(tmp1, "%ld", m_ordinal);
-                                          for (int i = strlen(tmp1); i < $3->val; ++i)
+                                          for (size_t i = strlen(tmp1); i < (size_t)$3->val; ++i)
                                             $$->str.append_char('0');
                                           $$->str.append(tmp1);
                                           $$->val = 0;

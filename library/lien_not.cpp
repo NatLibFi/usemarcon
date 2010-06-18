@@ -32,6 +32,7 @@
 #define C_NEW -20;
 #define C_NEWEST -21;
 
+// TODO: lexer is not fully size_t compliant
 int TMarcScannerImpl::LexerInput(char *buf, int max_size)
 {
     if (mBufferPos >= mBufferLen)
@@ -39,13 +40,13 @@ int TMarcScannerImpl::LexerInput(char *buf, int max_size)
         buf = NULL;
         return 0;
     }
-    long num = mBufferLen - mBufferPos;
-    if (num > max_size)
+    size_t num = mBufferLen - mBufferPos;
+    if (num > (size_t)max_size)
         num = max_size;
     memcpy(buf, &mBuffer[mBufferPos], num);
     mBufferPos += num;
 
-    return num;
+    return (int)num;
 }
 
 void TMarcScannerImpl::SetRule(TRule *Rule)
@@ -2065,11 +2066,11 @@ TypeInst* TEvaluateRule::Len( TypeInst* t )
     {
         if (mUTF8Mode)
         {
-            rc->val = utf8_strlen(t->str.str());
+            rc->val = (int)utf8_strlen(t->str.str());
         }
         else
         {
-            rc->val=strlen(t->str.str());
+            rc->val = (int)strlen(t->str.str());
         }
     }
     FreeTypeInst(t);
@@ -2078,14 +2079,14 @@ TypeInst* TEvaluateRule::Len( TypeInst* t )
 
 typestr TEvaluateRule::from(typestr& a_str, int a_index, bool a_strict)
 {
-    unsigned int slen = mUTF8Mode ? utf8_strlen(a_str.str()) : strlen(a_str.str());
+    size_t slen = mUTF8Mode ? utf8_strlen(a_str.str()) : strlen(a_str.str());
     if (a_index < 0 || a_index > (int) slen)
     {
         return "";
     }
     if (mUTF8Mode)
     {
-        a_index = utf8_charindex(a_str.str(), a_index);
+        a_index = (int)utf8_charindex(a_str.str(), a_index);
     }
     char *p = a_str.str() + a_index;
     if (!a_strict)
@@ -2114,7 +2115,7 @@ TypeInst* TEvaluateRule::From(TypeInst* t, bool a_strict)
 
 typestr TEvaluateRule::to(typestr& a_str, int a_index, bool a_strict)
 {
-    unsigned int slen = mUTF8Mode ? utf8_strlen(a_str.str()) : strlen(a_str.str());
+    size_t slen = mUTF8Mode ? utf8_strlen(a_str.str()) : strlen(a_str.str());
     if (a_index < 0 || a_index > (int) slen)
     {
         return "";
@@ -2125,7 +2126,7 @@ typestr TEvaluateRule::to(typestr& a_str, int a_index, bool a_strict)
     ++a_index;
     if (mUTF8Mode)
     {
-        a_index = utf8_charindex(p, a_index);
+        a_index = (int)utf8_charindex(p, a_index);
         p += a_index;
     }
     else
@@ -2164,7 +2165,7 @@ TypeInst* TEvaluateRule::To(TypeInst* t, bool a_strict)
 
 typestr TEvaluateRule::between(typestr& a_str, unsigned int a_from, unsigned int a_to, bool a_strict)
 {
-    unsigned int slen = mUTF8Mode ? utf8_strlen(a_str.str()) : strlen(a_str.str());
+    size_t slen = mUTF8Mode ? utf8_strlen(a_str.str()) : strlen(a_str.str());
     if (a_from < 0 || a_from > (int) slen ||
         a_to < 0 || a_to > (int) slen ||
         a_from > a_to)
@@ -2173,8 +2174,8 @@ typestr TEvaluateRule::between(typestr& a_str, unsigned int a_from, unsigned int
     }
     if (mUTF8Mode)
     {
-        a_from = utf8_charindex(a_str.str(), a_from);
-        a_to = utf8_charindex(a_str.str(), a_to);
+        a_from = (int)utf8_charindex(a_str.str(), a_from);
+        a_to = (int)utf8_charindex(a_str.str(), a_to);
     }
     if (!a_strict)
     {
@@ -2225,8 +2226,8 @@ TypeInst* TEvaluateRule::Between(TypeInst* t1, TypeInst* t2, bool a_strict)
 
 typestr TEvaluateRule::replace(typestr& a_str, typestr& a_source, typestr& a_replacement, IN_STR_POSITION a_at, bool a_strict)
 {
-    int source_len = strlen(a_source.str());
-    int replacement_len = strlen(a_replacement.str());
+    size_t source_len = strlen(a_source.str());
+    size_t replacement_len = strlen(a_replacement.str());
     
     typestr str = a_str;
 
@@ -2240,7 +2241,7 @@ typestr TEvaluateRule::replace(typestr& a_str, typestr& a_source, typestr& a_rep
                 while (p)
                 {
                     typestr tmp;
-                    int pos = p - str.str();
+                    size_t pos = p - str.str();
                     if (pos > 0)
                         tmp.str(str.str(), pos);
                     tmp += a_replacement;
@@ -2258,7 +2259,7 @@ typestr TEvaluateRule::replace(typestr& a_str, typestr& a_source, typestr& a_rep
                 while (strncmp(p, a_source.str(), source_len) == 0)
                 {
                     typestr tmp;
-                    int pos = p - str.str();
+                    size_t pos = p - str.str();
                     if (pos > 0)
                         tmp.str(str.str(), pos);
                     tmp += a_replacement;
@@ -2272,21 +2273,21 @@ typestr TEvaluateRule::replace(typestr& a_str, typestr& a_source, typestr& a_rep
             }
         case SP_END:
             {
-                int len = strlen(str.str());
+                size_t len = strlen(str.str());
                 if (len < source_len)
                     break;
                 char* p = str.str() + len - source_len;
                 while (strncmp(p, a_source.str(), source_len) == 0)
                 {
                     typestr tmp;
-                    int pos = p - str.str();
+                    size_t pos = p - str.str();
                     if (pos > 0)
                         tmp.str(str.str(), pos);
                     tmp += a_replacement;
                     p += source_len;
                     tmp += p;
                     str = tmp;
-                    if (pos - replacement_len < 0)
+                    if (pos < replacement_len)
                         break;
                     p = str.str() + pos - replacement_len;
                 }
@@ -2323,8 +2324,8 @@ TypeInst* TEvaluateRule::Replace( TypeInst* t1, TypeInst* t2, IN_STR_POSITION at
 typestr TEvaluateRule::replaceocc(typestr& a_str, typestr& a_source, typestr& a_replacement, typestr& a_condition, bool a_strict)
 {
     typestr str = a_str;
-    int source_len = strlen(a_source.str());
-    int replacement_len = strlen(a_replacement.str());
+    size_t source_len = strlen(a_source.str());
+    size_t replacement_len = strlen(a_replacement.str());
     int occurrence = 0;
     char* p = strstr(str.str(), a_source.str());
     while (p)
@@ -2332,7 +2333,7 @@ typestr TEvaluateRule::replaceocc(typestr& a_str, typestr& a_source, typestr& a_
         if (CompareOccurrence(a_condition, ++occurrence))
         {
             typestr tmp;
-            int pos = p - str.str();
+            size_t pos = p - str.str();
             if (pos > 0)
                 tmp.str(str.str(), pos);
             tmp += a_replacement;
@@ -2383,8 +2384,7 @@ BFIRST( translation | ... )
 TypeInst* TEvaluateRule::BFirst( TypeInst* t, int k )
 {
     TypeInst*rc;
-    int i;
-    int l;
+    size_t i, l;
 
     rc=AllocTypeInst();
     ToString(S);
@@ -2393,9 +2393,9 @@ TypeInst* TEvaluateRule::BFirst( TypeInst* t, int k )
     {
     case 0 :
         ToString(t);
-        l=strlen(t->str.str());
+        l = strlen(t->str.str());
         i=0;
-        while( S->str.str()[i] )
+        while(S->str.str()[i])
         {
             if (memcmp(&S->str.str()[i],t->str.str(),l)) ++i;
             else break;
@@ -2421,9 +2421,9 @@ TypeInst* TEvaluateRule::BFirst( TypeInst* t, int k )
         break;
     }
     if (S->str.str()[i])
-        rc->val=i+1;
+        rc->val = (int) i + 1;
     else
-        rc->val=0;
+        rc->val = 0;
     FreeTypeInst(t);
     return rc;
 };
@@ -2434,25 +2434,24 @@ EFIRST( translation | ... )
 TypeInst* TEvaluateRule::EFirst( TypeInst* t, int k )
 {
     TypeInst*rc;
-    int i,ok;
-    int l;
+    size_t i, l;
+    bool ok;
 
-    rc=AllocTypeInst();
+    rc = AllocTypeInst();
     ToString(S);
-
-    ok=0;
+    ok = false;
     switch(k)
     {
     case 0 :
         ToString(t);
-        l=strlen(t->str.str());
+        l = strlen(t->str.str());
         i=0;
         while( S->str.str()[i] )
         {
             if (memcmp(&S->str.str()[i],t->str.str(),l)) ++i;
             else
             {
-                ok=1;
+                ok = true;
                 break;
             }
         }
@@ -2465,7 +2464,7 @@ TypeInst* TEvaluateRule::EFirst( TypeInst* t, int k )
         {
             if (IsDigit(S->str.str()[i]))
             {
-                ok=1;
+                ok = true;
                 break;
             }
             else ++i;
@@ -2484,7 +2483,7 @@ TypeInst* TEvaluateRule::EFirst( TypeInst* t, int k )
             if ((unsigned char)(S->str.str()[i])==' ' || IsDigit(S->str.str()[i])) ++i;
             else
             {
-                ok=1;
+                ok = true;
                 break;
             }
         }
@@ -2496,9 +2495,9 @@ TypeInst* TEvaluateRule::EFirst( TypeInst* t, int k )
         break;
     }
     if (ok)
-        rc->val=i+1;
+        rc->val = (int) i + 1;
     else
-        rc->val=0;
+        rc->val = 0;
     FreeTypeInst(t);
     return rc;
 };
@@ -2508,14 +2507,13 @@ BLAST( translation | ... )
 */
 TypeInst* TEvaluateRule::BLast( TypeInst* t, int k )
 {
-    TypeInst*rc;
-    int i,ok;
-    int l;
-
-    rc=AllocTypeInst();
+    TypeInst* rc;
+    size_t i, l;
+    bool ok;
+    
+    rc = AllocTypeInst();
     ToString(S);
-    ok=0;
-
+    ok = false;
     switch(k)
     {
     case 0 :
@@ -2527,7 +2525,7 @@ TypeInst* TEvaluateRule::BLast( TypeInst* t, int k )
             if (memcmp(&S->str.str()[i],t->str.str(),l)) --i;
             else
             {
-                ok=1;
+                ok = true;
                 break;
             }
         }
@@ -2539,7 +2537,7 @@ TypeInst* TEvaluateRule::BLast( TypeInst* t, int k )
         {
             if (IsDigit(S->str.str()[i]))
             {
-                ok=1;
+                ok = true;
                 break;
             }
             else --i;
@@ -2558,7 +2556,7 @@ TypeInst* TEvaluateRule::BLast( TypeInst* t, int k )
             if ((unsigned char)(S->str.str()[i])==' ' || IsDigit(S->str.str()[i])) --i;
             else
             {
-                ok=1;
+                ok = true;
                 break;
             }
         }
@@ -2570,9 +2568,9 @@ TypeInst* TEvaluateRule::BLast( TypeInst* t, int k )
         break;
     }
     if (ok)
-        rc->val=i+1;
+        rc->val = (int) i + 1;
     else
-        rc->val=0;
+        rc->val = 0;
     FreeTypeInst(t);
     return rc;
 };
@@ -2583,8 +2581,7 @@ ELAST( translation | ... )
 TypeInst* TEvaluateRule::ELast( TypeInst* t, int k )
 {
     TypeInst*rc;
-    int i;
-    int l;
+    size_t i, l;
 
     rc=AllocTypeInst();
     ToString(S);
@@ -2593,8 +2590,8 @@ TypeInst* TEvaluateRule::ELast( TypeInst* t, int k )
     {
     case 0 :
         ToString(t);
-        l=strlen(t->str.str());
-        i=strlen(S->str.str())-l;
+        l = strlen(t->str.str());
+        i = strlen(S->str.str())-l;
         while( i>=0 )
         {
             if (memcmp(&S->str.str()[i],t->str.str(),l)) --i;
@@ -2621,10 +2618,10 @@ TypeInst* TEvaluateRule::ELast( TypeInst* t, int k )
         }
         break;
     }
-    if (i>=0)
-        rc->val=i+1;
+    if (i >= 0)
+        rc->val = (int) i + 1;
     else
-        rc->val=0;
+        rc->val = 0;
     FreeTypeInst(t);
     return rc;
 };
@@ -2670,7 +2667,7 @@ bool TEvaluateRule::RegFindInternal(const char *a_str, const char *a_regexp)
 
     mRegExpSearchString = a_str;
 
-    mRegExpResult = pcre_exec(re, NULL, mRegExpSearchString.str(), strlen(mRegExpSearchString.str()), 0, 0, mRegExpMatchVector, sizeof(mRegExpMatchVector) / sizeof(int));
+    mRegExpResult = pcre_exec(re, NULL, mRegExpSearchString.str(), (int)strlen(mRegExpSearchString.str()), 0, 0, mRegExpMatchVector, sizeof(mRegExpMatchVector) / sizeof(int));
     pcre_free(re);
     if (mRegExpResult == 0)
         mRegExpResult = sizeof(mRegExpMatchVector) / sizeof(int) / 3;
@@ -2793,7 +2790,7 @@ bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, con
 {
     a_replaced = false;
     int loop_count = 0;
-    int start_pos = 0;
+    size_t start_pos = 0;
     while (loop_count++ < 10000)
     {
         if (!RegFindInternal(a_str.str() + start_pos, a_regexp))
@@ -2829,7 +2826,7 @@ bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, con
         if (replace_start > 0)
             tmp.str(mRegExpSearchString.str(), replace_start);
         tmp.append(replacement);
-        int prev_start_pos = start_pos;
+        size_t prev_start_pos = start_pos;
         start_pos = start_pos + strlen(tmp.str());
         tmp.append(mRegExpSearchString.str() + replace_end);
         *(a_str.str() + prev_start_pos) = '\0';
@@ -2988,7 +2985,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
             if (!is_preserved && a_target && !a_target->str.is_empty())
             {
                 // Convert subfield code
-                int source_pos = strchr(a_source->str.str(), *(p + 1)) - a_source->str.str();
+                size_t source_pos = strchr(a_source->str.str(), *(p + 1)) - a_source->str.str();
                 *(p + 1) = *(a_target->str.str() + source_pos);
             }
 
@@ -2998,8 +2995,8 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
                 p_end = p + strlen(p) - 1;
 
             // Check for any prefix to preserve in the end of the preceding field
-            int before_len = p - fielddata.str();
-            int subfield_len = p_end - p;
+            size_t before_len = p - fielddata.str();
+            size_t subfield_len = p_end - p;
             char* pp = a_preserved_punctuations ? a_preserved_punctuations->str.str() : NULL;
             while (pp)
             {
@@ -3009,7 +3006,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
                     prefix.str(pp, end_pp - pp);
                 else
                     prefix = pp;
-                int prefix_len = strlen(prefix.str());
+                size_t prefix_len = strlen(prefix.str());
 
                 // Something at the end of the subfield to be moved
                 if (!found_after && subfield_len >= prefix_len)
@@ -3098,7 +3095,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
 
                 if (p)
                 {
-                    int pos = p - fielddata.str();
+                    size_t pos = p - fielddata.str();
                     if (pos > 0)
                         before.str(fielddata.str(), pos);
                     after = p;
@@ -3111,7 +3108,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
                 }
 
                 // Check for any prefix to preserve in the end of the preceding field
-                int before_len = strlen(before.str());
+                size_t before_len = strlen(before.str());
                 char* pp = a_preserved_punctuations ? a_preserved_punctuations->str.str() : NULL;
                 while (pp)
                 {
@@ -3121,7 +3118,7 @@ bool TEvaluateRule::move_subfields(typestr &a_fielddata, TypeInst* a_source, Typ
                         prefix.str(pp, end_pp - pp);
                     else
                         prefix = pp;
-                    int prefix_len = strlen(prefix.str());
+                    size_t prefix_len = strlen(prefix.str());
 
                     if (before_len >= prefix_len)
                     {

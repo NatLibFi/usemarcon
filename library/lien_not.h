@@ -50,8 +50,8 @@ class TCDLib;
 class TMarcScannerImpl : public umFlexLexer
 {
 private:
-    long mBufferLen;
-    long mBufferPos;
+    size_t mBufferLen;
+    size_t mBufferPos;
     char *mBuffer;
     bool mFirstTime;
     MemoryPool *m_allocator;

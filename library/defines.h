@@ -75,6 +75,10 @@ AUTHOR
   #define FALSE 0
 #endif
 
+#if !defined(SIZE_MAX)
+  #define SIZE_MAX ((size_t)-1)
+#endif
+
 typedef enum MARC_FILE_FORMAT
 {
     MFF_NONSEGMENTED = 0,

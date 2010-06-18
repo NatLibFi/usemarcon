@@ -20,32 +20,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// InsertChar
-//
-///////////////////////////////////////////////////////////////////////////////
-int InsertChar(char *entree,int *lg_entree,int position,char *caracteres,int code)
-{
-    int i,j,decal,decalage;
-
-    decal=strlen(caracteres);
-    decalage=decal-code;
-    for (j=*lg_entree;j>=position+code;j--)
-        entree[j+decalage]=entree[j];
-    for (i=0; i<decal; i++)
-        entree[position++]=caracteres[i];
-    (*lg_entree)+=decal;
-    return(decal);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // ToUpperCase
 //
 ///////////////////////////////////////////////////////////////////////////////
 int ToUpperCase(char *String)
 {
-    int     CurrentPos;
-    int     MaxPos=strlen(String);
+    size_t     CurrentPos;
+    size_t     MaxPos=strlen(String);
 
     for (CurrentPos=0; CurrentPos<MaxPos; CurrentPos++)
         String[CurrentPos]=(char)toupper((int)String[CurrentPos]);
@@ -384,7 +365,7 @@ void copy_path_from_filename(typestr & path, const char *filename)
     const char *slashp = strrchr(filename, SLASH);
     if (slashp)
     {
-        int i = 1 + slashp - filename;
+        size_t i = 1 + slashp - filename;
         path.append(filename, i);
     }
 }
@@ -433,14 +414,14 @@ unsigned int utf8_glypheme_length(const char *p)
     return len;
 }
 
-unsigned int utf8_strlen(const char *str)
+size_t utf8_strlen(const char *str)
 {
     const char *p = str;
-    unsigned int i = 0;
+    size_t i = 0;
     while (*p)
     {
         ++i;
-        unsigned int clen = utf8_glypheme_length(p);
+        size_t clen = utf8_glypheme_length(p);
         while (*p && clen > 0)
         {
             ++p;
@@ -450,18 +431,18 @@ unsigned int utf8_strlen(const char *str)
     return i;
 }
 
-unsigned int utf8_charindex(const char *str, unsigned long idx)
+size_t utf8_charindex(const char *str, size_t idx)
 {
-    unsigned int utf8_idx = 0;
+    size_t utf8_idx = 0;
     const char *p = str;
-    for (unsigned int i = 0; i < idx; i++)
+    for (size_t i = 0; i < idx; i++)
     {
         if (!*p)
         {
             ++utf8_idx;
             continue;
         }
-        unsigned int clen = utf8_glypheme_length(p);
+        size_t clen = utf8_glypheme_length(p);
         if (clen < 0) 
             break;
         utf8_idx += clen;
@@ -509,7 +490,7 @@ int readline(typestr &a_line, FILE *a_fh)
         }
         first = false;
 
-        int len = strlen(buf);
+        size_t len = strlen(buf);
         if (buf[len-1] == '\n')
         {
             if (len >= 2 && buf[len-2] == '\r')

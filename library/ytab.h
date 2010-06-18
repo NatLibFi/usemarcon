@@ -44,7 +44,7 @@ typedef short int yytype_int16;
 #endif
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 #ifndef YY_
-# if defined YYENABLE_NLS && YYENABLE_NLS
+# if YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)

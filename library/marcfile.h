@@ -62,24 +62,26 @@ public:
     char      GetMarcInfoPaddingChar  (void)                  { return itsMarcInfo.PaddingChar; };
     bool      GetMarcInfoLastBlock    (void)                  { return itsMarcInfo.LastBlock; };
 
-    virtual long GetSize(void);
-    virtual long GetPos(void);
+    virtual size_t GetSize(void);
+    virtual size_t GetPos(void);
 
 private:
     typestr           m_filebuffer;
-    unsigned long     PosCour;
-    unsigned long     NumBloc;
+    size_t            PosCour;
+    size_t            NumBloc;
     unsigned char     FinBande[6];
-    int               TB;
-    unsigned long     BufSize;
-    unsigned long     BufPos;
+    size_t            itsBlockSize;
+    size_t            BufSize;
+    size_t            BufPos;
     bool              EndOfFile;
     bool              itsEof;
-    int               read_marc   (unsigned long, char*);
+    size_t            itsCharsRead;
+
+    int               read_marc   (size_t, char*);
     int               read_marc_scw(bool a_first);
     bool              first_block (void);
-    int               write_marc  (unsigned long, char*);
-    int               write_marc_scw(short,unsigned long);
+    int               write_marc  (size_t, char*);
+    int               write_marc_scw(short, size_t);
     int               val         (const char *, unsigned short *);
     int               longval     (const char *, unsigned long *);
 
@@ -87,9 +89,7 @@ private:
     bool              xml_read_until_end(const char *tag, typestr & a_xml);
 
     TUMApplication    *itsApplication;
-    TStateManager            *mStateManager;
-
-    unsigned long     itsCharsRead;
+    TStateManager     *mStateManager;
 
 protected:
     TMarcDoc          *itsDocument;

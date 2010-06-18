@@ -65,7 +65,7 @@ public:
 private:
     int                   Val                 (char *buffer, unsigned long *valeur);
     int                   LongVal             (char *buffer, unsigned long *valeur);
-    bool                  IsFieldWithIndicators(int IO, const char *tag, const char *field, unsigned long fieldlen);
+    bool                  IsFieldWithIndicators(int IO, const char *tag, const char *field, size_t fieldlen);
     bool                  IsItAFieldWithIndicators(const char *tag, int IO);
     bool                  get_tag(typestr & a_xml, typestr & a_tag, typestr & a_attribs, typestr & a_content, typestr & a_remainder);
     typestr               get_attrib(const char *a_name, typestr & a_attribs);

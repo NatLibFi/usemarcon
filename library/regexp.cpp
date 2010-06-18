@@ -52,7 +52,7 @@ bool RegExp::init(const char *a_regexp, bool a_utf8, bool a_multiline)
 int RegExp::exec(const char *a_str)
 {
     m_str = a_str;
-    m_match_count = pcre_exec(m_pcre, NULL, m_str.str(), strlen(m_str.str()), 0, 0, m_vector, m_vector_size);
+    m_match_count = pcre_exec(m_pcre, NULL, m_str.str(), (int)strlen(m_str.str()), 0, 0, m_vector, m_vector_size);
     if (m_match_count == 0)
         m_match_count = m_vector_size / 3;
     return m_match_count;
@@ -61,7 +61,7 @@ int RegExp::exec(const char *a_str)
 int RegExp::replace(typestr &a_str, const char *a_replacement, bool a_global)
 {
     int loop_count = 0;
-    int start_pos = 0;
+    size_t start_pos = 0;
     int replaced = 0;
     while (loop_count++ < 10000)
     {
@@ -90,13 +90,13 @@ int RegExp::replace(typestr &a_str, const char *a_replacement, bool a_global)
                 replacement.append_char(*p);
             ++p;
         }
-        int replace_start = m_vector[0];
-        int replace_end = m_vector[1];
+        size_t replace_start = m_vector[0];
+        size_t replace_end = m_vector[1];
         typestr tmp;
         if (replace_start > 0)
             tmp.str(m_str.str(), replace_start);
         tmp.append(replacement);
-        int prev_start_pos = start_pos;
+        size_t prev_start_pos = start_pos;
         start_pos = strlen(tmp.str());
         tmp.append(m_str.str() + replace_end);
         *(a_str.str() + prev_start_pos) = '\0';
