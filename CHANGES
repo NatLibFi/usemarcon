@@ -2,7 +2,7 @@
 **************************
 version 3.14
 
-June 18 2010
+September 28 2010
 
 The National Library of Finland
 Ere Maijala
@@ -10,9 +10,9 @@ http://www.nationallibrary.fi/
 ere.maijala at helsinki.fi
 
 - Cleaned up error handling and improved the API for errors and warnings.
-- Added API command to add and remove configuration overrides.
+- Added an API command to add and remove configuration overrides.
 - Added a warning in rule debug mode when a field is overwritten.
-- Const-correctness.
+- Const-correctness in source code.
 - Optimized rule file parsing a bit.
 - Fixed a bug from global conditions where an empty or comment line after
   #if caused the condition to be applied to the previous rule too.
