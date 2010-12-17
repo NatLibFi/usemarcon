@@ -1099,6 +1099,7 @@ int TEvaluateRule::End_Evaluate_Rule()
     if (NEWEST) FreeTypeInst(NEWEST); NEWEST=NULL;
     if (V_TAG) FreeTypeInst(V_TAG); V_TAG=NULL;
     if (V_SUB) FreeTypeInst(V_SUB); V_SUB=NULL;
+    if (V_UTF8) FreeTypeInst(V_UTF8); V_UTF8=NULL;
     FreeCD(CDIn); CDIn=NULL;
 
     return 0;

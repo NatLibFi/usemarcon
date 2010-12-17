@@ -1,5 +1,21 @@
 **************************
 **************************
+version 3.15
+
+December 17 2010
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed encoding/decoding of tag, indicators and subfield code 
+  when processing xml files (just in case..).
+- Fixed a memory leak during conversion.
+
+
+**************************
+**************************
 version 3.14
 
 September 28 2010

@@ -501,11 +501,13 @@ int TMarcRecord::ToXMLString(typestr &a_xml)
         {
             char *indicators = field->GetIndicators();
             a_xml.append("  <datafield tag=\"");
-            a_xml.append(tag);
+            a_xml.append(escape_xml(tag));
             a_xml.append("\" ind1=\"");
-            a_xml.append_char(indicators[0] ? indicators[0] : ' ');
+            char ind1[2] = {indicators[0], '\0'};
+            char ind2[2] = {indicators[1], '\0'};
+            a_xml.append(*ind1 ? escape_xml(ind1) : " ");
             a_xml.append("\" ind2=\"");
-            a_xml.append_char(indicators[1] ? indicators[1] : ' ');
+            a_xml.append(*ind2 ? escape_xml(ind2) : " ");
             a_xml.append("\">\n");
 
             const char *p = strchr(marcdata, START_OF_FIELD);
@@ -518,7 +520,8 @@ int TMarcRecord::ToXMLString(typestr &a_xml)
                     *end = '\0';
 
                 a_xml.append("    <subfield code=\"");
-                a_xml.append_char(code);
+                char codestr[2] = {code, '\0'};
+                a_xml.append(escape_xml(codestr));
                 a_xml.append("\">");
                 a_xml.append(escape_xml(subfield));
                 a_xml.append("</subfield>\n");
@@ -730,7 +733,7 @@ typestr TMarcRecord::get_attrib(const char *a_name, typestr & a_attribs)
         }
 
         if (name == a_name)
-            return value;
+            return unescape_xml(value);
 
         ++p;
     }
