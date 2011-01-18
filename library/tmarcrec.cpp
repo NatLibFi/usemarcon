@@ -4,7 +4,7 @@
  *  Adapted by Crossnet Systems Limited - British Library Contract No. BSDS 851
  *
  *  Adapted by ATP Library Systems Ltd, Finland, 2002-2003
- *  Adapted by The National Library of Finland, 2004-2010
+ *  Adapted by The National Library of Finland, 2004-2011
  *
  *  File:  tmarcrec.cpp
  *
@@ -331,7 +331,7 @@ int TMarcRecord::FromXMLString(typestr & a_xml)
                 {
                     content = unescape_xml(content);
                     size_t len = strlen(content.str());
-                    for (size_t i = 1; i <= 24 - len; i++)
+                    for (size_t i = len; i < 24; i++)
                         content.append_char(' ');
                     memcpy(itsLeader, content.str(), 24);
                 }
