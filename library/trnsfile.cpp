@@ -91,7 +91,7 @@ int TTransFile::Open()
 
                 // Creation de l'arbre lexicographique
                 if (*InListe.str())
-                    insere(InListe.str(), (unsigned char*)l_strdup(OutListe.str()));
+                    insere((unsigned char*) InListe.str(), (unsigned char*)l_strdup(OutListe.str()));
 
             }
         }
@@ -183,7 +183,7 @@ int TTransFile::Convert( TMarcRecord* MarcIn, TMarcRecord* MarcOut )
 ///////////////////////////////////////////////////////////////////////////////
 bool TTransFile::Transcode(const char* In, typestr &Out, const char *Notice, const char *Field)
 {
-    const char *c = In;
+    const unsigned char *c = (const unsigned char*) In;
     const char *r = NULL;
 
     Out.str("");
@@ -310,7 +310,7 @@ int TTransFile::GetValues(const char *src, typestr *dest)
 
 bool TTransFile::Exists(char* In)
 {
-    char *c = In;
+    unsigned char* c = (unsigned char*) In;
 
     if (!In)
         return true;

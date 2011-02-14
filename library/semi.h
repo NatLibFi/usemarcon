@@ -48,8 +48,8 @@ public:
     long taille; // size
     semi();
     ~semi();
-    void *cherche(const char *ch, int *); // search
-    void insere(const char *, void *); // insert
+    void *cherche(const unsigned char *ch, int *); // search
+    void insere(const unsigned char *, void *); // insert
 };
 
 #endif
