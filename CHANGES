@@ -11,6 +11,7 @@ ere.maijala at helsinki.fi
 
 - Fixed character conversion tables. In some cases the proper
   conversion was not used due to signed/unsigned comparison.
+- Fixed library automake to not try installing statemanager.h twice.
 
 
 **************************
