@@ -1939,7 +1939,7 @@ int TEvaluateRule::BoolGT( TypeInst* t1, TypeInst* t2 )
     if (t1->str.str() == NULL && t2->str.str() == NULL) 
         rc = t1->val > t2->val ? 1 : 0;
     else 
-        rc = strcmp(ToString(t1), ToString(t2)) ? 1 : 0;
+        rc = strcmp(ToString(t1), ToString(t2)) > 0 ? 1 : 0;
     if (m_debug_rule) 
     {
         typestr b1, b2;
