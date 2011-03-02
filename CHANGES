@@ -13,6 +13,7 @@ ere.maijala at helsinki.fi
 - Fixed less than or equal (<=) and greater than or equal (>=) 
   operators.
 - Fixed MARC-8 conversion from EACC set to UTF-8.
+- Optimized MARC-8 conversion tables for a slightly smaller size.
 
 **************************
 **************************
