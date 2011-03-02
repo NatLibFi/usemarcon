@@ -285,23 +285,31 @@ const char* TTransDoc::Transcode(char* In, typestr *Out, char *Notice, char *Fie
                         case MARC8_SET_MULTIBYTE:
                             {
                                 char esc3 = *(c+3);
-                                if (esc3 == MARC8_SET_EXTENDED_LATIN_PRE)
+                                if (esc3 != '\0')
                                 {
-                                    c++;
-                                    esc3 = *(c+3);
-                                }
-
-                                if (esc2 == MARC8_SET_G1_MULTIBYTE_A || esc2 == MARC8_SET_G1_MULTIBYTE_B)
-                                {
-                                    g1 = esc3;
-                                    c += 4;
-                                    continue;
-                                }
-                                if (esc2 == MARC8_SET_G0_MULTIBYTE_B)
-                                {
-                                    g0 = esc3;
-                                    c += 4;
-                                    continue;
+                                    char esc4 = *(c+4);
+                                    if (esc2 == MARC8_SET_G1_MULTIBYTE_A || esc2 == MARC8_SET_G1_MULTIBYTE_B)
+                                    {
+                                        if (esc3 == MARC8_SET_EXTENDED_LATIN_PRE && esc4 == MARC8_SET_EXTENDED_LATIN)
+                                        {
+                                            esc3 = MARC8_SET_EXTENDED_LATIN;
+                                            ++c;
+                                        }
+                                        g1 = esc3;
+                                        c += 4;
+                                        continue;
+                                    }
+                                    if (esc2 == MARC8_SET_G0_MULTIBYTE_B)
+                                    {
+                                        if (esc3 == MARC8_SET_EXTENDED_LATIN_PRE && esc4 == MARC8_SET_EXTENDED_LATIN)
+                                        {
+                                            esc3 = MARC8_SET_EXTENDED_LATIN;
+                                            ++c;
+                                        }
+                                        g0 = esc3;
+                                        c += 4;
+                                        continue;
+                                    }
                                 }
                                 // G0 is default if no other designation is given
                                 g0 = esc2;

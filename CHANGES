@@ -1,5 +1,21 @@
 **************************
 **************************
+version 3.17
+
+March 2 2011
+
+The National Library of Finland
+Ere Maijala
+http://www.nationallibrary.fi/
+ere.maijala at helsinki.fi
+
+- Fixed less than (<) and greater than (>) operators.
+- Fixed less than or equal (<=) and greater than or equal (>=) 
+  operators.
+- Fixed MARC-8 conversion from EACC set to UTF-8.
+
+**************************
+**************************
 version 3.16
 
 February 14 2011

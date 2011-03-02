@@ -1,5 +1,5 @@
 AC_INIT(program/usemarcon.cpp)
-AM_INIT_AUTOMAKE(usemarcon_cpp,3.16)
+AM_INIT_AUTOMAKE(usemarcon_cpp,3.17)
 
 AC_PROG_CC
 AC_PROG_CXX
