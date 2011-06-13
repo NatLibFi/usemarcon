@@ -2792,6 +2792,7 @@ bool TEvaluateRule::RegReplaceInternal(typestr &a_str, const char *a_regexp, con
     a_replaced = false;
     int loop_count = 0;
     size_t start_pos = 0;
+    memset(mRegExpMatchVector, 0, sizeof(mRegExpMatchVector));
     while (loop_count++ < 10000)
     {
         if (!RegFindInternal(a_str.str() + start_pos, a_regexp))

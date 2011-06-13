@@ -21,8 +21,8 @@ AUTHOR
 #ifndef _Defines_H
 #define _Defines_H
 
-#define USEMARCON_VERSION "3.17"
-#define RULE_VERSION 317
+#define USEMARCON_VERSION "3.18"
+#define RULE_VERSION 318
 
 #define INPUT 1
 #define OUTPUT 2
