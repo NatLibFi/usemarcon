@@ -7,7 +7,12 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef HAVE_MALLOC_H_
 #include <malloc.h>
+#endif
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#endif
 #include <time.h>
 
 /* Command to build:  ../bison+.pl --input analyse2.y --class MarcScanner --cpp ytab.cpp --hdr ytab.h --no-lines */
@@ -131,7 +136,7 @@ S(NULL), T(NULL), D(NULL), CDIn(NULL), N(NULL), NT(NULL), NS(NULL), NO(NULL), NS
 %token <inst> TAG DTAG STAG FIX I1 I2
 %token <inst> STR VAL LEN STO MEM EXC CLR LOWER UPPER
 %token <inst> FROM TO BETWEEN _DELETE REPLACE REPLACEOCC
-%token <inst> BFIRST EFIRST BLAST ELAST
+%token <inst> BFIRST EFIRST BLAST ENDLAST
 %token <inst> REDO SORT SORTFIELD NEXT LAST TABLE ORDINAL
 %token <inst> YEAR MONTH DAY HOUR MINUTE SECOND
 %token <inst> NEXTSUB NEXTSUBIN PREVIOUSSUB PREVIOUSSUBIN 
@@ -596,9 +601,9 @@ Translation :
 |       BLAST '(' Translation ')'       { PrintDebug("BLast(...)");$$=BLast($3,0); $3=NULL; }
 |       BLAST '(' WNUMBER ')'           { PrintDebug("BLast(Number)");$$=BLast(NULL,1); }
 |       BLAST '(' WSTRING ')'           { PrintDebug("BLast(String)");$$=BLast(NULL,2); }
-|       ELAST '(' Translation ')'       { PrintDebug("ELast(...)");$$=ELast($3,0); $3=NULL; }
-|       ELAST '(' WNUMBER ')'           { PrintDebug("ELast(Number)");$$=ELast(NULL,1); }
-|       ELAST '(' WSTRING ')'           { PrintDebug("ELast(String)");$$=ELast(NULL,2); }
+|       ENDLAST '(' Translation ')'     { PrintDebug("ELast(...)");$$=ELast($3,0); $3=NULL; }
+|       ENDLAST '(' WNUMBER ')'         { PrintDebug("ELast(Number)");$$=ELast(NULL,1); }
+|       ENDLAST '(' WSTRING ')'         { PrintDebug("ELast(String)");$$=ELast(NULL,2); }
 |       NEXT '(' CD ')'                 { PrintDebug("Next(...)");$$=Next_($3,NULL,0); $3=NULL; }
 |       NEXT '(' CD ',' CD ')'          { PrintDebug("Next(...,...)");
                                           $$=Next_($3,$5,0);

@@ -23,7 +23,12 @@ AUTHOR
 #define _TYPEDEF_H_
 
 #include <string.h>
+#ifdef HAVE_MALLOC_H_
 #include <malloc.h>
+#endif
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#endif
 #include "defines.h"
 #include <limits>
 

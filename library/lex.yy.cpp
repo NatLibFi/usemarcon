@@ -782,7 +782,13 @@ goto find_rule; \
 
 #include <string.h>
 #include <stdlib.h>
+#ifdef HAVE_MALLOC_H_
 #include <malloc.h>
+#endif
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#endif
+
 
 #include "typedef.h"
 #include "mempool.h"
@@ -1294,7 +1300,7 @@ return MarcParser::BLAST;
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-return MarcParser::ELAST;
+return MarcParser::ENDLAST;
 	YY_BREAK
 case 65:
 YY_RULE_SETUP

@@ -23,6 +23,9 @@ The build has been tested using MS Visual C++ 2005 under Windows XP.
 
 Building in other systems:
 
+On MAC:
+export CXXFLAGS=-I/usr/include/malloc
+
 First build PCRE by giving the following commands in the usemarcon base directory:
 
 cd pcre

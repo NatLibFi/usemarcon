@@ -12,7 +12,7 @@
  *
  */
 
-#include <malloc.h>
+#include "typedef.h"
 #include "trnsfile.h"
 #include "statemanager.h"
 #include "tmarcrec.h"

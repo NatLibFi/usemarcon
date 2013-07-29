@@ -50,7 +50,12 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef HAVE_MALLOC_H_
 #include <malloc.h>
+#endif
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#endif
 #include <time.h>
 #include "ytab.h"
 
@@ -295,7 +300,7 @@ static const char *const yytname[] =
   "VAR_NEWEST", "VAR_TAG", "VAR_SUB", "VAR_UTF8", "TAG", "DTAG", "STAG",
   "FIX", "I1", "I2", "STR", "VAL", "LEN", "STO", "MEM", "EXC", "CLR",
   "LOWER", "UPPER", "FROM", "TO", "BETWEEN", "_DELETE", "REPLACE",
-  "REPLACEOCC", "BFIRST", "EFIRST", "BLAST", "ELAST", "REDO", "SORT",
+  "REPLACEOCC", "BFIRST", "EFIRST", "BLAST", "ENDLAST", "REDO", "SORT",
   "SORTFIELD", "NEXT", "LAST", "TABLE", "ORDINAL", "YEAR", "MONTH", "DAY",
   "HOUR", "MINUTE", "SECOND", "NEXTSUB", "NEXTSUBIN", "PREVIOUSSUB",
   "PREVIOUSSUBIN", "REGFINDNUM", "REGFINDPOS", "REGFIND", "REGMATCH",

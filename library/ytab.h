@@ -247,7 +247,7 @@ public:
        BFIRST = 325,
        EFIRST = 326,
        BLAST = 327,
-       ELAST = 328,
+       ENDLAST = 328,
        REDO = 329,
        SORT = 330,
        SORTFIELD = 331,

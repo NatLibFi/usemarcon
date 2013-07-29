@@ -4,7 +4,13 @@
 
 #include <string.h>
 #include <stdlib.h>
+#ifdef HAVE_MALLOC_H_
 #include <malloc.h>
+#endif
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#endif
+
 
 #include "typedef.h"
 #include "mempool.h"
@@ -134,7 +140,7 @@ D                       return MarcParser::VARD;
 [B|b][F|f]irst          return MarcParser::BFIRST;
 [E|e][F|f]irst          return MarcParser::EFIRST;
 [B|b][L|l]ast           return MarcParser::BLAST;
-[E|e][L|l]ast           return MarcParser::ELAST;
+[E|e][L|l]ast           return MarcParser::ENDLAST;
 [N|n]umber              return MarcParser::WNUMBER;
 [S|s]tring              return MarcParser::WSTRING;
 [E|e]xists              return MarcParser::EXISTS;
