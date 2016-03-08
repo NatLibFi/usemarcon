@@ -7,7 +7,7 @@ USEMARCON has native support for UTF-8. It can also convert MARC-8 to UTF-8 and 
 
 USEMARCON can read and write ISO2709 (the MARC exchange format), MARCXML and MarcXchange (input and output formats independently).
 
-Compiled binaries, example rulesets, the USEMARCON GUI and other information can be found at the [USEMARCON page of the National Library of Finland](http://www.nationallibrary.fi/libraries/format/usemarcon.html).
+Compiled binaries, example rulesets, the USEMARCON GUI and other information can be found at the [USEMARCON page of the National Library of Finland](https://www.kiwi.fi/display/Marc21/USEMARCON).
 
 [The USEMARCON page at the British Library](http://www.bl.uk/bibliographic/usemarcon.html) contains more information on USEMARCON and the background on the project.
 
