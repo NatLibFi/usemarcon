@@ -4,6 +4,7 @@ CMD ["usemarcon"]
 
 RUN apk update
 RUN apk add autoconf make gcc g++ wget
+RUN addgroup -S usemarcon
 RUN adduser -S -h /usemarcon usemarcon usemarcon
 
 USER usemarcon
@@ -30,4 +31,8 @@ RUN make
 RUN make install
 
 WORKDIR /usemarcon
+
 RUN rm -r build
+USER root
+RUN apk del autoconf make wget
+USER usemarcon
