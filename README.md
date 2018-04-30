@@ -1,4 +1,4 @@
-USEMARCON ![Docker Build Status](https://img.shields.io/docker/build/natlibfi/usemarcon.svg)
+USEMARCON
 =========
 
 USEMARCON is a rule-based MARC record manipulation program and library. It is free, open source, written in C++. USEMARCON can be used interactively with USEMARCON GUI (see below), in batch processing using the command line version and it's also possible to integrate the library with other software (this has been done e.g. with [YAZ Proxy](http://www.indexdata.com/yazproxy)).
