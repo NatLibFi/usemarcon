@@ -1,38 +1,26 @@
-FROM alpine:3.7
-ENV PATH="/usemarcon/bin:${PATH}"
-CMD ["usemarcon"]
+FROM alpine:3.8
+ENTRYPOINT ["bin/usemarcon"]
 
-RUN apk update
-RUN apk add autoconf make gcc g++ wget
-RUN addgroup -S usemarcon
-RUN adduser -S -h /usemarcon usemarcon usemarcon
-
-USER usemarcon
-
+COPY . build
 WORKDIR usemarcon
-RUN mkdir build
-WORKDIR build
 
-RUN wget https://github.com/NatLibFi/usemarcon/archive/v3.17.tar.gz
-RUN tar --strip-components 1 -xf v3.17.tar.gz
-RUN rm v3.17.tar.gz
+RUN addgroup -S usemarcon \
+  && adduser -S -h /usemarcon usemarcon usemarcon \
+  && chown -R usemarcon:usemarcon /build \
+  && apk add -U --no-cache gcc \
+  && apk add --no-cache --virtual .build-deps \
+    sudo autoconf perl automake libtool make g++ file \
+  && sudo -u usemarcon sh -c 'cd /build/ && rm aclocal.m4 && aclocal \
+    && ./buildconf.sh' \
+  && sudo -u usemarcon sh -c 'cd /build/pcre && chmod +x configure depcomp \
+      Detrail install-sh perltest.pl PrepareRelease RunGrepTest RunTest \
+      132html && ./configure --enable-utf8 --enable-unicode-properties \
+      --disable-shared --disable-cpp && make' \
+  && sudo -u usemarcon sh -c 'cd /build && chmod +x configure install-sh \
+        mkinstalldirs && ./configure --prefix=/usemarcon && \
+         make' \
+  && sh -c 'cd /build && make install' \
+  && apk del .build-deps \
+  && rm -rf build tmp/* /var/cache/apk/*
 
-WORKDIR pcre
-
-RUN chmod +x CleanTxt config.guess config.sub configure depcomp Detrail install-sh perltest.pl PrepareRelease RunGrepTest RunTest 132html
-RUN ./configure --enable-utf8 --enable-unicode-properties --disable-shared --disable-cpp
-RUN make
-
-WORKDIR /usemarcon/build
-
-RUN chmod +x Makefile.am buildconf.sh config.guess config.sub configure install-sh missing mkinstalldirs usemarcon-config.in
-RUN ./configure --prefix=/usemarcon
-RUN make
-RUN make install
-
-WORKDIR /usemarcon
-
-RUN rm -r build
-USER root
-RUN apk del autoconf make wget
 USER usemarcon
