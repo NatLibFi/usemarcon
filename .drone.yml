@@ -5,13 +5,9 @@ pipeline:
     image: plugins/docker
     registry: quay.io
     repo: quay.io/natlibfi/usemarcon
-    environment:
-    - DOCKER_CONTENT_TRUST=1
     secrets:
     - docker_username
     - docker_password
-    - docker_content_trust_root_passphrase
-    - docker_content_trust_repository_passphrase
     when:
       event: [push, tag]
 branches: [master, test]
