@@ -21,6 +21,6 @@ RUN addgroup -S usemarcon \
          make' \
   && sh -c 'cd /build && make install' \
   && apk del .build-deps \
-  && rm -rf build tmp/* /var/cache/apk/*
+  && rm -rf /build tmp/* /var/cache/apk/*
 
 USER usemarcon
