@@ -1,0 +1,26 @@
+FROM debian:10
+ENTRYPOINT ["bin/usemarcon"]
+
+COPY . build
+WORKDIR usemarcon
+
+RUN groupadd -r usemarcon \
+  && useradd -r -d /usemarcon -g usemarcon usemarcon \
+  && chown -R usemarcon:usemarcon /build \
+  && apt-get update -y \
+  && apt-get install -y gcc autoconf perl automake libtool make g++ file sudo \
+  && sudo -u usemarcon sh -c 'cd /build/ && rm aclocal.m4 && aclocal \
+    && ./buildconf.sh' \
+  && sudo -u usemarcon sh -c 'cd /build/pcre && chmod +x configure depcomp \
+      Detrail install-sh perltest.pl PrepareRelease RunGrepTest RunTest \
+      132html && ./configure --enable-utf8 --enable-unicode-properties \
+      --disable-shared --disable-cpp && make' \
+  && sudo -u usemarcon sh -c 'cd /build && chmod +x configure install-sh \
+        mkinstalldirs && ./configure --prefix=/usemarcon && \
+         make' \
+  && sh -c 'cd /build && make install' \
+  && apt-get purge -y autoconf perl automake libtool make g++ file \
+  && apt-get clean \
+  && rm -rf /build tmp/* /var/cache/apt/*
+
+USER usemarcon
