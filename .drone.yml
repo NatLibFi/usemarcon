@@ -13,7 +13,7 @@ steps:
     password:
       from_secret: docker_password
   when:
-    branch: [master,test]
+    branch: [feature/docker-debian]
     event: [push]    
 trigger:
   event: [push, tag]
@@ -35,7 +35,7 @@ steps:
     password:
       from_secret: docker_password
   when:
-    branch: [master,test]
+    branch: [feature/docker-debian]
     event: [push]    
 trigger:
   event: [push, tag]  
