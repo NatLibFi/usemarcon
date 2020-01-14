@@ -29,6 +29,7 @@ steps:
   image: plugins/docker
   settings:
     repo: quay.io/natlibfi/usemarcon
+    dockerfile: Dockerfile.debian
     registry: quay.io
     username:
       from_secret: docker_username
