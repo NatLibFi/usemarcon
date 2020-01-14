@@ -10,7 +10,8 @@ pipeline:
     - docker_password
     when:
       event: [push, tag]
-branches: [master, test, feature/docker-debian]
+#branches: [master, test]
+branches: [feature/docker-debian]
 ---
 pipeline:
   generate-tags:
@@ -26,4 +27,5 @@ pipeline:
     - docker_password
     when:
       event: [push, tag]
-branches: [master, test, feature/docker-debian]
+#branches: [master, test]
+branches: [feature/docker-debian]
