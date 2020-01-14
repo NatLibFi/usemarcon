@@ -39,4 +39,3 @@ steps:
     event: [push]    
 trigger:
   event: [push, tag]
-#foo  
