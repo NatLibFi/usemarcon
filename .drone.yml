@@ -14,7 +14,7 @@ steps:
       from_secret: docker_password
   when:
     branch: [master, test]
-    event: [push]    
+    event: [push, tag]    
 trigger:
   event: [push, tag]
 ---
@@ -37,6 +37,6 @@ steps:
       from_secret: docker_password
   when:
     branch: [master, test]
-    event: [push]    
+    event: [push, tag]    
 trigger:
   event: [push, tag]
