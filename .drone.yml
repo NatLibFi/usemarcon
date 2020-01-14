@@ -11,3 +11,19 @@ pipeline:
     when:
       event: [push, tag]
 branches: [master, test]
+---
+pipeline:
+  generate-tags:
+    image: quay.io/natlibfi/drone-gen-tags
+    tag_prefix: 'debian-'
+  docker:
+    image: plugins/docker
+    dockerfile: Dockerfile.debian
+    registry: quay.io
+    repo: quay.io/natlibfi/usemarcon
+    secrets:
+    - docker_username
+    - docker_password
+    when:
+      event: [push, tag]
+branches: [master, test]
