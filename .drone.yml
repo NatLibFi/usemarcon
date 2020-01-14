@@ -12,11 +12,6 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-  when:
-    branch: [master, test]
-    #event: [push, tag]    
-#trigger:
-#  event: [push, tag]
 ---
 kind: pipeline
 name: debian
@@ -35,8 +30,3 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-  when:
-    branch: [master, test]
-    #event: [push, tag]    
-#trigger:
-#  event: [push, tag]
