@@ -24,7 +24,7 @@ steps:
 - name: generate-tags
   image: quay.io/natlibfi/drone-gen-tags
   settings:
-    tag_prefix: 'debian-'
+    tag_suffix: '-debian'
 - name: docker
   image: plugins/docker
   settings:
