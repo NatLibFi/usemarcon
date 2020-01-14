@@ -1,13 +1,41 @@
-pipeline:
-  generate-tags:
-    image: quay.io/natlibfi/drone-gen-tags
-  docker:
-    image: plugins/docker
-    registry: quay.io
+kind: pipeline
+name: default
+steps:
+- name: generate-tags
+  image: quay.io/natlibfi/drone-gen-tags
+- name: docker
+  image: plugins/docker
+  settings:
     repo: quay.io/natlibfi/usemarcon
-    secrets:
-    - docker_username
-    - docker_password
-    when:
-      event: [push, tag]
-branches: [master, test]
+    registry: quay.io
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+  when:
+    branch: [master, test]
+    event: [push]    
+trigger:
+  event: [push, tag]
+---
+kind: pipeline
+name: debian
+steps:
+- name: generate-tags
+  image: quay.io/natlibfi/drone-gen-tags
+  settings:
+    tag_prefix: 'debian-'
+- name: docker
+  image: plugins/docker
+  settings:
+    repo: quay.io/natlibfi/usemarcon
+    registry: quay.io
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+  when:
+    branch: [master, test]
+    event: [push]    
+trigger:
+  event: [push, tag]
